@@ -1,0 +1,130 @@
+
+Dependancy tree:
+	Create ressources that are missing, according to the dependancy tree by running the necessary processes
+
+Shell:
+	A shell processor to run command line tools
+
+Graph report:
+	Trace the execution of processes in a sqlite database
+	Repports the current state in graphviz (at the end of each process ?)
+
+Python:
+	A Python processor
+
+Logs:
+	View logs interractivelly
+
+Invalidation:
+	Remove former ressources that are no longer needed
+	Remove ressources that are no longer up to date because a process creating it has changed
+	Remove ressources that are no longer up to date according to the current dependancy tree
+	Remove all ressources dependant to removed ressources
+
+
+Check:
+	"tuttle check" to check if my data is up to date
+	could return the total time of processing that would be invalidated, and the percent too.
+	maybe the number of processes that would need to be run
+
+Invalidate:
+	"tuttle invalidate" to invalidate a specific ressource I know to to be updated, but can't be automatically because I have forgotten to declare a dependancy / I've updated a specific library that will change the result
+
+Documentation:
+	As important as a good working software
+	Processors documentation
+	Ressources documentation
+	Tutorials
+	Philosophy
+	Quick statup
+	Blog posts:
+	- don't write rollback yourself
+	- don't trash intermediate data
+
+Runtime dependancies:
+	declare dependancies at runtime, in order to consider python librairies imported or tools used by the process
+
+Packaging :
+	because an easy installation is vital
+	on Linux
+	on Windows 
+
+Adult mode:
+	Ok, I know what I'm doing :
+	- I've only added a comment, but I really know it will not change a specific ressouce. So please don't invalidate it
+	- I've already got some data I have processed previously, and I've ported the code to tuttle, but I don't have the time to launch the whole workflow right now. But I still want to run the missing parts
+	Should impact graph reports
+
+SQLite:
+	An SQLite processor
+	Databases is a major goal of tuttle, so an implemtation of SQLite would be a good exercice before heading to more complexe databases
+
+PostgresQL:
+	A PostgresQL processor, because opensource rules !
+	Should implement such ressources as stored procedures (because a stored procedure shouldn't change in the workflow)
+
+MongoDb:
+	A javascript processor for MongoDB
+
+Prediction:
+	Estimate the duration of running the whole workflow, according to passed duration of processes
+
+Windows:
+	The shell processor (or another) to run on Windows command line
+	tuttle should run on Windows
+	
+Auto processor:
+	An [Auto] processor for automaticly doing clear operations such as
+	* download a file from http / ftp
+	* publishing a file through ftp
+	* unzip a file
+	* load a csv file into a table
+	* ..
+R:
+	An R processor
+
+Virtual:
+	A "virtual" target to run operation that don't necesseraly produce output
+	Usefull to notification, like sending an email when a specific target is ready
+
+Log:
+	Log the output and the errors when a process is run
+
+Configuration:
+	A standard way to declare constants
+	Could be used for Pre-run dependancy graph
+	Processes using constants should declare them as dependancies, in order to invalidate the appropriate ressources if configuration changes
+	Somme constants should not be taken into account for dependancies and should not be saved. Specifically passwords
+
+Machine configuration:
+	a default configuration
+	overridden by project's configuration
+
+Pre-run dependancy graph:
+	Declare some ressources and processes dynamically before the whole workflow is ran
+	Usefull when dealing with legagy workflow
+	Users could extend the static graph with Python code
+	Eg : reading a configuration file that specifies where to find the input data
+	Before the whole workflow is run, the pre-run dependancies code is executed, and all the operations of invalidation are based the the dynamic graph
+
+Concurency :
+	Run several independant processes concurently on one machine
+
+Dispatching:
+	Allow other machines to connect to tuttle and retreive some processes to run
+	Usefull for distributing processing among several machines
+	Usefull for running processes that need a specific environement when :
+		* a tool that exist only on windows /  Linux / Mac if it's not your normal environnement
+		* a tools is installed only in a specific machine (eg for licence issues)
+
+Export to spreadshit:
+	Could be done in the auto processor
+
+Other stuff in a spreadshit processor:
+	To be defined
+
+Distribution:
+	Bundle a workflow into a an executable you can ditribute
+
+Datasets:
+	some reference datasets like maps of the world with reference id for zones

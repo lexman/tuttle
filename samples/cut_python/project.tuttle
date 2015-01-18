@@ -1,0 +1,34 @@
+# Retreive the logs
+http.log <- http://myuser:mypwd@admin.mysite.com/logs/logs_december.log #!auto
+
+nb_ips.csv <- http.log #!shell
+	# get the n'th field, and count the number of occurrences of each value
+	cut -c3 $INPUT | sort | uniq -c > $OUTPUT 
+
+nb_users.csv <- file://knowned_people.csv, nb_ips.csv #!python
+	people = {}
+	for line in input[0]:
+		fields = line.strip().split("\t")
+		name = fields[0]
+		ip = fields [1]
+		people[ip] = name
+	for line in input[1]:
+		fields = line.strip().split("\t")
+		nb = fields[0]
+		ip_or_name = fields[1]
+		if ip_or_name in people:
+			ip_or_name = people[ip_or_name]
+		print "{}\t{}".format( nb, ip_or_name)
+			
+			
+users.html <- nb_users.csv, users.tpl.html #!python
+	from jinja2 import Template, Environment, FileSystemLoader
+	templateLoader = FileSystemLoader( searchpath="./templates" )
+	templateEnv = Environment( loader=templateLoader )
+	template = templateEnv.get_template( "users.tpl.html" )
+	templateVars = { "title" : "Test Example",
+                 "description" : "A simple inquiry of function." }
+	outputText = template.render( templateVars )
+	
+# Publish back the result
+ftp://myuser:mypwd@ftp.mysite.com/admin/users.html <- users.html #!auto
