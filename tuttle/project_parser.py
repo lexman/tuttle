@@ -29,15 +29,16 @@ class ProjectParser():
             self._line = self._lines[self._num_line]
             self._num_line = self._num_line + 1
             self._eof = (self._nb_lines == self._num_line)
+            return (self._line, self._num_line, self._eof)
         else:
-            return ""
+            return ("", self._num_line, self._eof)
 
-    def is_blank(self):
+    def is_blank(self, line):
         """ Check whether the current line in a tuttlefile is blank
         """
-        if len(self._line) > 0 and self._line[0] == "#":
+        if len(line) > 0 and line[0] == "#":
                 return True
-        line_stripped = self._line.strip()
+        line_stripped = line.strip()
         return len(line_stripped) == 0
         
     def parse_dependencies_and_processor(self):
@@ -91,11 +92,11 @@ class ProjectParser():
         """
         # Dependency definition
         section = self.parse_dependencies_and_processor()
-        self.read_line()
+        line, num_line, eof = self.read_line()
         # Any number of blank lines
-        while self.is_blank():
-            self.read_line()
-            if self._eof:
+        while self.is_blank(line):
+            line, num_line, eof = self.read_line()
+            if eof:
                 return section
         # Several lines all beginning by white-spaces define a process
         process_code = ""
@@ -110,60 +111,15 @@ class ProjectParser():
 
     def parse_project(self):
         processes = []
-        self.read_line()
+        (line, num_line, eof) = self.read_line()
         while not self._eof:
-            while self.is_blank():
-                self.read_line()
-                if self._eof:
+            while self.is_blank(line):
+                line, num_line, eof = self.read_line()
+                if eof:
                     return processes
             section = self.parse_section()
             processes.append(section)
         return processes
         
-                
-        
-    
-    
-def parse_project(filename):
-    
-    with open(filename) as f:
-        error_found = False
-        num_line = 1
-        line = f.readline()
-        if line == "":
-            # Fin
-            pass
-        # Any number of blank lines
-        while is_blank(line):
-            line = f.readline()
-            if line == "":
-                # Fin
-                pass
-            num_line = num_line + 1
-        # Dependancy definition
-        dep_and_proc = parse_dependencies_and_processor(line)
-        # Any blank line
-        while is_blank(line):
-            line = f.readline()
-            if line == "":
-                # Fin
-                pass
-            num_line = num_line + 1
-        # Several lines all beginning by white-spaces define a process
-        process_code = ""
-        (wsp_prefix, is_process_line) = is_first_process_line(line)
-        while is_process_line:
-            (process_line, is_process_line) = parse_process_line(line, wsp_prefix)
-            num_line = num_line + 1
-            process_code = process_code + process_line
-        
-# Q : est-ce que le fichier peut se terminer par une définition de dépendances ?
-                
-def is_blank(line):
-    """ Check whether a line in a tuttlefile is blank
-    """
-    if len(line) > 0 and line[0] == "#":
-            return True
-    line_stripped = line.strip()
-    return len(line_stripped) == 0
 
+# Q : est-ce que le fichier peut se terminer par une définition de dépendances ?

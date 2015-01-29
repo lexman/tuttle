@@ -13,26 +13,26 @@ def teardown():
 def test_is_blank_if_empty():
     "Empty line should be considereed blank"
     pp = ProjectParser()
-    pp._line = "\n"
-    assert pp.is_blank() == True
+    line = "\n"
+    assert pp.is_blank(line) == True
 
 def test_is_blank_if_blank_cars():
     "Line with blank characters should be blank"
     pp = ProjectParser()
-    pp._line = "  \t \n"
-    assert pp.is_blank() == True
+    line = "  \t \n"
+    assert pp.is_blank(line) == True
     
 def test_is_blank_if_comment():
     "Line with comment should be blank"
     pp = ProjectParser()
-    pp._line = "# un commentaire accentué\n"
-    assert pp.is_blank() == True
+    line = "# un commentaire accentué\n"
+    assert pp.is_blank(line) == True
   
 def test_indented_line_should_not_be_blank():
     "Indented line should not be blank"
     pp = ProjectParser()
-    pp._line = "\ttest"
-    assert pp.is_blank() == False
+    line = "\ttest"
+    assert pp.is_blank(line) == False
     
 def test_simple_read_section():
     "Simple dependency line should return dependancies"
@@ -113,9 +113,8 @@ file:///ressource2 <- file:///ressource3
     More code
     """
     pp.set_project(project)
-    project = pp.parse_project()
-    print project
-    assert False
+    workflow = pp.parse_project()
+    assert len(workflow) == 2
     
 def test_pasrse_workflow_with_indentation_error():
     "Read a project with identation error on first process"
@@ -128,6 +127,9 @@ file:///ressource2 <- file:///ressource3
     Some code2
     """
     pp.set_project(project)
-    project = pp.parse_project()
-    print project
-    assert False
+    try:
+        workflow = pp.parse_project()
+    except ParsingError:
+        assert True
+    else:
+        assert False
