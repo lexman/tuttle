@@ -2,6 +2,15 @@
 # -*- coding: utf-8 -*-
     
 
+class ParsingError(Exception): 
+    def __init__(self, message, line):
+        self._message = message
+        self._line = line
+    
+    def __str__(self):
+        return "Error '{}' on line {}".format(self._message, self._line)
+    
+   
 class ProjectParser():
     
     def parse_file(self, filename):
@@ -33,6 +42,8 @@ class ProjectParser():
         
     def parse_dependencies_and_processor(self):
         arrow_pos = self._line.find('<-')
+        if arrow_pos == -1:
+            raise ParsingError("Definition of dependency expected", self._num_line)
         shebang_pos = self._line.find('#!')
         if shebang_pos == -1:
             shebang_pos = len(self._line)
@@ -42,7 +53,6 @@ class ProjectParser():
                  'inputs' : [input.strip() for input in inputs],
                  'processor' : 'shell',
                  'process_code' : "",
-                 
                }
     
     def is_first_process_line(self):
@@ -71,34 +81,48 @@ class ProjectParser():
         line :
             The line of the process, with prefix removed"""
         if self._line.startswith(prefix):
-            return (True, self._line[len(prefix):])
+            return (True, self._line[len(prefix):] + "\n")
         else:
             return (False, "")
     
     def parse_section(self):
-        """ Parse a whole section : dependancy definition + processor type + process code
+        """ Parse a whole section : dependency definition + processor type + process code
         All blank lines must have been skipped before
         """
-        self.read_line()
-        # Dependancy definition
+        # Dependency definition
         section = self.parse_dependencies_and_processor()
+        self.read_line()
         # Any number of blank lines
         while self.is_blank():
             self.read_line()
             if self._eof:
-                # Renvoyer mieux que None
                 return section
         # Several lines all beginning by white-spaces define a process
         process_code = ""
         (is_process_line, wsp_prefix, ) = self.is_first_process_line()
-        while is_process_line:
-            (process_line, is_process_line) = self.parse_process_line(line, wsp_prefix)
-            self.read_line()
-            process_code = process_code + process_line
+        while is_process_line and not self._eof:
+            (is_process_line, process_line,) = self.parse_process_line(wsp_prefix)
+            if is_process_line:
+                self.read_line()
+                process_code = process_code + process_line
         section['process_code'] = process_code
         return section
 
+    def parse_project(self):
+        processes = []
+        self.read_line()
+        while not self._eof:
+            while self.is_blank():
+                self.read_line()
+                if self._eof:
+                    return processes
+            section = self.parse_section()
+            processes.append(section)
+        return processes
         
+                
+        
+    
     
 def parse_project(filename):
     
