@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from nose.tools import *
-from tuttle.ProcessBuilder import *
+from tuttle.process_builder import *
 
 def setup():
     pass
@@ -10,38 +10,37 @@ def setup():
 def teardown():
     pass
 
-def test_extract_protocol():
+def test_extract_scheme():
     "A file ressource should return a file protocol"
     pb = ProcessBuilder()
-    uri = "file://test.csv"
-    assert pb.extract_protocol(uri) == "file"
+    url = "file://test.csv"
+    assert pb.extract_scheme(url) == "file"
 
-def test_cant_extract_protocol():
+def test_cant_extract_scheme():
     "Should return False if no protocol is present"
     pb = ProcessBuilder()
-    uri = "LoremIpsum"
-    print pb.extract_protocol(uri)
-    assert pb.extract_protocol(uri) == False
+    url = "LoremIpsum"
+    assert pb.extract_scheme(url) == False
 
 def test_build_file_ressource():
-    "Build a file ressource according to a file: uri"
+    "Build a file resource according to a file: uri"
     pb = ProcessBuilder()
-    uri = "file://test.csv"
-    ressource = pb.build_ressource(uri)
+    url = "file://test.csv"
+    ressource = pb.build_ressource(url)
     assert isinstance(ressource, FileRessource)
 
 def test_build_ressource_with_unknown_protocol():
-    ""
+    "Building a resource with an unknown protocol should return None"
     pb = ProcessBuilder()
-    uri = "unknown://test.csv"
-    ressource = pb.build_ressource(uri)
+    url = "unknown://test.csv"
+    ressource = pb.build_ressource(url)
     assert ressource == None
 
-def test_build_ressource_with_bad_uri():
-    "Building a ressource with a malformed uri should return None"
+def test_build_ressource_with_mallformed_uri():
+    "Building a resource with a malformed uri should return None"
     pb = ProcessBuilder()
-    uri = "file:test.csv"
-    ressource = pb.build_ressource(uri)
+    url = "file:test.csv"
+    ressource = pb.build_ressource(url)
     assert ressource == None
 
 def test_build_process():

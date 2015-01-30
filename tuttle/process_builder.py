@@ -3,10 +3,10 @@
 
 
 class FileRessource:
-    protocol = 'file'
+    scheme = 'file'
     
-    def __init__(self, uri):
-        self._uri = uri
+    def __init__(self, url):
+        self._url = url
     
 class ShellProcessor:
     name = 'shell'
@@ -15,6 +15,9 @@ class ShellProcessor:
         pass
 
 class Process:
+    """ Class wrapping a process. A process has some input resources, some output resources, 
+    some code that produces outputs from inputs, a processor that handle the language specificities
+    """
     
     def __init__(self, processor):
         self._processor = processor
@@ -33,6 +36,7 @@ class Process:
 
         
 class ProcessBuilder():
+    """A helper class to build Process classes from the name of processors and ressources"""
     
     def __init__(self):
         self._ressources_definition = {}
@@ -41,19 +45,20 @@ class ProcessBuilder():
         self._processors['shell'] = ShellProcessor
         self._processors['default'] = ShellProcessor
 
-    def extract_protocol(self, uri):
-        separator_pos = uri.find('://')        
+    def extract_scheme(self, url):
+        """Extract the scheme from an url"""
+        separator_pos = url.find('://')        
         if separator_pos == -1:
             return False
-        uri_protocol = uri[:separator_pos]
-        return uri_protocol
+        url_scheme = url[:separator_pos]
+        return url_scheme
         
-    def build_ressource(self, uri):
-        protocol = self.extract_protocol(uri)
-        if protocol == False or protocol not in self._ressources_definition:
+    def build_ressource(self, url):
+        scheme = self.extract_scheme(url)
+        if scheme == False or scheme not in self._ressources_definition:
             return None
-        ResDefClass = self._ressources_definition[protocol]
-        return ResDefClass(uri)
+        ResDefClass = self._ressources_definition[scheme]
+        return ResDefClass(url)
     
     def build_process(self, processor = None):
         if processor is None:
