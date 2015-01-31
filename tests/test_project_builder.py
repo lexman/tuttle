@@ -26,21 +26,21 @@ def test_build_file_ressource():
     "Build a file resource according to a file: uri"
     pb = ProcessBuilder()
     url = "file://test.csv"
-    ressource = pb.build_ressource(url)
-    assert isinstance(ressource, FileRessource)
+    ressource = pb.build_resource(url)
+    assert isinstance(ressource, FileResource)
 
 def test_build_ressource_with_unknown_protocol():
     "Building a resource with an unknown protocol should return None"
     pb = ProcessBuilder()
     url = "unknown://test.csv"
-    ressource = pb.build_ressource(url)
+    ressource = pb.build_resource(url)
     assert ressource == None
 
 def test_build_ressource_with_mallformed_uri():
     "Building a resource with a malformed uri should return None"
     pb = ProcessBuilder()
     url = "file:test.csv"
-    ressource = pb.build_ressource(url)
+    ressource = pb.build_resource(url)
     assert ressource == None
 
 def test_build_process():

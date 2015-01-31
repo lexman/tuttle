@@ -7,7 +7,9 @@ class WorkflowError(Exception):
     def __init__(self, message):
         super(WorkflowError, self).__init__(message)    
 
-class FileRessource:
+
+class FileResource:
+
     scheme = 'file'
     
     def __init__(self, url):
@@ -48,7 +50,7 @@ class ProcessBuilder():
     
     def __init__(self):
         self._ressources_definition = {}
-        self._ressources_definition['file'] = FileRessource
+        self._ressources_definition['file'] = FileResource
         self._processors = {}
         self._processors['shell'] = ShellProcessor
         self._processors['default'] = ShellProcessor
@@ -61,7 +63,7 @@ class ProcessBuilder():
         url_scheme = url[:separator_pos]
         return url_scheme
         
-    def build_ressource(self, url):
+    def build_resource(self, url):
         scheme = self.extract_scheme(url)
         if scheme == False or scheme not in self._ressources_definition:
             return None
@@ -76,34 +78,34 @@ class ProcessBuilder():
         else:
             return False
     
-    def process_from_section(self, section, ressources):
+    def process_from_section(self, section, resources):
         process = self.build_process(section['processor'])
         process.set_code(section['process_code'])
         for input in section['inputs']:
             in_res = None
-            if input not in ressources:            
-                in_res = self.build_ressource(input)
-                ressources[input] = in_res
+            if input not in resources:
+                in_res = self.build_resource(input)
+                resources[input] = in_res
             else:
-                in_res = ressources[input]
+                in_res = resources[input]
             process.add_input(in_res)
         for output in section['outputs']:
             out_res = None
-            if output not in ressources:            
-                out_res = self.build_ressource(output)
-                ressources[output] = in_res
+            if output not in resources:
+                out_res = self.build_resource(output)
+                resources[output] = out_res
             else:
-                out_res = ressources[input]
+                out_res = resources[output]
             if out_res._creator_process != None:
-                raise WorkflowError("{} has been already defined in the workflow (processor : {})".format(output, processor.name))            
+                raise WorkflowError("{} has been already defined in the workflow (processor : {})".format(output, process._processor.name))
             out_res.set_creator_process(process)
             process.add_output(out_res)
         return process
         
     def workflow_from_project(self, sections):
         workflow = []
-        ressources = {}
+        resources = {}
         for section in sections:
-            process = self.process_from_section(section, ressources)
+            process = self.process_from_section(section, resources)
             workflow.append(process)
         return workflow
