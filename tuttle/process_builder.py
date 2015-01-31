@@ -9,7 +9,7 @@ class WorkflowError(Exception):
 
 
 class FileResource:
-
+    """A resource for a local file"""
     scheme = 'file'
     
     def __init__(self, url):
