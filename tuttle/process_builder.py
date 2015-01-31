@@ -51,8 +51,8 @@ class ProcessBuilder():
     """A helper class to build Process classes from the name of processors and ressources"""
     
     def __init__(self):
-        self._ressources_definition = {}
-        self._ressources_definition['file'] = FileResource
+        self._resources_definition = {}
+        self._resources_definition['file'] = FileResource
         self._processors = {}
         self._processors['shell'] = ShellProcessor
         self._processors['default'] = ShellProcessor
@@ -67,9 +67,9 @@ class ProcessBuilder():
 
     def build_resource(self, url):
         scheme = self.extract_scheme(url)
-        if scheme is False or scheme not in self._ressources_definition:
+        if scheme is False or scheme not in self._resources_definition:
             return None
-        ResDefClass = self._ressources_definition[scheme]
+        ResDefClass = self._resources_definition[scheme]
         return ResDefClass(url)
     
     def build_process(self, processor=None):
