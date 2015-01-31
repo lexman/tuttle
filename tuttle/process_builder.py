@@ -19,11 +19,13 @@ class FileResource:
     def set_creator_process(self, process):
         self._creator_process = process
     
+
 class ShellProcessor:
     name = 'shell'
     
     def __init__(self):
         pass
+
 
 class Process:
     """ Class wrapping a process. A process has some input resources, some output resources, 
@@ -35,8 +37,8 @@ class Process:
         self._outputs = []
         self._code = None
     
-    def add_input(self, input):
-        self._inputs.append(input)
+    def add_input(self, input_res):
+        self._inputs.append(input_res)
 
     def add_output(self, output):
         self._outputs.append(output)
@@ -44,7 +46,7 @@ class Process:
     def set_code(self, code):
         self._code = code
 
-        
+
 class ProcessBuilder():
     """A helper class to build Process classes from the name of processors and ressources"""
     
@@ -57,20 +59,20 @@ class ProcessBuilder():
 
     def extract_scheme(self, url):
         """Extract the scheme from an url"""
-        separator_pos = url.find('://')        
+        separator_pos = url.find('://')
         if separator_pos == -1:
             return False
         url_scheme = url[:separator_pos]
         return url_scheme
-        
+
     def build_resource(self, url):
         scheme = self.extract_scheme(url)
-        if scheme == False or scheme not in self._ressources_definition:
+        if scheme is False or scheme not in self._ressources_definition:
             return None
         ResDefClass = self._ressources_definition[scheme]
         return ResDefClass(url)
     
-    def build_process(self, processor = None):
+    def build_process(self, processor=None):
         if processor is None:
             return Process(self._processors["default"])
         elif processor in self._processors:
@@ -81,13 +83,13 @@ class ProcessBuilder():
     def process_from_section(self, section, resources):
         process = self.build_process(section['processor'])
         process.set_code(section['process_code'])
-        for input in section['inputs']:
+        for input_url in section['inputs']:
             in_res = None
-            if input not in resources:
-                in_res = self.build_resource(input)
-                resources[input] = in_res
+            if input_url not in resources:
+                in_res = self.build_resource(input_url)
+                resources[input_url] = in_res
             else:
-                in_res = resources[input]
+                in_res = resources[input_url]
             process.add_input(in_res)
         for output in section['outputs']:
             out_res = None
@@ -96,8 +98,9 @@ class ProcessBuilder():
                 resources[output] = out_res
             else:
                 out_res = resources[output]
-            if out_res._creator_process != None:
-                raise WorkflowError("{} has been already defined in the workflow (processor : {})".format(output, process._processor.name))
+            if out_res._creator_process is not None:
+                raise WorkflowError("{} has been already defined in the workflow (processor : {})".format(output,
+                    process._processor.name))
             out_res.set_creator_process(process)
             process.add_output(out_res)
         return process
