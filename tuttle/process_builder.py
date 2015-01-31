@@ -84,7 +84,6 @@ class ProcessBuilder():
         process = self.build_process(section['processor'])
         process.set_code(section['process_code'])
         for input_url in section['inputs']:
-            in_res = None
             if input_url not in resources:
                 in_res = self.build_resource(input_url)
                 resources[input_url] = in_res
@@ -92,7 +91,6 @@ class ProcessBuilder():
                 in_res = resources[input_url]
             process.add_input(in_res)
         for output in section['outputs']:
-            out_res = None
             if output not in resources:
                 out_res = self.build_resource(output)
                 resources[output] = out_res
