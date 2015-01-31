@@ -1,6 +1,7 @@
 
-Dependancy tree:
-	Create ressources that are missing, according to the dependancy tree by running the necessary processes
+
+File ressource:
+	Be able to process files from input to outputs
 
 Shell:
 	A shell processor to run command line tools
@@ -9,11 +10,16 @@ Graph report:
 	Trace the execution of processes in a sqlite database
 	Repports the current state in graphviz (at the end of each process ?)
 
+Dependancy tree:
+	Create ressources that are missing, according to the dependancy tree by running the necessary processes
+	
+	
 Python:
 	A Python processor
 
 Logs:
 	View logs interractivelly
+
 
 Invalidation:
 	Remove former ressources that are no longer needed
@@ -21,6 +27,8 @@ Invalidation:
 	Remove ressources that are no longer up to date according to the current dependancy tree
 	Remove all ressources dependant to removed ressources
 
+Improved file ressource:
+	By default, even if you don't tell file://, your ressource is a file
 
 Check:
 	"tuttle check" to check if my data is up to date
@@ -48,6 +56,10 @@ Packaging :
 	because an easy installation is vital
 	on Linux
 	on Windows 
+
+Handle wildcards in file ressource:
+	Be able to process file:///directory/*.sql files
+	Need to check for conflicts, because ressources must not overlap. Eg file:///directory/*.sql and file:///directory/init.sql
 
 Adult mode:
 	Ok, I know what I'm doing :
@@ -128,3 +140,11 @@ Distribution:
 
 Datasets:
 	some reference datasets like maps of the world with reference id for zones
+
+Pyline processor:
+	A python processor to handle lines of input files 
+	User don't have to code the opening of the file nor the opening of the output
+	stdout is written to the destination file
+
+Pycsv processor:
+	A python processor to handle line a csv files
