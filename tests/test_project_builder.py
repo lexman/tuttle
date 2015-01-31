@@ -72,5 +72,41 @@ class TestProjectBuilder():
         process = pb.process_from_section(section, resources)
         assert process._inputs[0]._url == "file:///source1"
         assert process._outputs[0]._url == "file:///result1"
+        assert process._outputs[0]._creator_process == process
         assert process._processor.name == "shell"
         assert process._code == "Some \nCode\n"
+
+    def test_output_can_come_from_only_one_process(self):
+        """A section extracted from the parser should build a process"""
+        pb = ProcessBuilder()
+        section = {'outputs': ['file:///result1'],
+                   'inputs': ['file:///source1'],
+                   'processor': 'shell',
+                   'process_code': "Some \nCode\n",
+                   }
+        resources = {}
+        process = pb.process_from_section(section, resources)
+        try:
+            process = pb.process_from_section(section, resources)
+            assert False
+        except WorkflowError:
+            assert True
+
+    def test_resources_should_be_equals_across_processes(self):
+        """Two processes using the same url should use the same resource object"""
+        pb = ProcessBuilder()
+        sections = [
+            {'outputs': ['file:///result1'],
+             'inputs': ['file:///source1'],
+             'processor': 'shell',
+             'process_code': "Some \nCode\n",
+             },
+            {'outputs': ['file:///result2'],
+             'inputs': ['file:///source1'],
+             'processor': 'shell',
+             'process_code': "Some \nCode\n",
+             },
+            ]
+        resources = {}
+        [process1, process2] = pb.workflow_from_project(sections)
+        assert process1._inputs[0] == process2._inputs[0]

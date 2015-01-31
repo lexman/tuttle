@@ -48,7 +48,7 @@ class Process:
 
 
 class ProcessBuilder():
-    """A helper class to build Process classes from the name of processors and ressources"""
+    """A helper class to build Process classes from the name of processors and resources"""
     
     def __init__(self):
         self._resources_definition = {}
@@ -98,7 +98,7 @@ class ProcessBuilder():
                 out_res = resources[output]
             if out_res._creator_process is not None:
                 raise WorkflowError("{} has been already defined in the workflow (processor : {})".format(output,
-                    process._processor.name))
+                                    process._processor.name))
             out_res.set_creator_process(process)
             process.add_output(out_res)
         return process
