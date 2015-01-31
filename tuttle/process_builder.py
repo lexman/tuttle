@@ -12,6 +12,10 @@ class FileRessource:
     
     def __init__(self, url):
         self._url = url
+        self._creator_process = None
+
+    def set_creator_process(self, process):
+        self._creator_process = process
     
 class ShellProcessor:
     name = 'shell'
@@ -72,18 +76,34 @@ class ProcessBuilder():
         else:
             return False
     
-    def process_from_section(self, section):
+    def process_from_section(self, section, ressources):
         process = self.build_process(section['processor'])
         process.set_code(section['process_code'])
         for input in section['inputs']:
-            in_res = self.build_ressource(input)
+            in_res = None
+            if input not in ressources:            
+                in_res = self.build_ressource(input)
+                ressources[input] = in_res
+            else:
+                in_res = ressources[input]
             process.add_input(in_res)
-            # self.ressources[input] = in_res
         for output in section['outputs']:
-            out_res = self.build_ressource(output)
+            out_res = None
+            if output not in ressources:            
+                out_res = self.build_ressource(output)
+                ressources[output] = in_res
+            else:
+                out_res = ressources[input]
+            if out_res._creator_process != None:
+                raise WorkflowError("{} has been already defined in the workflow (processor : {})".format(output, processor.name))            
+            out_res.set_creator_process(process)
             process.add_output(out_res)
-            # if output in self._ressources:
-                # raise WorkflowError("{} has been already defined in the workflow".format(output))
-            # self._ressources[output] = out_res
         return process
         
+    def workflow_from_project(self, sections):
+        workflow = []
+        ressources = {}
+        for section in sections:
+            process = self.process_from_section(section, ressources)
+            workflow.append(process)
+        return workflow

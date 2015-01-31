@@ -72,8 +72,8 @@ def test_process_from_section():
                 'processor' : 'shell',
                 'process_code' : "Some \nCode\n",
                }
-    
-    process = pb.process_from_section(section)
+    ressources = {}
+    process = pb.process_from_section(section, ressources)
     assert process._inputs[0]._url == "file:///source1"
     assert process._outputs[0]._url == "file:///result1"
     assert process._processor.name == "shell"
