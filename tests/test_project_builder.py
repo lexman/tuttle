@@ -62,3 +62,20 @@ def test_build_process_with_unknown_processor():
     processor_name = "unknown_processor"
     process = pb.build_process(processor_name)
     assert process == False
+
+    
+def test_process_from_section():
+    "A section extracted from the parser should build a process"
+    pb = ProcessBuilder()
+    section = { 'outputs' : ['file:///result1'],
+                'inputs' : ['file:///source1'],
+                'processor' : 'shell',
+                'process_code' : "Some \nCode\n",
+               }
+    
+    process = pb.process_from_section(section)
+    assert process._inputs[0]._url == "file:///source1"
+    assert process._outputs[0]._url == "file:///result1"
+    assert process._processor.name == "shell"
+    assert process._code == "Some \nCode\n"
+    

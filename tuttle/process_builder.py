@@ -2,6 +2,11 @@
 # -*- coding: utf8 -*-
 
 
+class WorkflowError(Exception): 
+    """An error in the workflow structure"""
+    def __init__(self, message):
+        super(WorkflowError, self).__init__(message)    
+
 class FileRessource:
     scheme = 'file'
     
@@ -17,8 +22,7 @@ class ShellProcessor:
 class Process:
     """ Class wrapping a process. A process has some input resources, some output resources, 
     some code that produces outputs from inputs, a processor that handle the language specificities
-    """
-    
+    """    
     def __init__(self, processor):
         self._processor = processor
         self._inputs = []
@@ -74,10 +78,12 @@ class ProcessBuilder():
         for input in section['inputs']:
             in_res = self.build_ressource(input)
             process.add_input(in_res)
-            self.ressources[input] = inp_res
-        for input in section['output']:
+            # self.ressources[input] = in_res
+        for output in section['outputs']:
             out_res = self.build_ressource(output)
-            process.add_output(in_res)
-            self.ressources[output] = out_res
+            process.add_output(out_res)
+            # if output in self._ressources:
+                # raise WorkflowError("{} has been already defined in the workflow".format(output))
+            # self._ressources[output] = out_res
         return process
         
