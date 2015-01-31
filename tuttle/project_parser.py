@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
     
-
 class ParsingError(Exception): 
     def __init__(self, message, line):
         self._message = message
@@ -110,16 +109,16 @@ class ProjectParser():
         return section
 
     def parse_project(self):
-        processes = []
+        sections = []
         (line, num_line, eof) = self.read_line()
         while not self._eof:
             while self.is_blank(line):
                 line, num_line, eof = self.read_line()
                 if eof:
-                    return processes
+                    return sections
             section = self.parse_section()
-            processes.append(section)
-        return processes
-        
+            sections.append(section)
+        return sections
+                
 
 # Q : est-ce que le fichier peut se terminer par une définition de dépendances ?
