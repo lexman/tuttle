@@ -1,32 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
+from resources import FileResource
+from processors import ShellProcessor
 
 class WorkflowError(Exception): 
     """An error in the workflow structure"""
     def __init__(self, message):
         super(WorkflowError, self).__init__(message)    
-
-
-class FileResource:
-    """A resource for a local file"""
-    scheme = 'file'
-    
-    def __init__(self, url):
-        self._url = url
-        self._creator_process = None
-
-    def set_creator_process(self, process):
-        self._creator_process = process
-    
-
-class ShellProcessor:
-    """ A processor runs process code
-    """
-    name = 'shell'
-    
-    def __init__(self):
-        pass
 
 
 class Workflow:
