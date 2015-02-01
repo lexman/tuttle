@@ -3,22 +3,13 @@
 
 from resources import FileResource
 from processors import ShellProcessor
+from workflow import  Workflow
+
 
 class WorkflowError(Exception): 
     """An error in the workflow structure"""
     def __init__(self, message):
         super(WorkflowError, self).__init__(message)    
-
-
-class Workflow:
-    """ A workflow is a dependency tree of processes
-    """
-    def __init__(self):
-        self.resources = {}
-        self.processes = []
-
-    def add_process(self, process):
-        self.processes.append(process)
 
 
 class Process:
