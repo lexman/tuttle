@@ -21,10 +21,23 @@ class FileResource:
     
 
 class ShellProcessor:
+    """ A processor runs process code
+    """
     name = 'shell'
     
     def __init__(self):
         pass
+
+
+class Workflow:
+    """ A workflow is a dependency tree of processes
+    """
+    def __init__(self):
+        self.resources = {}
+        self.processes = []
+
+    def add_process(self, process):
+        self.processes.append(process)
 
 
 class Process:
@@ -104,9 +117,12 @@ class ProcessBuilder():
         return process
         
     def workflow_from_project(self, sections):
-        workflow = []
-        resources = {}
+        """
+
+        :rtype : Workflow
+        """
+        workflow = Workflow()
         for section in sections:
-            process = self.process_from_section(section, resources)
-            workflow.append(process)
+            process = self.process_from_section(section, workflow.resources)
+            workflow.add_process(process)
         return workflow

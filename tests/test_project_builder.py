@@ -108,5 +108,5 @@ class TestProjectBuilder():
              },
             ]
         resources = {}
-        [process1, process2] = pb.workflow_from_project(sections)
-        assert process1._inputs[0] == process2._inputs[0]
+        workflow = pb.workflow_from_project(sections)
+        assert workflow.processes[0]._inputs[0] == workflow.processes[1]._inputs[0]
