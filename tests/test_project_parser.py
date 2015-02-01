@@ -102,9 +102,7 @@ class TestProjectParser():
         """Read a simple project"""
         pp = ProjectParser()
         project = """file:///resource1 <- file:///resource2
-        Some code
-        
-file:///resource2 <- file:///resource3
+        Some code""" +  "\n        \n" + """file:///resource2 <- file:///resource3
         Some code
         More code
         """
