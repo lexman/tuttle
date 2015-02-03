@@ -58,24 +58,24 @@ class ProcessBuilder():
             return Process(self._processors[processor])
         else:
             return False
-    
+
+    def get_or_build_resource(self, url, resources):
+        if url not in resources:
+            resource = self.build_resource(url)
+            resources[url] = resource
+        else:
+            resource = resources[url]
+        return resource
+
     def process_from_section(self, section, resources):
         process = self.build_process(section['processor'])
         process.set_code(section['process_code'])
         for input_url in section['inputs']:
-            if input_url not in resources:
-                in_res = self.build_resource(input_url)
-                resources[input_url] = in_res
-            else:
-                in_res = resources[input_url]
+            in_res = self.get_or_build_resource(input_url, resources)
             process.add_input(in_res)
         for output in section['outputs']:
-            if output not in resources:
-                out_res = self.build_resource(output)
-                resources[output] = out_res
-            else:
-                out_res = resources[output]
-            if out_res._creator_process is not None:
+            out_res = self.get_or_build_resource(output, resources)
+            if out_res.creator_process is not None:
                 raise WorkflowError("{} has been already defined in the workflow (processor : {})".format(output,
                                     process._processor.name))
             out_res.set_creator_process(process)

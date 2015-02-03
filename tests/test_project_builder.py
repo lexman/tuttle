@@ -70,9 +70,9 @@ class TestProjectBuilder():
                    }
         resources = {}
         process = pb.process_from_section(section, resources)
-        assert process._inputs[0]._url == "file:///source1"
-        assert process._outputs[0]._url == "file:///result1"
-        assert process._outputs[0]._creator_process == process
+        assert process._inputs[0].url == "file:///source1"
+        assert process._outputs[0].url == "file:///result1"
+        assert process._outputs[0].creator_process == process
         assert process._processor.name == "shell"
         assert process._code == "Some \nCode\n"
 

@@ -29,17 +29,17 @@ class Workflow:
         """
         missing = []
         for resource in self.resources.itervalues():
-            if resource._creator_process is None:
+            if resource.creator_process is None:
                 if not resource.exists():
                     missing.append(resource)
         return missing
 
     def raise_if_missing_inputs(self):
         """Raises a Workflow exception if some inputs are missing"""
-        missings_inputs = self.missing_inputs()
-        if len(missings_inputs) > 0 :
+        missing_inputs = self.missing_inputs()
+        if len(missing_inputs) > 0 :
             missing_txt = ""
-            for missing in missings:
+            for missing in missing_inputs:
                 missing_txt = missing_txt + "* {}\n".format(missing)
             raise WorkflowError("Some resources that are inputs of the workflow "
                                  "are missing : \n{}".format(missing_txt))
