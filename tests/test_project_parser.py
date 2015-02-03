@@ -110,6 +110,19 @@ class TestProjectParser():
         workflow = pp.parse_project()
         assert len(workflow) == 2
 
+    def test_pasrse_workflow_with_blank_lines(self):
+        """Read a simple project"""
+        pp = ProjectParser()
+        project = """file:///resource1 <- file:///resource2
+        Some code""" +  "\n  \n" + """file:///resource2 <- file:///resource3
+        Some code
+        More code
+        """
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow) == 2
+
+
     def test_pasrse_workflow_with_indentation_error(self):
         """Read a project with indentation error on first process"""
         pp = ProjectParser()

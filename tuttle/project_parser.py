@@ -28,9 +28,9 @@ class ProjectParser():
             self._line = self._lines[self._num_line]
             self._num_line = self._num_line + 1
             self._eof = (self._nb_lines == self._num_line)
-            return (self._line, self._num_line, self._eof)
+            return self._line, self._num_line, self._eof
         else:
-            return ("", self._num_line, self._eof)
+            return "", self._num_line, self._eof
 
     def is_blank(self, line):
         """ Check whether the current line in a tuttlefile is blank
@@ -49,11 +49,11 @@ class ProjectParser():
             shebang_pos = len(self._line)
         outputs = self._line[:arrow_pos].split(',')
         inputs = self._line[arrow_pos + 2:shebang_pos].split(',')
-        return { 'outputs' : [output.strip() for output in outputs],
-                 'inputs' : [input.strip() for input in inputs],
-                 'processor' : 'shell',
-                 'process_code' : "",
-               }
+        return {'outputs': [output.strip() for output in outputs],
+                 'inputs': [in_res.strip() for in_res in inputs],
+                'processor': 'shell',
+                'process_code': "",
+                }
     
     def is_first_process_line(self):
         """ Is the current line a valid first line of a process ? All blank lines must have been skipped before
@@ -62,15 +62,15 @@ class ProjectParser():
         wsp = "\t "
         prefix = ""
         i = 0
-        while wsp.find(self._line[i]) >= 0 :
+        while wsp.find(self._line[i]) >= 0:
             # Char i of self._line is a white-space
             prefix = prefix + self._line[i]
-            i = i + 1
+            i += 1
         if i == 0:
             # Line didn't begin by white-spaces. It's not a valid first process line
-            return (False, "")
-        else :
-            return (True, prefix)
+            return False, ""
+        else:
+            return True, prefix
 
     def parse_process_line(self, prefix):
         """ Parses the line as if it is a line of process, beginning by ::prefix::.
@@ -81,9 +81,11 @@ class ProjectParser():
         line :
             The line of the process, with prefix removed"""
         if self._line.startswith(prefix):
-            return (True, self._line[len(prefix):] + "\n")
+            return True, self._line[len(prefix):] + "\n"
+        elif self.is_blank(self._line):
+            return True, ""
         else:
-            return (False, "")
+            return False, ""
     
     def parse_section(self):
         """ Parse a whole section : dependency definition + processor type + process code
@@ -121,4 +123,4 @@ class ProjectParser():
         return sections
                 
 
-# Q : est-ce que le fichier peut se terminer par une définition de dépendances ?
+# Q : est-ce que le fichier peut se terminer par une dï¿½finition de dï¿½pendances ?
