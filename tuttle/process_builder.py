@@ -3,13 +3,7 @@
 
 from resources import FileResource
 from processors import ShellProcessor
-from workflow import  Workflow
-
-
-class WorkflowError(Exception): 
-    """An error in the workflow structure"""
-    def __init__(self, message):
-        super(WorkflowError, self).__init__(message)    
+from workflow import  Workflow, WorkflowError
 
 
 class Process:
@@ -97,4 +91,5 @@ class ProcessBuilder():
         for section in sections:
             process = self.process_from_section(section, workflow.resources)
             workflow.add_process(process)
+        workflow.raise_if_missing_inputs()
         return workflow

@@ -13,3 +13,5 @@ class FileResource:
     def set_creator_process(self, process):
         self._creator_process = process
 
+    def exists(self):
+        return True
