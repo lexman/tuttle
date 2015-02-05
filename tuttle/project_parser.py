@@ -128,26 +128,27 @@ class ProjectParser():
                 return process
         # Several lines all beginning by white-spaces define a process
         process_code = ""
-        (is_process_line, wsp_prefix, ) = self.is_first_process_line()
+        is_process_line, wsp_prefix = self.is_first_process_line()
         while is_process_line and not self._eof:
-            (is_process_line, process_line,) = self.parse_process_line(wsp_prefix)
+            is_process_line, process_line = self.parse_process_line(wsp_prefix)
             if is_process_line:
-                self.read_line()
                 process_code += process_line
+                self.read_line()
         process.set_code(process_code)
         return process
 
     def parse_project(self):
         workflow = Workflow()
-        (line, num_line, eof) = self.read_line()
-        while not self._eof:
+        line, num_line, eof = self.read_line()
+        while True:
             while self.is_blank(line):
                 line, num_line, eof = self.read_line()
                 if eof:
                     return workflow
             process = self.parse_section()
             workflow.add_process(process)
-        return workflow
+            if self._eof:
+                return workflow
 
     def missing_inputs(self):
         """ Check that all external resources that are necessary to run the workflow exist
