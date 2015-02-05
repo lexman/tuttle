@@ -26,7 +26,7 @@ class Process:
         self._code = code
 
 
-class ProcessBuilder():
+class WorkflowBuilder():
     """A helper class to build Process classes from the name of processors and resources"""
     
     def __init__(self):
