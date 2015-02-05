@@ -159,7 +159,6 @@ class ProjectParser():
         print self.resources
         for resource in self.resources.itervalues():
             if resource.creator_process is None:
-                print "Candidate :", resource.url
                 if not resource.exists():
                     missing.append(resource)
         return missing
