@@ -3,7 +3,6 @@
 
 from resources import FileResource
 from processors import ShellProcessor
-from workflow import  Workflow, WorkflowError
 
 
 class Process:
@@ -31,13 +30,18 @@ class WorkflowBuilder():
     
     def __init__(self):
         self._resources_definition = {}
-        self._resources_definition['file'] = FileResource
         self._processors = {}
+        self.init_resources_and_processors()
+
+    def init_resources_and_processors(self):
+        self._resources_definition['file'] = FileResource
         self._processors['shell'] = ShellProcessor
         self._processors['default'] = ShellProcessor
 
     def extract_scheme(self, url):
-        """Extract the scheme from an url"""
+        """Extract the scheme from an url
+        url is supposed to be stripped from spaces
+        """
         separator_pos = url.find('://')
         if separator_pos == -1:
             return False
@@ -47,6 +51,7 @@ class WorkflowBuilder():
     def build_resource(self, url):
         scheme = self.extract_scheme(url)
         if scheme is False or scheme not in self._resources_definition:
+            print self._resources_definition
             return None
         ResDefClass = self._resources_definition[scheme]
         return ResDefClass(url)
@@ -66,30 +71,3 @@ class WorkflowBuilder():
         else:
             resource = resources[url]
         return resource
-
-    def process_from_section(self, section, resources):
-        process = self.build_process(section['processor'])
-        process.set_code(section['process_code'])
-        for input_url in section['inputs']:
-            in_res = self.get_or_build_resource(input_url, resources)
-            process.add_input(in_res)
-        for output in section['outputs']:
-            out_res = self.get_or_build_resource(output, resources)
-            if out_res.creator_process is not None:
-                raise WorkflowError("{} has been already defined in the workflow (processor : {})".format(output,
-                                    process._processor.name))
-            out_res.set_creator_process(process)
-            process.add_output(out_res)
-        return process
-        
-    def workflow_from_project(self, sections):
-        """
-
-        :rtype : Workflow
-        """
-        workflow = Workflow()
-        for section in sections:
-            process = self.process_from_section(section, workflow.resources)
-            workflow.add_process(process)
-        workflow.raise_if_missing_inputs()
-        return workflow
