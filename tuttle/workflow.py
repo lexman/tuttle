@@ -2,17 +2,10 @@
 # -*- coding: utf8 -*-
 
 
-class WorkflowError(Exception):
-    """An error in the workflow structure"""
-    def __init__(self, message):
-        super(WorkflowError, self).__init__(message)
-
-
 class Workflow:
     """ A workflow is a dependency tree of processes
     """
     def __init__(self):
-        self.resources = {}
         self.processes = []
 
     def add_process(self, process):
@@ -22,17 +15,6 @@ class Workflow:
         """
         self.processes.append(process)
 
-    def missing_inputs(self):
-        """ Check that all external resources that are necessary to run the workflow exist
-        :return: a list of missing resources
-        :rtype: list
-        """
-        missing = []
-        for resource in self.resources.itervalues():
-            if resource.creator_process is None:
-                if not resource.exists():
-                    missing.append(resource)
-        return missing
 
     def raise_if_missing_inputs(self):
         """Raises a Workflow exception if some inputs are missing"""

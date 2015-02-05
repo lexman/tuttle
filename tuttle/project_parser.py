@@ -147,8 +147,18 @@ class ProjectParser():
                     return workflow
             process = self.parse_section()
             workflow.add_process(process)
-        workflow.raise_if_missing_inputs()
         return workflow
 
-
-# Q : est-ce que le fichier peut se terminer par une d�finition de d�pendances ?
+    def missing_inputs(self):
+        """ Check that all external resources that are necessary to run the workflow exist
+        :return: a list of missing resources
+        :rtype: list
+        """
+        missing = []
+        print self.resources
+        for resource in self.resources.itervalues():
+            if resource.creator_process is None:
+                print "Candidate :", resource.url
+                if not resource.exists():
+                    missing.append(resource)
+        return missing
