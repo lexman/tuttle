@@ -51,7 +51,6 @@ class WorkflowBuilder():
     def build_resource(self, url):
         scheme = self.extract_scheme(url)
         if scheme is False or scheme not in self._resources_definition:
-            print self._resources_definition
             return None
         ResDefClass = self._resources_definition[scheme]
         return ResDefClass(url)
