@@ -3,17 +3,23 @@
 
 import sys
 from optparse import OptionParser
+from tuttle import prepare_workflow
 
 
 def main():
     """Main entry point for the project."""
     usage = 'bin/tuttle'
     parser = OptionParser(usage=usage)
-    parser.add_option('-x', '--example',
-                  default='example-value',
-                  dest='example',
-                  help='An example option')
-    print "Main 2"
+    parser.add_option('-p', '--project',
+                  default='tuttlefile',
+                  dest='tuttlefile',
+                  help='Path to the tuttlefile : file describing the workflow')
+    parser.add_option('-w', '--workspace',
+                  default='.',
+                  dest='workspace',
+                  help='Directory where the workspace lies. Default is the current directory')
+    options, args = parser.parse_args()
+    prepare_workflow(options.tuttlefile, options.workspace)
 
 if __name__ == '__main__':
     sys.exit(main())
