@@ -82,6 +82,34 @@ class TestProjectParser():
         assert process._outputs[2].url == 'file:///result3'
         assert process._code == "Some code\n"
 
+    def test_read_section_with_invalid_input(self):
+        """A section with an invalid / unrecognised input url should raise an Exception"""
+        pp = ProjectParser()
+        project = """file:///result1 <- source1.csv
+        Some code
+        """
+        pp.set_project(project)
+        pp.read_line()
+        try:
+            process = pp.parse_section()
+            assert False
+        except ParsingError:
+            assert True
+
+    def test_read_section_with_invalid_output(self):
+        """A section with an invalid / unrecognised input url should raise an Exception"""
+        pp = ProjectParser()
+        project = """result1.csv <- file:///source1.csv
+        Some code
+        """
+        pp.set_project(project)
+        pp.read_line()
+        try:
+            process = pp.parse_section()
+            assert False
+        except ParsingError:
+            assert True
+
     def test_read_section_without_process_code(self):
         """Read a sections without process code"""
         pp = ProjectParser()
@@ -161,10 +189,9 @@ file:///resource2 <- file:///resource3
         pp.set_project(project)
         try:
             workflow = pp.parse_project()
+            assert False
         except ParsingError:
             assert True
-        else:
-            assert False
 
     def test_output_can_come_from_only_one_process(self):
         """A section extracted from the parser should build a process"""
