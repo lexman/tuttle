@@ -1,4 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
 
-BINPATH=`dirname $0`
-python "$BINPATH/../tuttle/main.py" $@
+import sys
+from optparse import OptionParser
+
+
+def main():
+    """Main entry point for the project."""
+    usage = 'bin/tuttle'
+    parser = OptionParser(usage=usage)
+    parser.add_option('-x', '--example',
+                  default='example-value',
+                  dest='example',
+                  help='An example option')
+    print "Main 2"
+
+if __name__ == '__main__':
+    sys.exit(main())

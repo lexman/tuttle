@@ -1,23 +1,33 @@
 #!/usr/bin/env python
 """Tuttle"""
+
+import sys
+from tuttle import __version__
 try:
     from setuptools import setup, find_packages
 except ImportError:
-    from distutils.core import setup, find_packages
+    print("Tuttle needs setuptools in order to build. Install it using"
+          " your package manager (usually python-setuptools) or via pip (pip"
+          " install setuptools).")
+    sys.exit(1)
 
-config = {
-	'name' : 'tuttle',
-    'version' : '0.1',
-    'description' : 'Make for data',
-    'long_description' : 'Reliably create data from source as a team in an industrial environment... A tool for continuous data processing',
-    'author' : 'Lexman',
-    'author_email' : 'tuttle@lexman.org',
-    'platforms' : ['Linux', 'Windows'],
-    'url' : 'http://tuttle.lexman.org/',
-    'install_requires': ['nose'],
-    'license' : 'MIT',
-    'packages' : find_packages(),
-    'scripts': [],
-}
-
-setup(**config)	
+setup(name='tuttle',
+      version=__version__,
+      author='Lexman',
+      author_email='tuttle@lexman.org',
+      description='Make for data',
+      long_description='Reliably create data from source as a team in an industrial environment... A tool for '
+                       'continuous data processing',
+      platforms=['Linux', 'Windows'],
+      url='http://tuttle.lexman.org/',
+      install_requires=['nose'],
+      license='MIT',
+      packages=find_packages(),
+      data_files=[],
+      scripts=[
+       'bin/tuttle',
+      ],
+      package_data={
+       #'': ['module_utils/*.ps1', 'modules/core/windows/*.ps1', 'modules/extras/windows/*.ps1'],
+      },
+)
