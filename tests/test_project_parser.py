@@ -94,7 +94,6 @@ class TestProjectParser():
         assert process._inputs[0].url == 'file:///source1'
         assert len(process._outputs) == 1
         assert process._outputs[0].url == 'file:///result1'
-        print process._code
         assert process._code is None
 
     def test_read_section_without_indentation_error_in_process_code(self):

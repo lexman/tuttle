@@ -156,7 +156,6 @@ class ProjectParser():
         :rtype: list
         """
         missing = []
-        print self.resources
         for resource in self.resources.itervalues():
             if resource.creator_process is None:
                 if not resource.exists():

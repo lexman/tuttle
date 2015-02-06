@@ -19,5 +19,4 @@ class FileResource:
 
     def exists(self):
         file_path = self.get_path()
-        print file_path
         return exists(file_path)
