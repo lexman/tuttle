@@ -146,6 +146,8 @@ class ProjectParser():
         return process
 
     def parse_project(self):
+        """ Parse a full project describing a workflow
+        """
         workflow = Workflow()
         line, num_line, eof = self.read_line()
         while True:
