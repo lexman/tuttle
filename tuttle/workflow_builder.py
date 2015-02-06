@@ -9,8 +9,9 @@ class Process:
     """ Class wrapping a process. A process has some input resources, some output resources, 
     some code that produces outputs from inputs, a processor that handle the language specificities
     """    
-    def __init__(self, processor):
+    def __init__(self, processor, line_num):
         self._processor = processor
+        self._line_num = line_num
         self._inputs = []
         self._outputs = []
         self._code = None
@@ -23,6 +24,12 @@ class Process:
 
     def set_code(self, code):
         self._code = code
+
+    def generate_executable(self):
+        self._processor.generate_executable(code)
+
+    def run(self):
+        self._processor.run(self)
 
 
 class WorkflowBuilder():
@@ -55,11 +62,11 @@ class WorkflowBuilder():
         ResDefClass = self._resources_definition[scheme]
         return ResDefClass(url)
     
-    def build_process(self, processor=None):
+    def build_process(self, line_num, processor=None):
         if processor is None:
-            return Process(self._processors["default"])
+            return Process(self._processors["default"], line_num)
         elif processor in self._processors:
-            return Process(self._processors[processor])
+            return Process(self._processors[processor], line_num)
         else:
             return False
 

@@ -65,7 +65,7 @@ class ProjectParser():
         return len(line_stripped) == 0
         
     def parse_dependencies_and_processor(self):
-        process = self.wb.build_process()
+        process = self.wb.build_process(self._num_line)
         arrow_pos = self._line.find('<-')
         if arrow_pos == -1:
             raise ParsingError("Definition of dependency expected", self._num_line)
