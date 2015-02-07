@@ -15,6 +15,7 @@ class TestShellProcessor():
         sp = ShellProcessor()
         code = "bla bla\nblou"
         sp.generate_executable(code, 12, '.')
-        content = open("shell_12.bat").read()
+        content = open("shell_12").read()
+        assert content.startswith("#!")
         assert content.endswith(code)
-        remove("shell_12.bat")
+        remove("shell_12")

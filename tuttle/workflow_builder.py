@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 
 from resources import FileResource
-from processors import ShellProcessor
+from processors import *
 from os import path, makedirs
 
 
@@ -51,7 +51,8 @@ class WorkflowBuilder():
     def init_resources_and_processors(self):
         self._resources_definition['file'] = FileResource
         self._processors['shell'] = ShellProcessor()
-        self._processors['default'] = self._processors['shell']
+        self._processors['bat'] = BatProcessor()
+        self._processors['default'] = self._processors['bat']
 
     def extract_scheme(self, url):
         """Extract the scheme from an url
