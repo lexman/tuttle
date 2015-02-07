@@ -14,7 +14,7 @@ def prepare_workflow(tuttlefile, workspace):
     try:
         pp = ProjectParser()
         try:
-            pp.parse_file(abs_tuttlefile)
+            workflow = pp.parse_file(abs_tuttlefile)
         except ParsingError as e:
             print e
             return
@@ -24,5 +24,20 @@ def prepare_workflow(tuttlefile, workspace):
             for mis in missing:
                 error_msg += "* {}\n".format(mis.url)
             print error_msg
+        else:
+            return workflow
     finally:
         chdir(curdir)
+
+def run_workflow(workflow):
+    """ Runs all the needed processes in a workflow
+    :param workflow: Workflow
+    :return:
+    """
+    process = workflow.pick_a_process_to_run()
+    while process is not None:
+        process.generate_executable()
+        process.run()
+        process = workflow.pick_a_process_to_run()
+
+

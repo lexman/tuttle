@@ -3,12 +3,14 @@
 
 from resources import FileResource
 from processors import ShellProcessor
+from os import path, makedirs
 
 
 class Process:
     """ Class wrapping a process. A process has some input resources, some output resources, 
     some code that produces outputs from inputs, a processor that handle the language specificities
-    """    
+    """
+
     def __init__(self, processor, line_num):
         self._processor = processor
         self._line_num = line_num
@@ -26,10 +28,13 @@ class Process:
         self._code = code
 
     def generate_executable(self):
-        self._processor.generate_executable(code)
+        directory = path.join(".tuttle", "processes")
+        if not path.isdir(directory):
+            makedirs(directory)
+        self._executable = self._processor.generate_executable(self._code, self._line_num, directory)
 
     def run(self):
-        self._processor.run(self)
+        self._processor.run(self._executable)
 
 
 class WorkflowBuilder():
@@ -42,8 +47,8 @@ class WorkflowBuilder():
 
     def init_resources_and_processors(self):
         self._resources_definition['file'] = FileResource
-        self._processors['shell'] = ShellProcessor
-        self._processors['default'] = ShellProcessor
+        self._processors['shell'] = ShellProcessor()
+        self._processors['default'] = self._processors['shell']
 
     def extract_scheme(self, url):
         """Extract the scheme from an url

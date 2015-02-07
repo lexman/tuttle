@@ -3,7 +3,8 @@
 
 import sys
 from optparse import OptionParser
-from tuttle import prepare_workflow
+from tuttle import prepare_workflow, run_workflow
+from os import path, mkdir
 
 
 def main():
@@ -19,7 +20,10 @@ def main():
                   dest='workspace',
                   help='Directory where the workspace lies. Default is the current directory')
     options, args = parser.parse_args()
-    prepare_workflow(options.tuttlefile, options.workspace)
+
+    workflow = prepare_workflow(options.tuttlefile, options.workspace)
+    if workflow:
+        run_workflow(workflow)
 
 if __name__ == '__main__':
     sys.exit(main())

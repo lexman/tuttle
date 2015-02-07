@@ -15,8 +15,11 @@ class Workflow:
         """
         self.processes.append(process)
 
-    def get_a_process_to_run(self):
+    def pick_a_process_to_run(self):
         """ Pick up a process to run
         :return:
         """
-        pass
+        for process in self.processes:
+            if len(process._outputs) > 0 and not process._outputs[0].exists():
+                return process
+        return None
