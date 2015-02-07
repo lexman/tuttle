@@ -32,15 +32,14 @@ echo "Shell process"
         chmod(script_name, mode | S_IXUSR | S_IXGRP | S_IXOTH)
         return script_name
 
-    def run(self, script_path):
-        log_dir = path.join(path.dirname(script_path), 'logs')
-        if not path.isdir(log_dir):
-            makedirs(log_dir)
+    def run(self, script_path, logs_dir):
         osprocess = Popen([path.abspath(script_path)], stdout=PIPE, stderr=PIPE)
         stdout, stderr = osprocess.communicate()
         print stdout
         script_name = path.basename(script_path)
-        with open(path.join(log_dir, "{}_stdout".format(script_name)), 'w') as f:
+        log_stdout = path.join(logs_dir, "{}_stdout".format(script_name))
+        with open(log_stdout, 'w') as f:
             f.write(stdout)
-        with open(path.join(log_dir, "{}_err".format(script_name)), 'w') as f:
+        log_stderr = path.join(logs_dir, "{}_err".format(script_name))
+        with open(log_stderr, 'w') as f:
             f.write(stderr)

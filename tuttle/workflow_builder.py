@@ -34,7 +34,10 @@ class Process:
         self._executable = self._processor.generate_executable(self._code, self._line_num, directory)
 
     def run(self):
-        self._processor.run(self._executable)
+        logs_dir = path.join(path.dirname( self._executable), 'logs')
+        if not path.isdir(logs_dir):
+            makedirs(logs_dir)
+        self._processor.run(self._executable, logs_dir)
 
 
 class WorkflowBuilder():
