@@ -1,5 +1,8 @@
 # region_groups.csv created from : http://www.interieur.gouv.fr/Actualites/L-actu-du-Ministere/L-Assemblee-nationale-adopte-une-carte-a-13-regions
 # old_regions.tsv from http://www.insee.fr/fr/methodes/nomenclatures/cog/telechargement/2014/txt/reg2014.txt
 file://new_regions.tsv <- file://old_regions.tsv, file://region_groups.csv
-	cp region_groups.csv new_regions.tsv
-	
+	echo Creation de new_regions.tsv
+	copy null > new_regions.tsv
+	echo On tente une erreur
+	bla
+	echo The end
