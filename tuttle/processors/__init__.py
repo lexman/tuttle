@@ -6,13 +6,13 @@ from stat import S_IXUSR, S_IXGRP, S_IXOTH
 from subprocess import Popen, PIPE
 
 def run_and_log(prog, log_stdout, log_stderr):
-    osprocess = Popen([prog], stdout=PIPE, stderr=PIPE)
-    stdout, stderr = osprocess.communicate()
-    with open(log_stdout, 'w') as f:
-        f.write(stdout)
-    with open(log_stderr, 'w') as f:
-        f.write(stderr)
-    return stdout, stderr
+    fout = open(log_stdout, 'w')
+    ferr = open(log_stderr, 'w')
+    osprocess = Popen([prog], stdout=fout.fileno(), stderr=ferr.fileno())
+    fout.close()
+    ferr.close()
+    rcode = osprocess.wait()
+    return rcode
 
 
 class ShellProcessor:
@@ -35,13 +35,24 @@ class ShellProcessor:
         return script_name
 
     def run(self, script_path, logs_dir):
-        prog = path.abspath(script_path)
         script_name = path.basename(script_path)
+        print "=" * 60
+        print script_name
+        print "=" * 60
+        prog = path.abspath(script_path)
         log_stdout = path.join(logs_dir, "{}_stdout".format(script_name))
         log_stderr = path.join(logs_dir, "{}_err".format(script_name))
-        stdout, stderr = run_and_log(prog, log_stdout, log_stderr)
-        print stdout
-        print stderr
+        ret_code = run_and_log(prog, log_stdout, log_stderr)
+        f = open(log_stdout, "r")
+        print f.read()
+        f.close()
+        print "-" * 60
+        f = open(log_stderr, "r")
+        print f.read()
+        f.close()
+        if ret_code:
+            print "-" * 60
+            print("Process {} failed".format(script_name))
 
 
 class BatProcessor:
@@ -62,10 +73,24 @@ class BatProcessor:
         return script_name
 
     def run(self, script_path, logs_dir):
-        prog = path.abspath(script_path)
         script_name = path.basename(script_path)
+        print "=" * 60
+        print script_name
+        print "=" * 60
+        print "--- stdout : ", "-" * 47
+        prog = path.abspath(script_path)
         log_stdout = path.join(logs_dir, "{}_stdout".format(script_name))
         log_stderr = path.join(logs_dir, "{}_err".format(script_name))
-        stdout, stderr = run_and_log(prog, log_stdout, log_stderr)
-        print stdout
-        print stderr
+        ret_code = run_and_log(prog, log_stdout, log_stderr)
+        f = open(log_stdout, "r")
+        print f.read()
+        f.close()
+        print "--- stderr : ", "-" * 47
+        f = open(log_stderr, "r")
+        print f.read()
+        f.close()
+        if ret_code:
+            print "-" * 60
+            print
+            print("Process {} failed with return code {}".format(script_name, ret_code))
+
