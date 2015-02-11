@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Workflow</title>
+</head>
+<body>
+<h1>Workflow : process detail</h1>
+ <div id="processes_list">
+    {% for process in processes %}
+      <hr/>
+        {% for output in process._outputs %}  {{ output.url }} ,  {% endfor %}
+        <-
+        {% for input in process._inputs %} {{ input.url }} ,  {% endfor %}
+         <br/>
+         Logs <a href="{{ process.log_stdout }}"> stdout </a> :
+         <br/>
+         Logs <a href="{{ process.log_stderr }}"> stderr </a> :
+         <br/>
+         <pre>{{process._code}}
+         </pre>
+     {% endfor %}
+
+ </div>
+
+</body>
+</html>

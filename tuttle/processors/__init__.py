@@ -15,7 +15,7 @@ def run_and_log(prog, log_stdout, log_stderr):
     return rcode
 
 
-def print_log(log_file, header):
+def print_log_if_exists(log_file, header):
     with open(log_file, "r") as f:
         content = f.read()
         if len(content) > 1 :
@@ -42,17 +42,15 @@ class ShellProcessor:
         chmod(script_path, mode | S_IXUSR | S_IXGRP | S_IXOTH)
         return script_path
 
-    def run(self, script_path, process_id, logs_dir):
+    def run(self, script_path, process_id, log_stdout, log_stderr):
         script_name = path.basename(script_path)
         print "=" * 60
         print script_name
         print "=" * 60
-        log_stdout = path.join(logs_dir, "{}_stdout".format(process_id))
-        log_stderr = path.join(logs_dir, "{}_err".format(process_id))
         prog = path.abspath(script_path)
         ret_code = run_and_log(prog, log_stdout, log_stderr)
-        log_stdout = path.join(logs_dir, "{}_stdout".format(process_id))
-        log_stderr = path.join(logs_dir, "{}_err".format(process_id))
+        print_log_if_exists(log_stdout, "stdout")
+        print_log_if_exists(log_stderr, "stderr")
         if ret_code:
             print "-" * 60
             print("Process {} failed".format(script_name))
@@ -75,16 +73,14 @@ class BatProcessor:
             f.write(code)
         return script_name
 
-    def run(self, script_path, process_id, logs_dir):
+    def run(self, script_path, process_id, log_stdout, log_stderr):
         print "=" * 60
         print process_id
         print "=" * 60
         prog = path.abspath(script_path)
-        log_stdout = path.join(logs_dir, "{}_stdout".format(process_id))
-        log_stderr = path.join(logs_dir, "{}_err".format(process_id))
         ret_code = run_and_log(prog, log_stdout, log_stderr)
-        print_log(log_stdout, "stdout")
-        print_log(log_stderr, "stderr")
+        print_log_if_exists(log_stdout, "stdout")
+        print_log_if_exists(log_stderr, "stderr")
         if ret_code:
             print "-" * 60
             print

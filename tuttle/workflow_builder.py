@@ -19,6 +19,8 @@ class Process:
         self._inputs = []
         self._outputs = []
         self._code = None
+        self.log_stdout = None
+        self.log_stderr = None
         self.return_code = None
     
     def add_input(self, input_res):
@@ -42,7 +44,9 @@ class Process:
         self._executable = self._processor.generate_executable(self._code, self.id(), directory)
 
     def run(self, logs_dir):
-        self._processor.run(self._executable, self.id(), logs_dir)
+        self.log_stdout = path.join(logs_dir, "{}_stdout".format(self.id()))
+        self.log_stderr = path.join(logs_dir, "{}_err".format(self.id()))
+        self._processor.run(self._executable, self.id(), self.log_stdout, self.log_stderr)
 
 
 class WorkflowBuilder():

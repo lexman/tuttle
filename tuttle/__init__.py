@@ -35,7 +35,7 @@ def run_workflow(workflow):
     :return:
     """
     workflow.prepare()
-    workflow.create_html_report()
     workflow.run()
+    workflow.create_html_report()
 
 
