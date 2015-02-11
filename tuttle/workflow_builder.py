@@ -3,7 +3,7 @@
 
 from resources import FileResource
 from processors import *
-from os import path, makedirs
+from os import path
 
 
 class Process:
