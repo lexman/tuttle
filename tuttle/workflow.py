@@ -4,6 +4,8 @@
 from time import time
 from jinja2 import Template
 from os import path, makedirs
+import pygraphviz as pgv
+
 
 class Workflow:
     """ A workflow is a dependency tree of processes
@@ -75,3 +77,30 @@ class Workflow:
             t = Template(ftpl.read())
         with open("report.html", "w") as fout:
             fout.write(t.render(processes = self.processes))
+
+    def nick_from_url(self, url):
+        parts = url.split("/")
+        return parts.pop()
+
+    def create_dot_report(self):
+        """ Runs a workflow that has been previously prepared :
+
+        :return: None
+        """
+        with open("workflow.dot", "w") as fout:
+            fout.write("digraph workflow {\n")
+            for process in self.processes:
+                p_node = "p_{}".format(process.id())
+                fout.write('    {} [shape="none", label="", width=0, height=0] ;\n'.format(p_node))
+                for res_input in process._inputs:
+                    fout.write('    "{}" -> {} [arrowhead="none"] ;\n'.format(self.nick_from_url(res_input.url), p_node))
+                for res_output in process._outputs:
+                    fout.write('    {} -> "{}" ;\n'.format(p_node, self.nick_from_url(res_output.url)))
+            fout.write('}')
+
+    def create_png_report(self):
+        """ Runs a workflow that has been previously prepared :
+
+        :return: None
+        """
+        dependency_graph = pgv.AGraph("Petersen.dot")
