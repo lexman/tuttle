@@ -47,6 +47,8 @@ class TestProjectParser():
         assert process._outputs[0].creator_process == process
         # TODO : get back to shell processors by default
         # assert process._processor.name == "shell"
+        print "'{}'".format(process._code)
+        print "'{}'".format("Some code\n")
         assert process._code == "Some code\n"
 
     def test_read_section_with_blank_line(self):
@@ -125,6 +127,18 @@ class TestProjectParser():
         assert process._outputs[0].url == 'file:///result1'
         assert process._code is None
 
+    def test_read_last_line_of_a_section(self):
+        """Read a sections without process code"""
+        pp = ProjectParser()
+        project = """file:///result1 <- file:///source1
+        bla"""
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_section()
+        print "'{}'".format(process._code)
+        assert process._code == "bla\n"
+
+
     def test_read_section_without_indentation_error_in_process_code(self):
         """Read a section with an indentation error in process code"""
         pp = ProjectParser()
@@ -152,6 +166,15 @@ class TestProjectParser():
         pp.set_project(project)
         workflow = pp.parse_project()
         assert len(workflow.processes) == 2
+
+    def test_workflow_without_new_line_in_the_end(self):
+        """The las line of a process should not be forgotten"""
+        pp = ProjectParser()
+        project = """file:///resource1 <- file:///resource2
+        Some code"""
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert workflow.processes[0]._code == "Some code\n"
 
     def test_pasrse_workflow_with_blank_lines(self):
         """Read project with a blank line with any number of blank characters"""

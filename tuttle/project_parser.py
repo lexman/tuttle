@@ -137,11 +137,15 @@ class ProjectParser():
         # Several lines all beginning by white-spaces define a process
         process_code = ""
         is_process_line, wsp_prefix = self.is_first_process_line()
+        if not is_process_line:
+            return process
+        is_process_line, process_line = self.parse_process_line(wsp_prefix)
         while is_process_line and not self._eof:
+            process_code += process_line
+            self.read_line()
             is_process_line, process_line = self.parse_process_line(wsp_prefix)
-            if is_process_line:
-                process_code += process_line
-                self.read_line()
+        if is_process_line and self._eof and len(process_line.strip()) != 0:
+            process_code += process_line
         process.set_code(process_code)
         return process
 
