@@ -14,7 +14,7 @@ class TestShellProcessor():
         """Should generate an executable"""
         sp = ShellProcessor()
         code = "bla bla\nblou"
-        sp.generate_executable(code, 12, '.')
+        sp.generate_executable(code, "shell_12", '.')
         content = open("shell_12").read()
         assert content.startswith("#!")
         assert content.endswith(code)

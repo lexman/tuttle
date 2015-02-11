@@ -15,41 +15,44 @@ def run_and_log(prog, log_stdout, log_stderr):
     return rcode
 
 
+def print_log(log_file, header):
+    with open(log_file, "r") as f:
+        content = f.read()
+        if len(content) > 1 :
+            print "--- {} : {}".format(header, "-" * (60 - len(header)))
+            print content
+
+
 class ShellProcessor:
     """ A processor to run *nix shell code
     """
     name = 'shell'
     header = "#!/usr/bin/env sh\n"
 
-    def generate_executable(self, code, line_num, directory):
+    def generate_executable(self, code, process_id, directory):
         """ Create an executable file
         :param directory: string
         :return: the path to the file
         """
-        script_name = path.join(directory, "shell_{}".format(line_num))
-        with open(script_name, "w+") as f:
+        script_path = path.join(directory, process_id)
+        with open(script_path, "w+") as f:
             f.write(self.header)
             f.write(code)
-        mode = stat(script_name).st_mode
-        chmod(script_name, mode | S_IXUSR | S_IXGRP | S_IXOTH)
-        return script_name
+        mode = stat(script_path).st_mode
+        chmod(script_path, mode | S_IXUSR | S_IXGRP | S_IXOTH)
+        return script_path
 
-    def run(self, script_path, logs_dir):
+    def run(self, script_path, process_id, logs_dir):
         script_name = path.basename(script_path)
         print "=" * 60
         print script_name
         print "=" * 60
+        log_stdout = path.join(logs_dir, "{}_stdout".format(process_id))
+        log_stderr = path.join(logs_dir, "{}_err".format(process_id))
         prog = path.abspath(script_path)
-        log_stdout = path.join(logs_dir, "{}_stdout".format(script_name))
-        log_stderr = path.join(logs_dir, "{}_err".format(script_name))
         ret_code = run_and_log(prog, log_stdout, log_stderr)
-        f = open(log_stdout, "r")
-        print f.read()
-        f.close()
-        print "-" * 60
-        f = open(log_stderr, "r")
-        print f.read()
-        f.close()
+        log_stdout = path.join(logs_dir, "{}_stdout".format(process_id))
+        log_stderr = path.join(logs_dir, "{}_err".format(process_id))
         if ret_code:
             print "-" * 60
             print("Process {} failed".format(script_name))
@@ -61,36 +64,29 @@ class BatProcessor:
     name = 'bat'
     header = "@echo off\n"
 
-    def generate_executable(self, code, line_num, directory):
+    def generate_executable(self, code, process_id, directory):
         """ Create an executable file
         :param directory: string
         :return: the path to the file
         """
-        script_name = path.join(directory, "shell_{}.bat".format(line_num))
+        script_name = path.join(directory, "{}.bat".format(process_id))
         with open(script_name, "w+") as f:
             f.write(self.header)
             f.write(code)
         return script_name
 
-    def run(self, script_path, logs_dir):
-        script_name = path.basename(script_path)
+    def run(self, script_path, process_id, logs_dir):
         print "=" * 60
-        print script_name
+        print process_id
         print "=" * 60
-        print "--- stdout : ", "-" * 47
         prog = path.abspath(script_path)
-        log_stdout = path.join(logs_dir, "{}_stdout".format(script_name))
-        log_stderr = path.join(logs_dir, "{}_err".format(script_name))
+        log_stdout = path.join(logs_dir, "{}_stdout".format(process_id))
+        log_stderr = path.join(logs_dir, "{}_err".format(process_id))
         ret_code = run_and_log(prog, log_stdout, log_stderr)
-        f = open(log_stdout, "r")
-        print f.read()
-        f.close()
-        print "--- stderr : ", "-" * 47
-        f = open(log_stderr, "r")
-        print f.read()
-        f.close()
+        print_log(log_stdout, "stdout")
+        print_log(log_stderr, "stderr")
         if ret_code:
             print "-" * 60
             print
-            print("Process {} failed with return code {}".format(script_name, ret_code))
+            print("Process {} failed with return code {}".format(process_id, ret_code))
 

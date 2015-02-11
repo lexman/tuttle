@@ -3,7 +3,7 @@
 
 from time import time
 from jinja2 import Template
-from os import path
+from os import path, makedirs
 
 class Workflow:
     """ A workflow is a dependency tree of processes
@@ -43,18 +43,24 @@ class Workflow:
 
         :return: None
         """
+        directory = path.join(".tuttle", "processes")
+        if not path.isdir(directory):
+            makedirs(directory)
         for process in self.processes:
-            process.generate_executable()
+            process.generate_executable(directory)
 
     def run(self):
         """ Runs a workflow that has been previously prepared :
 
         :return: None
         """
+        logs_dir = path.join(".tuttle", "processes", 'logs')
+        if not path.isdir(logs_dir):
+            makedirs(logs_dir)
         process = self.pick_a_process_to_run()
         while process is not None:
             process.start = time()
-            process.return_code = process.run()
+            process.return_code = process.run(logs_dir)
             process.end = time()
             process = self.pick_a_process_to_run()
 

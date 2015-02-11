@@ -30,17 +30,19 @@ class Process:
     def set_code(self, code):
         self._code = code
 
-    def generate_executable(self):
-        directory = path.join(".tuttle", "processes")
-        if not path.isdir(directory):
-            makedirs(directory)
-        self._executable = self._processor.generate_executable(self._code, self._line_num, directory)
+    def id(self):
+        return "{}_{}".format( self._processor.name, self._line_num)
 
-    def run(self):
-        logs_dir = path.join(path.dirname( self._executable), 'logs')
-        if not path.isdir(logs_dir):
-            makedirs(logs_dir)
-        self._processor.run(self._executable, logs_dir)
+    def generate_executable(self, directory):
+        """
+        Creates what is needed to later run the process. Commonly, this would be one executable file.
+        :param directory: Directory where the executable lies
+        :return: An identifier to be able to run the executable later. Commonly, this would be the path to the executable file
+        """
+        self._executable = self._processor.generate_executable(self._code, self.id(), directory)
+
+    def run(self, logs_dir):
+        self._processor.run(self._executable, self.id(), logs_dir)
 
 
 class WorkflowBuilder():

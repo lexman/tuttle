@@ -14,8 +14,8 @@ class TestBatProcessor():
         """Should generate an executable"""
         bp = BatProcessor()
         code = "bla bla\nblou"
-        bp.generate_executable(code, 25, '.')
-        content = open("shell_25.bat").read()
+        bp.generate_executable(code, "bat_25", '.')
+        content = open("bat_25.bat").read()
         assert content.startswith("@echo off")
         assert content.endswith(code)
-        remove("shell_25.bat")
+        remove("bat_25.bat")
