@@ -9,5 +9,6 @@ file://matching.tsv <- file://old_regions.tsv, file://codes_for_aggregated_regio
 	echo "Not working yet"
 	type old_regions.tsv | python match.py > matching.tsv
 
-file://test <- file://matching.tsv
-	echo No output
+file://test.test <- 
+	echo No input
+	copy nul test.test

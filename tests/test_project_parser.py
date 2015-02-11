@@ -285,22 +285,22 @@ file:///result1 <- file:///source1
 #Verifier qu'une ligne seule peut être acceptée : out <- in
 
 #TODO
-#    def test_section_can_have_no_inputs(self):
-#        """Read project with a blank line with blank characters which match exactly the indentation of the code of the process"""
-#        pp = ProjectParser()
-#        section = """file:///resource1 <-
-#        """
-#        pp.set_project(section)
-#        pp.read_line()
-#        process = pp.parse_section()
-#        assert len(process._inputs) == 0
+    def test_section_can_have_no_inputs(self):
+        """Read project with a blank line with blank characters which match exactly the indentation of the code of the process"""
+        pp = ProjectParser()
+        section = """file:///resource1 <-
+        """
+        pp.set_project(section)
+        pp.read_line()
+        process = pp.parse_section()
+        assert len(process._inputs) == 0
 
-#    def test_section_can_have_no_outputs(self):
-#        """Read project with a blank line with blank characters which match exactly the indentation of the code of the process"""
-#        pp = ProjectParser()
-#        section = """ <- file:///resource
-#        """
-#        pp.set_project(section)
-#        pp.read_line()
-#        process= pp.parse_section()
-#        assert len(process._outputs) == 0
+    def test_section_can_have_no_outputs(self):
+        """Read project with a blank line with blank characters which match exactly the indentation of the code of the process"""
+        pp = ProjectParser()
+        section = """ <- file:///resource
+        """
+        pp.set_project(section)
+        pp.read_line()
+        process= pp.parse_section()
+        assert len(process._outputs) == 0

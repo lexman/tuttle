@@ -73,21 +73,23 @@ class ProjectParser():
         if shebang_pos == -1:
             shebang_pos = len(self._line)
         inputs = self._line[arrow_pos + 2:shebang_pos].split(',')
-        for input_url in inputs:
-            in_res = self.wb.get_or_build_resource(input_url.strip(), self.resources)
-            if in_res is None:
-                raise InvalidResourceError("Invalid resource url : '{}'".format(input_url.strip()), self._num_line)
-            process.add_input(in_res)
+        if len(inputs) > 1 or inputs[0].strip() != "":
+            for input_url in inputs:
+                in_res = self.wb.get_or_build_resource(input_url.strip(), self.resources)
+                if in_res is None:
+                    raise InvalidResourceError("Invalid resource url : '{}' in inputs".format(input_url.strip()), self._num_line)
+                process.add_input(in_res)
         outputs = self._line[:arrow_pos].split(',')
-        for output_url in outputs:
-            out_res = self.wb.get_or_build_resource(output_url.strip(), self.resources)
-            if out_res is None:
-                raise InvalidResourceError("Invalid resource url : '{}'".format(output_url.strip()), self._num_line)
-            if out_res.creator_process is not None:
-                raise WorkflowError("{} has been already defined in the workflow (by processor : {})".format(output_url,
-                                    process._processor.name), self._num_line)
-            out_res.set_creator_process(process)
-            process.add_output(out_res)
+        if len(outputs) > 1 or outputs[0].strip() != "":
+            for output_url in outputs:
+                out_res = self.wb.get_or_build_resource(output_url.strip(), self.resources)
+                if out_res is None:
+                    raise InvalidResourceError("Invalid resource url : '{}' in outputs".format(output_url.strip()), self._num_line)
+                if out_res.creator_process is not None:
+                    raise WorkflowError("{} has been already defined in the workflow (by processor : {})".format(output_url,
+                                        process._processor.name), self._num_line)
+                out_res.set_creator_process(process)
+                process.add_output(out_res)
         return process
 
     def is_first_process_line(self):
