@@ -12,6 +12,8 @@ class Process:
     """
 
     def __init__(self, processor, line_num):
+        self.start = None
+        self.end = None
         self._processor = processor
         self._line_num = line_num
         self._inputs = []
