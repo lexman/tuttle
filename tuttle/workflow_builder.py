@@ -19,6 +19,7 @@ class Process:
         self._inputs = []
         self._outputs = []
         self._code = None
+        self.return_code = None
     
     def add_input(self, input_res):
         self._inputs.append(input_res)

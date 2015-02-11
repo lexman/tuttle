@@ -2,7 +2,8 @@
 # -*- coding: utf8 -*-
 
 from time import time
-
+from jinja2 import Template
+from os import path
 
 class Workflow:
     """ A workflow is a dependency tree of processes
@@ -40,7 +41,7 @@ class Workflow:
         - ...
         The workflow is supposed to be safe : no circular references, etc.
 
-        :return:
+        :return: None
         """
         for process in self.processes:
             process.generate_executable()
@@ -48,7 +49,7 @@ class Workflow:
     def run(self):
         """ Runs a workflow that has been previously prepared :
 
-        :return:
+        :return: None
         """
         process = self.pick_a_process_to_run()
         while process is not None:
@@ -56,3 +57,15 @@ class Workflow:
             process.return_code = process.run()
             process.end = time()
             process = self.pick_a_process_to_run()
+
+    def create_html_report(self):
+        """ Runs a workflow that has been previously prepared :
+
+        :return: None
+        """
+        module_dir = path.dirname(__file__)
+        tpl_filename = path.join(module_dir, "report", "report_template.html")
+        with open(tpl_filename, "r") as ftpl:
+            t = Template(ftpl.read())
+        with open("report.html", "w") as fout:
+            fout.write(t.render(processes = self.processes))
