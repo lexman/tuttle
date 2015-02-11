@@ -6,7 +6,6 @@ __version__ ='0.1'
 from project_parser import ProjectParser, ParsingError
 from os import chdir, getcwd
 from os.path import abspath
-from time import time
 
 def prepare_workflow(tuttlefile, workspace):
     curdir = getcwd()
@@ -35,12 +34,7 @@ def run_workflow(workflow):
     :param workflow: Workflow
     :return:
     """
-    process = workflow.pick_a_process_to_run()
-    while process is not None:
-        process.generate_executable()
-        process.start = time()
-        process.return_code = process.run()
-        process.end = time()
-        process = workflow.pick_a_process_to_run()
+    workflow.prepare()
+    workflow.run()
 
 
