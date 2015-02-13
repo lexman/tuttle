@@ -3,7 +3,17 @@
 
 from resources import FileResource
 from processors import *
+from time import time
 from os import path
+
+
+class ProcessState:
+    SCHEDULED = 0
+    READY = 1
+    RUNNING = 2
+    COMPLETE = 3
+    ERROR = 4
+    NOTHING_TO_DO = 5
 
 
 class Process:
@@ -46,7 +56,29 @@ class Process:
     def run(self, logs_dir):
         self.log_stdout = path.join(logs_dir, "{}_stdout".format(self.id()))
         self.log_stderr = path.join(logs_dir, "{}_err".format(self.id()))
+        self.start = time()
         self._processor.run(self._executable, self.id(), self.log_stdout, self.log_stderr)
+        self.end = time()
+
+    def get_state(self):
+        """
+
+        :return: the state of the process.  One of ProcessState value
+        """
+        if len(self._outputs) == 0:
+            return ProcessState.NOTHING_TO_DO
+        elif self.start is None:
+            for in_res in self._inputs:
+                if not in_res.exists():
+                    return ProcessState.SCHEDULED
+            return ProcessState.READY
+        elif self.end is None:
+            return ProcessState.RUNNING
+        elif self.return_code == 0:
+            return ProcessState.COMPLETE
+        else:
+            return ProcessState.ERROR
+
 
 
 class WorkflowBuilder():

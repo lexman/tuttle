@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from time import time
 from jinja2 import Template
 from os import path, makedirs
-import pygraphviz as pgv
+from workflow_builder import ProcessState
 
 
 class Workflow:
@@ -28,12 +27,7 @@ class Workflow:
         for process in self.processes:
             # All outputs are supposed to be generated at the same time with a process,
             # so checking for existence of one is like checking fo existence of all !
-            if process.start is None and len(process._outputs) > 0 and not process._outputs[0].exists():
-                for in_res in process._inputs:
-                    if not in_res.exists():
-                        # Can't pick this one if all dependencies have not been generated !
-                        continue
-                # Every input is here, so the process can be run !
+            if process.get_state() == ProcessState.READY:
                 return process
         return None
 
@@ -61,9 +55,7 @@ class Workflow:
             makedirs(logs_dir)
         process = self.pick_a_process_to_run()
         while process is not None:
-            process.start = time()
             process.return_code = process.run(logs_dir)
-            process.end = time()
             process = self.pick_a_process_to_run()
 
     def create_html_report(self):
@@ -87,6 +79,7 @@ class Workflow:
 
         :return: None
         """
+
         with open("workflow.dot", "w") as fout:
             fout.write("digraph workflow {\n")
             for process in self.processes:
@@ -103,4 +96,4 @@ class Workflow:
 
         :return: None
         """
-        dependency_graph = pgv.AGraph("Petersen.dot")
+        pass
