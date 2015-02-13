@@ -54,6 +54,7 @@ class ShellProcessor:
         if ret_code:
             print "-" * 60
             print("Process {} failed".format(script_name))
+        return ret_code
 
 
 class BatProcessor:
@@ -85,4 +86,5 @@ class BatProcessor:
             print "-" * 60
             print
             print("Process {} failed with return code {}".format(process_id, ret_code))
+        return ret_code
 

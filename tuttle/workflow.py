@@ -3,6 +3,7 @@
 
 from jinja2 import Template
 from os import path, makedirs
+from tuttle.report.dot_repport import create_dot_report
 from workflow_builder import ProcessState
 
 
@@ -55,7 +56,8 @@ class Workflow:
             makedirs(logs_dir)
         process = self.pick_a_process_to_run()
         while process is not None:
-            process.return_code = process.run(logs_dir)
+            process.run(logs_dir)
+            self.create_dot_report()
             process = self.pick_a_process_to_run()
 
     def create_html_report(self):
@@ -75,21 +77,11 @@ class Workflow:
         return parts.pop()
 
     def create_dot_report(self):
-        """ Runs a workflow that has been previously prepared :
+        """ Write to disk a dot file describing the workflow, with color for states
 
         :return: None
         """
-
-        with open("workflow.dot", "w") as fout:
-            fout.write("digraph workflow {\n")
-            for process in self.processes:
-                p_node = "p_{}".format(process.id())
-                fout.write('    {} [shape="none", label="", width=0, height=0] ;\n'.format(p_node))
-                for res_input in process._inputs:
-                    fout.write('    "{}" -> {} [arrowhead="none"] ;\n'.format(self.nick_from_url(res_input.url), p_node))
-                for res_output in process._outputs:
-                    fout.write('    {} -> "{}" ;\n'.format(p_node, self.nick_from_url(res_output.url)))
-            fout.write('}')
+        create_dot_report(self, "workflow.dot")
 
     def create_png_report(self):
         """ Runs a workflow that has been previously prepared :

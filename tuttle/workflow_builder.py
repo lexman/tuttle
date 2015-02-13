@@ -57,7 +57,7 @@ class Process:
         self.log_stdout = path.join(logs_dir, "{}_stdout".format(self.id()))
         self.log_stderr = path.join(logs_dir, "{}_err".format(self.id()))
         self.start = time()
-        self._processor.run(self._executable, self.id(), self.log_stdout, self.log_stderr)
+        self.return_code = self._processor.run(self._executable, self.id(), self.log_stdout, self.log_stderr)
         self.end = time()
 
     def get_state(self):
@@ -78,7 +78,6 @@ class Process:
             return ProcessState.COMPLETE
         else:
             return ProcessState.ERROR
-
 
 
 class WorkflowBuilder():
