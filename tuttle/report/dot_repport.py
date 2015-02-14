@@ -18,7 +18,7 @@ def resource_color_from_process_state(process_state):
 
 
 def create_dot_report(workflow, filename):
-    """ Runs a workflow that has been previously prepared :
+    """ Write to disk a dot file describing the workflow, with color for states
 
     :return: None
     """

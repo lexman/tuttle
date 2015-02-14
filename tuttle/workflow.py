@@ -75,7 +75,7 @@ class Workflow:
             process = self.pick_a_process_to_run()
 
     def create_html_report(self):
-        """ Runs a workflow that has been previously prepared :
+        """ Write an html file describing the workflow
 
         :return: None
         """
@@ -87,14 +87,12 @@ class Workflow:
 
     def create_dot_report(self):
         """ Write to disk a dot file describing the workflow, with color for states
-
         :return: None
         """
         create_dot_report(self, "workflow.dot")
 
     def create_png_report(self):
         """ Runs a workflow that has been previously prepared :
-
         :return: None
         """
         pass

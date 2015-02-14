@@ -6,7 +6,7 @@ from os import path
 
 
 def create_html_report(workflow, filename):
-    """ Creates a report in html format
+    """ Write an html file describing the workflow
     :param workflow:
     :param filename: path to the html fil to be generated
     :return: None
