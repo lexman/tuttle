@@ -4,6 +4,7 @@
 __version__ = '0.1'
 
 from project_parser import ProjectParser, ParsingError
+from pickle import dump, load
 
 
 def prepare_workflow(tuttlefile):
@@ -41,4 +42,6 @@ def run_workflow(workflow):
     workflow.create_reports()
     workflow.run()
 
-
+def dump_workflow(workflow):
+    with open("last_workflow.pickle", "w") as f:
+        dump(workflow, f)
