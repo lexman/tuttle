@@ -3,12 +3,12 @@
 
 import sys
 from optparse import OptionParser
-from tuttle import prepare_workflow, run_workflow
-from os import path, mkdir
+from tuttle import prepare_workflow, run_workflow, abort_if_workflow_inconsistent
+from os import chdir, getcwd
+from os.path import abspath
 
 
-def main():
-    """Main entry point for the project."""
+def parse_options():
     usage = 'bin/tuttle'
     parser = OptionParser(usage=usage)
     parser.add_option('-p', '--project',
@@ -19,11 +19,26 @@ def main():
                   default='.',
                   dest='workspace',
                   help='Directory where the workspace lies. Default is the current directory')
-    options, args = parser.parse_args()
+    options, _ = parser.parse_args()
+    return options
 
-    workflow = prepare_workflow(options.tuttlefile, options.workspace)
-    if workflow:
+def main():
+    """Main entry point for the project."""
+
+    options = parse_options()
+    current_dir = getcwd()
+    abs_tuttlefile = abspath(options.tuttlefile)
+    chdir(options.workspace)
+    try:
+        workflow = prepare_workflow(abs_tuttlefile)
+        if not workflow:
+            return
+        if abort_if_workflow_inconsistent(workflow):
+            return
         run_workflow(workflow)
+    finally:
+        chdir(current_dir)
+
 
 if __name__ == '__main__':
     sys.exit(main())
