@@ -33,12 +33,11 @@ class Workflow:
                     missing.append(resource)
         return missing
 
-
     def pick_a_process_to_run(self):
         """ Pick up a process to run
         :return:
         """
-        #TODO : check for circular references
+        # TODO : check for circular references
         for process in self.processes:
             # All outputs are supposed to be generated at the same time with a process,
             # so checking for existence of one is like checking fo existence of all !
@@ -71,28 +70,16 @@ class Workflow:
         process = self.pick_a_process_to_run()
         while process is not None:
             process.run(logs_dir)
-            self.create_dot_report()
+            self.create_reports()
             process = self.pick_a_process_to_run()
-
-    def create_html_report(self):
-        """ Write an html file describing the workflow
-
-        :return: None
-        """
-        create_html_report(self, "report.html")
 
     def nick_from_url(self, url):
         parts = url.split("/")
         return parts.pop()
 
-    def create_dot_report(self):
-        """ Write to disk a dot file describing the workflow, with color for states
+    def create_reports(self):
+        """ Write to disk files describing the workflow, with color for states
         :return: None
         """
         create_dot_report(self, "workflow.dot")
-
-    def create_png_report(self):
-        """ Runs a workflow that has been previously prepared :
-        :return: None
-        """
-        pass
+        create_html_report(self, "report.html")
