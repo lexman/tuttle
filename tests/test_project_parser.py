@@ -262,15 +262,6 @@ file:///result1 <- file:///source1
         except ParsingError:
             assert True
 
-    def test_missing_inputs(self):
-        """Test the list of missing inputs"""
-        pp = ProjectParser()
-        project = """file://result <- file://file1, file://README.txt"""
-        pp.set_project(project)
-        workflow = pp.parse_project()
-        missing = pp.missing_inputs()
-        assert len(missing) == 1
-        assert missing[0].url == "file://file1"
 
     def test_a_project_can_have_one_line(self):
         """Test the list of missing inputs"""

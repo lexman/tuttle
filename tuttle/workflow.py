@@ -12,6 +12,7 @@ class Workflow:
     """
     def __init__(self):
         self.processes = []
+        self.resources = None
 
     def add_process(self, process):
         """ Adds a process
@@ -19,6 +20,19 @@ class Workflow:
         :return:
         """
         self.processes.append(process)
+
+    def missing_inputs(self):
+        """ Check that all external resources that are necessary to run the workflow exist
+        :return: a list of missing resources
+        :rtype: list
+        """
+        missing = []
+        for resource in self.resources.itervalues():
+            if resource.creator_process is None:
+                if not resource.exists():
+                    missing.append(resource)
+        return missing
+
 
     def pick_a_process_to_run(self):
         """ Pick up a process to run

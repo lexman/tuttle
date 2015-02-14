@@ -155,6 +155,7 @@ class ProjectParser():
         """ Parse a full project describing a workflow
         """
         workflow = Workflow()
+        workflow.resources = self.resources
         line, num_line, eof = self.read_line()
         while True:
             while self.is_blank(line):
@@ -165,15 +166,3 @@ class ProjectParser():
             workflow.add_process(process)
             if self._eof:
                 return workflow
-
-    def missing_inputs(self):
-        """ Check that all external resources that are necessary to run the workflow exist
-        :return: a list of missing resources
-        :rtype: list
-        """
-        missing = []
-        for resource in self.resources.itervalues():
-            if resource.creator_process is None:
-                if not resource.exists():
-                    missing.append(resource)
-        return missing

@@ -18,7 +18,7 @@ def prepare_workflow(tuttlefile, workspace):
         except ParsingError as e:
             print e
             return
-        missing = pp.missing_inputs()
+        missing = workflow.missing_inputs()
         if missing:
             error_msg = "Missing the following resources to launch the workflow :\n"
             for mis in missing:
