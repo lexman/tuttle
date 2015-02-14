@@ -27,10 +27,10 @@ def main():
 
     options = parse_options()
     current_dir = getcwd()
-    abs_tuttlefile = abspath(options.tuttlefile)
+    tuttlefile_path = abspath(options.tuttlefile)
     chdir(options.workspace)
     try:
-        workflow = prepare_workflow(abs_tuttlefile)
+        workflow = prepare_workflow(tuttlefile_path)
         if not workflow:
             return
         if abort_if_workflow_inconsistent(workflow):
