@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from jinja2 import Template
 from os import path, makedirs
-from tuttle.report.dot_repport import create_dot_report
+from report.dot_repport import create_dot_report
+from report.html_repport import create_html_report
 from workflow_builder import ProcessState
 
 
@@ -79,12 +79,7 @@ class Workflow:
 
         :return: None
         """
-        module_dir = path.dirname(__file__)
-        tpl_filename = path.join(module_dir, "report", "report_template.html")
-        with open(tpl_filename, "r") as ftpl:
-            t = Template(ftpl.read())
-        with open("report.html", "w") as fout:
-            fout.write(t.render(processes = self.processes))
+        create_html_report(self, "report.html")
 
     def nick_from_url(self, url):
         parts = url.split("/")
