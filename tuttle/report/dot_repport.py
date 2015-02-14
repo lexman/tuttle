@@ -28,7 +28,6 @@ def create_dot_report(workflow, filename):
         # Show primary resources in a color, and missing ones in another
         fout.write(DOT_HEADER)
         for process in workflow.processes:
-            print "{} : {}".format(process.id(), process.get_state())
             p_node = "p_{}".format(process.id())
             fout.write('    {} [shape="none", label="", width=0, height=0] ;\n'.format(p_node))
             for res_input in process._inputs:
