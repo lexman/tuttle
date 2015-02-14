@@ -33,6 +33,19 @@ def abort_if_workflow_inconsistent(workflow):
     return False
 
 
+def invalidate_previous(workflow):
+    previous_worflow = None
+    try:
+        with open("last_workflow.pickle", "r") as f:
+            previous_worflow = load(f)
+    except:
+        return
+    to_invalidate = previous_worflow.resources_to_invalidate(workflow)
+    if to_invalidate:
+        print "The following resources are not valid any more :"
+        for res in to_invalidate:
+            print "* {}".format(res.url)
+
 def run_workflow(workflow):
     """ Runs all the needed processes in a workflow
     :param workflow: Workflow

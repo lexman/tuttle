@@ -83,3 +83,61 @@ class Workflow:
         """
         create_dot_report(self, "workflow.dot")
         create_html_report(self, "report.html")
+
+    def find_process_that_creates(self, url):
+        return self.resources.get(url).creator_process
+
+    def resources_not_created_the_same_way(self, newer_workflow):
+        """
+        Returns the list of resources that are not created the same way in the other workflow. Ie :
+            - the other workflow doesn't create this resource
+            - the other workflow doesn't create this resource from the same inputs
+            - the code that produces this resource is different
+        :param newer_workflow:
+        :return:
+        """
+        changing_resources = []
+        # TODO : could be optimized by not checking twice a process that creates two outputs
+        for url, resource in self.resources.iteritems():
+            creator_process = resource.creator_process
+            if creator_process is not None:
+                # Resources not created by a process don't have to be invalidated
+                newer_process = newer_workflow.find_process_that_creates(url)
+                if newer_process is None:
+                    # TODO : if a resource used to be created be by the workflow
+                    # but is now a primary input, we should not remove it
+                    changing_resources.append(resource)
+                elif not resource.creator_process.has_same_inputs(newer_process):
+                    changing_resources.append(resource)
+                elif resource.creator_process._code != newer_process._code:
+                    changing_resources.append(resource)
+        return changing_resources
+
+    def compute_dependencies(self):
+        """ Feeds the dependant_processes field in every resource
+        :return: Nothing
+        """
+        for resource in self.resources.itervalues():
+            resource.dependant_processes = []
+
+        for process in self.processes:
+            for resource in process._inputs:
+                resource.dependant_processes.append(process)
+
+    def resources_to_invalidate(self, newer_workflow):
+        """
+        Returns the resources to invalidate in this workflow, before launching newer_workflow
+        Other resources are guaranteed to remain the same
+        :param newer_workflow:
+        :return:
+        """
+        invalid_resources = self.resources_not_created_the_same_way(newer_workflow)
+        self.compute_dependencies()
+        for resource in invalid_resources:
+            print "Invalidating {}".format(resource.url)
+            for dependant_process in resource.dependant_processes:
+                for dependant_resource in dependant_process._outputs:
+                    print "  So we have to invalidate {}".format(dependant_resource.url)
+                    if dependant_resource not in invalid_resources:
+                        invalid_resources.append(dependant_resource)
+        return invalid_resources

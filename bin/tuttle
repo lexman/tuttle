@@ -6,6 +6,7 @@ from optparse import OptionParser
 from tuttle import prepare_workflow, \
                    run_workflow, \
                    abort_if_workflow_inconsistent, \
+                   invalidate_previous, \
                    dump_workflow
 
 from os import chdir, getcwd
@@ -39,6 +40,7 @@ def main():
             return
         if abort_if_workflow_inconsistent(workflow):
             return
+        invalidate_previous(workflow)
         run_workflow(workflow)
         dump_workflow(workflow)
     finally:

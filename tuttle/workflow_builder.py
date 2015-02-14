@@ -67,6 +67,8 @@ class Process:
         """
         if len(self._outputs) == 0:
             return ProcessState.NOTHING_TO_DO
+        elif self._outputs[0].exists():
+            return ProcessState.COMPLETE
         elif self.start is None:
             for in_res in self._inputs:
                 if not in_res.exists():
@@ -78,6 +80,16 @@ class Process:
             return ProcessState.COMPLETE
         else:
             return ProcessState.ERROR
+
+    def has_same_inputs(self, other_process):
+        """ Returns True if both process have exactly the same inputs, according to their urls, False otherwise
+
+        :param other_process:
+        :return:
+        """
+        self_inputs = set(in_res.url for in_res in self._inputs)
+        other_inputs = set(in_res.url for in_res in other_process._inputs)
+        return self_inputs == other_inputs
 
 
 class WorkflowBuilder():
