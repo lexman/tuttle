@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: ascii -*-
 
-__version__ ='0.1'
+__version__ = '0.1'
 
 from project_parser import ProjectParser, ParsingError
 
@@ -13,15 +13,7 @@ def prepare_workflow(tuttlefile):
     except ParsingError as e:
         print e
         return
-
-    missing = workflow.missing_inputs()
-    if missing:
-        error_msg = "Missing the following resources to launch the workflow :\n"
-        for mis in missing:
-            error_msg += "* {}\n".format(mis.url)
-        print error_msg
-    else:
-        return workflow
+    return workflow
 
 
 def abort_if_workflow_inconsistent(workflow):
@@ -38,7 +30,6 @@ def abort_if_workflow_inconsistent(workflow):
         print error_msg
         return True
     return False
-
 
 
 def run_workflow(workflow):
