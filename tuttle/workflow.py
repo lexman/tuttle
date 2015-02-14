@@ -111,6 +111,7 @@ class Workflow:
                     changing_resources.append(resource)
                 elif resource.creator_process._code != newer_process._code:
                     changing_resources.append(resource)
+        # TODO : we could associate a "reason" why the resource is invalid for logs
         return changing_resources
 
     def compute_dependencies(self):
@@ -134,10 +135,8 @@ class Workflow:
         invalid_resources = self.resources_not_created_the_same_way(newer_workflow)
         self.compute_dependencies()
         for resource in invalid_resources:
-            print "Invalidating {}".format(resource.url)
             for dependant_process in resource.dependant_processes:
                 for dependant_resource in dependant_process._outputs:
-                    print "  So we have to invalidate {}".format(dependant_resource.url)
                     if dependant_resource not in invalid_resources:
                         invalid_resources.append(dependant_resource)
         return invalid_resources
