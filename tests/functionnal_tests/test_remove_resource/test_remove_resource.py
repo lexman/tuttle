@@ -67,6 +67,7 @@ file://D <- file://A
             result = run_tuttle()
             assert result.find("* file://B") >= 0
             assert result.find("* file://C") >= 0
+            assert result.find("* file://D") == -1
             print result
         finally:
             raz()
