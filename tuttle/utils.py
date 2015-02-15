@@ -1,0 +1,18 @@
+# -*- coding: utf8 -*-
+import os
+
+
+class CurrentDir(object):
+    """
+    Step into a directory temporarily.
+    """
+    def __init__(self, path):
+        self.old_dir = os.getcwd()
+        self.new_dir = path
+ 
+    def __enter__(self):
+        print "__enter__", self.new_dir
+        os.chdir(self.new_dir)
+ 
+    def __exit__(self, *args):
+        os.chdir(self.old_dir)
