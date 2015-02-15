@@ -85,7 +85,10 @@ class Workflow:
         create_html_report(self, "report.html")
 
     def find_process_that_creates(self, url):
-        return self.resources.get(url).creator_process
+        if url in self.resources:
+            return self.resources[url].creator_process
+        else:
+            return None
 
     def resources_not_created_the_same_way(self, newer_workflow):
         """
