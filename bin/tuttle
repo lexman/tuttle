@@ -10,7 +10,7 @@ from tuttle import prepare_workflow, \
                    dump_workflow
 
 from os import chdir, getcwd
-from os.path import abspath
+from os.path import abspath, exists
 
 
 def parse_options():
@@ -33,6 +33,9 @@ def main():
     options = parse_options()
     current_dir = getcwd()
     tuttlefile_path = abspath(options.tuttlefile)
+    if not exists(tuttlefile_path):
+        print "No tuttlefile"
+        exit(0)
     chdir(options.workspace)
     try:
         workflow = prepare_workflow(tuttlefile_path)
