@@ -16,7 +16,7 @@ from tuttle.utils import CurrentDir
 def parse_options():
     usage = 'bin/tuttle'
     parser = OptionParser(usage=usage)
-    parser.add_option('-p', '--project',
+    parser.add_option('-f', '--file',
                   default='tuttlefile',
                   dest='tuttlefile',
                   help='Path to the tuttlefile : file describing the workflow')
