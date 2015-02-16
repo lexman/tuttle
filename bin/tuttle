@@ -6,8 +6,7 @@ from optparse import OptionParser
 from tuttle import prepare_workflow, \
                    run_workflow, \
                    abort_if_workflow_inconsistent, \
-                   invalidate_previous, \
-                   dump_workflow
+                   invalidate_previous
 
 from os import chdir, getcwd
 from os.path import abspath, exists
@@ -45,7 +44,6 @@ def main():
             return
         invalidate_previous(workflow)
         run_workflow(workflow)
-        dump_workflow(workflow)
 
 
 if __name__ == '__main__':

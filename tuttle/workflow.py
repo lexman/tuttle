@@ -5,6 +5,7 @@ from os import path, makedirs
 from report.dot_repport import create_dot_report
 from report.html_repport import create_html_report
 from workflow_builder import ProcessState
+from pickle import dump, load
 
 
 class Workflow:
@@ -70,6 +71,7 @@ class Workflow:
         process = self.pick_a_process_to_run()
         while process is not None:
             process.run(logs_dir)
+            self.dump()
             self.create_reports()
             process = self.pick_a_process_to_run()
 
@@ -83,6 +85,22 @@ class Workflow:
         """
         create_dot_report(self, "workflow.dot")
         create_html_report(self, "report.html")
+
+    def dump(self):
+        """ Pickles the workflow and writes it to last_workflow.pickle
+
+        :return: None
+        """
+        with open("last_workflow.pickle", "w") as f:
+            dump(self, f)
+
+    @staticmethod
+    def load():
+        try:
+            with open("last_workflow.pickle", "r") as f:
+                return load(f)
+        except:
+            return None
 
     def find_process_that_creates(self, url):
         if url in self.resources:

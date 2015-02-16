@@ -4,7 +4,7 @@
 __version__ = '0.1'
 
 from project_parser import ProjectParser, ParsingError
-from pickle import dump, load
+from workflow import Workflow
 
 
 def prepare_workflow(tuttlefile):
@@ -34,13 +34,10 @@ def abort_if_workflow_inconsistent(workflow):
 
 
 def invalidate_previous(workflow):
-    previous_worflow = None
-    try:
-        with open("last_workflow.pickle", "r") as f:
-            previous_worflow = load(f)
-    except:
+    previous_workflow = Workflow.load()
+    if previous_workflow is None:
         return
-    to_invalidate = previous_worflow.resources_to_invalidate(workflow)
+    to_invalidate = previous_workflow.resources_to_invalidate(workflow)
     if to_invalidate:
         print "The following resources are not valid any more :"
         for res in to_invalidate:
@@ -54,7 +51,3 @@ def run_workflow(workflow):
     workflow.prepare()
     workflow.create_reports()
     workflow.run()
-
-def dump_workflow(workflow):
-    with open("last_workflow.pickle", "w") as f:
-        dump(workflow, f)
