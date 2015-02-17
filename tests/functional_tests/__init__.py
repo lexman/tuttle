@@ -14,7 +14,7 @@ class FunctionalTestBase(TestCase):
             f.write(content)
 
     def run_tuttle(self):
-        return check_output(['python', self._tuttle_cmd], shell=True)
+        return check_output(['python', self._tuttle_cmd])
 
     def _rm(self, filename):
         if path.isdir(filename):

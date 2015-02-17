@@ -17,5 +17,6 @@ class TestBatProcessor():
         bp.generate_executable(code, "bat_25", '.')
         content = open("bat_25.bat").read()
         assert content.startswith("@echo off")
-        assert content.endswith(code)
+        assert content.find("bla bla") >= 0
+        assert content.find("blou") >= 0
         remove("bat_25.bat")

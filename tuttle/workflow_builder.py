@@ -59,6 +59,7 @@ class Process:
         self.start = time()
         self.return_code = self._processor.run(self._executable, self.id(), self.log_stdout, self.log_stderr)
         self.end = time()
+        return self.return_code
 
     def get_state(self):
         """

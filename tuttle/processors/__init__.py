@@ -3,7 +3,8 @@
 
 from os import path, chmod, stat
 from stat import S_IXUSR, S_IXGRP, S_IXOTH
-from subprocess import Popen, PIPE
+from subprocess import Popen\
+
 
 def run_and_log(prog, log_stdout, log_stderr):
     fout = open(log_stdout, 'w')
@@ -18,8 +19,8 @@ def run_and_log(prog, log_stdout, log_stderr):
 def print_log_if_exists(log_file, header):
     with open(log_file, "r") as f:
         content = f.read()
-        if len(content) > 1 :
-            print "--- {} : {}".format(header, "-" * (60 - len(header)))
+        if len(content) > 1:
+            print "--- {} : {}".format(header, "-" * (60 - len(header) - 7))
             print content
 
 
@@ -62,6 +63,7 @@ class BatProcessor:
     """
     name = 'bat'
     header = "@echo off\n"
+    exit_if_fail = 'echo %ERRORLEVEL%\nif %ERRORLEVEL% neq 0 exit /b 1\n'
 
     def generate_executable(self, code, process_id, directory):
         """ Create an executable file
@@ -71,7 +73,11 @@ class BatProcessor:
         script_name = path.join(directory, "{}.bat".format(process_id))
         with open(script_name, "w+") as f:
             f.write(self.header)
-            f.write(code)
+            lines = code.split("\n")
+            for line in lines:
+                f.write(line)
+                f.write("\n")
+                f.write(self.exit_if_fail)
         return script_name
 
     def run(self, script_path, process_id, log_stdout, log_stderr):

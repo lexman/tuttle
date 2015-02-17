@@ -63,7 +63,7 @@ class Workflow:
     def run(self):
         """ Runs a workflow that has been previously prepared :
 
-        :return: None
+        :return: True if every thing is Ok, False if there war an error while running the processes
         """
         logs_dir = path.join(".tuttle", "processes", 'logs')
         if not path.isdir(logs_dir):
@@ -73,7 +73,10 @@ class Workflow:
             process.run(logs_dir)
             self.dump()
             self.create_reports()
+            if process.return_code != 0:
+                return False
             process = self.pick_a_process_to_run()
+        return True
 
     def nick_from_url(self, url):
         parts = url.split("/")

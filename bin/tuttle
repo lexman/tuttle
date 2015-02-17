@@ -31,7 +31,6 @@ def main():
     """Main entry point for the project."""
 
     options = parse_options()
-    current_dir = getcwd()
     tuttlefile_path = abspath(options.tuttlefile)
     if not exists(tuttlefile_path):
         print "No tuttlefile"
@@ -43,7 +42,8 @@ def main():
         if abort_if_workflow_inconsistent(workflow):
             return
         invalidate_previous(workflow)
-        run_workflow(workflow)
+        if not run_workflow(workflow):
+            return 2
 
 
 if __name__ == '__main__':
