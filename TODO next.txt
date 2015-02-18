@@ -1,0 +1,41 @@
+Move resource in its own module
+
+Put all the generated files in directory .tuttle
+
+should we close stdin ?
+
+Tell the user why that resource is deleted :
+	- process has changed
+	- resource no longer produced
+	- ...
+	- depends on an invalid resource
+
+Run Functional tests and process states in its own temporary dir
+	
+Remove resources that are invalid
+Check if some primary resources changed
+Check if some resource changed (and invalid them ?)
+Check if some resources where deleted and invalidate depending resources
+
+Retreive duration of common processes from previous workflow
+
+Ensure that a resource that used to be created by the process but is now a primary resource should not be deleted
+
+Stop deleting resources if the time (or % of time) of the work invalidated exceeds a threashold provided by user
+
+HTTP ou FTP resource
+
+Improve code coverage
+
+Remove #! from modules and packages
+
+packaging
+	
+Nicer repports : beautifull html, autorelading iframe on the logs
+
+Move default processord to shell
+
+Add a unifed log for both stderr and out
+
+Produce as much data as you can, similar to option --keep-going in Gnu Make
+
