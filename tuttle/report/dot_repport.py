@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-from tuttle.workflow_builder import ProcessState
+from tuttle.process import ProcessState
 
 DOT_HEADER = """digraph workflow {
     Node [style="rounded,filled", shape=box, fillcolor=none]

@@ -4,7 +4,7 @@
 from os import path, makedirs
 from report.dot_repport import create_dot_report
 from report.html_repport import create_html_report
-from workflow_builder import ProcessState
+from process import ProcessState
 from pickle import dump, load
 
 
