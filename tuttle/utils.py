@@ -11,7 +11,6 @@ class CurrentDir(object):
         self.new_dir = path
  
     def __enter__(self):
-        print "__enter__", self.new_dir
         os.chdir(self.new_dir)
  
     def __exit__(self, *args):
