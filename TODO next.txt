@@ -1,6 +1,6 @@
-Move resource in its own module
+DONE - Move resource in its own module
 
-Put all the generated files in directory .tuttle
+DONE - Put all the generated files in directory .tuttle (except tuttle_report.html, the entry point of everything accessible from the project)
 
 should we close stdin ?
 
