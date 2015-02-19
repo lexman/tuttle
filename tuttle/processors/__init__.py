@@ -3,13 +3,14 @@
 
 from os import path, chmod, stat
 from stat import S_IXUSR, S_IXGRP, S_IXOTH
-from subprocess import Popen\
+from subprocess import Popen, PIPE
 
 
 def run_and_log(prog, log_stdout, log_stderr):
     fout = open(log_stdout, 'w')
     ferr = open(log_stderr, 'w')
-    osprocess = Popen([prog], stdout=fout.fileno(), stderr=ferr.fileno())
+    osprocess = Popen([prog], stdout=fout.fileno(), stderr=ferr.fileno(), stdin=PIPE)
+    osprocess.stdin.close()
     fout.close()
     ferr.close()
     rcode = osprocess.wait()

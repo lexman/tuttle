@@ -2,7 +2,7 @@ DONE - Move resource in its own module
 
 DONE - Put all the generated files in directory .tuttle (except tuttle_report.html, the entry point of everything accessible from the project)
 
-should we close stdin ?
+DONE - should we close stdin ?
 
 Tell the user why that resource is deleted :
 	- process has changed
@@ -11,6 +11,8 @@ Tell the user why that resource is deleted :
 	- depends on an invalid resource
 
 Run Functional tests and process states in its own temporary dir
+
+Check that the should-be-created resource really exists at the end of the process, otherwise there have been an issue and any depending process can't pursue
 	
 Remove resources that are invalid
 Check if some primary resources changed
