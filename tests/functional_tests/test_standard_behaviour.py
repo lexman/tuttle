@@ -4,7 +4,7 @@ from os import path
 from tests.functional_tests import FunctionalTestBase
 
 
-class TestCreateResource(FunctionalTestBase):
+class TestStandardBehaviour(FunctionalTestBase):
 
     def test_create_resource(self):
         """ When launching "tuttle" in the command line, should produce the result"""
@@ -16,4 +16,5 @@ class TestCreateResource(FunctionalTestBase):
 """
         self.write_tuttlefile(first)
         result = self.run_tuttle()
+        print result
         assert path.exists('B')
