@@ -24,9 +24,7 @@ class FunctionalTestBase(TestCase):
 
     def reset(self):
         self._rm('tuttlefile')
-        self._rm('last_workflow.pickle')
-        self._rm('report.html')
-        self._rm('workflow.dot')
+        self._rm('tuttle_report.html')
         self._rm('.tuttle')
 
     def setUp(self):

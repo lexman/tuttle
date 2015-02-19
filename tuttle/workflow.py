@@ -91,7 +91,7 @@ class Workflow:
         :return: None
         """
         create_dot_report(self, tuttle_dir("workflow.dot"))
-        create_html_report(self, "report.html")
+        create_html_report(self, "tuttle_report.html")
 
     def dump(self):
         """ Pickles the workflow and writes it to last_workflow.pickle
