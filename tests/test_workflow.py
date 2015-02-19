@@ -4,6 +4,7 @@
 from nose.tools import *
 from tuttle.workflow import *
 from test_project_parser import ProjectParser
+from os import path
 
 
 class TestWorkflow():
@@ -17,3 +18,9 @@ class TestWorkflow():
         missing = workflow.missing_inputs()
         assert len(missing) == 1
         assert missing[0].url == "file://file1"
+
+    def test_one_param_from_dir(self):
+        assert tuttle_dir("test") == path.join(".tuttle", "test")
+
+    def test_two_params_from_dir(self):
+        assert tuttle_dir("test1", "test2") == path.join(".tuttle", "test1", "test2")

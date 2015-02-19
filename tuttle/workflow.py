@@ -8,6 +8,9 @@ from process import ProcessState
 from pickle import dump, load
 
 
+def tuttle_dir(*args):
+    return path.join(".tuttle", *args)
+
 class Workflow:
     """ A workflow is a dependency tree of processes
     """
@@ -21,6 +24,7 @@ class Workflow:
         :return:
         """
         self.processes.append(process)
+
 
     def missing_inputs(self):
         """ Check that all external resources that are necessary to run the workflow exist
@@ -54,7 +58,7 @@ class Workflow:
 
         :return: None
         """
-        directory = path.join(".tuttle", "processes")
+        directory = tuttle_dir("processes")
         if not path.isdir(directory):
             makedirs(directory)
         for process in self.processes:
@@ -65,7 +69,7 @@ class Workflow:
 
         :return: True if every thing is Ok, False if there war an error while running the processes
         """
-        logs_dir = path.join(".tuttle", "processes", 'logs')
+        logs_dir = tuttle_dir("processes", 'logs')
         if not path.isdir(logs_dir):
             makedirs(logs_dir)
         process = self.pick_a_process_to_run()
@@ -86,7 +90,7 @@ class Workflow:
         """ Write to disk files describing the workflow, with color for states
         :return: None
         """
-        create_dot_report(self, "workflow.dot")
+        create_dot_report(self, tuttle_dir("workflow.dot"))
         create_html_report(self, "report.html")
 
     def dump(self):
@@ -94,13 +98,13 @@ class Workflow:
 
         :return: None
         """
-        with open("last_workflow.pickle", "w") as f:
+        with open(tuttle_dir("last_workflow.pickle"), "w") as f:
             dump(self, f)
 
     @staticmethod
     def load():
         try:
-            with open("last_workflow.pickle", "r") as f:
+            with open(tuttle_dir("last_workflow.pickle"), "r") as f:
                 return load(f)
         except:
             return None
