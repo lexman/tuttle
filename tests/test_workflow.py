@@ -27,21 +27,22 @@ class TestWorkflow():
         """Should find the right path to a file in the project directory"""
         assert tuttle_dir("test1", "test2") == path.join(".tuttle", "test1", "test2")
 
+    def get_workflow(self, project_source):
+        pp = ProjectParser()
+        pp.set_project(project_source)
+        return pp.parse_project()
+
     def test_invalidate_code_change(self):
         """ Should invalidate a resource if the code creating it changes
         """
-        pp1 = ProjectParser()
-        project1 = """file://result <- file://file1
+        workflow1 = self.get_workflow(
+            """file://result <- file://file1
         Initial code
-"""
-        pp1.set_project(project1)
-        workflow1 = pp1.parse_project()
-        pp2 = ProjectParser()
-        project2 = """file://result <- file://file1
+""")
+        workflow2 = self.get_workflow(
+            """file://result <- file://file1
         Updated code
-"""
-        pp2.set_project(project2)
-        workflow2 = pp2.parse_project()
+""")
         invalid = workflow1.resources_not_created_the_same_way(workflow2)
         assert len(invalid) == 1
         (resource, invalidation_reason) = invalid[0]
@@ -51,18 +52,15 @@ class TestWorkflow():
     def test_invalidate_removed_resource(self):
         """ Should invalidate a resource if it is not created anymore
         """
-        pp1 = ProjectParser()
-        project1 = """file://file2 <- file://file1
+        workflow1 = self.get_workflow(
+            """file://file2 <- file://file1
 
 file://file3 <- file://file2
-"""
-        pp1.set_project(project1)
-        workflow1 = pp1.parse_project()
-        pp2 = ProjectParser()
-        project2 = """file://file3 <- file://file1
-"""
-        pp2.set_project(project2)
-        workflow2 = pp2.parse_project()
+""")
+        workflow2 = self.get_workflow(
+            """file://file3 <- file://file1
+""")
+
         invalid = workflow1.resources_not_created_the_same_way(workflow2)
         assert len(invalid) == 1
         (resource, invalidation_reason) = invalid[0]
@@ -72,18 +70,14 @@ file://file3 <- file://file2
     def test_invalidate_if_resource_dependency_change(self):
         """ Should invalidate a resource if it does not depend on the same resource anymore
         """
-        pp1 = ProjectParser()
-        project1 = """file://result <- file://file1
+        workflow1 = self.get_workflow(
+            """file://result <- file://file1
         Some code
-"""
-        pp1.set_project(project1)
-        workflow1 = pp1.parse_project()
-        pp2 = ProjectParser()
-        project2 = """file://result <- file://file2
+""")
+        workflow2 = self.get_workflow(
+            """file://result <- file://file2
         Some code
-"""
-        pp2.set_project(project2)
-        workflow2 = pp2.parse_project()
+""")
         invalid = workflow1.resources_not_created_the_same_way(workflow2)
         assert len(invalid) == 1
         (resource, invalidation_reason) = invalid[0]
