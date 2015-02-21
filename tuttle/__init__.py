@@ -40,8 +40,9 @@ def invalidate_previous(workflow):
     to_invalidate = previous_workflow.resources_to_invalidate(workflow)
     if to_invalidate:
         print "The following resources are not valid any more :"
-        for res in to_invalidate:
-            print "* {}".format(res.url)
+        for resource, reason in to_invalidate:
+            print "* {} - {}".format(resource.url, reason)
+
 
 def run_workflow(workflow):
     """ Runs all the needed processes in a workflow

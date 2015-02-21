@@ -8,8 +8,29 @@ from process import ProcessState
 from pickle import dump, load
 
 
+class InvalidationReason:
+    NO_LONGER_CREATED = 0
+    NOT_SAME_INPUTS = 1
+    PROCESS_CHANGED = 2
+    DEPENDENCY_CHANGED = 3
+
+    messages = [
+        "Resource no longer created by the newer process",
+        "Resource was created with different inputs",
+        "Process code changed",
+        "Resource depends on another resource that have changed"
+    ]
+
+    def __init__(self, reason):
+        self._reason = reason
+
+    def __str__(self):
+        return self.messages[self._reason]
+
+
 def tuttle_dir(*args):
     return path.join(".tuttle", *args)
+
 
 class Workflow:
     """ A workflow is a dependency tree of processes
@@ -134,12 +155,11 @@ class Workflow:
                 if newer_process is None:
                     # TODO : if a resource used to be created be by the workflow
                     # but is now a primary input, we should not remove it
-                    changing_resources.append(resource)
+                    changing_resources.append( (resource, InvalidationReason(InvalidationReason.NO_LONGER_CREATED)) )
                 elif not resource.creator_process.has_same_inputs(newer_process):
-                    changing_resources.append(resource)
+                    changing_resources.append( (resource, InvalidationReason(InvalidationReason.NOT_SAME_INPUTS)) )
                 elif resource.creator_process._code != newer_process._code:
-                    changing_resources.append(resource)
-        # TODO : we could associate a "reason" why the resource is invalid for logs
+                    changing_resources.append( (resource, InvalidationReason(InvalidationReason.PROCESS_CHANGED)) )
         return changing_resources
 
     def compute_dependencies(self):
@@ -162,9 +182,9 @@ class Workflow:
         """
         invalid_resources = self.resources_not_created_the_same_way(newer_workflow)
         self.compute_dependencies()
-        for resource in invalid_resources:
+        for (resource, reason) in invalid_resources:
             for dependant_process in resource.dependant_processes:
                 for dependant_resource in dependant_process._outputs:
                     if dependant_resource not in invalid_resources:
-                        invalid_resources.append(dependant_resource)
+                        invalid_resources.append( (dependant_resource, InvalidationReason(InvalidationReason.DEPENDENCY_CHANGED)) )
         return invalid_resources
