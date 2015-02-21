@@ -3,6 +3,7 @@ DONE - Move resource in its own module
 DONE - Put all the generated files in directory .tuttle (except tuttle_report.html, the entry point of everything accessible from the project)
 
 DONE - should we close stdin ?
+	should be tested on *nix
 
 Tell the user why that resource is deleted :
 	- process has changed
@@ -13,17 +14,19 @@ Tell the user why that resource is deleted :
 Run Functional tests and process states in its own temporary dir
 
 Check that the should-be-created resource really exists at the end of the process, otherwise there have been an issue and any depending process can't pursue
-	
+    + Test of a resource not really created by a process should not be invalided when removed
+
 Remove resources that are invalid
 Check if some primary resources changed
 Check if some resource changed (and invalid them ?)
 Check if some resources where deleted and invalidate depending resources
 
-Retreive duration of common processes from previous workflow
+Retrieve duration of common processes from previous workflow
 
 Ensure that a resource that used to be created by the process but is now a primary resource should not be deleted
 
-Stop deleting resources if the time (or % of time) of the work invalidated exceeds a threashold provided by user
+Stop deleting resources if the time (or % of time) of the work invalidated exceeds a threshold provided by user
+    And print invalidation quantity any way
 
 HTTP ou FTP resource
 
@@ -31,13 +34,18 @@ Improve code coverage
 
 Remove #! from modules and packages
 
-packaging
-	
-Nicer repports : beautifull html, autorelading iframe on the logs
+Packaging
 
-Move default processord to shell
+Travis for tests on *nix. Is it possible to test on Windows ?
 
-Add a unifed log for both stderr and out
+shell processor by default (should tests be run according to the os ?)
+
+Nicer reports : beautiful html, autorelading iframe on the logs
+
+Move default processor to shell
+
+Add a unified log for both stderr and stdout
 
 Produce as much data as you can, similar to option --keep-going in Gnu Make
 
+A working example using tuttle in Github, with continuous integration in Travis CI. Car accidents en France ?
