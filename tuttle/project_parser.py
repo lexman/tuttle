@@ -162,7 +162,6 @@ class ProjectParser():
             is_process_line, process_line = self.parse_process_line(wsp_prefix)
         if process_line == "\n":
             # Remove carriage return
-            print "should remove"
             process_code = process_code[:-1]
         process.set_code(process_code)
         return process
