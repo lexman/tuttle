@@ -5,7 +5,7 @@ DONE - Put all the generated files in directory .tuttle (except tuttle_report.ht
 DONE - should we close stdin ?
 	should be tested on *nix
 
-Tell the user why that resource is deleted :
+DONE - Tell the user why that resource is deleted :
 	- process has changed
 	- resource no longer produced
 	- ...
@@ -36,7 +36,7 @@ Remove #! from modules and packages
 
 Packaging
 
-Travis for tests on *nix. Is it possible to test on Windows ?
+Travis for tests on *nix. Is it possible to test on Windows ? No
 
 shell processor by default (should tests be run according to the os ?)
 

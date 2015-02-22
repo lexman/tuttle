@@ -31,7 +31,7 @@ Improved file ressource:
 	By default, even if you don't tell file://, your ressource is a file
 
 Check:
-	"tuttle check" to check if my data is up to date
+	"tuttle check" to check if my data is up to date => tuttle invalidate -q ?
 	could return the total time of processing that would be invalidated, and the percent too.
 	maybe the number of processes that would need to be run
 

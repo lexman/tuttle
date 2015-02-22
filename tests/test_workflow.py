@@ -84,3 +84,37 @@ file://file3 <- file://file2
         assert resource.url == "file://result"
         assert invalidation_reason._reason == InvalidationReason.NOT_SAME_INPUTS
 
+    def test_invalidation_in_cascade(self):
+        """ When a resource is invalidated all resulting resources should be invalidated too
+        """
+        workflow1 = self.get_workflow(
+            """file://file2 <- file://file1
+            Original code
+
+file://file3 <- file://file2
+
+""")
+        workflow2 = self.get_workflow(
+            """file://file2 <- file://file1
+            Updated code
+
+file://file3 <- file://file2
+
+""")
+        invalid = workflow1.resources_to_invalidate(workflow2)
+        assert len(invalid) == 2
+        (resource, invalidation_reason) = invalid[0]
+        assert resource.url == "file://file2"
+        assert invalidation_reason._reason == InvalidationReason.PROCESS_CHANGED
+
+    def test_compute_dependencies(self):
+        """ Every resource should know the processes dependant from it """
+        workflow = self.get_workflow(
+            """file://file2 <- file://file1
+            Original code
+
+file://file3 <- file://file1
+
+""")
+        workflow.compute_dependencies()
+        assert workflow.resources['file://file1'].dependant_processes == [workflow.processes[0], workflow.processes[1]]
