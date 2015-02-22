@@ -182,7 +182,7 @@ class Workflow:
         """
         invalid_resources = self.resources_not_created_the_same_way(newer_workflow)
         self.compute_dependencies()
-        for (resource, reason) in invalid_resources:
+        for (resource, _) in invalid_resources:
             for dependant_process in resource.dependant_processes:
                 for dependant_resource in dependant_process._outputs:
                     if dependant_resource not in invalid_resources:
