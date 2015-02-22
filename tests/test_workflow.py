@@ -55,13 +55,14 @@ class TestWorkflow():
         workflow1 = self.get_workflow(
             """file://file2 <- file://file1
 
-file://file3 <- file://file2
+file://file3 <- file://file1
 """)
         workflow2 = self.get_workflow(
             """file://file3 <- file://file1
 """)
 
         invalid = workflow1.resources_not_created_the_same_way(workflow2)
+        print invalid
         assert len(invalid) == 1
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://file2"
@@ -93,6 +94,7 @@ file://file3 <- file://file2
 
 file://file3 <- file://file2
 
+
 """)
         workflow2 = self.get_workflow(
             """file://file2 <- file://file1
@@ -101,7 +103,11 @@ file://file3 <- file://file2
 file://file3 <- file://file2
 
 """)
+        print(workflow1.resources)
+        print(workflow1.processes)
         invalid = workflow1.resources_to_invalidate(workflow2)
+        print invalid
+        print workflow1.resources['file://file2']
         assert len(invalid) == 2
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://file2"

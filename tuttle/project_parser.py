@@ -44,17 +44,26 @@ class ProjectParser():
     def set_project(self, text):
         self._lines = text.splitlines()
         self._nb_lines = len(self._lines)
+        #if self._lines[self._nb_lines - 1] == "":
+            #Remove the last line if empty
+        #    self._lines = self._lines[:-1]
+        #    self._nb_lines = len(self._lines)
         self._num_line = 0
         self._eof = (self._nb_lines == 0)
         
     def read_line(self):
-        if not self._eof:
+        if self._num_line < self._nb_lines:
             self._line = self._lines[self._num_line]
+            if self._line.startswith("file://file3 <- file://file2"):
+                pass
+                #raise "On en est la"
             self._num_line += 1
-            self._eof = (self._nb_lines == self._num_line)
-            return self._line, self._num_line, self._eof
+            self._eof = False
+            return self._line, self._num_line, False
         else:
-            return "", self._num_line, self._eof
+            self._eof = True
+            self._line = ""
+            return "", self._nb_lines, True
 
     def is_blank(self, line):
         """ Check whether the current line in a tuttlefile is blank
@@ -134,6 +143,9 @@ class ProjectParser():
         # Any number of blank lines
         while self.is_blank(line):
             line, num_line, eof = self.read_line()
+            if line.startswith("file://file3 <- file://file2"):
+                print "=" * 80
+                print "file://file3 <- file://file2"
             if eof:
                 return process
         # Several lines all beginning by white-spaces define a process
@@ -145,9 +157,13 @@ class ProjectParser():
         while is_process_line and not self._eof:
             process_code += process_line
             self.read_line()
+            if self._eof:
+                break
             is_process_line, process_line = self.parse_process_line(wsp_prefix)
-        if is_process_line and self._eof and len(process_line.strip()) != 0:
-            process_code += process_line
+        if process_line == "\n":
+            # Remove carriage return
+            print "should remove"
+            process_code = process_code[:-1]
         process.set_code(process_code)
         return process
 
@@ -160,9 +176,14 @@ class ProjectParser():
         while True:
             while self.is_blank(line):
                 line, num_line, eof = self.read_line()
+                if line.startswith("file://file3 <- file://file2"):
+                    print "file://file3 <- file://file2"
                 if eof:
+                    print "reached EOF 1"
                     return workflow
             process = self.parse_section()
+            print process
             workflow.add_process(process)
             if self._eof:
+                print "reached EOF 2"
                 return workflow

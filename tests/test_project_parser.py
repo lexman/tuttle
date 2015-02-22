@@ -65,6 +65,7 @@ class TestProjectParser():
         assert process._inputs[0].url == 'file:///source1'
         assert len(process._outputs) == 1
         assert process._outputs[0].url == 'file:///result1'
+        print process._code
         assert process._code == "Some code\n"
 
     def test_read_section_multiple_inputs_and_outputs(self):
