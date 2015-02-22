@@ -175,14 +175,9 @@ class ProjectParser():
         while True:
             while self.is_blank(line):
                 line, num_line, eof = self.read_line()
-                if line.startswith("file://file3 <- file://file2"):
-                    print "file://file3 <- file://file2"
                 if eof:
-                    print "reached EOF 1"
                     return workflow
             process = self.parse_section()
-            print process
             workflow.add_process(process)
             if self._eof:
-                print "reached EOF 2"
                 return workflow
