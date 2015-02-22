@@ -92,17 +92,12 @@ file://file3 <- file://file1
             """file://file2 <- file://file1
             Original code
 
-file://file3 <- file://file2
-
-
-""")
+file://file3 <- file://file2""")
         workflow2 = self.get_workflow(
             """file://file2 <- file://file1
             Updated code
 
-file://file3 <- file://file2
-
-""")
+file://file3 <- file://file2""")
         print(workflow1.resources)
         print(workflow1.processes)
         invalid = workflow1.resources_to_invalidate(workflow2)
