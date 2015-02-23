@@ -132,6 +132,18 @@ class TestProjectParser():
         """Read a sections without process code"""
         pp = ProjectParser()
         project = """file:///result1 <- file:///source1
+        bla
+"""
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_section()
+        print "'{}'".format(process._code)
+        assert process._code == "bla\n"
+
+    def test_read_last_unfinished_line_of_a_section(self):
+        """Read a sections without process code"""
+        pp = ProjectParser()
+        project = """file:///result1 <- file:///source1
         bla"""
         pp.set_project(project)
         pp.read_line()
@@ -139,8 +151,7 @@ class TestProjectParser():
         print "'{}'".format(process._code)
         assert process._code == "bla\n"
 
-
-    def test_read_section_without_indentation_error_in_process_code(self):
+    def test_read_section_with_indentation_error_in_process_code(self):
         """Read a section with an indentation error in process code"""
         pp = ProjectParser()
         project = """file:///result1 <- file:///source1
@@ -175,6 +186,7 @@ class TestProjectParser():
         Some code"""
         pp.set_project(project)
         workflow = pp.parse_project()
+        assert len(workflow.processes) == 1
         assert workflow.processes[0]._code == "Some code\n"
 
     def test_pasrse_workflow_with_blank_lines(self):
@@ -190,7 +202,7 @@ class TestProjectParser():
         assert len(workflow.processes) == 2
 
     def test_pasrse_workflow_with_0_char_blank_lines(self):
-        """Read a simple project"""
+        """Read a simple project where lines separating two processes are empty"""
         pp = ProjectParser()
         project = """file:///resource1 <- file:///resource2
         Some code""" + "\n \n" + """file:///resource2 <- file:///resource3
@@ -264,19 +276,27 @@ file:///result1 <- file:///source1
             assert True
 
 
-    def test_a_project_can_have_one_line(self):
-        """Test the list of missing inputs"""
+    def test_a_project_can_have_one_line_no_caret(self):
+        """Test the project can have only one line and even no carriage return at the end"""
         pp = ProjectParser()
-        project = """file://result <- file://source"""
+        project = "file://result <- file://source"
         pp.set_project(project)
         workflow = pp.parse_project()
+        assert len(workflow.processes) == 1
         assert len(workflow.processes[0]._inputs) == 1
         assert len(workflow.processes[0]._outputs) == 1
 
-#TODO
-#Verifier qu'une ligne seule peut être acceptée : out <- in
 
-#TODO
+    def test_a_project_can_have_one_line(self):
+        """Test the project can have only one line"""
+        pp = ProjectParser()
+        project = "file://result <- file://source\n"
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow.processes) == 1
+        assert len(workflow.processes[0]._inputs) == 1
+        assert len(workflow.processes[0]._outputs) == 1
+
     def test_section_can_have_no_inputs(self):
         """Read project with a blank line with blank characters which match exactly the indentation of the code of the process"""
         pp = ProjectParser()
@@ -296,3 +316,28 @@ file:///result1 <- file:///source1
         pp.read_line()
         process= pp.parse_section()
         assert len(process._outputs) == 0
+
+    def test_a_project_can_begin_by_a_blank_line(self):
+        """Test the project can begin by a blank line"""
+        pp = ProjectParser()
+        project = "\nfile://result <- file://source"
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow.processes) == 1
+        assert len(workflow.processes[0]._inputs) == 1
+        assert len(workflow.processes[0]._outputs) == 1
+
+    def test_a_project_can_have_no_blank_lines(self):
+        """Test the project can begin by a blank line"""
+        pp = ProjectParser()
+        project = """
+file://file2 <- file://file1
+file://file3 <- file://file2
+"""
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow.processes) == 2
+        assert len(workflow.processes[0]._inputs) == 1
+        assert len(workflow.processes[0]._outputs) == 1
+        assert len(workflow.processes[1]._inputs) == 1
+        assert len(workflow.processes[1]._outputs) == 1
