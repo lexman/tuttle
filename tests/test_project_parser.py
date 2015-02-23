@@ -47,8 +47,6 @@ class TestProjectParser():
         assert process._outputs[0].creator_process == process
         # TODO : get back to shell processors by default
         # assert process._processor.name == "shell"
-        print "'{}'".format(process._code)
-        print "'{}'".format("Some code\n")
         assert process._code == "Some code\n"
 
     def test_read_section_with_blank_line(self):
@@ -275,8 +273,7 @@ file:///result1 <- file:///source1
         except ParsingError:
             assert True
 
-
-    def test_a_project_can_have_one_line_no_caret(self):
+    def test_a_project_can_have_one_unfinished_line(self):
         """Test the project can have only one line and even no carriage return at the end"""
         pp = ProjectParser()
         project = "file://result <- file://source"
@@ -285,7 +282,6 @@ file:///result1 <- file:///source1
         assert len(workflow.processes) == 1
         assert len(workflow.processes[0]._inputs) == 1
         assert len(workflow.processes[0]._outputs) == 1
-
 
     def test_a_project_can_have_one_line(self):
         """Test the project can have only one line"""
@@ -341,3 +337,37 @@ file://file3 <- file://file2
         assert len(workflow.processes[0]._outputs) == 1
         assert len(workflow.processes[1]._inputs) == 1
         assert len(workflow.processes[1]._outputs) == 1
+
+    def test_read_last_unfinished_line_of_a_project(self):
+        """Test the project can begin by a blank line"""
+        pp = ProjectParser()
+        project = """file://result <- file://source
+        Some code"""
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow.processes) == 1
+        assert workflow.processes[0]._code == "Some code\n"
+
+    def test_read_last_line_of_a_project(self):
+        """Test the project can begin by a blank line"""
+        pp = ProjectParser()
+        project = """file://result <- file://source
+        Some code
+        """
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow.processes) == 1
+        assert workflow.processes[0]._code == "Some code\n"
+
+    def test_read_extra_line_of_a_project(self):
+        """Test the project have extra blank lines at the end"""
+        pp = ProjectParser()
+        project = """file://result <- file://source
+        Some code
+
+"""
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow.processes) == 1
+        print "'{}'".format(workflow.processes[0]._code)
+        assert workflow.processes[0]._code == "Some code\n\n"
