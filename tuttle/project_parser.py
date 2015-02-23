@@ -106,17 +106,15 @@ class ProjectParser():
             Returns a couple (is_first_line : bool, prefix found : string)
         """
         wsp = "\t "
-        prefix = ""
         i = 0
         while wsp.find(self._line[i]) >= 0:
             # Char i of self._line is a white-space
-            prefix += self._line[i]
             i += 1
         if i == 0:
             # Line didn't begin by white-spaces. It's not a valid first process line
-            return False, ""
+            return False, "", ""
         else:
-            return True, prefix
+            return True, self._line[:i], self._line[i:]
 
     def parse_process_line(self, prefix):
         """ Parses the line as if it is a line of process, beginning by ::prefix::.
@@ -143,23 +141,19 @@ class ProjectParser():
         # Any number of blank lines
         while self.is_blank(line):
             line, num_line, eof = self.read_line()
-            if line.startswith("file://file3 <- file://file2"):
-                print "=" * 80
-                print "file://file3 <- file://file2"
             if eof:
                 return process
         # Several lines all beginning by white-spaces define a process
         process_code = ""
-        is_process_line, wsp_prefix = self.is_first_process_line()
-        if not is_process_line:
-            return process
-        is_process_line, process_line = self.parse_process_line(wsp_prefix)
+        is_process_line, wsp_prefix, process_line = self.is_first_process_line()
         while is_process_line and not self._eof:
             process_code += process_line
             self.read_line()
             if self._eof:
                 break
             is_process_line, process_line = self.parse_process_line(wsp_prefix)
+        if process_code[:-1] != "\n":
+            process_code += "\n"
         if process_line == "\n":
             # Remove carriage return
             process_code = process_code[:-1]
