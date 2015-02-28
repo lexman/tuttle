@@ -11,15 +11,23 @@ DONE - Tell the user why that resource is deleted :
 	- ...
 	- depends on an invalid resource
 
-Run Functional tests and process states in its own temporary dir
 
 Check that the should-be-created resource really exists at the end of the process, otherwise there have been an issue and any depending process can't pursue
     + Test of a resource not really created by a process should not be invalided when removed
 
+When there is an error running a process, every resources produced should be marked as invalid
+
+Run Functional tests and process states in its own temporary dir
+	
 Remove resources that are invalid
-Check if some primary resources changed
-Check if some resource changed (and invalid them ?)
+
 Check if some resources where deleted and invalidate depending resources
+
+shell processor by default (should tests be run according to the os ?)
+Move default processor to shell
+
+Improve code coverage
+    especially for parser - DONE
 
 Retrieve duration of common processes from previous workflow
 
@@ -30,22 +38,21 @@ Stop deleting resources if the time (or % of time) of the work invalidated excee
 
 HTTP ou FTP resource
 
-Improve code coverage
 
 Remove #! from modules and packages
+
+Check if some primary resources changed
+
+Check if some resource changed (and invalid them ?)
 
 Packaging
 
 Travis for tests on *nix. Is it possible to test on Windows ? No
 
-shell processor by default (should tests be run according to the os ?)
-
 Nicer reports : beautiful html, autorelading iframe on the logs
-
-Move default processor to shell
 
 Add a unified log for both stderr and stdout
 
 Produce as much data as you can, similar to option --keep-going in Gnu Make
 
-A working example using tuttle in Github, with continuous integration in Travis CI. Car accidents en France ?
+A working example using tuttle in Github, with continuous integ<ration in Travis CI. Car accidents en France ?

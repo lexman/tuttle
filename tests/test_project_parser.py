@@ -370,4 +370,4 @@ file://file3 <- file://file2
         workflow = pp.parse_project()
         assert len(workflow.processes) == 1
         print "'{}'".format(workflow.processes[0]._code)
-        assert workflow.processes[0]._code == "Some code\n\n"
+        assert workflow.processes[0]._code == "Some code\n  "
