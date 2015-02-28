@@ -51,4 +51,4 @@ def run_workflow(workflow):
     """
     workflow.prepare()
     workflow.create_reports()
-    return workflow.run()
+    workflow.run()

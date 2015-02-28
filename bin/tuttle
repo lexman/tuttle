@@ -11,6 +11,7 @@ from tuttle import prepare_workflow, \
 from os import chdir, getcwd
 from os.path import abspath, exists
 from tuttle.utils import CurrentDir
+from tuttle.workflow import ExecutionError
 
 
 def parse_options():
@@ -42,8 +43,11 @@ def main():
         if abort_if_workflow_inconsistent(workflow):
             return
         invalidate_previous(workflow)
-        if not run_workflow(workflow):
+        try:
+            run_workflow(workflow)
+        except ExecutionError:
             return 2
+        return 0
 
 
 if __name__ == '__main__':

@@ -8,6 +8,20 @@ from process import ProcessState
 from pickle import dump, load
 
 
+class ExecutionError(Exception):
+    def __init__(self, message):
+        self._message = message
+
+    def __str__(self):
+        return "Error while running the workflow : \n{}".format(self._message)
+
+
+class ProcessExecutionError(ExecutionError):
+    pass
+
+class ResourceError(ExecutionError):
+    pass
+
 class InvalidationReason:
     NO_LONGER_CREATED = 0
     NOT_SAME_INPUTS = 1
@@ -85,23 +99,31 @@ class Workflow:
         for process in self.processes:
             process.generate_executable(directory)
 
+    def run_process(self, process, logs_dir):
+        process.run(logs_dir)
+        self.dump()
+        self.create_reports()
+        if process.return_code != 0:
+            msg = "Process {} ended with error code {}".format(process.id(), process.return_code)
+            raise ProcessExecutionError(msg)
+        for res in process._outputs:
+            if not res.exists():
+                msg = "After execution of process {} : resource {} should have been created"
+                raise ResourceError(msg)
+
     def run(self):
         """ Runs a workflow that has been previously prepared :
 
-        :return: True if every thing is Ok, False if there war an error while running the processes
+        :return:
+        :raises ExecutionError if an error occurs
         """
         logs_dir = tuttle_dir("processes", 'logs')
         if not path.isdir(logs_dir):
             makedirs(logs_dir)
         process = self.pick_a_process_to_run()
         while process is not None:
-            process.run(logs_dir)
-            self.dump()
-            self.create_reports()
-            if process.return_code != 0:
-                return False
+            self.run_process(process, logs_dir)
             process = self.pick_a_process_to_run()
-        return True
 
     def nick_from_url(self, url):
         parts = url.split("/")
