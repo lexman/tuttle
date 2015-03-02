@@ -1,10 +1,35 @@
 # -*- coding: utf-8 -*-
+from tempfile import mkdtemp
 
 from unittest import TestCase
 from subprocess import check_output
 from os import getcwd, chdir, remove
-from shutil import rmtree
+from shutil import rmtree, copy
 from os import path
+from functools import wraps
+from os.path import basename, join, dirname
+
+
+def isolate(files):
+    def wrap(func):
+        funct_dir = dirname(func.func_globals['__file__'])
+
+        @wraps(func)
+        def wrapped_func(*args, **kwargs):
+            tmp_dir = mkdtemp()
+            for filename in files:
+                src = join(funct_dir, filename)
+                dst = join(tmp_dir, filename)
+                copy(src, dst)
+            cwd = getcwd()
+            chdir(tmp_dir)
+            try:
+                return func(*args, **kwargs)
+            finally:
+                chdir(cwd)
+                rmtree(tmp_dir)
+        return wrapped_func
+    return wrap
 
 
 class FunctionalTestBase(TestCase):

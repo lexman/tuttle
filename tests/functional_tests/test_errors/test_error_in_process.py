@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+import glob
 
 from subprocess import CalledProcessError
-from tests.functional_tests import FunctionalTestBase
+from sys import stderr
+from os import getcwd
+from tests.functional_tests import FunctionalTestBase, isolate
+
 
 class TestErrorInProcess(FunctionalTestBase):
 
@@ -30,6 +34,10 @@ file://D <- file://A
         except CalledProcessError:
             assert True
 
+    @isolate(['A', 'test_error_in_process.py'])
+    def test_isolation_decorator(self):
+        files = glob.glob("*")
+        assert files == ['A', 'test_error_in_process.py']
 
     def tearDown(self):
         try:
