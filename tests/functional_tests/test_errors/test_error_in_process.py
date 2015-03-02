@@ -41,5 +41,4 @@ file://D <- file://A
 
     @isolate
     def test_isolation_decorator_without_args(self):
-        stderr.write(getcwd())
-        stderr.write('\n')
+        assert True
