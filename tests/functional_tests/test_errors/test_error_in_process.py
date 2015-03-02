@@ -39,6 +39,11 @@ file://D <- file://A
         files = glob.glob("*")
         assert files == ['A', 'test_error_in_process.py']
 
+    @isolate
+    def test_isolation_decorator_without_args(self):
+        stderr.write(getcwd())
+        stderr.write('\n')
+
     def tearDown(self):
         try:
             self.reset()

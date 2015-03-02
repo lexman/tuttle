@@ -10,7 +10,12 @@ from functools import wraps
 from os.path import basename, join, dirname
 
 
-def isolate(files):
+def isolate(arg):
+    if isinstance(arg, list):
+        files = arg
+    elif callable(arg):
+        files = []
+
     def wrap(func):
         funct_dir = dirname(func.func_globals['__file__'])
 
@@ -29,7 +34,10 @@ def isolate(files):
                 chdir(cwd)
                 rmtree(tmp_dir)
         return wrapped_func
-    return wrap
+    if isinstance(arg, list):
+        return wrap
+    elif callable(arg):
+        return wrap(arg)
 
 
 class FunctionalTestBase(TestCase):
