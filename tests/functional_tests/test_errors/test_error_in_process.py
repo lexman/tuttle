@@ -9,10 +9,10 @@ from tests.functional_tests import FunctionalTestBase, isolate
 
 class TestErrorInProcess(FunctionalTestBase):
 
+    @isolate(['A'])
     def test_error_in_process(self):
         """  When a process fail, Tuttle should exit with status code 2"""
         # As in Gnu Make
-        self.work_dir_from_module(__file__)
         first = """file://B <- file://A
     echo A produces B
     echo B > B
@@ -43,12 +43,3 @@ file://D <- file://A
     def test_isolation_decorator_without_args(self):
         stderr.write(getcwd())
         stderr.write('\n')
-
-    def tearDown(self):
-        try:
-            self.reset()
-            self._rm('B')
-            self._rm('C')
-            self._rm('D')
-        finally:
-            super(TestErrorInProcess, self).tearDown()
