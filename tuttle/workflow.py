@@ -108,7 +108,7 @@ class Workflow:
             raise ProcessExecutionError(msg)
         for res in process._outputs:
             if not res.exists():
-                msg = "After execution of process {} : resource {} should have been created"
+                msg = "After execution of process {} : resource {} should have been created".format(process.id(), res.url)
                 raise ResourceError(msg)
 
     def run(self):

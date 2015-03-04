@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from nose.tools import *
+from shutil import rmtree
+from tests.functional_tests import isolate
+from tuttle import workflow
 from tuttle.workflow import *
 from test_project_parser import ProjectParser
-from os import path
+from os import path, remove, listdir, getcwd
 
 
 class TestWorkflow():
@@ -119,3 +122,37 @@ file://file3 <- file://file1
 """)
         workflow.compute_dependencies()
         assert workflow.resources['file://file1'].dependant_processes == [workflow.processes[0], workflow.processes[1]]
+
+    @isolate
+    def test_run_process(self):
+        """
+        Should run a process and update the state of the workflow
+        """
+        workflow = self.get_workflow(
+            """file://result <- file://source
+            echo result > result
+            """)
+        workflow.prepare()
+        process = workflow.processes[0]
+        workflow.run_process(process, '.')
+        assert path.isfile("result")
+        assert path.isfile("tuttle_report.html")
+        assert path.isfile(path.join(".tuttle", "last_workflow.pickle"))
+
+    @isolate
+    def test_check_process_output(self):
+        """
+        Should raise an exception if the output resource was not really created
+        """
+        workflow = self.get_workflow(
+            """file://result <- file://source
+            echo result > result
+            echo test
+            """)
+        workflow.prepare()
+        process = workflow.processes[0]
+        try:
+            workflow.run_process(process, '.')
+            assert False, "Exception has not been not raised"
+        except ResourceError:
+            assert True
