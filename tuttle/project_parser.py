@@ -54,9 +54,6 @@ class ProjectParser():
     def read_line(self):
         if self._num_line < self._nb_lines:
             self._line = self._lines[self._num_line]
-            if self._line.startswith("file://file3 <- file://file2"):
-                pass
-                #raise "On en est la"
             self._num_line += 1
             self._eof = False
             return self._line, self._num_line, False

@@ -124,7 +124,7 @@ class TestProjectParser():
         assert process._inputs[0].url == 'file:///source1'
         assert len(process._outputs) == 1
         assert process._outputs[0].url == 'file:///result1'
-        assert process._code is None
+        assert process._code == ""
 
     def test_read_last_line_of_a_section(self):
         """Read a sections without process code"""
@@ -370,4 +370,4 @@ file://file3 <- file://file2
         workflow = pp.parse_project()
         assert len(workflow.processes) == 1
         print "'{}'".format(workflow.processes[0]._code)
-        assert workflow.processes[0]._code == "Some code\n  "
+        assert workflow.processes[0]._code == "Some code\n"

@@ -26,7 +26,7 @@ class Process:
         self._line_num = line_num
         self._inputs = []
         self._outputs = []
-        self._code = None
+        self._code = ""
         self.log_stdout = None
         self.log_stderr = None
         self.return_code = None
