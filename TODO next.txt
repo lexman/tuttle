@@ -11,15 +11,32 @@ DONE - Tell the user why that resource is deleted :
 	- ...
 	- depends on an invalid resource
 
+If a process failed, running tuttle again should fail immediately
 
-Check that the should-be-created resource really exists at the end of the process, otherwise there have been an issue and any depending process can't pursue
+If a process failed, all should be marked as not Ok
+
+What should happen if a process fails and tuttle is re-run ?
+    - should resources produced by the erroneous process be removed ? No because tuttle would run again endlessly
+    - should if ignore the failing process and run other candidates until partial completion then end in error again ? Would
+        be the same as an option --build_max_stuff as in gcc
+    - should it stop immediately and not run anything ? This is consistent => will be implemented for now
+
+Check for circular dependencies
+
+Check for status : if not all dependencies are created the process should be marked as failed
+
+
+Remove resources that are invalid
+
+Check that the claimed-to-be-created resource really exists at the end of the process, otherwise there have been an issue and any depending process can't pursue
+
+
     + Test of a resource not really created by a process should not be invalided when removed
 
 When there is an error running a process, every resources produced should be marked as invalid
 
 Run Functional tests and process states in its own temporary dir
 	
-Remove resources that are invalid
 
 Check if some resources where deleted and invalidate depending resources
 
