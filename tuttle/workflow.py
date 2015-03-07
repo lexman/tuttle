@@ -79,9 +79,10 @@ class Workflow:
         """
         # TODO : check for circular references
         for process in self.processes:
-            # All outputs are supposed to be generated at the same time with a process,
-            # so checking for existence of one is like checking fo existence of all !
-            if process.get_state() == ProcessState.READY:
+            if process.start is None:
+                for in_res in process._inputs:
+                    if not in_res.exists():
+                        continue
                 return process
         return None
 
