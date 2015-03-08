@@ -13,6 +13,14 @@
         <-
         {% for input in process._inputs %} {{ input.url }} ,  {% endfor %}
          <br/>
+         Start : {{ process.start }}
+         <br/>
+         End : {{ process.end }}
+         <br/>
+         Return code : {{ process.return_code }}
+         <br/>
+         Logs <a href="{{ process.log_stdout }}"> stdout </a> :
+         <br/>
          Logs <a href="{{ process.log_stdout }}"> stdout </a> :
          <br/>
          Logs <a href="{{ process.log_stderr }}"> stderr </a> :

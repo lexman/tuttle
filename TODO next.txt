@@ -15,6 +15,8 @@ If a process failed, running tuttle again should fail immediately
 
 If a process failed, all should be marked as not Ok
 
+Should we invalidate a resource that has disapeared ?
+
 What should happen if a process fails and tuttle is re-run ?
     - should resources produced by the erroneous process be removed ? No because tuttle would run again endlessly
     - should if ignore the failing process and run other candidates until partial completion then end in error again ? Would

@@ -211,3 +211,17 @@ class Workflow:
                     if dependant_resource not in invalid_resources:
                         invalid_resources.append( (dependant_resource, InvalidationReason(InvalidationReason.DEPENDENCY_CHANGED)) )
         return invalid_resources
+
+    def retrieve_execution_info(self, previous, invalidated_resources):
+        """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow, where the processes are in common
+         No need to retrieve information for the processes that are not in common
+         """
+        inv_urls = [res[0].url for res in invalidated_resources]
+        for prev_process in previous.processes:
+            if len(prev_process._outputs) > 0 and prev_process._outputs[0].url not in inv_urls:
+                # When running this function, invalidation has been computed already
+                # So if process from previous workflow creates a resource, it creates all the same
+                # resources as the process in the current workflow
+                process = self.find_process_that_creates(prev_process._outputs[0].url)
+                process.retrieve_execution_info(prev_process)
+                pass

@@ -34,15 +34,13 @@ def abort_if_workflow_inconsistent(workflow):
     return False
 
 
-def invalidate_previous(workflow):
-    previous_workflow = Workflow.load()
-    if previous_workflow is None:
-        return
+def invalidate_previous(workflow, previous_workflow):
     to_invalidate = previous_workflow.resources_to_invalidate(workflow)
     if to_invalidate:
         print "The following resources are not valid any more :"
         for resource, reason in to_invalidate:
             print "* {} - {}".format(resource.url, reason)
+    return to_invalidate
 
 
 def run_workflow(workflow):
@@ -61,7 +59,10 @@ def run_tuttlefile(tuttlefile_path):
             return
         if abort_if_workflow_inconsistent(workflow):
             return
-        invalidate_previous(workflow)
+        previous_workflow = Workflow.load()
+        if previous_workflow is not None:
+            invalidated_resources = invalidate_previous(workflow, previous_workflow)
+            workflow.retrieve_execution_info(previous_workflow, invalidated_resources)
         try:
             run_workflow(workflow)
         except ExecutionError:

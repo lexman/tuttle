@@ -40,6 +40,11 @@ class Process:
     def set_code(self, code):
         self._code = code
 
+    def retrieve_execution_info(self, process):
+        self.start = process.start
+        self.end = process.end
+        self.return_code = process.return_code
+
     def id(self):
         return "{}_{}".format( self._processor.name, self._line_num)
 
