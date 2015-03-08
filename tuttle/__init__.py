@@ -5,6 +5,7 @@ __version__ = '0.1'
 
 from project_parser import ProjectParser, ParsingError
 from workflow import Workflow
+from tuttle.workflow import ExecutionError
 
 
 def prepare_workflow(tuttlefile):
@@ -52,3 +53,17 @@ def run_workflow(workflow):
     workflow.prepare()
     workflow.create_reports()
     workflow.run()
+
+
+def run_tuttlefile(tuttlefile_path):
+        workflow = prepare_workflow(tuttlefile_path)
+        if not workflow:
+            return
+        if abort_if_workflow_inconsistent(workflow):
+            return
+        invalidate_previous(workflow)
+        try:
+            run_workflow(workflow)
+        except ExecutionError:
+            return 2
+        return 0
