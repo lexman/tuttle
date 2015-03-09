@@ -86,7 +86,7 @@ class Workflow:
                 return process
         return None
 
-    def prepare(self):
+    def prepare_execution(self):
         """ Prepare the workflow to be executed :
         - creates executable
         - ...

@@ -132,7 +132,7 @@ file://file3 <- file://file1
             """file://result <- file://source
             echo result > result
             """)
-        workflow.prepare()
+        workflow.prepare_execution()
         process = workflow.processes[0]
         workflow.run_process(process, '.')
         assert path.isfile("result")
@@ -149,7 +149,7 @@ file://file3 <- file://file1
             echo result > result
             echo test
             """)
-        workflow.prepare()
+        workflow.prepare_execution()
         process = workflow.processes[0]
         try:
             workflow.run_process(process, '.')
