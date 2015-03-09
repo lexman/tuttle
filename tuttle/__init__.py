@@ -34,6 +34,19 @@ def abort_if_workflow_inconsistent(workflow):
     return False
 
 
+def abort_if_already_failed(workflow):
+    """ Check weather a provious process already failled and has not changed.
+
+    :param workflow:
+    :return: False if workflow is correct, True if workflow is inconsistent
+    """
+    for process in workflow.processes:
+        if process.end is not None and process.return_code != 0:
+            print "Workflow already failed on process '{}'. Fix the process and run tuttle again".format(process.id())
+            return True
+    return False
+
+
 def invalidate_previous(workflow, previous_workflow):
     to_invalidate = previous_workflow.resources_to_invalidate(workflow)
     if to_invalidate:
@@ -63,6 +76,9 @@ def run_tuttlefile(tuttlefile_path):
         if previous_workflow is not None:
             invalidated_resources = invalidate_previous(workflow, previous_workflow)
             workflow.retrieve_execution_info(previous_workflow, invalidated_resources)
+            if abort_if_already_failed(workflow):
+                return 2
+            # actual invalidation goes here
         try:
             run_workflow(workflow)
         except ExecutionError:
