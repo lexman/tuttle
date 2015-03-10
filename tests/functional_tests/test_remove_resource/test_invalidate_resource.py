@@ -5,11 +5,11 @@ from os import path
 from tests.functional_tests import FunctionalTestBase, isolate
 
 
-class TestRemoveResource(FunctionalTestBase):
+class TestInvalidateResource(FunctionalTestBase):
 
     @isolate(['A'])
-    def test_remove_resource(self):
-        """If a resource is removed from a tuttlefile, it should be deleted"""
+    def test_invalidate_resource(self):
+        """If a resource is removed from a tuttlefile, it should be invalidated"""
         first = """file://B <- file://A
     echo A produces B
     echo B > B
