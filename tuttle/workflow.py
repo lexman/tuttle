@@ -26,12 +26,14 @@ class InvalidationReason:
     NO_LONGER_CREATED = 0
     NOT_SAME_INPUTS = 1
     PROCESS_CHANGED = 2
-    DEPENDENCY_CHANGED = 3
+    RESOURCE_NOT_CREATED_BY_TUTTLE = 3
+    DEPENDENCY_CHANGED = 4
 
     messages = [
         "Resource no longer created by the newer process",
         "Resource was created with different inputs",
         "Process code changed",
+        "Resource has not been created by tuttle",
         "Resource depends on another resource that have changed"
     ]
 
@@ -184,6 +186,14 @@ class Workflow:
                 elif resource.creator_process._code != newer_process._code:
                     changing_resources.append( (resource, InvalidationReason(InvalidationReason.PROCESS_CHANGED)) )
         return changing_resources
+
+    def resources_not_created_by_tuttle(self):
+        result = []
+        for resource in self.resources.itervalues():
+            if resource.exists() and resource.creator_process and resource.creator_process.end is None:
+                result.append(resource)
+        return result
+
 
     def compute_dependencies(self):
         """ Feeds the dependant_processes field in every resource

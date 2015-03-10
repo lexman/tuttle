@@ -8,7 +8,7 @@ from tests.functional_tests import FunctionalTestBase, isolate
 class TestInvalidateResource(FunctionalTestBase):
 
     @isolate(['A'])
-    def test_invalidate_resource(self):
+    def test_remove_resource(self):
         """If a resource is removed from a tuttlefile, it should be invalidated"""
         first = """file://B <- file://A
     echo A produces B
@@ -40,3 +40,16 @@ file://D <- file://A
         assert result.find("* file://B") >= 0
         assert result.find("* file://C") >= 0
         assert result.find("* file://D") == -1
+
+
+    @isolate(['A', 'B'])
+    def test_resource_should_be_created_by_tuttle(self):
+        """If a resource is removed from a tuttlefile, it should be invalidated"""
+        first = """file://B <- file://A
+    echo A produces B
+    echo B > B
+"""
+        self.write_tuttlefile(first)
+        result = self.run_tuttle()
+        print result
+        assert result.find("* file://B") >= 0
