@@ -41,6 +41,10 @@ class Process:
         self._code = code
 
     def retrieve_execution_info(self, process):
+        """ Copy the execution info (start, end and return code) from another process
+        :param process:
+        :return:
+        """
         self.start = process.start
         self.end = process.end
         self.return_code = process.return_code
@@ -66,7 +70,6 @@ class Process:
 
     def get_state(self):
         """
-
         :return: the state of the process.  One of ProcessState value
         """
         # TODO : there is a confusion here, between a worflow that is running and a workflow that has been loaded
@@ -97,3 +100,11 @@ class Process:
         other_inputs = set(in_res.url for in_res in other_process._inputs)
         return self_inputs == other_inputs
 
+    def all_inputs_exists(self):
+        """
+        :return: True if all input resources for this process exist, False otherwise
+        """
+        for in_res in self._inputs:
+            if not in_res.exists():
+                return False
+        return True

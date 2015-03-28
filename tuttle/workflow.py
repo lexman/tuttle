@@ -114,12 +114,8 @@ class Workflow:
         """ Pick up a process to run
         :return:
         """
-        # TODO : check for circular references
         for process in self.processes:
-            if process.start is None:
-                for in_res in process._inputs:
-                    if not in_res.exists():
-                        continue
+            if process.start is None and process.all_inputs_exists():
                 return process
         return None
 
