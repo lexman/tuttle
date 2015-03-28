@@ -15,7 +15,7 @@ class TestStandardBehaviour(FunctionalTestBase):
 
 """
         self.write_tuttlefile(first)
-        result = self.run_tuttle()
+        self.run_tuttle()
         assert path.exists('B')
 
     @isolate(['A'])
@@ -27,7 +27,7 @@ class TestStandardBehaviour(FunctionalTestBase):
 
 """
         self.write_tuttlefile(first)
-        result = self.run_tuttle()
+        self.run_tuttle()
         assert path.exists('tuttle_report.html')
 
     @isolate(['A'])
@@ -72,12 +72,9 @@ file://D <- file://C
             assert False
         except:
             pass
-
         report = file('tuttle_report.html').read()
-        [_, sec1, sec2, sec3] = report.split('<hr/>')
-        assert sec1.find("Start : 1") >= 0
-        assert sec2.find("Start : 1") >= 0
-        assert sec3.find("Start : ") >= 0
-        print sec3
-        assert sec3.find("Start : None") >= 0
+        [_, sec1, sec2, sec3] = report.split('<h2>')
+        assert sec1.find("<th>Start</th>") >= 0
+        assert sec2.find("<th>Start</th>") >= 0
+        assert sec3.find("<th>Start</th>") == -1
 
