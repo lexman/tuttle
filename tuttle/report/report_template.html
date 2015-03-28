@@ -2,34 +2,74 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Workflow</title>
+    <title>Workflow : process detail</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <style>
+        body {
+          padding-top: 50px;
+        }
+        h1 {
+          text-align: center;
+        }
+    </style>
 </head>
 <body>
-<h1>Workflow : process detail</h1>
- <div id="processes_list">
-    {% for process in processes %}
-      <hr/>
-        {% for output in process._outputs %}  {{ output.url }} ,  {% endfor %}
-        <-
-        {% for input in process._inputs %} {{ input.url }} ,  {% endfor %}
-         <br/>
-         Start : {{ process.start }}
-         <br/>
-         End : {{ process.end }}
-         <br/>
-         Return code : {{ process.return_code }}
-         <br/>
-         Logs <a href="{{ process.log_stdout }}"> stdout </a> :
-         <br/>
-         Logs <a href="{{ process.log_stdout }}"> stdout </a> :
-         <br/>
-         Logs <a href="{{ process.log_stderr }}"> stderr </a> :
-         <br/>
-         <pre>{{process._code}}
-         </pre>
-     {% endfor %}
+    <div class="container">
+        <h1>Detail of processes</h1>
+        {% for process in processes %}
+        <div class="process">
+            <h2> {% if not process.start %}
+            {% elif not process.end %} <span class="label label-info">Running</span>
+            {% elif not process.return_code %} <span class="label label-success">Success</span>
+            {% else %} <span class="label label-danger">Failure</span>
+            {% endif %}
+            {{ process.id }}
+            </h2>
+            <div class="col-sm-5">
+                <ul> {% for output in process._outputs %}  <li>{{ output.url }}</li>  {% endfor %} </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul>{% for input in process._inputs %} <li>{{ input.url }}</li>  {% endfor %}</ul>
+            </div>
+            <br/>
+            <pre><code>{{process._code}}
+bla
+test
+</code></pre>
+            {% if process.start %}
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Return code</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>{{ process.start }}</td>
+                        <td>{{ process.end }}</td>
+                        <td>{{ process.duration }}</td>
+                        <td>{{ process.return_code }}</td>
+                        <td><a href="{{ process.log_stdout }}"> download </a></td>
+                        <td><a href="{{ process.log_stderr }}"> download </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+        {% endfor %}
 
- </div>
-
+     </div>
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 </body>
 </html>
