@@ -25,12 +25,8 @@ file://D <- file://A
     echo D > D
 """
         self.write_tuttlefile(first)
-        try:
-            result = self.run_tuttle()
-            print result
-            assert False
-        except CalledProcessError:
-            assert True
+        rcode, output = self.run_tuttle()
+        assert rcode == 2
 
     @isolate(['A', 'test_error_in_process.py'])
     def test_isolation_decorator(self):
@@ -59,12 +55,8 @@ file://D <- file://A
     echo D > D
 """
         self.write_tuttlefile(first)
-        try:
-            result = self.run_tuttle()
-            print result
-            assert False
-        except CalledProcessError:
-            assert True
+        rcode, output = self.run_tuttle()
+        assert rcode == 2
 
         second = """file://B <- file://A
     echo A produces B

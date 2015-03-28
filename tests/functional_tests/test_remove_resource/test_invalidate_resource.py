@@ -23,7 +23,7 @@ file://D <- file://A
     echo D > D
 """
         self.write_tuttlefile(first)
-        result = self.run_tuttle()
+        rcode, output = self.run_tuttle()
         assert path.exists('B')
         assert path.exists('C')
         assert path.exists('D')
@@ -36,10 +36,12 @@ file://D <- file://A
     echo D > D
 """
         self.write_tuttlefile(second)
-        result = self.run_tuttle()
-        assert result.find("* file://B") >= 0
-        assert result.find("* file://C") >= 0
-        assert result.find("* file://D") == -1
+        rcode, output = self.run_tuttle()
+        # TODO shouldn't it fail ?
+        assert rcode == 0
+        assert output.find("* file://B") >= 0
+        assert output.find("* file://C") >= 0
+        assert output.find("* file://D") == -1
 
 
     @isolate(['A', 'B'])
@@ -50,6 +52,6 @@ file://D <- file://A
     echo B > B
 """
         self.write_tuttlefile(first)
-        result = self.run_tuttle()
-        print result
-        assert result.find("* file://B") >= 0
+        rcode, output = self.run_tuttle()
+        assert rcode == 0
+        assert output.find("* file://B") >= 0

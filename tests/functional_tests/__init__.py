@@ -2,12 +2,12 @@
 from tempfile import mkdtemp
 
 from unittest import TestCase
-from subprocess import check_output
+from subprocess import check_output, Popen, PIPE
 from os import getcwd, chdir, remove
 from shutil import rmtree, copy
 from os import path
 from functools import wraps
-from os.path import basename, join, dirname
+from os.path import join, dirname
 
 
 def isolate(arg):
@@ -46,8 +46,14 @@ class FunctionalTestBase(TestCase):
         with open('tuttlefile', "w") as f:
             f.write(content)
 
+    #def run_tuttle(self):
+    #    return check_output(['python', self._tuttle_cmd])
+
     def run_tuttle(self):
-        return check_output(['python', self._tuttle_cmd])
+        proc = Popen(['python', self._tuttle_cmd], stdout=PIPE)
+        output = proc.stdout.read()
+        rcode = proc.wait()
+        return rcode, output
 
     def _rm(self, filename):
         if path.isdir(filename):
