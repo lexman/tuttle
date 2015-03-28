@@ -35,10 +35,7 @@
                 <ul>{% for input in process._inputs %} <li>{{ input.url }}</li>  {% endfor %}</ul>
             </div>
             <br/>
-            <pre><code>{{process._code}}
-bla
-test
-</code></pre>
+            <pre><code>{{process._code}}</code></pre>
             {% if process.start %}
             <table class="table table-condensed">
                 <thread>
