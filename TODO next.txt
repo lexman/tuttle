@@ -23,7 +23,7 @@ What should happen if a process fails and tuttle is re-run ?
         be the same as an option --build_max_stuff as in gcc
     - should it stop immediately and not run anything ? This is consistent => will be implemented for now
 
-Check for circular dependencies
+DONE - Check for circular dependencies
 
 DONE - Check for status : if not all dependencies are created the process should be marked as failed
 

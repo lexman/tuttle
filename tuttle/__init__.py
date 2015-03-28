@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: ascii -*-
+# -*- coding: utf8 -*-
 from tuttle import workflow
 
 __version__ = '0.1'
@@ -19,12 +18,12 @@ def invalidate_previous(workflow, previous_workflow):
 
 
 def invalidate_not_created(workflow):
-        to_invalidate = workflow.resources_not_created_by_tuttle()
-        if to_invalidate:
-            print "The following resources are not reliable because they were not created by tuttle  :"
-            for resource in to_invalidate:
-                print "* {}".format(resource.url)
-        return to_invalidate
+    to_invalidate = workflow.resources_not_created_by_tuttle()
+    if to_invalidate:
+        print "The following resources are not reliable because they were not created by tuttle  :"
+        for resource in to_invalidate:
+            print "* {}".format(resource.url)
+    return to_invalidate
 
 
 def run_tuttlefile(tuttlefile):
