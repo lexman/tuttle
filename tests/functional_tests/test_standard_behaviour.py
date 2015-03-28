@@ -47,11 +47,8 @@ file://D <- file://C
     echo D > D
 """
         self.write_tuttlefile(first)
-        try:
-            result = self.run_tuttle()
-            assert False
-        except:
-            pass
+        rcode, output = self.run_tuttle()
+        assert rcode == 2
         second = """file://B <- file://A
     echo A produces B
     echo B > B
@@ -67,11 +64,8 @@ file://D <- file://C
     echo D > D
 """
         self.write_tuttlefile(second)
-        try:
-            result = self.run_tuttle()
-            assert False
-        except:
-            pass
+        rcode, output = self.run_tuttle()
+        assert rcode == 2
         report = file('tuttle_report.html').read()
         [_, sec1, sec2, sec3] = report.split('<h2>')
         assert sec1.find("<th>Start</th>") >= 0
