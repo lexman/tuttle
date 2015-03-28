@@ -180,3 +180,20 @@ file://D <- file://C
 file://B <- file://C
             """)
         assert not workflow.circular_references()
+
+    @isolate(['A'])
+    def test_pick_a_process_to_run(self):
+        """
+        Should run a process and update the state of the workflow
+        """
+        workflow = self.get_workflow(
+            """file://C <- file://B
+            echo C > C
+            echo B creates C
+
+file://B <- file://A
+            echo B > B
+            echo A creates B
+            """)
+        p = workflow.pick_a_process_to_run()
+        assert p.id() == "bat_5", p.id()
