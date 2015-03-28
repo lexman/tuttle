@@ -19,8 +19,10 @@ class ExecutionError(Exception):
 class ProcessExecutionError(ExecutionError):
     pass
 
+
 class ResourceError(ExecutionError):
     pass
+
 
 class InvalidationReason:
     NO_LONGER_CREATED = 0
@@ -62,7 +64,6 @@ class Workflow:
         """
         self.processes.append(process)
 
-
     def missing_inputs(self):
         """ Check that all external resources that are necessary to run the workflow exist
         :return: a list of missing resources
@@ -74,6 +75,40 @@ class Workflow:
                 if not resource.exists():
                     missing.append(resource)
         return missing
+
+    def circular_references(self):
+        """ Return a list of processes that won't be able to run according to to dependency graph, because
+        of circular references, ie when A is produced by B... And B produced by A.
+        :return: a list of process that won't be able to run. No special indication about circular groups
+        :rtype: list
+        """
+        resources_to_build = [r for r in self.resources.itervalues() if r.creator_process]
+        processes_to_run = [p for p in self.processes]
+
+        def all_inputs_built(process):
+            """ Returns True if all inputs of this process where build, ie if the process can be executed """
+            for input_res in process._inputs:
+                if input_res in resources_to_build:
+                    return False
+            return True
+
+        def pick_a_process():
+            """ Pick an executable process, if there is one
+            """
+            for process in processes_to_run:
+                if all_inputs_built(process):
+                    return process
+            # No more process to pick
+            return None
+
+        # The idea is to remove the resource from the list as we simulate execution of processes
+        p = pick_a_process()
+        while p:
+            for r in p._outputs:
+                resources_to_build.remove(r)
+            processes_to_run.remove(p)
+            p = pick_a_process()
+        return processes_to_run
 
     def pick_a_process_to_run(self):
         """ Pick up a process to run
@@ -111,7 +146,8 @@ class Workflow:
             raise ProcessExecutionError(msg)
         for res in process._outputs:
             if not res.exists():
-                msg = "After execution of process {} : resource {} should have been created".format(process.id(), res.url)
+                msg = "After execution of process {} : resource {} should have been created".format(process.id(),
+                                                                                                    res.url)
                 raise ResourceError(msg)
 
     def run(self):
@@ -180,11 +216,11 @@ class Workflow:
                 if newer_process is None:
                     # TODO : if a resource used to be created be by the workflow
                     # but is now a primary input, we should not remove it
-                    changing_resources.append( (resource, InvalidationReason(InvalidationReason.NO_LONGER_CREATED)) )
+                    changing_resources.append((resource, InvalidationReason(InvalidationReason.NO_LONGER_CREATED)))
                 elif not resource.creator_process.has_same_inputs(newer_process):
-                    changing_resources.append( (resource, InvalidationReason(InvalidationReason.NOT_SAME_INPUTS)) )
+                    changing_resources.append((resource, InvalidationReason(InvalidationReason.NOT_SAME_INPUTS)))
                 elif resource.creator_process._code != newer_process._code:
-                    changing_resources.append( (resource, InvalidationReason(InvalidationReason.PROCESS_CHANGED)) )
+                    changing_resources.append((resource, InvalidationReason(InvalidationReason.PROCESS_CHANGED)))
         return changing_resources
 
     def resources_not_created_by_tuttle(self):
@@ -193,7 +229,6 @@ class Workflow:
             if resource.exists() and resource.creator_process and resource.creator_process.end is None:
                 result.append(resource)
         return result
-
 
     def compute_dependencies(self):
         """ Feeds the dependant_processes field in every resource

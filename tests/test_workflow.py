@@ -156,3 +156,27 @@ file://file3 <- file://file1
             assert False, "Exception has not been not raised"
         except ResourceError:
             assert True
+
+    def test_check_circular_references(self):
+        """
+        Should return true for there are some circular references
+        """
+        workflow = self.get_workflow(
+            """file://A <- file://B
+
+file://B <- file://A
+file://D <- file://C
+            """)
+        cr = workflow.circular_references()
+        assert len(cr) == 2, cr
+
+    def test_check_no_circular_references(self):
+        """
+        Should return true for there are some circular references
+        """
+        workflow = self.get_workflow(
+            """file://A <- file://B
+
+file://B <- file://C
+            """)
+        assert not workflow.circular_references()
