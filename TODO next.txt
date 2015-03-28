@@ -25,19 +25,19 @@ What should happen if a process fails and tuttle is re-run ?
 
 Check for circular dependencies
 
-Check for status : if not all dependencies are created the process should be marked as failed
+DONE - Check for status : if not all dependencies are created the process should be marked as failed
 
 
 Remove resources that are invalid
 
-Check that the claimed-to-be-created resource really exists at the end of the process, otherwise there have been an issue and any depending process can't pursue
-
+DONE - -Check that the claimed-to-be-created resource really exists at the end of the process, otherwise there have been an issue and any depending process can't pursue
 
     + Test of a resource not really created by a process should not be invalided when removed
 
-When there is an error running a process, every resources produced should be marked as invalid
+When there is an error running a process, every resources produced by this process should be marked as invalid
+	It means that if a process didn't produce one of the expected outputs, every other output must be considered invalid
 
-Run Functional tests and process states in its own temporary dir
+DONE - Run Functional tests and process states in its own temporary dir
 	
 
 Check if some resources where deleted and invalidate depending resources
@@ -48,7 +48,7 @@ Move default processor to shell
 Improve code coverage
     especially for parser - DONE
 
-Retrieve duration of common processes from previous workflow
+DONE - Retrieve duration of common processes from previous workflow
 
 Ensure that a resource that used to be created by the process but is now a primary resource should not be deleted
 
@@ -74,4 +74,10 @@ Add a unified log for both stderr and stdout
 
 Produce as much data as you can, similar to option --keep-going in Gnu Make
 
-A working example using tuttle in Github, with continuous integ<ration in Travis CI. Car accidents en France ?
+A working example using tuttle in Github, with continuous integration in Travis CI. Car accidents en France ?
+
+
+"Just run it again..."
+	If execution of a workflow failed, it MUST fail again if run again without any change in he workflow. 
+	What must not happen : your run a workflow. The 4rth process didn't produce bla.csv as promissed : tuttle stops at the error. No process uses bla.csv. Anyway, if you run tuttle again, it must not produce the rest and succed
+	No magic. No surprise
