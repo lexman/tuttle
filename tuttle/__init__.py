@@ -43,6 +43,15 @@ def run_tuttlefile(tuttlefile):
                 error_msg += "* {}\n".format(mis.url)
             print error_msg
             return 2
+        unreachable = workflow.circular_references()
+        if unreachable:
+            # TODO : better explanation
+            error_msg = "The following processes can't be run because of circular references :\n"
+            for res in unreachable:
+                error_msg += "* {}\n".format(res.id())
+            print error_msg
+            return 2
+
         previous_workflow = Workflow.load()
         if previous_workflow is not None:
             invalidated_resources = invalidate_previous(workflow, previous_workflow)

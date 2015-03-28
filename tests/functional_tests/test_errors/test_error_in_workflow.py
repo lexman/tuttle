@@ -16,4 +16,15 @@ class TestErrorInWorkflow(FunctionalTestBase):
         assert rcode == 2
         assert output.find("Missing") >= 0, output
 
-
+    @isolate
+    def test_circular_references(self):
+        """ Should fail if a primary resource is missing"""
+        project = """file://B <- file://A
+file://A <- file://B
+    echo A produces B
+    echo B > B
+"""
+        self.write_tuttlefile(project)
+        rcode, output = self.run_tuttle()
+        assert rcode == 2
+        assert output.find("circular reference") >= 0, output
