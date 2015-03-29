@@ -178,7 +178,7 @@ class TestProjectParser():
         assert len(workflow.processes) == 2
 
     def test_workflow_without_new_line_in_the_end(self):
-        """The las line of a process should not be forgotten"""
+        """The last line of a process should not be forgotten"""
         pp = ProjectParser()
         project = """file:///resource1 <- file:///resource2
         Some code"""
@@ -294,7 +294,10 @@ file:///result1 <- file:///source1
         assert len(workflow.processes[0]._outputs) == 1
 
     def test_section_can_have_no_inputs(self):
-        """Read project with a blank line with blank characters which match exactly the indentation of the code of the process"""
+        """
+        Read project with a blank line with blank characters which match exactly the indentation
+        of the code of the process
+        """
         pp = ProjectParser()
         section = """file:///resource1 <-
         """
@@ -304,7 +307,9 @@ file:///result1 <- file:///source1
         assert len(process._inputs) == 0
 
     def test_section_can_have_no_outputs(self):
-        """Read project with a blank line with blank characters which match exactly the indentation of the code of the process"""
+        """
+        Read project with a process with inputs but without outputs
+        """
         pp = ProjectParser()
         section = """ <- file:///resource
         """
