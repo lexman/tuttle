@@ -33,7 +33,7 @@ class InvalidationReason:
         "Resource was created with different inputs",
         "Process code changed",
         "Resource has not been created by tuttle",
-        "Resource depends on another resource that have changed"
+        "Resource depends on another resource that have changed",
     ]
 
     def __init__(self, reason):
@@ -219,7 +219,7 @@ class Workflow:
         result = []
         for resource in self.resources.itervalues():
             if resource.exists() and resource.creator_process and resource.creator_process.end is None:
-                result.append(resource)
+                result.append((resource, InvalidationReason.RESOURCE_NOT_CREATED_BY_TUTTLE))
         return result
 
     def compute_dependencies(self):

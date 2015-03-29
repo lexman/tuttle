@@ -21,7 +21,7 @@ def invalidate_not_created(workflow):
     to_invalidate = workflow.resources_not_created_by_tuttle()
     if to_invalidate:
         print "The following resources are not reliable because they were not created by tuttle  :"
-        for resource in to_invalidate:
+        for resource, reason in to_invalidate:
             print "* {}".format(resource.url)
     return to_invalidate
 
