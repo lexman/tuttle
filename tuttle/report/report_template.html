@@ -5,20 +5,19 @@
     <title>Workflow : process detail</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <style>
-        body {
-          padding-top: 50px;
-        }
         h1 {
           text-align: center;
+          padding: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Detail of processes</h1>
+        <div class="text-center" id="dependency_graph"></div>
         {% for process in processes %}
         <div class="process">
-            <h2> {% if not process.start %}
+            <h2 id="{{ process.id }}" name="{{ process.id }}"> {% if not process.start %}
             {% elif not process.end %} <span class="label label-info">Running</span>
             {% elif not process.return_code %} <span class="label label-success">Success</span>
             {% else %} <span class="label label-danger">Failure</span>
@@ -63,10 +62,23 @@
         </div>
         {% endfor %}
 
-     </div>
-        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-        <!-- Include all compiled plugins (below), or include individual files as needed -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) & Boostrap -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <!-- For viewing dependency graph in the dot language -->
+    <script src="http://mdaines.github.io/viz.js/viz.js"></script>
+    <script type="text/vnd.graphviz" id="dependency_graph_source">
+        {{ dot_src }}
+    </script>
+    <script>
+        function insert_graph() {
+            dot_src = $("#dependency_graph_source").html();
+            svg = Viz(dot_src, "svg");
+            $("#dependency_graph").html(svg)
+        }
+        insert_graph();
+    </script>
 </body>
 </html>

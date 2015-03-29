@@ -4,6 +4,7 @@
 from jinja2 import Template
 from os import path
 from time import strftime, localtime
+from dot_repport import dot
 
 
 def format_process(process):
@@ -44,4 +45,4 @@ def create_html_report(workflow, filename):
         t = Template(ftpl.read())
     processes = [format_process(p) for p in workflow.processes]
     with open(filename, "w") as fout:
-        fout.write(t.render(processes = processes, ))
+        fout.write(t.render(processes = processes, dot_src = dot(workflow)))

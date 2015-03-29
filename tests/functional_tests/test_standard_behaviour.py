@@ -67,7 +67,7 @@ file://D <- file://C
         rcode, output = self.run_tuttle()
         assert rcode == 2
         report = file('tuttle_report.html').read()
-        [_, sec1, sec2, sec3] = report.split('<h2>')
+        [_, sec1, sec2, sec3] = report.split('<h2')
         assert sec1.find("<th>Start</th>") >= 0
         assert sec2.find("<th>Start</th>") >= 0
         assert sec3.find("<th>Start</th>") == -1
