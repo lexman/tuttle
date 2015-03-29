@@ -3,7 +3,7 @@
 
 import sys
 from optparse import OptionParser
-from tuttle import run_tuttlefile
+from tuttle import parse_invalidate_and_run
 
 from os.path import abspath, exists
 from tuttle.utils import CurrentDir
@@ -32,7 +32,7 @@ def main():
         print "No tuttlefile"
         exit(0)
     with CurrentDir(options.workspace):
-        return run_tuttlefile(tuttlefile_path)
+        return parse_invalidate_and_run(tuttlefile_path)
 
 
 if __name__ == '__main__':

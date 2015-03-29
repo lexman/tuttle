@@ -35,10 +35,29 @@ class ProjectParser():
         self._num_line = 0
         self._eof = True
 
-    def parse_file(self, filename):
+    def parse_and_check_file(self, filename):
         with open(filename) as f:
             self.set_project(f.read())
-        return self.parse_project()
+        return self.parse_and_check_project()
+
+    def parse_and_check_project(self):
+        workflow = self.parse_project()
+        missing = workflow.missing_inputs()
+        if missing:
+            error_msg = "Missing the following resources to launch the workflow :\n"
+            for mis in missing:
+                error_msg += "* {}\n".format(mis.url)
+            # TODO : improve line reference
+            raise WorkflowError(error_msg, self._nb_lines)
+        unreachable = workflow.circular_references()
+        if unreachable:
+            # TODO : better explanation
+            error_msg = "The following processes can't be run because of circular references :\n"
+            for res in unreachable:
+                error_msg += "* {}\n".format(res.id())
+            raise WorkflowError(error_msg, self._nb_lines)
+        return workflow
+
 
     def set_project(self, text):
         self._lines = text.splitlines()

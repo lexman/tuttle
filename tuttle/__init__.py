@@ -3,7 +3,7 @@ from tuttle import workflow
 
 __version__ = '0.1'
 
-from project_parser import ProjectParser, ParsingError
+from project_parser import ProjectParser, ParsingError, WorkflowError
 from workflow import Workflow
 from tuttle.workflow import ExecutionError
 
@@ -26,31 +26,15 @@ def invalidate_not_created(workflow):
     return to_invalidate
 
 
-def run_tuttlefile(tuttlefile):
+def parse_invalidate_and_run(tuttlefile):
         try:
             pp = ProjectParser()
-            workflow = pp.parse_file(tuttlefile)
+            workflow = pp.parse_and_check_file(tuttlefile)
         except ParsingError as e:
             print e
             return 2
         # Maybe missing resource code should be in parsing
         # As well as cyclic dependencies check
-        missing = workflow.missing_inputs()
-        if missing:
-            error_msg = "Missing the following resources to launch the workflow :\n"
-            for mis in missing:
-                error_msg += "* {}\n".format(mis.url)
-            print error_msg
-            return 2
-        unreachable = workflow.circular_references()
-        if unreachable:
-            # TODO : better explanation
-            error_msg = "The following processes can't be run because of circular references :\n"
-            for res in unreachable:
-                error_msg += "* {}\n".format(res.id())
-            print error_msg
-            return 2
-
         previous_workflow = Workflow.load()
         if previous_workflow is not None:
             invalidated_resources = invalidate_previous(workflow, previous_workflow)
