@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from workflow_builder import WorkflowBuilder
@@ -44,10 +43,6 @@ class ProjectParser():
     def set_project(self, text):
         self._lines = text.splitlines()
         self._nb_lines = len(self._lines)
-        #if self._lines[self._nb_lines - 1] == "":
-            #Remove the last line if empty
-        #    self._lines = self._lines[:-1]
-        #    self._nb_lines = len(self._lines)
         self._num_line = 0
         self._eof = (self._nb_lines == 0)
         
@@ -111,7 +106,7 @@ class ProjectParser():
             # Line didn't begin by white-spaces. It's not a valid first process line
             return False, "", ""
         else:
-            return True, self._line[:i], self._line[i:]
+            return True, self._line[:i], self._line[i:] + "\n"
 
     def parse_process_line(self, prefix):
         """ Parses the line as if it is a line of process, beginning by ::prefix::.
@@ -149,8 +144,6 @@ class ProjectParser():
             if self._eof:
                 break
             is_process_line, process_line = self.parse_process_line(wsp_prefix)
-        if process_code[:-1] != "\n":
-            process_code += "\n"
         if process_line == "\n":
             # Remove carriage return
             process_code = process_code[:-1]

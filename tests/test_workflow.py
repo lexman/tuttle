@@ -146,7 +146,6 @@ file://file3 <- file://file1
         """
         workflow = self.get_workflow(
             """file://result <- file://source
-            echo result > result
             echo test
             """)
         workflow.prepare_execution()

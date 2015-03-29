@@ -60,7 +60,7 @@ Remove #! from modules and packages
 
 Check if some primary resources changed
 
-Check if some resource changed (and invalid them ?)
+NOT FOR 0.1 - Check if some resource changed (and invalid them ?)
 
 Packaging
 
@@ -68,7 +68,8 @@ Travis for tests on *nix. Is it possible to test on Windows ? No
 
 Nicer reports :
     DONE - beautiful html
-    autorelading iframe on the logs
+    Embed js in .tuttle
+    autorelading iframe for the logs
 
 NOT FOR THE MOMENT - Add a unified log for both stderr and stdout
 
