@@ -68,28 +68,6 @@ class Process:
         self.end = time()
         return self.return_code
 
-    def get_state(self):
-        """
-        :return: the state of the process.  One of ProcessState value
-        """
-        # TODO : there is a confusion here, between a worflow that is running and a workflow that has been loaded
-        # There should be another way to know if a process is complete
-        if len(self._outputs) == 0:
-            return ProcessState.NOTHING_TO_DO
-        elif self._outputs[0].exists():
-            return ProcessState.COMPLETE
-        elif self.start is None:
-            for in_res in self._inputs:
-                if not in_res.exists():
-                    return ProcessState.SCHEDULED
-            return ProcessState.READY
-        elif self.end is None:
-            return ProcessState.RUNNING
-        elif self.return_code == 0:
-            return ProcessState.COMPLETE
-        else:
-            return ProcessState.ERROR
-
     def has_same_inputs(self, other_process):
         """ Returns True if both process have exactly the same inputs, according to their urls, False otherwise
 
