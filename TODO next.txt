@@ -27,7 +27,6 @@ DONE - Check for circular dependencies
 
 DONE - Check for status : if not all dependencies are created the process should be marked as failed
 
-
 Remove resources that are invalid
 
 DONE - -Check that the claimed-to-be-created resource really exists at the end of the process, otherwise there have been an issue and any depending process can't pursue
@@ -38,7 +37,6 @@ When there is an error running a process, every resources produced by this proce
 	It means that if a process didn't produce one of the expected outputs, every other output must be considered invalid
 
 DONE - Run Functional tests and process states in its own temporary dir
-	
 
 Check if some resources where deleted and invalidate depending resources
 
@@ -52,7 +50,7 @@ DONE - Retrieve duration of common processes from previous workflow
 
 Ensure that a resource that used to be created by the process but is now a primary resource should not be deleted
 
-Stop deleting resources if the time (or % of time) of the work invalidated exceeds a threshold provided by user
+NOT FOR THE MOMENT - Stop deleting resources if the time (or % of time) of the work invalidated exceeds a threshold provided by user
     And print invalidation quantity any way
 
 HTTP ou FTP resource
@@ -68,11 +66,13 @@ Packaging
 
 Travis for tests on *nix. Is it possible to test on Windows ? No
 
-Nicer reports : beautiful html, autorelading iframe on the logs
+Nicer reports :
+    DONE - beautiful html
+    autorelading iframe on the logs
 
-Add a unified log for both stderr and stdout
+NOT FOR THE MOMENT - Add a unified log for both stderr and stdout
 
-Produce as much data as you can, similar to option --keep-going in Gnu Make
+NOT FOR THE MOMENT - Produce as much data as you can, similar to option --keep-going in Gnu Make
 
 A working example using tuttle in Github, with continuous integration in Travis CI. Car accidents en France ?
 
