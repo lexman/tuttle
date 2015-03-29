@@ -262,3 +262,9 @@ class Workflow:
                 process = self.find_process_that_creates(prev_process._outputs[0].url)
                 process.retrieve_execution_info(prev_process)
                 pass
+
+    def pick_a_failing_process(self):
+        for process in self.processes:
+            if process.end is not None and process.return_code != 0:
+                return process
+        return None
