@@ -1,10 +1,7 @@
-#!/usr/bin/env python
 # -*- coding: utf8 -*-
 
 from os import path, makedirs
-from report.dot_repport import create_dot_report
 from report.html_repport import create_html_report
-from process import ProcessState
 from pickle import dump, load
 
 
@@ -168,7 +165,6 @@ class Workflow:
         """ Write to disk files describing the workflow, with color for states
         :return: None
         """
-        create_dot_report(self, tuttle_dir("workflow.dot"))
         create_html_report(self, "tuttle_report.html")
 
     def dump(self):
