@@ -64,7 +64,7 @@ class BatProcessor:
     """
     name = 'bat'
     header = "@echo off\n"
-    exit_if_fail = 'echo %ERRORLEVEL%\nif %ERRORLEVEL% neq 0 exit /b 1\n'
+    exit_if_fail = 'if %ERRORLEVEL% neq 0 exit /b 1\n'
 
     def generate_executable(self, code, process_id, directory):
         """ Create an executable file
