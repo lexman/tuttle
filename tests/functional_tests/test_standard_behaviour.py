@@ -32,7 +32,7 @@ class TestStandardBehaviour(FunctionalTestBase):
 
     @isolate(['A'])
     def test_report_execution(self):
-        """ When launching "tuttle" in the command line, should produce the result"""
+        """ When launching "tuttle" in the command line, should produce the html report"""
         first = """file://B <- file://A
     echo A produces B
     echo B > B
