@@ -2,6 +2,7 @@
 # -*- coding: utf8 -*-
 
 from os.path import abspath, exists
+from os import remove
 
 class FileResource:
     """A resource for a local file"""
@@ -10,6 +11,7 @@ class FileResource:
     def __init__(self, url):
         self.url = url
         self.creator_process = None
+        self._path = self.get_path()
 
     def set_creator_process(self, process):
         self.creator_process = process
@@ -18,5 +20,7 @@ class FileResource:
         return abspath(self.url[len("file://"):])
 
     def exists(self):
-        file_path = self.get_path()
-        return exists(file_path)
+        return exists(self._path)
+
+    def remove(self):
+        remove(self._path)
