@@ -13,7 +13,7 @@ class TestErrorInWorkflow(FunctionalTestBase):
 """
         self.write_tuttlefile(project)
         rcode, output = self.run_tuttle()
-        assert rcode == 2
+        assert rcode == 2, rcode
         assert output.find("Missing") >= 0, output
 
     @isolate
@@ -26,5 +26,5 @@ file://A <- file://B
 """
         self.write_tuttlefile(project)
         rcode, output = self.run_tuttle()
-        assert rcode == 2
+        assert rcode == 2, rcode
         assert output.find("circular reference") >= 0, output
