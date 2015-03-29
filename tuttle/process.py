@@ -41,13 +41,15 @@ class Process:
         self._code = code
 
     def retrieve_execution_info(self, process):
-        """ Copy the execution info (start, end and return code) from another process
+        """ Copy the execution info (all the properties set by function run()) from another process
         :param process:
         :return:
         """
         self.start = process.start
         self.end = process.end
         self.return_code = process.return_code
+        self.log_stdout = process.log_stdout
+        self.log_stderr = process.log_stderr
 
     def id(self):
         return "{}_{}".format( self._processor.name, self._line_num)
