@@ -3,12 +3,12 @@ from tuttle import workflow
 
 __version__ = '0.1'
 
-from project_parser import ProjectParser, ParsingError, WorkflowError
+from error import TuttleError
+from project_parser import ProjectParser
 from workflow import Workflow
-from tuttle.workflow import ExecutionError
 
 
-class AlreadyFailedError(Exception):
+class AlreadyFailedError(TuttleError):
     pass
 
 
@@ -29,23 +29,16 @@ def invalidate(workflow):
             print "* {} - {}".format(resource.url, reason)
     # actual invalidation goes here
 
+
 def parse_invalidate_and_run(tuttlefile):
         try:
             pp = ProjectParser()
             workflow = pp.parse_and_check_file(tuttlefile)
-        except ParsingError as e:
-            print e
-            return 2
-        try:
             invalidate(workflow)
-        except AlreadyFailedError as e:
-            print e
-            return 2
-        try:
             workflow.prepare_execution()
             workflow.create_reports()
             workflow.run()
-        except ExecutionError as e:
+        except TuttleError as e:
             print e
             return 2
         return 0

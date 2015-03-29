@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from error import TuttleError
 from workflow_builder import WorkflowBuilder
 from workflow import Workflow
 
 
-class ParsingError(Exception):
+class ParsingError(TuttleError):
     def __init__(self, message, line):
         self._message = message
         self._line = line

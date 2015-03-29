@@ -1,11 +1,13 @@
 # -*- coding: utf8 -*-
 
+
+from error import TuttleError
 from os import path, makedirs
 from report.html_repport import create_html_report
 from pickle import dump, load
 
 
-class ExecutionError(Exception):
+class ExecutionError(TuttleError):
     def __init__(self, message):
         self._message = message
 
