@@ -30,7 +30,8 @@ class Process:
         self.log_stdout = None
         self.log_stderr = None
         self.return_code = None
-    
+        self.id = "{}_{}".format( self._processor.name, self._line_num)
+
     def add_input(self, input_res):
         self.inputs.append(input_res)
 
@@ -51,22 +52,19 @@ class Process:
         self.log_stdout = process.log_stdout
         self.log_stderr = process.log_stderr
 
-    def id(self):
-        return "{}_{}".format( self._processor.name, self._line_num)
-
     def generate_executable(self, directory):
         """
         Creates what is needed to later run the process. Commonly, this would be one executable file.
         :param directory: Directory where the executable lies
         :return: An identifier to be able to run the executable later. Commonly, this would be the path to the executable file
         """
-        self._executable = self._processor.generate_executable(self._code, self.id(), directory)
+        self._executable = self._processor.generate_executable(self._code, self.id, directory)
 
     def run(self, logs_dir):
-        self.log_stdout = path.join(logs_dir, "{}_stdout".format(self.id()))
-        self.log_stderr = path.join(logs_dir, "{}_err".format(self.id()))
+        self.log_stdout = path.join(logs_dir, "{}_stdout".format(self.id))
+        self.log_stderr = path.join(logs_dir, "{}_err".format(self.id))
         self.start = time()
-        self.return_code = self._processor.run(self._executable, self.id(), self.log_stdout, self.log_stderr)
+        self.return_code = self._processor.run(self._executable, self.id, self.log_stdout, self.log_stderr)
         self.end = time()
         return self.return_code
 

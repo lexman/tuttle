@@ -18,7 +18,7 @@ def invalidate(workflow):
         failing_process = workflow.pick_a_failing_process()
         if failing_process:
             raise AlreadyFailedError("Workflow already failed on process '{}'. Fix the process and run tuttle again".
-                                     format(failing_process.id()))
+                                     format(failing_process.id))
     invalid += workflow.resources_not_created_by_tuttle()
     if invalid:
         print "The following resources are not valid any more and will be removed :"

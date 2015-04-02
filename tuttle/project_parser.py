@@ -55,7 +55,7 @@ class ProjectParser():
             # TODO : better explanation
             error_msg = "The following processes can't be run because of circular references :\n"
             for process in unreachable:
-                error_msg += "* {}\n".format(process.id())
+                error_msg += "* {}\n".format(process.id)
             raise WorkflowError(error_msg, self._nb_lines)
         return workflow
 

@@ -21,7 +21,7 @@ def format_process(process):
             return_code = process.return_code
 
     return {
-        'id' : process.id(),
+        'id' : process.id,
         'start' : start,
         'end' : end,
         'duration' : duration,

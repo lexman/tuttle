@@ -27,8 +27,8 @@ def dot(workflow):
     # Show primary resources in a color, and missing ones in another
     result = DOT_HEADER
     for process in workflow.processes:
-        p_node = "p_{}".format(process.id())
-        result += '    {} [shape="none", label="{}", URL="#{}", width=0, height=0] ;\n'.format(p_node, process.id(), process.id())
+        p_node = "p_{}".format(process.id)
+        result += '    {} [shape="none", label="{}", URL="#{}", width=0, height=0] ;\n'.format(p_node, process.id, process.id)
         for res_input in process.inputs:
             nick = workflow.nick_from_url(res_input.url)
             result += '    "{}" -> {} [arrowhead="none"] \n'.format(nick, p_node)

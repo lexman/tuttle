@@ -137,11 +137,11 @@ class Workflow:
         self.dump()
         self.create_reports()
         if process.return_code != 0:
-            msg = "Process {} ended with error code {}".format(process.id(), process.return_code)
+            msg = "Process {} ended with error code {}".format(process.id, process.return_code)
             raise ProcessExecutionError(msg)
         for res in process.outputs:
             if not res.exists():
-                msg = "After execution of process {} : resource {} should have been created".format(process.id(),
+                msg = "After execution of process {} : resource {} should have been created".format(process.id,
                                                                                                     res.url)
                 raise ResourceError(msg)
 
