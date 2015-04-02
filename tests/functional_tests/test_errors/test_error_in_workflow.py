@@ -27,4 +27,4 @@ file://A <- file://B
         self.write_tuttlefile(project)
         rcode, output = self.run_tuttle()
         assert rcode == 2, rcode
-        assert output.find("circular reference") >= 0, output
+        assert output.find("circular") >= 0, output
