@@ -86,7 +86,7 @@ class Workflow:
 
         def all_inputs_built(process):
             """ Returns True if all inputs of this process where build, ie if the process can be executed """
-            for input_res in process._inputs:
+            for input_res in process.inputs:
                 if input_res in resources_to_build:
                     return False
             return True
@@ -103,7 +103,7 @@ class Workflow:
         # The idea is to remove the resource from the list as we simulate execution of processes
         p = pick_a_process()
         while p:
-            for r in p._outputs:
+            for r in p.outputs:
                 resources_to_build.remove(r)
             processes_to_run.remove(p)
             p = pick_a_process()
@@ -139,7 +139,7 @@ class Workflow:
         if process.return_code != 0:
             msg = "Process {} ended with error code {}".format(process.id(), process.return_code)
             raise ProcessExecutionError(msg)
-        for res in process._outputs:
+        for res in process.outputs:
             if not res.exists():
                 msg = "After execution of process {} : resource {} should have been created".format(process.id(),
                                                                                                     res.url)
@@ -232,7 +232,7 @@ class Workflow:
             resource.dependant_processes = []
 
         for process in self.processes:
-            for resource in process._inputs:
+            for resource in process.inputs:
                 resource.dependant_processes.append(process)
 
     def resources_to_invalidate(self, newer_workflow):
@@ -246,7 +246,7 @@ class Workflow:
         self.compute_dependencies()
         for (resource, _) in invalid_resources:
             for dependant_process in resource.dependant_processes:
-                for dependant_resource in dependant_process._outputs:
+                for dependant_resource in dependant_process.outputs:
                     if dependant_resource not in invalid_resources:
                         invalid_resources.append( (dependant_resource, InvalidationReason(InvalidationReason.DEPENDENCY_CHANGED)) )
         return invalid_resources
@@ -257,11 +257,11 @@ class Workflow:
          """
         inv_urls = [res[0].url for res in invalidated_resources]
         for prev_process in previous.processes:
-            if len(prev_process._outputs) > 0 and prev_process._outputs[0].url not in inv_urls:
+            if len(prev_process.outputs) > 0 and prev_process.outputs[0].url not in inv_urls:
                 # When running this function, invalidation has been computed already
                 # So if process from previous workflow creates a resource, it creates all the same
                 # resources as the process in the current workflow
-                process = self.find_process_that_creates(prev_process._outputs[0].url)
+                process = self.find_process_that_creates(prev_process.outputs[0].url)
                 process.retrieve_execution_info(prev_process)
                 pass
 

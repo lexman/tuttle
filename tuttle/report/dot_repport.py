@@ -29,13 +29,13 @@ def dot(workflow):
     for process in workflow.processes:
         p_node = "p_{}".format(process.id())
         result += '    {} [shape="none", label="{}", URL="#{}", width=0, height=0] ;\n'.format(p_node, process.id(), process.id())
-        for res_input in process._inputs:
+        for res_input in process.inputs:
             nick = workflow.nick_from_url(res_input.url)
             result += '    "{}" -> {} [arrowhead="none"] \n'.format(nick, p_node)
             if res_input.creator_process is None:
                 result += '    "{}" [fillcolor=beige] ;\n'.format(nick)
         color = color_from_process(process)
-        for res_output in process._outputs:
+        for res_output in process.outputs:
             nick = workflow.nick_from_url(res_output.url)
             result += '    {} -> "{}" \n'.format(p_node, nick)
             result += '    "{}" [fillcolor={}] ;\n'.format(nick, color)

@@ -26,5 +26,6 @@ def invalidate(workflow):
             print "* {} - {}".format(resource.url, reason)
             if resource.exists():
                 # sometimes, a resource has not been created by the process, that's why it failed !
+                print "* {} - {}".format(resource.url, reason)
                 resource.remove()
     # actual invalidation goes here

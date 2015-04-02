@@ -40,11 +40,11 @@ class TestProjectParser():
         pp.set_project(project)
         pp.read_line()
         process = pp.parse_section()
-        assert len(process._inputs) == 1
-        assert process._inputs[0].url == 'file:///source1'
-        assert len(process._outputs) == 1
-        assert process._outputs[0].url == 'file:///result1'
-        assert process._outputs[0].creator_process == process
+        assert len(process.inputs) == 1
+        assert process.inputs[0].url == 'file:///source1'
+        assert len(process.outputs) == 1
+        assert process.outputs[0].url == 'file:///result1'
+        assert process.outputs[0].creator_process == process
         # TODO : get back to shell processors by default
         # assert process._processor.name == "shell"
         assert process._code == "Some code\n"
@@ -59,10 +59,10 @@ class TestProjectParser():
         pp.set_project(project)
         pp.read_line()
         process = pp.parse_section()
-        assert len(process._inputs) == 1
-        assert process._inputs[0].url == 'file:///source1'
-        assert len(process._outputs) == 1
-        assert process._outputs[0].url == 'file:///result1'
+        assert len(process.inputs) == 1
+        assert process.inputs[0].url == 'file:///source1'
+        assert len(process.outputs) == 1
+        assert process.outputs[0].url == 'file:///result1'
         print process._code
         assert process._code == "Some code\n"
 
@@ -75,13 +75,13 @@ class TestProjectParser():
         pp.set_project(project)
         pp.read_line()
         process = pp.parse_section()
-        assert len(process._inputs) == 2
-        assert process._inputs[0].url == 'file:///source1'
-        assert process._inputs[1].url == 'file:///source2'
-        assert len(process._outputs) == 3
-        assert process._outputs[0].url == 'file:///result1'
-        assert process._outputs[1].url == 'file:///result2'
-        assert process._outputs[2].url == 'file:///result3'
+        assert len(process.inputs) == 2
+        assert process.inputs[0].url == 'file:///source1'
+        assert process.inputs[1].url == 'file:///source2'
+        assert len(process.outputs) == 3
+        assert process.outputs[0].url == 'file:///result1'
+        assert process.outputs[1].url == 'file:///result2'
+        assert process.outputs[2].url == 'file:///result3'
         assert process._code == "Some code\n"
 
     def test_read_section_with_invalid_input(self):
@@ -120,10 +120,10 @@ class TestProjectParser():
         pp.set_project(project)
         pp.read_line()
         process = pp.parse_section()
-        assert len(process._inputs) == 1
-        assert process._inputs[0].url == 'file:///source1'
-        assert len(process._outputs) == 1
-        assert process._outputs[0].url == 'file:///result1'
+        assert len(process.inputs) == 1
+        assert process.inputs[0].url == 'file:///source1'
+        assert len(process.outputs) == 1
+        assert process.outputs[0].url == 'file:///result1'
         assert process._code == ""
 
     def test_read_last_line_of_a_section(self):
@@ -159,10 +159,10 @@ class TestProjectParser():
         pp.set_project(project)
         pp.read_line()
         process = pp.parse_section()
-        assert len(process._inputs) == 1
-        assert process._inputs[0].url == 'file:///source1'
-        assert len(process._outputs) == 1
-        assert process._outputs[0].url == 'file:///result1'
+        assert len(process.inputs) == 1
+        assert process.inputs[0].url == 'file:///source1'
+        assert len(process.outputs) == 1
+        assert process.outputs[0].url == 'file:///result1'
         assert process._code == "Some code\n"
 
     def test_pasrse_simple_workflow(self):
@@ -257,7 +257,7 @@ file:///result2 <- file:///source1
         """
         pp.set_project(project)
         workflow = pp.parse_project()
-        assert workflow.processes[0]._inputs[0] == workflow.processes[1]._inputs[0]
+        assert workflow.processes[0].inputs[0] == workflow.processes[1].inputs[0]
 
     def test_project_should_begin_by_resources(self):
         """A project beginning by an invalid resource definition should raise an error"""
@@ -280,8 +280,8 @@ file:///result1 <- file:///source1
         pp.set_project(project)
         workflow = pp.parse_project()
         assert len(workflow.processes) == 1
-        assert len(workflow.processes[0]._inputs) == 1
-        assert len(workflow.processes[0]._outputs) == 1
+        assert len(workflow.processes[0].inputs) == 1
+        assert len(workflow.processes[0].outputs) == 1
 
     def test_a_project_can_have_one_line(self):
         """Test the project can have only one line"""
@@ -290,8 +290,8 @@ file:///result1 <- file:///source1
         pp.set_project(project)
         workflow = pp.parse_project()
         assert len(workflow.processes) == 1
-        assert len(workflow.processes[0]._inputs) == 1
-        assert len(workflow.processes[0]._outputs) == 1
+        assert len(workflow.processes[0].inputs) == 1
+        assert len(workflow.processes[0].outputs) == 1
 
     def test_section_can_have_no_inputs(self):
         """
@@ -304,7 +304,7 @@ file:///result1 <- file:///source1
         pp.set_project(section)
         pp.read_line()
         process = pp.parse_section()
-        assert len(process._inputs) == 0
+        assert len(process.inputs) == 0
 
     def test_section_can_have_no_outputs(self):
         """
@@ -316,7 +316,7 @@ file:///result1 <- file:///source1
         pp.set_project(section)
         pp.read_line()
         process= pp.parse_section()
-        assert len(process._outputs) == 0
+        assert len(process.outputs) == 0
 
     def test_a_project_can_begin_by_a_blank_line(self):
         """Test the project can begin by a blank line"""
@@ -325,8 +325,8 @@ file:///result1 <- file:///source1
         pp.set_project(project)
         workflow = pp.parse_project()
         assert len(workflow.processes) == 1
-        assert len(workflow.processes[0]._inputs) == 1
-        assert len(workflow.processes[0]._outputs) == 1
+        assert len(workflow.processes[0].inputs) == 1
+        assert len(workflow.processes[0].outputs) == 1
 
     def test_a_project_can_have_no_blank_lines(self):
         """Test the project can begin by a blank line"""
@@ -338,10 +338,10 @@ file://file3 <- file://file2
         pp.set_project(project)
         workflow = pp.parse_project()
         assert len(workflow.processes) == 2
-        assert len(workflow.processes[0]._inputs) == 1
-        assert len(workflow.processes[0]._outputs) == 1
-        assert len(workflow.processes[1]._inputs) == 1
-        assert len(workflow.processes[1]._outputs) == 1
+        assert len(workflow.processes[0].inputs) == 1
+        assert len(workflow.processes[0].outputs) == 1
+        assert len(workflow.processes[1].inputs) == 1
+        assert len(workflow.processes[1].outputs) == 1
 
     def test_read_last_unfinished_line_of_a_project(self):
         """Test the project can begin by a blank line"""

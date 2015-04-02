@@ -24,18 +24,18 @@ class Process:
         self.end = None
         self._processor = processor
         self._line_num = line_num
-        self._inputs = []
-        self._outputs = []
+        self.inputs = []
+        self.outputs = []
         self._code = ""
         self.log_stdout = None
         self.log_stderr = None
         self.return_code = None
     
     def add_input(self, input_res):
-        self._inputs.append(input_res)
+        self.inputs.append(input_res)
 
     def add_output(self, output):
-        self._outputs.append(output)
+        self.outputs.append(output)
 
     def set_code(self, code):
         self._code = code
@@ -76,15 +76,15 @@ class Process:
         :param other_process:
         :return:
         """
-        self_inputs = set(in_res.url for in_res in self._inputs)
-        other_inputs = set(in_res.url for in_res in other_process._inputs)
+        self_inputs = set(in_res.url for in_res in self.inputs)
+        other_inputs = set(in_res.url for in_res in other_process.inputs)
         return self_inputs == other_inputs
 
     def all_inputs_exists(self):
         """
         :return: True if all input resources for this process exist, False otherwise
         """
-        for in_res in self._inputs:
+        for in_res in self.inputs:
             if not in_res.exists():
                 return False
         return True
