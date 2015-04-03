@@ -16,5 +16,5 @@ class TestNoTuttlefile(FunctionalTestBase):
 
     def test_tuttle_file_does_not_exist(self):
         """ Should display a message if the tuttlefile passed as argument to the command line does not exist"""
-        result = check_output(['python', self._tuttle_cmd, '-f', 'inexistant_file'], shell=True)
+        result = check_output(['python', self._tuttle_cmd, '-f', 'inexistant_file'])
         assert result.find("No tuttlefile") >= 0
