@@ -4,6 +4,7 @@
 from resources import FileResource
 from processors import *
 from process import Process
+from tuttle.resources import HTTPResource
 
 
 class WorkflowBuilder():
@@ -16,6 +17,7 @@ class WorkflowBuilder():
 
     def init_resources_and_processors(self):
         self._resources_definition['file'] = FileResource
+        self._resources_definition['http'] = HTTPResource
         self._processors['shell'] = ShellProcessor()
         self._processors['bat'] = BatProcessor()
         self._processors['default'] = self._processors['bat']
