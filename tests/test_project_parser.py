@@ -376,3 +376,33 @@ file://file3 <- file://file2
         assert len(workflow.processes) == 1
         print "'{}'".format(workflow.processes[0]._code)
         assert workflow.processes[0]._code == "Some code\n"
+
+    def test_parse_dependencies_and_processor(self):
+        """ Ensure processor is bat when bat is required"""
+        pp = ProjectParser()
+        project = "file:///result1 <- file:///source1 #! bat"
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_dependencies_and_processor()
+        assert process._processor.name == "bat"
+
+    def test_parse_dependencies_and_processor2(self):
+        """ Ensure processor is shell when shell is required"""
+        pp = ProjectParser()
+        project = "file:///result1 <- file:///source1 #! shell"
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_dependencies_and_processor()
+        assert process._processor.name == "shell"
+
+    def test_unknown_processor(self):
+        """ Bla bla when a processor with a wrong name is providesd"""
+        pp = ProjectParser()
+        project = "file:///result1 <- file:///source1 #! unknown"
+        pp.set_project(project)
+        pp.read_line()
+        try:
+            process = pp.parse_dependencies_and_processor()
+            assert False
+        except InvalidProcessorError:
+            assert True

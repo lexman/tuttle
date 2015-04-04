@@ -22,6 +22,10 @@ class InvalidResourceError(ParsingError):
     pass
 
 
+class InvalidProcessorError(ParsingError):
+    pass
+
+
 class ProjectParser():
     """Parser for tuttlefiles.
         The text describing a Workflow is called Projet
@@ -86,13 +90,18 @@ class ProjectParser():
         return len(line_stripped) == 0
         
     def parse_dependencies_and_processor(self):
-        process = self.wb.build_process(self._num_line)
         arrow_pos = self._line.find('<-')
         if arrow_pos == -1:
             raise ParsingError("Definition of dependency expected", self._num_line)
         shebang_pos = self._line.find('#!')
         if shebang_pos == -1:
             shebang_pos = len(self._line)
+            processor_name = "default"
+        else:
+            processor_name = self._line[shebang_pos + 2:].strip()
+        process = self.wb.build_process(self._num_line, processor_name)
+        if not process:
+            raise InvalidProcessorError("Invalid processor : '{}' ".format(processor_name), self._num_line)
         inputs = self._line[arrow_pos + 2:shebang_pos].split(',')
         if len(inputs) > 1 or inputs[0].strip() != "":
             for input_url in inputs:
