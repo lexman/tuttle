@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 from shutil import copyfileobj
-from urllib import urlretrieve
 from urllib2 import Request, urlopen
 
 from os import path, chmod, stat
 from stat import S_IXUSR, S_IXGRP, S_IXOTH
 from subprocess import Popen, PIPE
+from tuttle.error import TuttleError
 
 
 def run_and_log(prog, log_stdout, log_stderr):
@@ -123,7 +123,13 @@ class DownloadProcessor:
     user_agent = 'tuttle'
 
     def pre_check(self, process):
+        if len(process.inputs) != 1 \
+           or len(process.outputs) != 1 \
+           or process.inputs[0].scheme != 'http' \
+           or process.outputs[0].scheme != 'file':
+            raise TuttleError("Download processor {} don't know how to handle his inputs / outputs".format(process.id))
         pass
+
 
     def run(self, process, directory, log_stdout, log_stderr):
         print "0" * 60

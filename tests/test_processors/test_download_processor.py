@@ -1,12 +1,11 @@
 # -*- coding: utf8 -*-
 from os.path import isfile
 
-from tests.functional_tests import isolate
-from os import remove
+from tests.functional_tests import isolate, FunctionalTestBase
 from tuttle.project_parser import ProjectParser
 
 
-class TestDownloadProcessor():
+class TestDownloadProcessor(FunctionalTestBase):
 
     @isolate
     def test_standard_download(self):
@@ -20,6 +19,20 @@ class TestDownloadProcessor():
         assert isfile("google.html")
         content = open("google.html").read()
         assert content.find("<title>Google</title>") >= 0
+
+    @isolate
+    def test_pre_check(self):
+        """Should fail if not http:// <- file:// """
+        project = " http://www.google.com/ <-  #! download"
+        pp = ProjectParser()
+        pp.set_project(project)
+        workflow = pp.parse_and_check_project()
+        try:
+            workflow.prepare_execution()
+            assert False, "An exception should be raised"
+        except:
+            assert True
+
 
     # @isolate
     # def test_download_fails(self):
@@ -35,3 +48,15 @@ class TestDownloadProcessor():
     #     workflow.run()
     #     assert isfile("tuttle.html")
 
+    @isolate
+    def test_pre_check_works_before_running(self):
+        """Should download a simple url"""
+        project = """file://A <-
+        obvious failure
+
+file://google.html <- file://A, http://www.google.com/ #! download
+        """
+        self.write_tuttlefile(project)
+        rcode, output = self.run_tuttle()
+        assert rcode == 2
+        assert output.find("Download processor") >= 0, output
