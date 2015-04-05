@@ -56,8 +56,7 @@ class Process:
         """
         Runs a verification that the process won't obviously fail. This is used for static analysis before any process is run
         """
-        pass
-        #self._processor.pre_check()
+        self._processor.pre_check(self)
 
     def run(self, directory, logs_dir):
         """

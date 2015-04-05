@@ -44,19 +44,27 @@ class ShellProcessor:
         chmod(script_path, mode | S_IXUSR | S_IXGRP | S_IXOTH)
         return script_path
 
-    def run(self, script_path, process_id, log_stdout, log_stderr):
-        script_name = path.basename(script_path)
+    def print_header(self, process_id):
         print "=" * 60
-        print script_name
+        print process_id
         print "=" * 60
-        prog = path.abspath(script_path)
-        ret_code = run_and_log(prog, log_stdout, log_stderr)
+
+    def print_logs(self, log_stdout, log_stderr):
         print_log_if_exists(log_stdout, "stdout")
         print_log_if_exists(log_stderr, "stderr")
+
+    def run(self, process, directory, log_stdout, log_stderr):
+        prog = self.generate_executable(process._code, process.id, directory)
+        self.print_header(process.id)
+        ret_code = run_and_log(prog, log_stdout, log_stderr)
+        self.print_logs(log_stdout, log_stderr)
         if ret_code:
             print "-" * 60
-            print("Process {} failed".format(script_name))
+            print("Process {} failed with return code {}".format(process.id, ret_code))
         return ret_code
+
+    def pre_check(self, process):
+        pass
 
 
 class BatProcessor:
@@ -65,11 +73,6 @@ class BatProcessor:
     name = 'bat'
     header = "@echo off\n"
     exit_if_fail = 'if %ERRORLEVEL% neq 0 exit /b 1\n'
-
-    def print_header(self, process_id):
-        print "=" * 60
-        print process_id
-        print "=" * 60
 
     def generate_executable(self, code, process_id, directory):
         """ Create an executable file
@@ -86,6 +89,11 @@ class BatProcessor:
                 f.write(self.exit_if_fail)
         return script_name
 
+    def print_header(self, process_id):
+        print "=" * 60
+        print process_id
+        print "=" * 60
+
     def print_logs(self, log_stdout, log_stderr):
         print_log_if_exists(log_stdout, "stdout")
         print_log_if_exists(log_stderr, "stderr")
@@ -101,6 +109,9 @@ class BatProcessor:
             print("Process {} failed with return code {}".format(process.id, ret_code))
         return ret_code
 
+    def pre_check(self, process):
+        pass
+
 
 class DownloadProcessor:
     """ A processor for downloading http resources
@@ -111,4 +122,7 @@ class DownloadProcessor:
         pass
 
     def run(self, script_path, process_id, log_stdout, log_stderr):
+        pass
+
+    def pre_check(self, process):
         pass
