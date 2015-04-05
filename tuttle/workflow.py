@@ -132,8 +132,8 @@ class Workflow:
         for process in self.processes:
             process.generate_executable(directory)
 
-    def run_process(self, process, logs_dir):
-        process.run(logs_dir)
+    def run_process(self, process, processes_dir, logs_dir):
+        process.run(processes_dir, logs_dir)
         self.dump()
         self.create_reports()
         if process.return_code != 0:
@@ -151,12 +151,15 @@ class Workflow:
         :return:
         :raises ExecutionError if an error occurs
         """
+        processes_dir = tuttle_dir("processes")
+        if not path.isdir(processes_dir):
+            makedirs(processes_dir)
         logs_dir = tuttle_dir("processes", 'logs')
         if not path.isdir(logs_dir):
             makedirs(logs_dir)
         process = self.pick_a_process_to_run()
         while process is not None:
-            self.run_process(process, logs_dir)
+            self.run_process(process, processes_dir, logs_dir)
             process = self.pick_a_process_to_run()
 
     def nick_from_url(self, url):

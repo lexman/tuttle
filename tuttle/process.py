@@ -58,13 +58,16 @@ class Process:
         :param directory: Directory where the executable lies
         :return: An identifier to be able to run the executable later. Commonly, this would be the path to the executable file
         """
-        self._executable = self._processor.generate_executable(self._code, self.id, directory)
+        pass
+        #self.return_code = self._processor.run2(self, directory)
+        #self._executable = self._processor.generate_executable(self._code, self.id, directory)
 
-    def run(self, logs_dir):
+    def run(self, directory, logs_dir):
         self.log_stdout = path.join(logs_dir, "{}_stdout".format(self.id))
         self.log_stderr = path.join(logs_dir, "{}_err".format(self.id))
         self.start = time()
-        self.return_code = self._processor.run(self._executable, self.id, self.log_stdout, self.log_stderr)
+        #self.return_code = self._processor.run(self._executable, self.id, self.log_stdout, self.log_stderr)
+        self.return_code = self._processor.run2(self, directory, self.log_stdout, self.log_stderr)
         self.end = time()
         return self.return_code
 

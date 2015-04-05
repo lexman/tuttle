@@ -134,7 +134,7 @@ file://file3 <- file://file1
             """)
         workflow.prepare_execution()
         process = workflow.processes[0]
-        workflow.run_process(process, '.')
+        workflow.run_process(process, '.', '.')
         assert path.isfile("result")
         assert path.isfile("tuttle_report.html")
         assert path.isfile(path.join(".tuttle", "last_workflow.pickle"))
@@ -151,7 +151,7 @@ file://file3 <- file://file1
         workflow.prepare_execution()
         process = workflow.processes[0]
         try:
-            workflow.run_process(process, '.')
+            workflow.run_process(process, '.', '.')
             assert False, "Exception has not been not raised"
         except ResourceError:
             assert True
