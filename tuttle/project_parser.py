@@ -63,7 +63,6 @@ class ProjectParser():
             raise WorkflowError(error_msg, self._nb_lines)
         return workflow
 
-
     def set_project(self, text):
         self._lines = text.splitlines()
         self._nb_lines = len(self._lines)

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
+from shutil import copyfileobj
+from urllib import urlretrieve
+from urllib2 import Request, urlopen
 
 from os import path, chmod, stat
 from stat import S_IXUSR, S_IXGRP, S_IXOTH
@@ -117,12 +120,18 @@ class DownloadProcessor:
     """ A processor for downloading http resources
     """
     name = 'download'
-
-    def generate_executable(self, code, process_id, directory):
-        pass
-
-    def run(self, script_path, process_id, log_stdout, log_stderr):
-        pass
+    user_agent = 'tuttle'
 
     def pre_check(self, process):
         pass
+
+    def run(self, process, directory, log_stdout, log_stderr):
+        print "0" * 60
+        file_name = process.outputs[0]._path
+        url = process.inputs[0].url
+        headers = {"User-Agent" : self.user_agent}
+        req = Request(url, headers = headers)
+        fin = urlopen(req)
+        with open(file_name, 'wb') as fout:
+            copyfileobj(fin, fout)
+        return 0

@@ -20,6 +20,7 @@ class WorkflowBuilder():
         self._resources_definition['http'] = HTTPResource
         self._processors['shell'] = ShellProcessor()
         self._processors['bat'] = BatProcessor()
+        self._processors['download'] = DownloadProcessor()
         self._processors['default'] = self._processors['bat']
 
     def extract_scheme(self, url):
