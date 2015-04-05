@@ -86,23 +86,11 @@ class BatProcessor:
                 f.write(self.exit_if_fail)
         return script_name
 
-    def run(self, script_path, process_id, log_stdout, log_stderr):
-        self.print_header(process_id)
-        prog = path.abspath(script_path)
-        ret_code = run_and_log(prog, log_stdout, log_stderr)
-        print_log_if_exists(log_stdout, "stdout")
-        print_log_if_exists(log_stderr, "stderr")
-        if ret_code:
-            print "-" * 60
-            print
-            print("Process {} failed with return code {}".format(process_id, ret_code))
-        return ret_code
-
     def print_logs(self, log_stdout, log_stderr):
         print_log_if_exists(log_stdout, "stdout")
         print_log_if_exists(log_stderr, "stderr")
 
-    def run2(self, process, directory, log_stdout, log_stderr):
+    def run(self, process, directory, log_stdout, log_stderr):
         prog = self.generate_executable(process._code, process.id, directory)
         self.print_header(process.id)
         ret_code = run_and_log(prog, log_stdout, log_stderr)
@@ -112,7 +100,6 @@ class BatProcessor:
             print
             print("Process {} failed with return code {}".format(process.id, ret_code))
         return ret_code
-        pass
 
 
 class DownloadProcessor:

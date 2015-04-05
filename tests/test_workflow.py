@@ -1,13 +1,9 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from nose.tools import *
-from shutil import rmtree
 from tests.functional_tests import isolate
-from tuttle import workflow
 from tuttle.workflow import *
 from test_project_parser import ProjectParser
-from os import path, remove, listdir, getcwd
+from os import path, makedirs
 
 
 class TestWorkflow():
@@ -126,14 +122,14 @@ file://file3 <- file://file1
     @isolate
     def test_run_process(self):
         """
-        Should run a process and update the state of the workflow
+        Should run a process and create the expected files according to the process and to tuttle tool
         """
         workflow = self.get_workflow(
             """file://result <- file://source
             echo result > result
             """)
-        workflow.prepare_execution()
         process = workflow.processes[0]
+        makedirs('.tuttle')
         workflow.run_process(process, '.', '.')
         assert path.isfile("result")
         assert path.isfile("tuttle_report.html")
@@ -149,8 +145,9 @@ file://file3 <- file://file1
             echo test
             """)
         workflow.prepare_execution()
-        process = workflow.processes[0]
         try:
+            process = workflow.processes[0]
+            makedirs('.tuttle')
             workflow.run_process(process, '.', '.')
             assert False, "Exception has not been not raised"
         except ResourceError:

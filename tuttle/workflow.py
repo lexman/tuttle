@@ -126,11 +126,8 @@ class Workflow:
 
         :return: None
         """
-        directory = tuttle_dir("processes")
-        if not path.isdir(directory):
-            makedirs(directory)
         for process in self.processes:
-            process.generate_executable(directory)
+            process.pre_check()
 
     def run_process(self, process, processes_dir, logs_dir):
         process.run(processes_dir, logs_dir)

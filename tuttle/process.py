@@ -52,22 +52,24 @@ class Process:
         self.log_stdout = process.log_stdout
         self.log_stderr = process.log_stderr
 
-    def generate_executable(self, directory):
+    def pre_check(self):
         """
-        Creates what is needed to later run the process. Commonly, this would be one executable file.
-        :param directory: Directory where the executable lies
-        :return: An identifier to be able to run the executable later. Commonly, this would be the path to the executable file
+        Runs a verification that the process won't obviously fail. This is used for static analysis before any process is run
         """
         pass
-        #self.return_code = self._processor.run2(self, directory)
-        #self._executable = self._processor.generate_executable(self._code, self.id, directory)
+        #self._processor.pre_check()
 
     def run(self, directory, logs_dir):
+        """
+        Runs the process and retreive all the metadata : logs, return code, duration...
+        :param directory: Directory where the processor can write files to execute
+        :param logs_dir: Directory where the logs lie
+        :return: The return code for the process
+        """
         self.log_stdout = path.join(logs_dir, "{}_stdout".format(self.id))
         self.log_stderr = path.join(logs_dir, "{}_err".format(self.id))
         self.start = time()
-        #self.return_code = self._processor.run(self._executable, self.id, self.log_stdout, self.log_stderr)
-        self.return_code = self._processor.run2(self, directory, self.log_stdout, self.log_stderr)
+        self.return_code = self._processor.run(self, directory, self.log_stdout, self.log_stderr)
         self.end = time()
         return self.return_code
 
