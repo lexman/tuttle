@@ -132,7 +132,7 @@ class DownloadProcessor:
 
 
     def run(self, process, directory, log_stdout, log_stderr):
-        print "0" * 60
+        # TODO how do we handle errors ?
         file_name = process.outputs[0]._path
         url = process.inputs[0].url
         headers = {"User-Agent" : self.user_agent}
