@@ -15,7 +15,6 @@ class TestNoTuttlefile():
         proc = Popen(['python', tuttle_cmd], stdout=PIPE)
         output = proc.stdout.read()
         rcode = proc.wait()
-        # TODO : shouldn't we exit with error code ?
         assert rcode == 2
         assert output.find("No tuttlefile") >= 0
 
