@@ -144,7 +144,7 @@ file://file3 <- file://file1
             """file://result <- file://source
             echo test
             """)
-        workflow.prepare_execution()
+        workflow.pre_check_processes()
         try:
             process = workflow.processes[0]
             makedirs('.tuttle')
@@ -192,4 +192,4 @@ file://B <- file://A
             echo A creates B
             """)
         p = workflow.pick_a_process_to_run()
-        assert p.id == "bat_5", p.id()
+        assert p.id == "bat_5", p.id

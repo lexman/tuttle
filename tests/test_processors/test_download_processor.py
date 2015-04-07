@@ -14,7 +14,7 @@ class TestDownloadProcessor(FunctionalTestBase):
         pp = ProjectParser()
         pp.set_project(project)
         workflow = pp.parse_and_check_project()
-        workflow.prepare_execution()
+        workflow.pre_check_processes()
         workflow.run()
         assert isfile("google.html")
         content = open("google.html").read()
@@ -28,7 +28,7 @@ class TestDownloadProcessor(FunctionalTestBase):
         pp.set_project(project)
         workflow = pp.parse_and_check_project()
         try:
-            workflow.prepare_execution()
+            workflow.pre_check_processes()
             assert False, "An exception should be raised"
         except:
             assert True
@@ -49,14 +49,35 @@ class TestDownloadProcessor(FunctionalTestBase):
     #     assert isfile("tuttle.html")
 
     @isolate
-    def test_pre_check_works_before_running(self):
-        """Should download a simple url"""
+    def test_pre_check_before_running(self):
+        """ Pre check should happen for each process before run the whole workflow """
         project = """file://A <-
         obvious failure
 
-file://google.html <- file://A, http://www.google.com/ #! download
+file://google.html <- file://A #! download
         """
         self.write_tuttlefile(project)
         rcode, output = self.run_tuttle()
         assert rcode == 2
+        assert output.find("Download processor") >= 0, output
+
+    @isolate
+    def test_pre_check_before_invalidation(self):
+        """Pre check should happen before invalidation"""
+        project1 = """file://A <-
+        echo A > A
+        """
+        self.write_tuttlefile(project1)
+        rcode, output = self.run_tuttle()
+        assert isfile('A')
+        project2 = """file://A <-
+        echo different > A
+
+file://google.html <- file://A #! download
+"""
+
+        self.write_tuttlefile(project2)
+        rcode, output = self.run_tuttle()
+        assert rcode == 2
+        assert output.find("* file://B") == -1
         assert output.find("Download processor") >= 0, output

@@ -118,12 +118,8 @@ class Workflow:
                 return process
         return None
 
-    def prepare_execution(self):
-        """ Prepare the workflow to be executed :
-        - creates executable
-        - ...
-        The workflow is supposed to be safe : no circular references, etc.
-
+    def pre_check_processes(self):
+        """ Runs a pre-check for every process, in order to catch early obvious errors, even before invalidation
         :return: None
         """
         for process in self.processes:

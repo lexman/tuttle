@@ -13,8 +13,8 @@ def parse_invalidate_and_run(tuttlefile):
         try:
             pp = ProjectParser()
             workflow = pp.parse_and_check_file(tuttlefile)
+            workflow.pre_check_processes()
             invalidate(workflow)
-            workflow.prepare_execution()
             workflow.create_reports()
             workflow.run()
         except TuttleError as e:
