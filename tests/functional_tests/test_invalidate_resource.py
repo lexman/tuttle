@@ -1,12 +1,11 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from os.path import isfile
 
 from os import path
-from tests.functional_tests import FunctionalTestBase, isolate
+from tests.functional_tests import FunctionalTestBase, isolate, run_tuttle_file
 
 
-class TestInvalidateResource(FunctionalTestBase):
+class TestInvalidateResource():
 
     @isolate(['A'])
     def test_remove_resource(self):
@@ -23,8 +22,7 @@ file://D <- file://A
     echo A produces D
     echo D > D
 """
-        self.write_tuttlefile(first)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(first)
         assert path.exists('B')
         assert path.exists('C')
         assert path.exists('D')
@@ -36,8 +34,7 @@ file://D <- file://A
     echo A produces D
     echo D > D
 """
-        self.write_tuttlefile(second)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(second)
         # TODO shouldn't it fail ?
         assert rcode == 0
         assert output.find("* file://B") >= 0
@@ -52,8 +49,7 @@ file://D <- file://A
     echo A produces B
     echo B > B
 """
-        self.write_tuttlefile(first)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(first)
         assert rcode == 0
         assert output.find("* file://B") >= 0
 
@@ -63,13 +59,11 @@ file://D <- file://A
         project1 = """file://B <- file://A
         echo A creates B > B
         """
-        self.write_tuttlefile(project1)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(project1)
         assert isfile('B')
         project2 = """file://B <- file://A
         echo A creates B in another way> B
         """
-        self.write_tuttlefile(project2)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(project2)
         assert rcode == 0
         assert output.find("* file://B") >= 0
