@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from os import path
-from tests.functional_tests import FunctionalTestBase, isolate
+from tests.functional_tests import isolate, run_tuttle_file
 
 
-class TestStandardBehaviour(FunctionalTestBase):
+class TestStandardBehaviour:
 
     @isolate(['A'])
     def test_create_resource(self):
@@ -14,8 +14,7 @@ class TestStandardBehaviour(FunctionalTestBase):
     echo B > B
 
 """
-        self.write_tuttlefile(first)
-        self.run_tuttle()
+        rcode, output = run_tuttle_file(first)
         assert path.exists('B')
 
     @isolate(['A'])
@@ -26,8 +25,7 @@ class TestStandardBehaviour(FunctionalTestBase):
     echo B > B
 
 """
-        self.write_tuttlefile(first)
-        self.run_tuttle()
+        rcode, output = run_tuttle_file(first)
         assert path.exists('tuttle_report.html')
 
     @isolate(['A'])
@@ -46,8 +44,7 @@ file://D <- file://C
     echo C produces D
     echo D > D
 """
-        self.write_tuttlefile(first)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(first)
         assert rcode == 2
         second = """file://B <- file://A
     echo A produces B
@@ -63,8 +60,7 @@ file://D <- file://C
     error
     echo D > D
 """
-        self.write_tuttlefile(second)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(second)
         assert rcode == 2
         report = file('tuttle_report.html').read()
         [_, sec1, sec2, sec3] = report.split('<h2')

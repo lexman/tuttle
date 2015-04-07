@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
 from os.path import isfile
 
-from tests.functional_tests import isolate, FunctionalTestBase
+from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.project_parser import ProjectParser
 
 
-class TestDownloadProcessor(FunctionalTestBase):
+class TestDownloadProcessor():
 
     @isolate
     def test_standard_download(self):
@@ -56,8 +56,7 @@ class TestDownloadProcessor(FunctionalTestBase):
 
 file://google.html <- file://A #! download
         """
-        self.write_tuttlefile(project)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(project)
         assert rcode == 2
         assert output.find("Download processor") >= 0, output
 
@@ -67,8 +66,7 @@ file://google.html <- file://A #! download
         project1 = """file://A <-
         echo A > A
         """
-        self.write_tuttlefile(project1)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(project1)
         assert isfile('A')
         project2 = """file://A <-
         echo different > A
@@ -76,8 +74,7 @@ file://google.html <- file://A #! download
 file://google.html <- file://A #! download
 """
 
-        self.write_tuttlefile(project2)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(project2)
         assert rcode == 2
         assert output.find("* file://B") == -1
         assert output.find("Download processor") >= 0, output

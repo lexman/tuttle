@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from tests.functional_tests import FunctionalTestBase, isolate
+from tests.functional_tests import isolate, run_tuttle_file
 
-class TestErrorInWorkflow(FunctionalTestBase):
+
+class TestErrorInWorkflow():
 
     @isolate
     def test_missing_primary_resource(self):
@@ -11,8 +12,7 @@ class TestErrorInWorkflow(FunctionalTestBase):
     echo A produces B
     echo B > B
 """
-        self.write_tuttlefile(project)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(project)
         assert rcode == 2, rcode
         assert output.find("Missing") >= 0, output
 
@@ -24,7 +24,6 @@ file://A <- file://B
     echo A produces B
     echo B > B
 """
-        self.write_tuttlefile(project)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(project)
         assert rcode == 2, rcode
         assert output.find("circular") >= 0, output

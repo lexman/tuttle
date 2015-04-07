@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
+
 import glob
-
-from subprocess import CalledProcessError, Popen, PIPE
-from tests.functional_tests import FunctionalTestBase, isolate
+from tests.functional_tests import isolate, run_tuttle_file
 
 
-class TestErrorInProcess(FunctionalTestBase):
+class TestErrorInProcess():
 
     @isolate(['A'])
     def test_error_in_process(self):
@@ -24,8 +23,7 @@ file://D <- file://A
     echo A produces D
     echo D > D
 """
-        self.write_tuttlefile(first)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(first)
         assert rcode == 2
 
     @isolate(['A', 'test_error_in_process.py'])
@@ -54,8 +52,7 @@ file://D <- file://A
     echo A produces D
     echo D > D
 """
-        self.write_tuttlefile(first)
-        rcode, output = self.run_tuttle()
+        rcode, output = run_tuttle_file(first)
         assert rcode == 2
 
         second = """file://B <- file://A
@@ -72,9 +69,6 @@ file://D <- file://A
     echo Minor change
     echo D > D
 """
-        self.write_tuttlefile(second)
-        proc = Popen(['python', self._tuttle_cmd], stdout=PIPE)
-        result = proc.stdout.read()
-        rcode = proc.wait()
+        rcode, output = run_tuttle_file(second)
         assert rcode == 2
-        assert result.find("Workflow already failed") >= 0
+        assert output.find("Workflow already failed") >= 0
