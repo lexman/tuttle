@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf8 -*-
 from shutil import copyfileobj
 from urllib2 import Request, urlopen
@@ -32,7 +31,7 @@ class ShellProcessor:
     """ A processor to run *nix shell code
     """
     name = 'shell'
-    header = "#!/usr/bin/env sh\n"
+    header = "#!/usr/bin/env sh\nset -e\nset -o\n"
 
     def generate_executable(self, code, process_id, directory):
         """ Create an executable file
@@ -128,7 +127,6 @@ class DownloadProcessor:
            or process.inputs[0].scheme != 'http' \
            or process.outputs[0].scheme != 'file':
             raise TuttleError("Download processor {} don't know how to handle his inputs / outputs".format(process.id))
-        pass
 
 
     def run(self, process, directory, log_stdout, log_stderr):
