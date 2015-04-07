@@ -2,7 +2,7 @@
 from os.path import isfile
 
 from os import path
-from tests.functional_tests import FunctionalTestBase, isolate, run_tuttle_file
+from tests.functional_tests import isolate, run_tuttle_file
 
 
 class TestInvalidateResource():
@@ -35,12 +35,10 @@ file://D <- file://A
     echo D > D
 """
         rcode, output = run_tuttle_file(second)
-        # TODO shouldn't it fail ?
         assert rcode == 0
         assert output.find("* file://B") >= 0
         assert output.find("* file://C") >= 0
         assert output.find("* file://D") == -1
-
 
     @isolate(['A', 'B'])
     def test_resource_should_be_created_by_tuttle(self):
