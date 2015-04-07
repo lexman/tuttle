@@ -11,7 +11,7 @@ DONE - Tell the user why that resource is deleted :
 	- ...
 	- depends on an invalid resource
 
-If a process failed, running tuttle again should fail immediately
+DONE - If a process failed, running tuttle again should fail immediately
 
 If a process failed, all should be marked as not Ok
 
@@ -27,7 +27,7 @@ DONE - Check for circular dependencies
 
 DONE - Check for status : if not all dependencies are created the process should be marked as failed
 
-Remove resources that are invalid
+DONE - Remove resources that are invalid
 
 DONE - -Check that the claimed-to-be-created resource really exists at the end of the process, otherwise there have been an issue and any depending process can't pursue
 
@@ -53,7 +53,7 @@ Ensure that a resource that used to be created by the process but is now a prima
 NOT FOR THE MOMENT - Stop deleting resources if the time (or % of time) of the work invalidated exceeds a threshold provided by user
     And print invalidation quantity any way
 
-HTTP ou FTP resource
+HTTP (DONE) or FTP resource
 
 
 Remove #! from modules and packages
@@ -67,7 +67,7 @@ Packaging
 Travis for tests on *nix. Is it possible to test on Windows ? No
 
 Nicer reports :
-    DONE - beautiful html
+    DONE - nice html with boostrap
     Embed js in .tuttle
     autorelading iframe for the logs
 
@@ -82,3 +82,7 @@ A working example using tuttle in Github, with continuous integration in Travis 
 	If execution of a workflow failed, it MUST fail again if run again without any change in he workflow. 
 	What must not happen : your run a workflow. The 4rth process didn't produce bla.csv as promissed : tuttle stops at the error. No process uses bla.csv. Anyway, if you run tuttle again, it must not produce the rest and succed
 	No magic. No surprise
+
+Pop a webserver for functional tests without network ?
+
+Refactor functional tests with function "run_tuttle" so that it imports tuttle and runs the main function instead of subprocessing : we get coverage !
