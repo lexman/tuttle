@@ -53,7 +53,6 @@ class TestDownloadProcessor():
         """ Pre check should happen for each process before run the whole workflow """
         project = """file://A <-
         obvious failure
-
 file://google.html <- file://A #! download
         """
         rcode, output = run_tuttle_file(project)
@@ -70,10 +69,8 @@ file://google.html <- file://A #! download
         assert isfile('A')
         project2 = """file://A <-
         echo different > A
-
 file://google.html <- file://A #! download
-"""
-
+        """
         rcode, output = run_tuttle_file(project2)
         assert rcode == 2
         assert output.find("* file://B") == -1

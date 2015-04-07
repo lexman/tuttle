@@ -8,7 +8,8 @@ class TestHttpResource():
 
     def test_real_resource_exists(self):
         """A real resource should exist"""
-        # TODO : Whenge this when tuttle has its site... If it can handle the load...
+        # TODO : change this when tuttle has its site... If it can handle the load...
+        # Or by a local http server
         res = HTTPResource("http://www.google.com/")
         assert res.exists()
 
