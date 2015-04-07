@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from os.path import isfile
 
 from os import path
 from tests.functional_tests import FunctionalTestBase, isolate
@@ -52,6 +53,23 @@ file://D <- file://A
     echo B > B
 """
         self.write_tuttlefile(first)
+        rcode, output = self.run_tuttle()
+        assert rcode == 0
+        assert output.find("* file://B") >= 0
+
+    @isolate(['A'])
+    def test_code_changes(self):
+        """ A resource should be invalidated if the code that creates it changes"""
+        project1 = """file://B <- file://A
+        echo A creates B > B
+        """
+        self.write_tuttlefile(project1)
+        rcode, output = self.run_tuttle()
+        assert isfile('B')
+        project2 = """file://B <- file://A
+        echo A creates B in another way> B
+        """
+        self.write_tuttlefile(project2)
         rcode, output = self.run_tuttle()
         assert rcode == 0
         assert output.find("* file://B") >= 0
