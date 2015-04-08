@@ -1,8 +1,9 @@
 # -*- coding: utf8 -*-
-
+from shutil import rmtree
+from os.path import isdir, isfile
 
 from error import TuttleError
-from os import path, makedirs
+from os import path, makedirs, remove
 from report.html_repport import create_html_report
 from pickle import dump, load
 
@@ -138,21 +139,35 @@ class Workflow:
                                                                                                     res.url)
                 raise ResourceError(msg)
 
+    def create_tuttle_dirs(self):
+        self._processes_dir = tuttle_dir("processes")
+        if not path.isdir(self._processes_dir):
+            makedirs(self._processes_dir)
+        self._logs_dir = tuttle_dir("processes", 'logs')
+        if not path.isdir(self._logs_dir):
+            makedirs(self._logs_dir)
+
+    def prepare_paths(self, process):
+        log_stdout = path.join(self._logs_dir, "{}_stdout".format(process.id))
+        log_stderr = path.join(self._logs_dir, "{}_err".format(process.id))
+        reserved_path = path.join(self._processes_dir, process.id)
+        if isdir(reserved_path):
+            rmtree(reserved_path)
+        elif isfile(reserved_path):
+            remove(reserved_path)
+        return reserved_path, log_stdout, log_stderr
+
     def run(self):
         """ Runs a workflow that has been previously prepared :
 
         :return:
         :raises ExecutionError if an error occurs
         """
-        processes_dir = tuttle_dir("processes")
-        if not path.isdir(processes_dir):
-            makedirs(processes_dir)
-        logs_dir = tuttle_dir("processes", 'logs')
-        if not path.isdir(logs_dir):
-            makedirs(logs_dir)
+        self.create_tuttle_dirs()
         process = self.pick_a_process_to_run()
         while process is not None:
-            self.run_process(process, processes_dir, logs_dir)
+            reserved_path, log_stdout, log_stderr = self.prepare_paths(process)
+            self.run_process(process, self._processes_dir, self._logs_dir)
             process = self.pick_a_process_to_run()
 
     def nick_from_url(self, url):
