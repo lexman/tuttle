@@ -12,13 +12,11 @@ def format_process(process):
     duration = ""
     start = ""
     end = ""
-    return_code = ""
     if process.start:
         start = strftime("%a, %d %b %Y %H:%M:%S", localtime(process.start))
         if process.end:
             end = strftime("%a, %d %b %Y %H:%M:%S", localtime(process.end))
             duration = process.end - process.start
-            return_code = process.return_code
 
     return {
         'id' : process.id,
@@ -30,7 +28,6 @@ def format_process(process):
         'outputs' : process.outputs,
         'inputs' : process.inputs,
         '_code' : process._code,
-        'return_code' : return_code,
         'success' : process.success,
     }
 

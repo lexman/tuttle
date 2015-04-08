@@ -4,15 +4,6 @@ from time import time
 from os import path
 
 
-class ProcessState:
-    SCHEDULED = 0
-    READY = 1
-    RUNNING = 2
-    COMPLETE = 3
-    ERROR = 4
-    NOTHING_TO_DO = 5
-
-
 class Process:
     """ Class wrapping a process. A process has some input resources, some output resources, 
     some code that produces outputs from inputs, a processor that handle the language specificities
@@ -48,7 +39,6 @@ class Process:
         """
         self.start = process.start
         self.end = process.end
-        self.return_code = process.return_code
         self.success = process.success
         self.log_stdout = process.log_stdout
         self.log_stderr = process.log_stderr
@@ -69,10 +59,9 @@ class Process:
         self.log_stdout = log_stdout
         self.log_stderr = log_stderr
         self.start = time()
-        self.return_code = self._processor.run(self, reserved_path, self.log_stdout, self.log_stderr)
-        self.success = self.return_code == 0
+        return_code = self._processor.run(self, reserved_path, self.log_stdout, self.log_stderr)
+        self.success = return_code == 0
         self.end = time()
-        return self.return_code
 
     def has_same_inputs(self, other_process):
         """ Returns True if both process have exactly the same inputs, according to their urls, False otherwise
