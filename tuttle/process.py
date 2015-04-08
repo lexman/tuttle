@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf8 -*-
 
 from time import time
@@ -67,8 +66,9 @@ class Process:
         """
         self.log_stdout = path.join(logs_dir, "{}_stdout".format(self.id))
         self.log_stderr = path.join(logs_dir, "{}_err".format(self.id))
+        reserved_path = path.join(directory, self.id)
         self.start = time()
-        self.return_code = self._processor.run(self, directory, self.log_stdout, self.log_stderr)
+        self.return_code = self._processor.run(self, reserved_path, self.log_stdout, self.log_stderr)
         self.end = time()
         return self.return_code
 

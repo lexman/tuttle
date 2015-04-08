@@ -1,8 +1,9 @@
 # -*- coding: utf8 -*-
-from shutil import copyfileobj
+from shutil import copyfileobj, rmtree
 from urllib2 import Request, urlopen
+from os.path import isdir, isfile
 
-from os import path, chmod, stat
+from os import path, chmod, stat, mkdir, remove
 from stat import S_IXUSR, S_IXGRP, S_IXOTH
 from subprocess import Popen, PIPE
 from tuttle.error import TuttleError
@@ -27,24 +28,29 @@ def print_log_if_exists(log_file, header):
             print content
 
 
+def delete_path(a_path):
+    if isdir(a_path):
+        rmtree(a_path)
+    elif isfile(a_path):
+        remove(a_path)
+
+
 class ShellProcessor:
     """ A processor to run *nix shell code
     """
     name = 'shell'
     header = "#!/usr/bin/env sh\nset -e\nset -o\n"
 
-    def generate_executable(self, code, process_id, directory):
+    def generate_executable(self, process, script_path):
         """ Create an executable file
         :param directory: string
         :return: the path to the file
         """
-        script_path = path.join(directory, process_id)
         with open(script_path, "w+") as f:
             f.write(self.header)
-            f.write(code)
+            f.write(process._code)
         mode = stat(script_path).st_mode
         chmod(script_path, mode | S_IXUSR | S_IXGRP | S_IXOTH)
-        return script_path
 
     def print_header(self, process_id):
         print "=" * 60
@@ -55,10 +61,10 @@ class ShellProcessor:
         print_log_if_exists(log_stdout, "stdout")
         print_log_if_exists(log_stderr, "stderr")
 
-    def run(self, process, directory, log_stdout, log_stderr):
-        prog = self.generate_executable(process._code, process.id, directory)
+    def run(self, process, reserved_path, log_stdout, log_stderr):
+        self.generate_executable(process, reserved_path)
         self.print_header(process.id)
-        ret_code = run_and_log(prog, log_stdout, log_stderr)
+        ret_code = run_and_log(reserved_path, log_stdout, log_stderr)
         self.print_logs(log_stdout, log_stderr)
         if ret_code:
             print "-" * 60
@@ -76,15 +82,16 @@ class BatProcessor:
     header = "@echo off\n"
     exit_if_fail = 'if %ERRORLEVEL% neq 0 exit /b 1\n'
 
-    def generate_executable(self, code, process_id, directory):
+    def generate_executable(self, process, reserved_path):
         """ Create an executable file
         :param directory: string
         :return: the path to the file
         """
-        script_name = path.abspath(path.join(directory, "{}.bat".format(process_id)))
+        mkdir(reserved_path)
+        script_name = path.abspath(path.join(reserved_path, "{}.bat".format(process.id)))
         with open(script_name, "w+") as f:
             f.write(self.header)
-            lines = code.split("\n")
+            lines = process._code.split("\n")
             for line in lines:
                 f.write(line)
                 f.write("\n")
@@ -100,8 +107,9 @@ class BatProcessor:
         print_log_if_exists(log_stdout, "stdout")
         print_log_if_exists(log_stderr, "stderr")
 
-    def run(self, process, directory, log_stdout, log_stderr):
-        prog = self.generate_executable(process._code, process.id, directory)
+    def run(self, process, reserved_path, log_stdout, log_stderr):
+        delete_path(reserved_path)
+        prog = self.generate_executable(process, reserved_path)
         self.print_header(process.id)
         ret_code = run_and_log(prog, log_stdout, log_stderr)
         self.print_logs(log_stdout, log_stderr)
@@ -128,8 +136,7 @@ class DownloadProcessor:
            or process.outputs[0].scheme != 'file':
             raise TuttleError("Download processor {} don't know how to handle his inputs / outputs".format(process.id))
 
-
-    def run(self, process, directory, log_stdout, log_stderr):
+    def run(self, process, reserved_path, log_stdout, log_stderr):
         # TODO how do we handle errors ?
         file_name = process.outputs[0]._path
         url = process.inputs[0].url

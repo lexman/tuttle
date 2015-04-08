@@ -1,22 +1,24 @@
-#!/usr/bin/env python
 # -*- coding: utf8 -*-
+from glob import glob
 
-
-
-from nose.tools import *
+from tests.functional_tests import isolate
+from tuttle.process import Process
 from tuttle.processors import BatProcessor
-from os import remove
-
+from os.path import join
 
 class TestBatProcessor():
 
+    @isolate
     def test_executable_generation(self):
         """Should generate an executable"""
         bp = BatProcessor()
         code = "bla bla\nblou"
-        bp.generate_executable(code, "bat_25", '.')
-        content = open("bat_25.bat").read()
+        processor = BatProcessor()
+        process = Process(processor, 23)
+        process.set_code(code)
+        bp.generate_executable(process, "bat_25")
+        print glob('*')
+        content = open("bat_25\\bat_23.bat").read()
         assert content.startswith("@echo off")
         assert content.find("bla bla") >= 0
         assert content.find("blou") >= 0
-        remove("bat_25.bat")
