@@ -19,7 +19,7 @@
         <div class="process">
             <h2 id="{{ process.id }}" name="{{ process.id }}"> {% if not process.start %}
             {% elif not process.end %} <span class="label label-info">Running</span>
-            {% elif not process.return_code %} <span class="label label-success">Success</span>
+            {% elif process.success %} <span class="label label-success">Success</span>
             {% else %} <span class="label label-danger">Failure</span>
             {% endif %}
             {{ process.id }}
@@ -42,7 +42,6 @@
                         <th>Start</th>
                         <th>End</th>
                         <th>Duration (s)</th>
-                        <th>Return code</th>
                         <th>Stdout</th>
                         <th>Stderr</th>
                     </tr>
@@ -52,7 +51,6 @@
                         <td>{{ process.start }}</td>
                         <td>{{ process.end }}</td>
                         <td>{{ process.duration }}</td>
-                        <td>{{ process.return_code }}</td>
                         <td><a href="{{ process.log_stdout }}"> download </a></td>
                         <td><a href="{{ process.log_stderr }}"> download </a></td>
                     </tr>

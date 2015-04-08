@@ -29,6 +29,7 @@ class Process:
         self.log_stdout = None
         self.log_stderr = None
         self.return_code = None
+        self.success = None
         self.id = "{}_{}".format( self._processor.name, self._line_num)
 
     def add_input(self, input_res):
@@ -48,6 +49,7 @@ class Process:
         self.start = process.start
         self.end = process.end
         self.return_code = process.return_code
+        self.success = process.success
         self.log_stdout = process.log_stdout
         self.log_stderr = process.log_stderr
 
@@ -68,6 +70,7 @@ class Process:
         self.log_stderr = log_stderr
         self.start = time()
         self.return_code = self._processor.run(self, reserved_path, self.log_stdout, self.log_stderr)
+        self.success = self.return_code == 0
         self.end = time()
         return self.return_code
 

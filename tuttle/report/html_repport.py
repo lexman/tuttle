@@ -31,6 +31,7 @@ def format_process(process):
         'inputs' : process.inputs,
         '_code' : process._code,
         'return_code' : return_code,
+        'success' : process.success,
     }
 
 def ensure_assets(module_dir, file_dir):

@@ -131,7 +131,7 @@ class Workflow:
         process.run(reserved_path, log_stdout, log_stderr)
         self.dump()
         self.create_reports()
-        if process.return_code != 0:
+        if process.success is False:
             msg = "Process {} ended with error code {}".format(process.id, process.return_code)
             raise ProcessExecutionError(msg)
         for res in process.outputs:
@@ -278,6 +278,6 @@ class Workflow:
 
     def pick_a_failing_process(self):
         for process in self.processes:
-            if process.end is not None and process.return_code != 0:
+            if process.end is not None and process.success is False:
                 return process
         return None
