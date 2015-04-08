@@ -129,8 +129,8 @@ file://file3 <- file://file1
             echo result > result
             """)
         process = workflow.processes[0]
-        makedirs('.tuttle')
-        workflow.run_process(process, '.', '.')
+        workflow.create_tuttle_dirs()
+        workflow.run_process(process)
         assert path.isfile("result")
         assert path.isfile("tuttle_report.html")
         assert path.isfile(path.join(".tuttle", "last_workflow.pickle"))
@@ -147,8 +147,8 @@ file://file3 <- file://file1
         workflow.pre_check_processes()
         try:
             process = workflow.processes[0]
-            makedirs('.tuttle')
-            workflow.run_process(process, '.', '.')
+            workflow.create_tuttle_dirs()
+            workflow.run_process(process)
             assert False, "Exception has not been not raised"
         except ResourceError:
             assert True

@@ -57,16 +57,15 @@ class Process:
         """
         self._processor.pre_check(self)
 
-    def run(self, directory, logs_dir):
+    def run(self, reserved_path, log_stdout, log_stderr):
         """
         Runs the process and retreive all the metadata : logs, return code, duration...
         :param directory: Directory where the processor can write files to execute
         :param logs_dir: Directory where the logs lie
         :return: The return code for the process
         """
-        self.log_stdout = path.join(logs_dir, "{}_stdout".format(self.id))
-        self.log_stderr = path.join(logs_dir, "{}_err".format(self.id))
-        reserved_path = path.join(directory, self.id)
+        self.log_stdout = log_stdout
+        self.log_stderr = log_stderr
         self.start = time()
         self.return_code = self._processor.run(self, reserved_path, self.log_stdout, self.log_stderr)
         self.end = time()

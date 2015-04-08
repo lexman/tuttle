@@ -126,8 +126,9 @@ class Workflow:
         for process in self.processes:
             process.pre_check()
 
-    def run_process(self, process, processes_dir, logs_dir):
-        process.run(processes_dir, logs_dir)
+    def run_process(self, process):
+        reserved_path, log_stdout, log_stderr = self.prepare_paths(process)
+        process.run(reserved_path, log_stdout, log_stderr)
         self.dump()
         self.create_reports()
         if process.return_code != 0:
@@ -158,7 +159,7 @@ class Workflow:
         return reserved_path, log_stdout, log_stderr
 
     def run(self):
-        """ Runs a workflow that has been previously prepared :
+        """ Runs a workflow by running every process in the right order
 
         :return:
         :raises ExecutionError if an error occurs
@@ -166,8 +167,7 @@ class Workflow:
         self.create_tuttle_dirs()
         process = self.pick_a_process_to_run()
         while process is not None:
-            reserved_path, log_stdout, log_stderr = self.prepare_paths(process)
-            self.run_process(process, self._processes_dir, self._logs_dir)
+            self.run_process(process)
             process = self.pick_a_process_to_run()
 
     def nick_from_url(self, url):
