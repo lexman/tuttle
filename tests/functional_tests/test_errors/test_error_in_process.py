@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import glob
+from os.path import isfile
 from tests.functional_tests import isolate, run_tuttle_file
 
 
@@ -54,7 +55,9 @@ file://D <- file://A
 """
         rcode, output = run_tuttle_file(first)
         assert rcode == 2
-
+        assert isfile('B')
+        assert not isfile('C')
+        assert not isfile('D')
         second = """file://B <- file://A
     echo A produces B
     echo B > B
@@ -71,4 +74,4 @@ file://D <- file://A
 """
         rcode, output = run_tuttle_file(second)
         assert rcode == 2
-        assert output.find("Workflow already failed") >= 0
+        assert output.find("Workflow already failed") >= 0, output

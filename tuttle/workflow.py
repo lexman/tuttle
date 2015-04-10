@@ -8,19 +8,7 @@ from report.html_repport import create_html_report
 from pickle import dump, load
 
 
-class ExecutionError(TuttleError):
-    def __init__(self, message):
-        self._message = message
-
-    def __str__(self):
-        return "Error while running the workflow : \n{}".format(self._message)
-
-
-class ProcessExecutionError(ExecutionError):
-    pass
-
-
-class ResourceError(ExecutionError):
+class ResourceError(TuttleError):
     pass
 
 
@@ -128,12 +116,11 @@ class Workflow:
 
     def run_process(self, process):
         reserved_path, log_stdout, log_stderr = self.prepare_paths(process)
-        process.run(reserved_path, log_stdout, log_stderr)
-        self.dump()
-        self.create_reports()
-        if process.success is False:
-            msg = "Process {} ended with error code {}".format(process.id, process.return_code)
-            raise ProcessExecutionError(msg)
+        try:
+            process.run(reserved_path, log_stdout, log_stderr)
+        finally:
+            self.dump()
+            self.create_reports()
         for res in process.outputs:
             if not res.exists():
                 msg = "After execution of process {} : resource {} should have been created".format(process.id,

@@ -9,6 +9,10 @@ from subprocess import Popen, PIPE
 from tuttle.error import TuttleError
 
 
+class ProcessExecutionError(TuttleError):
+    pass
+
+
 def run_and_log(prog, log_stdout, log_stderr):
     fout = open(log_stdout, 'w')
     ferr = open(log_stderr, 'w')
@@ -17,6 +21,9 @@ def run_and_log(prog, log_stdout, log_stderr):
     fout.close()
     ferr.close()
     rcode = osprocess.wait()
+    if rcode != 0:
+        msg = "Process ended with error code {}".format(rcode)
+        raise ProcessExecutionError(msg)
     return rcode
 
 

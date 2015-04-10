@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 
 from time import time
-from os import path
 
 
 class Process:
@@ -59,10 +58,16 @@ class Process:
         self.log_stdout = log_stdout
         self.log_stderr = log_stderr
         self.start = time()
-        return_code = self._processor.run(self, reserved_path, self.log_stdout, self.log_stderr)
-        self.success = return_code == 0
-        self.end = time()
-
+        try:
+            self._processor.run(self, reserved_path, self.log_stdout, self.log_stderr)
+        except:
+            self.success = False
+            raise
+        else:
+            self.success = True
+        finally:
+            self.end = time()
+#
     def has_same_inputs(self, other_process):
         """ Returns True if both process have exactly the same inputs, according to their urls, False otherwise
 

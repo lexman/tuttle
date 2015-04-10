@@ -64,7 +64,21 @@ file://D <- file://C
         assert rcode == 2
         report = file('tuttle_report.html').read()
         [_, sec1, sec2, sec3] = report.split('<h2')
-        assert sec1.find("<th>Start</th>") >= 0
-        assert sec2.find("<th>Start</th>") >= 0
-        assert sec3.find("<th>Start</th>") == -1
+        assert sec1.find("<th>Start</th>") >= 0, sec1
+        assert sec2.find("<th>Start</th>") >= 0, sec2
+        assert sec3.find("<th>Start</th>") == -1, sec3
+
+    @isolate(['A'])
+    def test_workflow_execution_should_stop_at_first_process_error(self):
+        """ Should invalidate a resource if the code creating it changes
+        """
+        project = """file://B <- file://A
+        echo A produces B > B
+        error
+
+file://C <- file://B
+        echo B produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        assert not path.exists('C')
 
