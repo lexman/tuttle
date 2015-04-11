@@ -9,8 +9,8 @@ class Process:
     """
 
     def __init__(self, processor, line_num):
-        self.start = None
-        self.end = None
+        self._start = None
+        self._end = None
         self._processor = processor
         self._line_num = line_num
         self.inputs = []
@@ -20,7 +20,27 @@ class Process:
         self.log_stderr = None
         self.return_code = None
         self.success = None
-        self.id = "{}_{}".format( self._processor.name, self._line_num)
+        self._id = "{}_{}".format( self._processor.name, self._line_num)
+
+    @property
+    def start(self):
+        return self._start
+
+    @property
+    def end(self):
+        return self._end
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def code(self):
+        return self._code
+
+    # Use a setter ?
+    def set_code(self, code):
+        self._code = code
 
     def add_input(self, input_res):
         self.inputs.append(input_res)
@@ -28,16 +48,30 @@ class Process:
     def add_output(self, output):
         self.outputs.append(output)
 
-    def set_code(self, code):
-        self._code = code
+    def iter_inputs(self):
+        for res in self.inputs:
+            yield res
+
+    def iter_outputs(self):
+        for res in self.outputs:
+            yield res
+
+    def has_outputs(self):
+        return len(self.outputs) > 0
+
+    def pick_an_output(self):
+        if not self.has_outputs():
+            return None
+        return self.outputs[0]
+
 
     def retrieve_execution_info(self, process):
         """ Copy the execution info (all the properties set by function run()) from another process
         :param process:
         :return:
         """
-        self.start = process.start
-        self.end = process.end
+        self._start = process.start
+        self._end = process.end
         self.success = process.success
         self.log_stdout = process.log_stdout
         self.log_stderr = process.log_stderr
@@ -57,7 +91,7 @@ class Process:
         """
         self.log_stdout = log_stdout
         self.log_stderr = log_stderr
-        self.start = time()
+        self._start = time()
         try:
             self._processor.run(self, reserved_path, self.log_stdout, self.log_stderr)
         except:
@@ -66,16 +100,16 @@ class Process:
         else:
             self.success = True
         finally:
-            self.end = time()
-#
+            self._end = time()
+
     def has_same_inputs(self, other_process):
         """ Returns True if both process have exactly the same inputs, according to their urls, False otherwise
 
         :param other_process:
         :return:
         """
-        self_inputs = set(in_res.url for in_res in self.inputs)
-        other_inputs = set(in_res.url for in_res in other_process.inputs)
+        self_inputs = set(in_res.url for in_res in self.iter_inputs())
+        other_inputs = set(in_res.url for in_res in other_process.iter_inputs())
         return self_inputs == other_inputs
 
     def all_inputs_exists(self):

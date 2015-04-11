@@ -25,8 +25,8 @@ def format_process(process):
         'duration' : duration,
         'log_stdout' : process.log_stdout,
         'log_stderr' : process.log_stderr,
-        'outputs' : process.outputs,
-        'inputs' : process.inputs,
+        'outputs' : process.iter_outputs(),
+        'inputs' : process.iter_inputs(),
         '_code' : process._code,
         'success' : process.success,
     }

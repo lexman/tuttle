@@ -137,16 +137,20 @@ class DownloadProcessor:
     user_agent = 'tuttle'
 
     def pre_check(self, process):
-        if len(process.inputs) != 1 \
-           or len(process.outputs) != 1 \
-           or process.inputs[0].scheme != 'http' \
-           or process.outputs[0].scheme != 'file':
+        inputs = [res for res in process.iter_inputs()]
+        outputs = [res for res in process.iter_outputs()]
+        if len(inputs) != 1 \
+           or len(outputs) != 1 \
+           or inputs[0].scheme != 'http' \
+           or outputs[0].scheme != 'file':
             raise TuttleError("Download processor {} don't know how to handle his inputs / outputs".format(process.id))
 
     def run(self, process, reserved_path, log_stdout, log_stderr):
         # TODO how do we handle errors ?
-        file_name = process.outputs[0]._path
-        url = process.inputs[0].url
+        inputs = [res for res in process.iter_inputs()]
+        outputs = [res for res in process.iter_outputs()]
+        file_name = outputs[0]._path
+        url = inputs[0].url
         headers = {"User-Agent" : self.user_agent}
         req = Request(url, headers = headers)
         fin = urlopen(req)
