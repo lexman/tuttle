@@ -1,9 +1,8 @@
 # -*- coding: utf8 -*-
-from shutil import copyfileobj, rmtree
+from shutil import copyfileobj
 from urllib2 import Request, urlopen
-from os.path import isdir, isfile
 
-from os import path, chmod, stat, mkdir, remove
+from os import path, chmod, stat, mkdir
 from stat import S_IXUSR, S_IXGRP, S_IXOTH
 from subprocess import Popen, PIPE
 from tuttle.error import TuttleError
