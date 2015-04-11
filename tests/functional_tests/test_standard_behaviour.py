@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from os.path import isfile, join
 
 from os import path
 from tests.functional_tests import isolate, run_tuttle_file
@@ -46,6 +47,8 @@ file://D <- file://C
 """
         rcode, output = run_tuttle_file(first)
         assert rcode == 2
+        assert isfile('tuttle_report.html')
+        assert path.isfile(path.join(".tuttle", "last_workflow.pickle"))
         second = """file://B <- file://A
     echo A produces B
     echo B > B

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from tests.functional_tests import isolate
+from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.workflow import *
 from test_project_parser import ProjectParser
 from os import path, makedirs
@@ -132,8 +132,20 @@ file://file3 <- file://file1
         workflow.create_tuttle_dirs()
         workflow.run_process(process)
         assert path.isfile("result")
-        assert path.isfile("tuttle_report.html")
+
+    @isolate(['A'])
+    def test_dump_and_report_workflow(self):
+        """
+        When a workflow is run, the report should be written and the state should be dumped, even if there is a failure
+        """
+        project = """file://result <- file://A
+            echo result > result
+            error
+            """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2
         assert path.isfile(path.join(".tuttle", "last_workflow.pickle"))
+
 
     @isolate
     def test_check_process_output(self):

@@ -116,11 +116,7 @@ class Workflow:
 
     def run_process(self, process):
         reserved_path, log_stdout, log_stderr = self.prepare_paths(process)
-        try:
-            process.run(reserved_path, log_stdout, log_stderr)
-        finally:
-            self.dump()
-            self.create_reports()
+        process.run(reserved_path, log_stdout, log_stderr)
         for res in process.outputs:
             if not res.exists():
                 msg = "After execution of process {} : resource {} should have been created".format(process.id,
@@ -154,7 +150,11 @@ class Workflow:
         self.create_tuttle_dirs()
         process = self.pick_a_process_to_run()
         while process is not None:
-            self.run_process(process)
+            try:
+                self.run_process(process)
+            finally:
+                self.dump()
+                self.create_reports()
             process = self.pick_a_process_to_run()
 
     def nick_from_url(self, url):
