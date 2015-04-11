@@ -141,6 +141,24 @@ class Workflow:
             remove(reserved_path)
         return reserved_path, log_stdout, log_stderr
 
+    def print_header(self, process):
+        print "=" * 60
+        print process.id
+        print "=" * 60
+
+    def print_log_if_exists(self, log_file, header):
+        if not isfile(log_file):
+            return
+        with open(log_file, "r") as f:
+            content = f.read()
+            if len(content) > 1:
+                print "--- {} : {}".format(header, "-" * (60 - len(header) - 7))
+                print content
+
+    def print_logs(self, process):
+        self.print_log_if_exists(process.log_stdout, "stdout")
+        self.print_log_if_exists(process.log_stderr, "stderr")
+
     def run(self):
         """ Runs a workflow by running every process in the right order
 
@@ -150,11 +168,13 @@ class Workflow:
         self.create_tuttle_dirs()
         process = self.pick_a_process_to_run()
         while process is not None:
+            self.print_header(process)
             try:
                 self.run_process(process)
             finally:
                 self.dump()
                 self.create_reports()
+            self.print_logs(process)
             process = self.pick_a_process_to_run()
 
     def nick_from_url(self, url):
