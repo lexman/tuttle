@@ -42,7 +42,7 @@ class Workflow:
     """ A workflow is a dependency tree of processes
     """
     def __init__(self):
-        self.processes = []
+        self._processes = []
         self.resources = None
 
     def add_process(self, process):
@@ -50,10 +50,10 @@ class Workflow:
         :param process:
         :return:
         """
-        self.processes.append(process)
+        self._processes.append(process)
 
     def iter_processes(self):
-        for process in self.processes:
+        for process in self._processes:
             yield process
 
     def missing_inputs(self):
@@ -93,7 +93,7 @@ class Workflow:
             # No more process to pick
             return None
 
-        # The idea is to remove the resource from the list as we simulate execution of processes
+        # The idea is to remove the resource from the list as we simulate execution of _processes
         p = pick_a_process()
         while p:
             for r in p.iter_outputs():

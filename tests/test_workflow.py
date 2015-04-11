@@ -3,7 +3,7 @@
 from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.workflow import *
 from test_project_parser import ProjectParser
-from os import path, makedirs
+from os import path
 
 
 class TestWorkflow():
@@ -97,11 +97,7 @@ file://file3 <- file://file2""")
             Updated code
 
 file://file3 <- file://file2""")
-        print(workflow1.resources)
-        print(workflow1.processes)
         invalid = workflow1.resources_to_invalidate(workflow2)
-        print invalid
-        print workflow1.resources['file://file2']
         assert len(invalid) == 2
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://file2"
@@ -117,7 +113,7 @@ file://file3 <- file://file1
 
 """)
         workflow.compute_dependencies()
-        assert workflow.resources['file://file1'].dependant_processes == [workflow.processes[0], workflow.processes[1]]
+        assert workflow.resources['file://file1'].dependant_processes == [workflow._processes[0], workflow._processes[1]]
 
     @isolate
     def test_run_process(self):
@@ -128,7 +124,7 @@ file://file3 <- file://file1
             """file://result <- file://source
             echo result > result
             """)
-        process = workflow.processes[0]
+        process = workflow._processes[0]
         workflow.create_tuttle_dirs()
         workflow.run_process(process)
         assert path.isfile("result")
@@ -158,7 +154,7 @@ file://file3 <- file://file1
             """)
         workflow.pre_check_processes()
         try:
-            process = workflow.processes[0]
+            process = workflow._processes[0]
             workflow.create_tuttle_dirs()
             workflow.run_process(process)
             assert False, "Exception has not been not raised"
