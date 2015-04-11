@@ -25,4 +25,5 @@ class TestHttpResource():
         pp.set_project(project)
         workflow = pp.parse_project()
         assert len(workflow.processes) == 1
-        assert len(workflow.processes[0].inputs) == 1
+        inputs = [res for res in workflow.processes[0].iter_inputs()]
+        assert len(inputs) == 1

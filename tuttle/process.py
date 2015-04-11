@@ -13,8 +13,8 @@ class Process:
         self._end = None
         self._processor = processor
         self._line_num = line_num
-        self.inputs = []
-        self.outputs = []
+        self._inputs = []
+        self._outputs = []
         self._code = ""
         self.log_stdout = None
         self.log_stderr = None
@@ -38,31 +38,31 @@ class Process:
     def code(self):
         return self._code
 
-    # Use a setter ?
+    # TODO Use a setter ?
     def set_code(self, code):
         self._code = code
 
     def add_input(self, input_res):
-        self.inputs.append(input_res)
+        self._inputs.append(input_res)
 
     def add_output(self, output):
-        self.outputs.append(output)
+        self._outputs.append(output)
 
     def iter_inputs(self):
-        for res in self.inputs:
+        for res in self._inputs:
             yield res
 
     def iter_outputs(self):
-        for res in self.outputs:
+        for res in self._outputs:
             yield res
 
     def has_outputs(self):
-        return len(self.outputs) > 0
+        return len(self._outputs) > 0
 
     def pick_an_output(self):
         if not self.has_outputs():
             return None
-        return self.outputs[0]
+        return self._outputs[0]
 
 
     def retrieve_execution_info(self, process):
@@ -116,7 +116,7 @@ class Process:
         """
         :return: True if all input resources for this process exist, False otherwise
         """
-        for in_res in self.inputs:
+        for in_res in self.iter_inputs():
             if not in_res.exists():
                 return False
         return True
