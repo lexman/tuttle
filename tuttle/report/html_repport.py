@@ -51,6 +51,6 @@ def create_html_report(workflow, filename):
     tpl_filename = path.join(module_dir, "report_template.html")
     with open(tpl_filename, "r") as ftpl:
         t = Template(ftpl.read())
-    processes = [format_process(p) for p in workflow.processes]
+    processes = [format_process(p) for p in workflow.iter_processes()]
     with open(filename, "w") as fout:
         fout.write(t.render(processes = processes, dot_src = dot(workflow)))

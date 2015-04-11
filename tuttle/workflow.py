@@ -52,6 +52,10 @@ class Workflow:
         """
         self.processes.append(process)
 
+    def iter_processes(self):
+        for process in self.processes:
+            yield process
+
     def missing_inputs(self):
         """ Check that all external resources that are necessary to run the workflow exist
         :return: a list of missing resources
@@ -71,7 +75,7 @@ class Workflow:
         :rtype: list
         """
         resources_to_build = [r for r in self.resources.itervalues() if r.creator_process]
-        processes_to_run = [p for p in self.processes]
+        processes_to_run = [p for p in self.iter_processes()]
 
         def all_inputs_built(process):
             """ Returns True if all inputs of this process where build, ie if the process can be executed """
@@ -102,7 +106,7 @@ class Workflow:
         """ Pick up a process to run
         :return:
         """
-        for process in self.processes:
+        for process in self.iter_processes():
             if process.start is None and process.all_inputs_exists():
                 return process
         return None
@@ -111,7 +115,7 @@ class Workflow:
         """ Runs a pre-check for every process, in order to catch early obvious errors, even before invalidation
         :return: None
         """
-        for process in self.processes:
+        for process in self.iter_processes():
             process.pre_check()
 
     def run_process(self, process):
@@ -249,7 +253,7 @@ class Workflow:
         for resource in self.resources.itervalues():
             resource.dependant_processes = []
 
-        for process in self.processes:
+        for process in self.iter_processes():
             for resource in process.iter_inputs():
                 resource.dependant_processes.append(process)
 
@@ -274,7 +278,7 @@ class Workflow:
          No need to retrieve information for the processes that are not in common
          """
         inv_urls = [res[0].url for res in invalidated_resources]
-        for prev_process in previous.processes:
+        for prev_process in previous.iter_processes():
             prev_output = prev_process.pick_an_output()
             if prev_output and prev_output.url not in inv_urls:
                 # When running this function, invalidation has been computed already
@@ -285,7 +289,7 @@ class Workflow:
                 pass
 
     def pick_a_failing_process(self):
-        for process in self.processes:
+        for process in self.iter_processes():
             if process.end is not None and process.success is False:
                 return process
         return None

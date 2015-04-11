@@ -96,3 +96,5 @@ Switch to pytest
 Refactor short names
 
 dump process status and start time just before running and just after, in case somebody would need this info at any time
+
+Create immutable processes from constructor no more add_input()
