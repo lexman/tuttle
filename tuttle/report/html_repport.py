@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf8 -*-
 
 from jinja2 import Template
@@ -6,6 +5,19 @@ from os import path, mkdir
 from shutil import copytree
 from time import strftime, localtime
 from dot_repport import dot
+from os.path import dirname, join, isdir
+import sys
+
+
+def data_path(*path_parts):
+    if getattr(sys, 'frozen', False):
+        # The application is frozen
+        datadir = join(dirname(sys.executable), "report")
+    else:
+        # The application is not frozen
+        # Change this bit to match where you store your data files:
+        datadir = dirname(__file__)
+    return join(datadir, *path_parts)
 
 
 def format_process(process):
@@ -31,13 +43,15 @@ def format_process(process):
         'success' : process.success,
     }
 
-def ensure_assets(module_dir, file_dir):
-    tuttle_dir = path.join(file_dir, '.tuttle')
-    if not path.isdir(tuttle_dir):
+
+def ensure_assets(dest_dir):
+    tuttle_dir = join(dest_dir, '.tuttle')
+    if not isdir(tuttle_dir):
         mkdir(tuttle_dir)
-    assets_dir = path.join(file_dir, '.tuttle', 'html_report_assets')
+    assets_dir = path.join(dest_dir, '.tuttle', 'html_report_assets')
     if not path.isdir(assets_dir):
-        copytree(path.join(module_dir, 'html_report_assets', ''), assets_dir,)
+        copytree(data_path('html_report_assets', ''), assets_dir,)
+
 
 def create_html_report(workflow, filename):
     """ Write an html file describing the workflow
@@ -45,10 +59,9 @@ def create_html_report(workflow, filename):
     :param filename: path to the html fil to be generated
     :return: None
     """
-    module_dir = path.dirname(__file__)
     file_dir = path.dirname(filename)
-    ensure_assets(module_dir, file_dir)
-    tpl_filename = path.join(module_dir, "report_template.html")
+    ensure_assets(file_dir)
+    tpl_filename = data_path("report_template.html")
     with open(tpl_filename, "r") as ftpl:
         t = Template(ftpl.read())
     processes = [format_process(p) for p in workflow.iter_processes()]

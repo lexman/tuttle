@@ -30,7 +30,7 @@ def main():
     tuttlefile_path = abspath(options.tuttlefile)
     if not exists(tuttlefile_path):
         print "No tuttlefile"
-        exit(2)
+        sys.exit(2)
     with CurrentDir(options.workspace):
         return parse_invalidate_and_run(tuttlefile_path)
 
