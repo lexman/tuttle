@@ -20,14 +20,14 @@ setup(name='tuttle',
                        'continuous data processing',
       platforms=['Linux', 'Windows'],
       url='http://tuttle.lexman.org/',
-      install_requires=['nose'],
       license='MIT',
-      packages=find_packages(),
-      data_files=[],
+      packages=['tuttle', 'tuttle.report'],
+      #data_files=[],
       scripts=[
        'bin/tuttle',
       ],
-      package_data={
-       #'': ['module_utils/*.ps1', 'modules/core/windows/*.ps1', 'modules/extras/windows/*.ps1'],
+      include_package_data = True,
+      package_data = {
+          'tuttle.report' :  ['*.html', 'html_report_assets/*'],
       },
 )
