@@ -9,6 +9,9 @@ from tuttle import __version__
 from urllib2 import Request, urlopen, URLError, HTTPError
 
 
+class MalformedUrl(TuttleError):
+    pass
+
 class FileResource:
     """A resource for a local file"""
     scheme = 'file'

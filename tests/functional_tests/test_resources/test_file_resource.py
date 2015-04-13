@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 
-
 from tuttle.resources import FileResource
+
 import tuttle.resources
 from os import path
 
