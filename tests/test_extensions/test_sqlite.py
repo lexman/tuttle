@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from tests.functional_tests import isolate
-from tuttle.extensions.sqlite import SQLiteResource
+from tuttle.extensions.sqlite import SQLiteResource, SQLiteTuttleError
 from tuttle.project_parser import ProjectParser
 
 
@@ -51,8 +51,7 @@ class TestSQLiteResource():
         process = pp.parse_dependencies_and_processor()
         assert process._processor.name == "sqlite"
 
-
-    def test_pre_check_should_fail_if_several_sqlite_files_are_ref(self):
+    def test_pre_check_should_fail_if_across_several_sqlite_files(self):
         """Pre-check should fail for SQLite processor if it is supposed to work with several SQLite files"""
         project = "sqlite://db1.sqlite/tables/my_table <- sqlite://db2.sqlite/tables/my_table #! sqlite"
         pp = ProjectParser()
@@ -60,8 +59,45 @@ class TestSQLiteResource():
         pp.read_line()
         process = pp.parse_dependencies_and_processor()
         assert process._processor.name == "sqlite"
+        try:
+            process.pre_check()
+            assert False, "Pre-check should not have allowed to sqlite files"
+        except SQLiteTuttleError:
+            assert True
 
+    def test_sqlite_pre_check_ok_with_no_outputs(self):
+        """Pre-check should work even if there are no outputs"""
+        project = " <- sqlite://db.sqlite/tables/my_table #! sqlite"
+        pp = ProjectParser()
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_dependencies_and_processor()
+        assert process._processor.name == "sqlite"
+        process.pre_check()
 
+    def test_sqlite_pre_check_ok_with_no_inputs(self):
+        """Pre-check should work even if there are no inputs"""
+        project = "sqlite://db.sqlite/tables/my_table <- #! sqlite"
+        pp = ProjectParser()
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_dependencies_and_processor()
+        assert process._processor.name == "sqlite"
+        process.pre_check()
+
+    def test_sqlite_pre_check_should_fail_without_sqlite_resources(self):
+        """Pre-check should fail if no SQLiteResources are specified either in inputs or outputs"""
+        project = "<- #! sqlite"
+        pp = ProjectParser()
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_dependencies_and_processor()
+        assert process._processor.name == "sqlite"
+        try:
+            process.pre_check()
+            assert False, "Pre-check should not have allowed SQLIteProcessor without SQLiteResources"
+        except SQLiteTuttleError:
+            assert True
 
 #    def test_real_resource_exists(self):
 #        """A real resource should exist"""

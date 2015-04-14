@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from itertools import chain
 
 import sqlite3
 from sqlite3 import OperationalError
@@ -18,7 +19,8 @@ class SQLiteProcessor:
 
     def _get_sqlite_file(self, process):
         filename = None
-        for resource in process.iter_inputs():
+        for resource in chain(process.iter_inputs(), process.iter_outputs()):
+            print filename, resource.db_file
             if isinstance(resource, SQLiteResource):
                 if filename is None:
                     filename = resource.db_file
@@ -28,21 +30,22 @@ class SQLiteProcessor:
                         "Found files {} and {}.".format(filename, resource.db_file))
         return filename
 
+    def pre_check(self, process):
+        # Will raise if file is ambiguous
+        for resource in chain(process.iter_inputs(), process.iter_outputs()):
+            if not isinstance(resource, SQLiteResource):
+                raise SQLiteTuttleError("Sorry, SQLite Processor can only handle SQLite resources "
+                                        "as inputs or outputs. Found : '{}'".format(resource.url))
+        sqlite_file = self._get_sqlite_file(process)
+        if sqlite_file is None:
+            raise SQLiteTuttleError(
+                "SQLite processor needs at least a SQLite resource as input or output... Don't know which database to connect to !")
+
     def run(self, process, reserved_path, log_stdout, log_stderr):
         conn = sqlite3.connect('example.db')
         prog = self.generate_executable(process, reserved_path)
         run_and_log(prog, log_stdout, log_stderr)
 
-    def pre_check(self, process):
-        # Will raise if file is ambiguous
-        sqlite_file = self._get_sqlite_file(process)
-        if sqlite_file is None:
-            raise SQLiteTuttleError(
-                "SQLite processor needs at least a SQLite resource as input or output")
-        for resource in process.iter_inputs():
-            if not isinstance(resource, SQLiteResource):
-                raise SQLiteTuttleError("Sorry, SQLite Processor can only handle SQLite resources "
-                                        "as inputs or outputs. Found : '{}'".format(resource.url))
 
 
 class SQLiteResource:
