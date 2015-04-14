@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from tests.functional_tests import isolate
+from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.extensions.sqlite import SQLiteResource, SQLiteTuttleError
 from tuttle.project_parser import ProjectParser
 
@@ -99,13 +99,40 @@ class TestSQLiteResource():
         except SQLiteTuttleError:
             assert True
 
-#    def test_real_resource_exists(self):
-#        """A real resource should exist"""
-#        file_url = "file://{}".format(path.abspath(tuttle.resources.__file__))
-#        res = FileResource(file_url)
-#        assert res.exists()
+    @isolate(['tests.sqlite'])
+    def test_sqlite_processor(self):
+        """A project with an SQLite processor should run the sql statements"""
+        project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table #! sqlite
+        CREATE TABLE new_table AS SELECT * FROM test_table;
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert output.find("CREATE TABLE new_table AS SELECT * FROM test_table"), \
+            "SQLiteProcessor should log the SQL statements"
 
-#    def test_fictive_resource_exists(self):
-#        """A real resource should exist"""
-#        res = FileResource("fictive_file")
-#        assert not res.exists()
+    @isolate(['tests.sqlite'])
+    def test_sqlite_processor_with_several_instuctions(self):
+        """ An SQLiteProcess can have several SQL instructions"""
+        project = """sqlite://tests.sqlite/tables/new_table, sqlite://tests.sqlite/tables/another_table  <- sqlite://tests.sqlite/tables/test_table #! sqlite
+        CREATE TABLE new_table AS SELECT * FROM test_table;
+
+        CREATE TABLE another_table (id int, col1 string);
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+
+    @isolate(['tests.sqlite'])
+    def test_sql_error_in_sqlite_processor(self):
+        """ If an error occurs, """
+        project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table #! sqlite
+        CREATE TABLE new_table AS SELECT * FROM test_table;
+
+        NOT an SQL statement;
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2
+        assert output is None, output
+
+# everal instructions
+# comments
+# errors

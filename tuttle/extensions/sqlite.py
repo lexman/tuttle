@@ -42,10 +42,20 @@ class SQLiteProcessor:
                 "SQLite processor needs at least a SQLite resource as input or output... Don't know which database to connect to !")
 
     def run(self, process, reserved_path, log_stdout, log_stderr):
-        conn = sqlite3.connect('example.db')
-        prog = self.generate_executable(process, reserved_path)
-        run_and_log(prog, log_stdout, log_stderr)
-
+        sqlite_file = self._get_sqlite_file(process)
+        db = sqlite3.connect(sqlite_file)
+        with open(log_stdout, "w") as lout, open(log_stderr, "w") as lerr:
+            try:
+                db.executescript(process._code)
+                lout.write(process._code)
+                lout.write("\n")
+            except OperationalError:
+                print "ERROR"
+                lerr.write(process._code)
+                lerr.write("\n")
+                raise
+            finally:
+                db.close()
 
 
 class SQLiteResource:
