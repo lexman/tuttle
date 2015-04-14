@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from tests.functional_tests import isolate
 from tuttle.extensions.sqlite import SQLiteResource
+from tuttle.project_parser import ProjectParser
 
 
 class TestSQLiteResource():
@@ -30,7 +31,36 @@ class TestSQLiteResource():
         """exists() should return True when the table exists"""
         url = "sqlite://tests.sqlite/tables/test_table"
         res = SQLiteResource(url)
-        assert res.exists() == True
+        assert res.exists()
+
+    @isolate(['tests.sqlite'])
+    def test_remove_table(self):
+        """exists() should return True when the table exists"""
+        url = "sqlite://tests.sqlite/tables/test_table"
+        res = SQLiteResource(url)
+        assert res.exists()
+        res.remove()
+        assert not res.exists()
+
+    def test_sqlite_processor_should_be_availlable(self):
+        """A project with an SQLite processor should be Ok"""
+        project = "sqlite://db.sqlite/tables/my_table <- sqlite://db.sqlite/tables/my_table #! sqlite"
+        pp = ProjectParser()
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_dependencies_and_processor()
+        assert process._processor.name == "sqlite"
+
+
+    def test_pre_check_should_fail_if_several_sqlite_files_are_ref(self):
+        """Pre-check should fail for SQLite processor if it is supposed to work with several SQLite files"""
+        project = "sqlite://db1.sqlite/tables/my_table <- sqlite://db2.sqlite/tables/my_table #! sqlite"
+        pp = ProjectParser()
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_dependencies_and_processor()
+        assert process._processor.name == "sqlite"
+
 
 
 #    def test_real_resource_exists(self):
