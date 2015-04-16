@@ -1,4 +1,6 @@
 # -*- coding: utf8 -*-
+from os import getcwd
+from os.path import join, isfile
 from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.extensions.sqlite import SQLiteResource, SQLiteTuttleError
 from tuttle.project_parser import ProjectParser
@@ -123,7 +125,7 @@ class TestSQLiteResource():
 
     @isolate(['tests.sqlite'])
     def test_sql_error_in_sqlite_processor(self):
-        """ If an error occurs, """
+        """ If an error occurs, tuttle should fail and output logs should trace the error"""
         project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table #! sqlite
         CREATE TABLE new_table AS SELECT * FROM test_table;
 
@@ -131,8 +133,7 @@ class TestSQLiteResource():
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 2
-        assert output is None, output
+        error_log = open(join('.tuttle', 'processes', 'logs', 'sqlite_1_err')).read()
+        assert error_log.find('near "NOT": syntax error') >= 0, error_log
 
-# everal instructions
 # comments
-# errors

@@ -2,7 +2,7 @@
 from itertools import chain
 
 import sqlite3
-from sqlite3 import OperationalError
+from sqlite3 import OperationalError, Error
 from os.path import isfile
 from re import compile
 from tuttle.error import TuttleError
@@ -12,6 +12,7 @@ from tuttle.resources import MalformedUrl
 class SQLiteTuttleError(TuttleError):
     pass
 
+
 class SQLiteProcessor:
     """ A processor for Windows command line
     """
@@ -20,7 +21,6 @@ class SQLiteProcessor:
     def _get_sqlite_file(self, process):
         filename = None
         for resource in chain(process.iter_inputs(), process.iter_outputs()):
-            print filename, resource.db_file
             if isinstance(resource, SQLiteResource):
                 if filename is None:
                     filename = resource.db_file
@@ -46,14 +46,14 @@ class SQLiteProcessor:
         db = sqlite3.connect(sqlite_file)
         with open(log_stdout, "w") as lout, open(log_stderr, "w") as lerr:
             try:
-                db.executescript(process._code)
                 lout.write(process._code)
                 lout.write("\n")
-            except OperationalError:
-                print "ERROR"
-                lerr.write(process._code)
+                db.executescript(process._code)
+            except OperationalError as e:
+                lerr.write(e.message)
                 lerr.write("\n")
-                raise
+                msg = "Error while running SQLite process {} : '{}'".format(process.id, e.message)
+                raise SQLiteTuttleError(msg)
             finally:
                 db.close()
 
