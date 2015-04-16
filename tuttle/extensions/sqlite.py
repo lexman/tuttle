@@ -3,6 +3,7 @@ from itertools import chain
 
 import sqlite3
 from sqlite3 import OperationalError, Error
+from os import remove
 from os.path import isfile
 from re import compile
 from tuttle.error import TuttleError
@@ -91,14 +92,19 @@ class SQLiteResource:
             db.close()
         return True
 
-    def remove_file_if_empty(self):
-        pass
+    def remove_file_if_empty(self, db):
+        cur = db.cursor()
+        cur.execute("SELECT COUNT(*) FROM sqlite_master AS nb")
+        raw = cur.fetchone()
+        if raw[0] == 0:
+            db.close()
+            remove(self.db_file)
 
     def remove(self):
         db = sqlite3.connect(self.db_file)
         try:
-            cur = db.cursor()
-            cur.execute("DROP TABLE {}".format(self.table))
+            db.execute("DROP TABLE {}".format(self.table))
+            self.remove_file_if_empty(db)
         finally:
             db.close()
 

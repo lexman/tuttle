@@ -1,5 +1,4 @@
 # -*- coding: utf8 -*-
-from os import getcwd
 from os.path import join, isfile
 from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.extensions.sqlite import SQLiteResource, SQLiteTuttleError
@@ -148,3 +147,30 @@ class TestSQLiteResource():
         error_log = open(join('.tuttle', 'processes', 'logs', 'sqlite_1_err')).read()
         assert rcode == 0, error_log
         assert output.find("comment") >= 0
+
+    @isolate(['tests.sqlite'])
+    def test_sqlite_file_should_be_deleted_if_empty_after_remove(self):
+        """ When an SQLiteResource is removed, the sqlite file should be delete if it is empty """
+        url = "sqlite://tests.sqlite/tables/test_table"
+        res = SQLiteResource(url)
+        assert res.exists()
+        assert isfile("tests.sqlite")
+        res.remove()
+        assert not res.exists()
+        assert not isfile("tests.sqlite")
+
+    @isolate(['tests.sqlite'])
+    def test_sqlite_file_should_not_be_deleted_if_not_empty_after_remove(self):
+        """ When an SQLiteResource is removed, then sqlite file should be not delete if it is not empty """
+        project = """sqlite://tests.sqlite/tables/to_be_removed <- #! sqlite
+        CREATE TABLE to_be_removed AS SELECT * FROM test_table;
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0
+        # The table exists !
+        url = "sqlite://tests.sqlite/tables/to_be_removed"
+        res = SQLiteResource(url)
+        assert isfile("tests.sqlite")
+        res.remove()
+        assert not res.exists()
+        assert isfile("tests.sqlite")
