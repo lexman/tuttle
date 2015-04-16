@@ -136,4 +136,15 @@ class TestSQLiteResource():
         error_log = open(join('.tuttle', 'processes', 'logs', 'sqlite_1_err')).read()
         assert error_log.find('near "NOT": syntax error') >= 0, error_log
 
-# comments
+    @isolate(['tests.sqlite'])
+    def test_comments_in_process(self):
+        """ If an error occurs, tuttle should fail and output logs should trace the error"""
+        project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table #! sqlite
+        CREATE TABLE new_table AS SELECT * FROM test_table;
+        -- This is a comment
+        /* last comment style*/
+        """
+        rcode, output = run_tuttle_file(project)
+        error_log = open(join('.tuttle', 'processes', 'logs', 'sqlite_1_err')).read()
+        assert rcode == 0, error_log
+        assert output.find("comment") >= 0
