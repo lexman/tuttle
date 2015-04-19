@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from report.html_repport import create_html_report
 from pickle import dump, load
-from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, prepare_paths, run_process
+from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, run_process
 
 
 class InvalidationReason:
