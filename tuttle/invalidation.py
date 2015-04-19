@@ -2,7 +2,7 @@
 
 
 from error import TuttleError
-from workflow import Workflow, InvalidationReason
+from workflow import Workflow
 
 
 class AlreadyFailedError(TuttleError):
@@ -28,4 +28,3 @@ def invalidate(workflow):
                 # sometimes, a resource has not been created by the process, that's why it failed !
                 print "* {} - {}".format(resource.url, reason)
                 resource.remove()
-    # actual invalidation goes here
