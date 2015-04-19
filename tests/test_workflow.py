@@ -4,6 +4,7 @@ from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.workflow import *
 from test_project_parser import ProjectParser
 from os import path
+from tuttle.workflow_runner import ResourceError
 
 
 class TestWorkflow():

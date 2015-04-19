@@ -1,15 +1,7 @@
 # -*- coding: utf8 -*-
-from shutil import rmtree
-from os.path import isdir, isfile
-
-from error import TuttleError
-from os import path, makedirs, remove
 from report.html_repport import create_html_report
 from pickle import dump, load
-
-
-class ResourceError(TuttleError):
-    pass
+from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, prepare_paths, run_process
 
 
 class InvalidationReason:
@@ -32,10 +24,6 @@ class InvalidationReason:
 
     def __str__(self):
         return self.messages[self._reason]
-
-
-def tuttle_dir(*args):
-    return path.join(".tuttle", *args)
 
 
 class Workflow:
@@ -118,67 +106,22 @@ class Workflow:
         for process in self.iter_processes():
             process.pre_check()
 
-    def run_process(self, process):
-        reserved_path, log_stdout, log_stderr = self.prepare_paths(process)
-        process.run(reserved_path, log_stdout, log_stderr)
-        for res in process.iter_outputs():
-            if not res.exists():
-                msg = "After execution of process {} : resource {} should have been created".format(process.id,
-                                                                                                    res.url)
-                raise ResourceError(msg)
-
-    def create_tuttle_dirs(self):
-        self._processes_dir = tuttle_dir("processes")
-        if not path.isdir(self._processes_dir):
-            makedirs(self._processes_dir)
-        self._logs_dir = tuttle_dir("processes", 'logs')
-        if not path.isdir(self._logs_dir):
-            makedirs(self._logs_dir)
-
-    def prepare_paths(self, process):
-        log_stdout = path.join(self._logs_dir, "{}_stdout".format(process.id))
-        log_stderr = path.join(self._logs_dir, "{}_err".format(process.id))
-        reserved_path = path.join(self._processes_dir, process.id)
-        if isdir(reserved_path):
-            rmtree(reserved_path)
-        elif isfile(reserved_path):
-            remove(reserved_path)
-        return reserved_path, log_stdout, log_stderr
-
-    def print_header(self, process):
-        print "=" * 60
-        print process.id
-        print "=" * 60
-
-    def print_log_if_exists(self, log_file, header):
-        if not isfile(log_file):
-            return
-        with open(log_file, "r") as f:
-            content = f.read()
-            if len(content) > 1:
-                print "--- {} : {}".format(header, "-" * (60 - len(header) - 7))
-                print content
-
-    def print_logs(self, process):
-        self.print_log_if_exists(process.log_stdout, "stdout")
-        self.print_log_if_exists(process.log_stderr, "stderr")
-
     def run(self):
         """ Runs a workflow by running every process in the right order
 
         :return:
         :raises ExecutionError if an error occurs
         """
-        self.create_tuttle_dirs()
+        create_tuttle_dirs()
         process = self.pick_a_process_to_run()
         while process is not None:
-            self.print_header(process)
+            print_header(process)
             try:
-                self.run_process(process)
+                run_process(process)
             finally:
                 self.dump()
                 self.create_reports()
-            self.print_logs(process)
+            print_logs(process)
             process = self.pick_a_process_to_run()
 
     def nick_from_url(self, url):
@@ -193,7 +136,6 @@ class Workflow:
 
     def dump(self):
         """ Pickles the workflow and writes it to last_workflow.pickle
-
         :return: None
         """
         with open(tuttle_dir("last_workflow.pickle"), "w") as f:
@@ -270,12 +212,13 @@ class Workflow:
             for dependant_process in resource.dependant_processes:
                 for dependant_resource in dependant_process.iter_outputs():
                     if dependant_resource not in invalid_resources:
-                        invalid_resources.append( (dependant_resource, InvalidationReason(InvalidationReason.DEPENDENCY_CHANGED)) )
+                        invalid_resources.append((dependant_resource,
+                                                  InvalidationReason(InvalidationReason.DEPENDENCY_CHANGED)))
         return invalid_resources
 
     def retrieve_execution_info(self, previous, invalidated_resources):
-        """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow, where the processes are in common
-         No need to retrieve information for the processes that are not in common
+        """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
+         where the processes are in common. No need to retrieve information for the processes that are not in common
          """
         inv_urls = [res[0].url for res in invalidated_resources]
         for prev_process in previous.iter_processes():
