@@ -124,10 +124,6 @@ class Workflow:
             print_logs(process)
             process = self.pick_a_process_to_run()
 
-    def nick_from_url(self, url):
-        parts = url.split("/")
-        return parts.pop()
-
     def create_reports(self):
         """ Write to disk files describing the workflow, with color for states
         :return: None
