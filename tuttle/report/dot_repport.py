@@ -20,7 +20,7 @@ def color_from_process(process):
 
 
 # TODO nick names for resources should be uniq
-def nick_from_url(self, url):
+def nick_from_url(url):
     parts = url.split("/")
     return parts.pop()
 
