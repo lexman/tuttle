@@ -29,7 +29,7 @@ class ShellProcessor:
     """ A processor to run *nix shell code
     """
     name = 'shell'
-    header = "#!/usr/bin/env sh\nset -e\nset -o\n"
+    header = "#!/usr/bin/env sh\nset -e\nset -x\n"
 
     def generate_executable(self, process, script_path):
         """ Create an executable file

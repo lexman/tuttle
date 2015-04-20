@@ -200,4 +200,4 @@ file://B <- file://A
             echo A creates B
             """)
         p = workflow.pick_a_process_to_run()
-        assert p.id == "bat_5", p.id
+        assert p.id.find("_5") >= 0, p.id

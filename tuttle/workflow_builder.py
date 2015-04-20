@@ -6,7 +6,7 @@ from processors import *
 from process import Process
 from tuttle.extensions.sqlite import SQLiteProcessor, SQLiteResource
 from tuttle.resources import HTTPResource
-
+import os
 
 class WorkflowBuilder():
     """A helper class to build Process classes from the name of processors and resources"""
@@ -24,7 +24,10 @@ class WorkflowBuilder():
         self._processors['bat'] = BatProcessor()
         self._processors['download'] = DownloadProcessor()
         self._processors['sqlite'] = SQLiteProcessor()
-        self._processors['default'] = self._processors['bat']
+        if os.name =="nt":
+            self._processors['default'] = self._processors['bat']
+        else:
+            self._processors['default'] = self._processors['shell']
 
     def extract_scheme(self, url):
         """Extract the scheme from an url
