@@ -65,3 +65,23 @@ file://D <- file://A
         rcode, output = run_tuttle_file(project2)
         assert rcode == 0
         assert output.find("* file://B") >= 0
+
+    @isolate(['A', 'B'])
+    def test_resource_is_now_created_by_tuttle(self):
+        """ If a resource used to be primary but is now created by tuttle, it should be invalidated """
+        first = """file://C <- file://B
+    echo B produces C
+    echo C > C
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0
+        second = """file://B <- file://A
+    echo A produces B
+    echo B > B
+
+file://C <- file://B
+    echo B produces C
+    echo C > C"""
+        rcode, output = run_tuttle_file(second)
+        assert rcode == 0
+        assert output.find("* file://B") >= 0, output

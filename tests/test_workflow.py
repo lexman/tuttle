@@ -44,10 +44,10 @@ class TestWorkflow():
         Updated code
 """)
         invalid = workflow1.resources_not_created_the_same_way(workflow2)
-        assert len(invalid) == 1
+        assert len(invalid) == 1, [(res.url, reason._reason) for (res, reason,) in invalid]
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://result"
-        assert invalidation_reason._reason == InvalidationReason.PROCESS_CHANGED
+        assert invalidation_reason._reason == InvalidationReason.PROCESS_CHANGED, invalidation_reason._reason
 
     def test_invalidate_removed_resource(self):
         """ Should invalidate a resource if it is not created anymore
@@ -62,8 +62,7 @@ file://file3 <- file://file1
 """)
 
         invalid = workflow1.resources_not_created_the_same_way(workflow2)
-        print invalid
-        assert len(invalid) == 1
+        assert len(invalid) == 1, [(res.url, reason._reason) for (res, reason,) in invalid]
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://file2"
         assert invalidation_reason._reason == InvalidationReason.NO_LONGER_CREATED
@@ -80,7 +79,7 @@ file://file3 <- file://file1
         Some code
 """)
         invalid = workflow1.resources_not_created_the_same_way(workflow2)
-        assert len(invalid) == 1
+        assert len(invalid) == 1, [(res.url, reason._reason) for (res, reason,) in invalid]
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://result"
         assert invalidation_reason._reason == InvalidationReason.NOT_SAME_INPUTS
@@ -99,7 +98,7 @@ file://file3 <- file://file2""")
 
 file://file3 <- file://file2""")
         invalid = workflow1.resources_to_invalidate(workflow2)
-        assert len(invalid) == 2
+        assert len(invalid) == 2, [(res.url, reason._reason) for (res, reason,) in invalid]
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://file2"
         assert invalidation_reason._reason == InvalidationReason.PROCESS_CHANGED

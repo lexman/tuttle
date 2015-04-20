@@ -8,14 +8,16 @@ class InvalidationReason:
     NO_LONGER_CREATED = 0
     NOT_SAME_INPUTS = 1
     PROCESS_CHANGED = 2
-    RESOURCE_NOT_CREATED_BY_TUTTLE = 3
-    DEPENDENCY_CHANGED = 4
+    MUST_CREATE_RESOURCE = 3
+    RESOURCE_NOT_CREATED_BY_TUTTLE = 4
+    DEPENDENCY_CHANGED = 5
 
     messages = [
         "Resource no longer created by the newer process",
         "Resource was created with different inputs",
         "Process code changed",
-        "Resource has not been created by tuttle",
+        "The former primary resource has to be created by tuttle",
+        "The existing resource has not been created by tuttle",
         "Resource depends on another resource that have changed",
     ]
 
@@ -146,8 +148,16 @@ class Workflow:
             return None
 
     def find_process_that_creates(self, url):
+        """
+        :param url: Returns the process that creates this url. this url is supposed to be created by this workflow,
+        so check creates_url() before calling this method
+        :return:
+        """
+        return self.resources[url].creator_process
+
+    def find_resource(self, url):
         if url in self.resources:
-            return self.resources[url].creator_process
+            return self.resources[url]
         else:
             return None
 
@@ -163,18 +173,19 @@ class Workflow:
         changing_resources = []
         # TODO : could be optimized by not checking twice a process that creates two outputs
         for url, resource in self.resources.iteritems():
-            creator_process = resource.creator_process
-            if creator_process is not None:
-                # Resources not created by a process don't have to be invalidated
-                newer_process = newer_workflow.find_process_that_creates(url)
-                if newer_process is None:
-                    # TODO : if a resource used to be created be by the workflow
-                    # but is now a primary input, we should not remove it
+            newer_resource = newer_workflow.find_resource(url)
+            if newer_resource is None:
+                if not resource.is_primary():
                     changing_resources.append((resource, InvalidationReason(InvalidationReason.NO_LONGER_CREATED)))
-                elif not resource.creator_process.has_same_inputs(newer_process):
+            elif not newer_resource.is_primary():
+                # Only not generated resources need to be invalidated
+                if resource.is_primary():
+                    changing_resources.append((resource, InvalidationReason(InvalidationReason.MUST_CREATE_RESOURCE)))
+                elif not resource.created_by_same_inputs(newer_resource):
                     changing_resources.append((resource, InvalidationReason(InvalidationReason.NOT_SAME_INPUTS)))
-                elif resource.creator_process._code != newer_process._code:
+                elif resource.creator_process._code != newer_resource.creator_process._code:
                     changing_resources.append((resource, InvalidationReason(InvalidationReason.PROCESS_CHANGED)))
+            # Primary resources must not be invalidated
         return changing_resources
 
     def resources_not_created_by_tuttle(self):

@@ -27,10 +27,18 @@ class ResourceMixIn:
         """ Returns True if the resources is a primary resource, ie if it not computed by tuttle but is needed
         to compute other resources.
         This information is meaningful only in a workflow context : it is valid only after
-        a call to workflow.compute_dependancies()
+        a call to workflow.compute_dependencies()
         :return: True if resource is a primary resource
         """
         return self.creator_process is None
+
+    def created_by_same_inputs(self, other_resource):
+        """
+        Call to depends_on_same_inputs is valid only if both resources are not primary (ie creator_process exists !)
+        """
+        self_inputs = set(in_res.url for in_res in self.creator_process.iter_inputs())
+        other_inputs = set(in_res.url for in_res in other_resource.creator_process.iter_inputs())
+        return self_inputs == other_inputs
 
 
 class FileResource(ResourceMixIn, object):

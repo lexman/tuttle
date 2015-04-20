@@ -102,16 +102,6 @@ class Process:
         finally:
             self._end = time()
 
-    def has_same_inputs(self, other_process):
-        """ Returns True if both process have exactly the same inputs, according to their urls, False otherwise
-
-        :param other_process:
-        :return:
-        """
-        self_inputs = set(in_res.url for in_res in self.iter_inputs())
-        other_inputs = set(in_res.url for in_res in other_process.iter_inputs())
-        return self_inputs == other_inputs
-
     def all_inputs_exists(self):
         """
         :return: True if all input resources for this process exist, False otherwise
