@@ -23,6 +23,15 @@ class ResourceMixIn:
     def set_creator_process(self, process):
         self.creator_process = process
 
+    def is_primary(self):
+        """ Returns True if the resources is a primary resource, ie if it not computed by tuttle but is needed
+        to compute other resources.
+        This information is meaningful only in a workflow context : it is valid only after
+        a call to workflow.compute_dependancies()
+        :return: True if resource is a primary resource
+        """
+        return self.creator_process is None
+
 
 class FileResource(ResourceMixIn, object):
     """A resource for a local file"""

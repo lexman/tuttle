@@ -36,7 +36,7 @@ def dot(workflow):
         for res_input in process.iter_inputs():
             nick = nick_from_url(res_input.url)
             result += '    "{}" -> {} [arrowhead="none"] \n'.format(nick, p_node)
-            if res_input.creator_process is None:
+            if res_input.is_primary():
                 result += '    "{}" [fillcolor=beige] ;\n'.format(nick)
         color = color_from_process(process)
         for res_output in process.iter_outputs():

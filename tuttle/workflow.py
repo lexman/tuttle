@@ -45,13 +45,13 @@ class Workflow:
             yield process
 
     def missing_inputs(self):
-        """ Check that all external resources that are necessary to run the workflow exist
+        """ Check that all primary resources (external resources) that are necessary to run the workflow exist
         :return: a list of missing resources
         :rtype: list
         """
         missing = []
         for resource in self.resources.itervalues():
-            if resource.creator_process is None:
+            if resource.is_primary():
                 if not resource.exists():
                     missing.append(resource)
         return missing
