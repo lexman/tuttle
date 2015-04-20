@@ -2,12 +2,12 @@
 from itertools import chain
 
 import sqlite3
-from sqlite3 import OperationalError, Error
+from sqlite3 import OperationalError
 from os import remove
 from os.path import isfile
 from re import compile
 from tuttle.error import TuttleError
-from tuttle.resources import MalformedUrl
+from tuttle.resources import MalformedUrl, ResourceMixIn
 
 
 class SQLiteTuttleError(TuttleError):
@@ -59,7 +59,7 @@ class SQLiteProcessor:
                 db.close()
 
 
-class SQLiteResource:
+class SQLiteResource(ResourceMixIn, object):
     """A resource for a table in a SQLite database"""
     """eg : sqlite://relative/path/to/sqlite_file/tables/mytable"""
     scheme = 'sqlite'
@@ -67,16 +67,13 @@ class SQLiteResource:
     ereg = compile("^sqlite://(.*)/tables/([^/]*)$")
 
     def __init__(self, url):
-        self.url = url
-        self.creator_process = None
+        super(SQLiteResource, self).__init__(url)
         m = self.ereg.match(url)
         if m is None:
             raise MalformedUrl("Malformed Sqlite url : '{}'".format(url))
         self.db_file = m.group(1)
         self.table = m.group(2)
 
-    def set_creator_process(self, process):
-        self.creator_process = process
 
     def exists(self):
         if not isfile(self.db_file):

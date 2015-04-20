@@ -12,19 +12,27 @@ from urllib2 import Request, urlopen, URLError, HTTPError
 class MalformedUrl(TuttleError):
     pass
 
-class FileResource:
-    """A resource for a local file"""
-    scheme = 'file'
+
+class ResourceMixIn:
+    """ Common behaviour for all resources """
 
     def __init__(self, url):
         self.url = url
         self.creator_process = None
-        self._path = self.get_path()
 
     def set_creator_process(self, process):
         self.creator_process = process
 
-    def get_path(self):
+
+class FileResource(ResourceMixIn, object):
+    """A resource for a local file"""
+    scheme = 'file'
+
+    def __init__(self, url):
+        super(FileResource, self).__init__(url)
+        self._path = self._get_path()
+
+    def _get_path(self):
         return abspath(self.url[len("file://"):])
 
     def exists(self):
@@ -34,17 +42,13 @@ class FileResource:
         remove(self._path)
 
 
-class HTTPResource:
+class HTTPResource(ResourceMixIn, object):
     """An HTTP resource"""
     scheme = 'http'
     user_agent = "tuttle/{}".format(__version__)
 
     def __init__(self, url):
-        self.url = url
-        self.creator_process = None
-
-    def set_creator_process(self, process):
-        self.creator_process = process
+        super(HTTPResource, self).__init__(url)
 
     def exists(self):
         try:
