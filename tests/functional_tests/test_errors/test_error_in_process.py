@@ -3,6 +3,7 @@
 import glob
 from os.path import isfile
 from tests.functional_tests import isolate, run_tuttle_file
+from tuttle.project_parser import ProjectParser
 
 
 class TestErrorInProcess():
@@ -79,3 +80,26 @@ file://D <- file://A
         rcode, output = run_tuttle_file(second)
         assert rcode == 2
         assert output.find("Workflow already failed") >= 0, output
+
+
+    @isolate(['A'])
+    def test_process_fail_if_output_not_create(self):
+        """  If the all the outputs of a process have not been create, the process should be marked as failed
+        even if no error occurred.
+        Useful when displaying html report
+        """
+
+        first = """file://B <- file://A
+    echo A won't produce B
+"""
+
+        pp = ProjectParser()
+        pp.set_project(first)
+        workflow = pp.parse_and_check_project()
+        try:
+            workflow.run()
+            assert False, "A resource error should have been raised"
+        except:
+            assert True
+        process = workflow._processes[0]
+        assert process.success is False, "Process should be marked as failed"

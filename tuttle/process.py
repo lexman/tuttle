@@ -101,6 +101,13 @@ class Process:
         finally:
             self._end = time()
 
+    def post_fail(self):
+        """
+        Called if post verification that every resource have been created failed
+        """
+        self.success = False
+
+
     def all_inputs_exists(self):
         """
         :return: True if all input resources for this process exist, False otherwise

@@ -39,6 +39,7 @@ def run_process(process):
     process.run(reserved_path, log_stdout, log_stderr)
     for res in process.iter_outputs():
         if not res.exists():
+            process.post_fail()
             msg = "After execution of process {} : resource {} should have been created".format(process.id,
                                                                                                 res.url)
             raise ResourceError(msg)
