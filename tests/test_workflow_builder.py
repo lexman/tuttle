@@ -50,9 +50,9 @@ class TestProjectBuilder():
     def test_build_process_with_default_processor(self):
         """Building a process with default processor should return a shell processor"""
         wb = WorkflowBuilder()
-        process = wb.build_process(69)
+        process = wb.build_process(69, "shell")
         # TODO : get back to shell processors by default
-        # assert process._processor.name == "shell"
+        assert process._processor.name == "shell"
         assert process._line_num == 69
 
     def test_build_process_with_unknown_processor(self):

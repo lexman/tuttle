@@ -101,16 +101,16 @@ class ProjectParser():
         process = self.wb.build_process(self._num_line, processor_name)
         if not process:
             raise InvalidProcessorError("Invalid processor : '{}' ".format(processor_name), self._num_line)
-        inputs = self._line[arrow_pos + 2:shebang_pos].split(',')
-        if len(inputs) > 1 or inputs[0].strip() != "":
-            for input_url in inputs:
+        input_urls = self._line[arrow_pos + 2:shebang_pos].split(',')
+        if len(input_urls) > 1 or input_urls[0].strip() != "":
+            for input_url in input_urls:
                 in_res = self.wb.get_or_build_resource(input_url.strip(), self.resources)
                 if in_res is None:
                     raise InvalidResourceError("Invalid resource url : '{}' in inputs".format(input_url.strip()), self._num_line)
                 process.add_input(in_res)
-        outputs = self._line[:arrow_pos].split(',')
-        if len(outputs) > 1 or outputs[0].strip() != "":
-            for output_url in outputs:
+        outputs_urls = self._line[:arrow_pos].split(',')
+        if len(outputs_urls) > 1 or outputs_urls[0].strip() != "":
+            for output_url in outputs_urls:
                 out_res = self.wb.get_or_build_resource(output_url.strip(), self.resources)
                 if out_res is None:
                     raise InvalidResourceError("Invalid resource url : '{}' in outputs".format(output_url.strip()), self._num_line)

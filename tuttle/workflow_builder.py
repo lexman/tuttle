@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf8 -*-
 
 from resources import FileResource
@@ -46,7 +45,7 @@ class WorkflowBuilder():
         ResDefClass = self._resources_definition[scheme]
         return ResDefClass(url)
     
-    def build_process(self, line_num, processor="default"):
+    def build_process(self, line_num, processor):
         if processor in self._processors:
             return Process(self._processors[processor], line_num)
         else:
