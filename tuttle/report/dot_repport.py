@@ -11,7 +11,7 @@ def color_from_process(process):
         if not process.end:
             # Running
             color = "skyblue"
-        elif not process.return_code:
+        elif process.success:
             # success
             color = "green"
         else:

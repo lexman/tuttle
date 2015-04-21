@@ -18,7 +18,6 @@ class Process:
         self._code = ""
         self.log_stdout = None
         self.log_stderr = None
-        self.return_code = None
         self.success = None
         self._id = "{}_{}".format( self._processor.name, self._line_num)
 
