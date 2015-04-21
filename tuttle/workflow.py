@@ -123,7 +123,7 @@ class Workflow:
             finally:
                 self.dump()
                 self.create_reports()
-            print_logs(process)
+                print_logs(process)
             process = self.pick_a_process_to_run()
 
     def create_reports(self):

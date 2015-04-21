@@ -11,6 +11,7 @@ class TestErrorInProcess():
     def test_error_in_process(self):
         """  When a process fail, Tuttle should exit with status code 2"""
         # As in Gnu Make
+
         first = """file://B <- file://A
     echo A produces B
     echo B > B
@@ -26,6 +27,9 @@ file://D <- file://A
 """
         rcode, output = run_tuttle_file(first)
         assert rcode == 2
+        assert output.find("- stderr : -") >= 0, output
+        assert output.find("Obvious") >= 0, output
+        assert output.find("Process ended with error code 1") >= 0, output
 
     @isolate(['A', 'test_error_in_process.py'])
     def test_isolation_decorator(self):
