@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
 from glob import glob
-
 from tests.functional_tests import isolate
 from tuttle.process import Process
 from tuttle.processors import BatProcessor
@@ -18,7 +17,7 @@ class TestBatProcessor():
         process.set_code(code)
         bp.generate_executable(process, "bat_25")
         print glob('*')
-        content = open("bat_25\\bat_23.bat").read()
+        content = open(join("bat_25", "bat_23.bat")).read()
         assert content.startswith("@echo off")
         assert content.find("bla bla") >= 0
         assert content.find("blou") >= 0

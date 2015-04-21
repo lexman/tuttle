@@ -30,7 +30,7 @@ file://D <- file://A
     @isolate(['A', 'test_error_in_process.py'])
     def test_isolation_decorator(self):
         files = glob.glob("*")
-        assert files == ['A', 'test_error_in_process.py']
+        assert files == ['A', 'test_error_in_process.py'], files
 
     @isolate
     def test_isolation_decorator_without_args(self):
