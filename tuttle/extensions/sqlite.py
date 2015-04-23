@@ -104,5 +104,3 @@ class SQLiteResource(ResourceMixIn, object):
             self.remove_file_if_empty(db)
         finally:
             db.close()
-
-
