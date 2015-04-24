@@ -2,6 +2,8 @@
 
 from tests.functional_tests import isolate, run_tuttle_file
 import sqlite3
+import shutil
+from os import path, getcwd
 
 
 class TestSQLiteResource():
@@ -91,12 +93,26 @@ class TestSQLiteResource():
         project = """sqlite://db.sqlite/tables/pop <- csv://test.csv #! csv2sqlite
         """
         rcode, output = run_tuttle_file(project)
-        print output
         assert rcode == 0, output
-        db = sqlite3.connect('db.sqlite')
-        cur = db.cursor()
-        all = cur.fetchall()
-        assert False, all
+        with sqlite3.connect('db.sqlite') as db:
+            cur = db.cursor()
+            cur.execute("SELECT * FROM pop")
+            expected = u"""Aruba,ABW,102911
+Andorra,AND,79218
+Afghanistan,AFG,30551674
+Angola,AGO,21471618
+Albania,ALB,2897366
+Arab World,ARB,369762523
+United Arab Emirates,ARE,9346129""".split("\n")
+
+            for exp in expected:
+                a_result = cur.next()
+                assert a_result == tuple(exp.split(','))
+            try:
+                cur.next()
+                assert False, "Detected an extra line on the table"
+            except:
+                assert True
 
 
     # @isolate(['tests.sqlite'])

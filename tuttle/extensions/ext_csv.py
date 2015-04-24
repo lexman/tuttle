@@ -39,12 +39,13 @@ def escape_column_name(st):
 
 def column_list(column_names):
     escaped_columns = map(escape_column_name, column_names)
-    ','.join(escaped_columns)
+    return ','.join(escaped_columns)
 
 
 def create_table(db, table_name, column_names):
     columns = column_list(column_names)
     sql = "CREATE TABLE `{}` ({})".format(table_name, columns)
+    print sql
     db.execute(sql)
 
 
@@ -55,19 +56,12 @@ def open_csv(csv_file):
     return csv.reader(csv_file, dialect)
 
 
-def yield_fields(csv_reader):
-    for row in csv_reader:
-        yield (12,24, 32)
-        #yield(tuple(row[0]))
-
 def fill_table(db, table_name, column_names, csv_reader):
     place_holders = ",".join(["?" for _ in column_names])
     columns = column_list(column_names)
     sql = "INSERT INTO `{}` ({}) VALUES ({})".format(table_name, columns, place_holders)
-    print sql
-    for l in yield_fields(csv_reader):
-        print l
-    db.executemany(sql, yield_fields(csv_reader))
+    db.executemany(sql, csv_reader)
+    db.commit()
 
 
 # TODO : handle utf8
