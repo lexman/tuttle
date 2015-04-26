@@ -126,26 +126,24 @@ United Arab Emirates,ARE,9346129""".split("\n")
     def assertF(self, output, truc):
         assert False, output
 
-    # @isolate(['test_csv.py'])
-    # def test_text_file_should_fail_with_csv_2sqlite(self):
-    #     """ A file that is not a csv should make the process fail"""
-    #     project = """sqlite://db.sqlite/tables/pop <- csv://test_csv.py #! csv2sqlite
-    #     """
-    #     rcode, output = run_tuttle_file(project)
-    #     assert rcode == 2, output
-    #     truc = output.split("\n")
-    #     self.assertF(output, truc)
-    #
-    # @isolate(['tests.sqlite'])
-    # def test_binary_file_should_fail_with_csv_2sqlite(self):
-    #     """ A file that is not a csv should make the process fail"""
-    #     project = """sqlite://db.sqlite/tables/pop <- csv://tests.sqlite #! csv2sqlite
-    #     """
-    #     rcode, output = run_tuttle_file(project)
-    #     assert rcode == 2, output
-    #     truc = output.split("\n")
-    #     self.assertF(output, truc)
-    #
+    @isolate(['test_csv.py'])
+    def test_text_file_should_fail_with_csv_2sqlite(self):
+        """ A source file that is not a csv should make the process fail"""
+        project = """sqlite://db.sqlite/tables/pop <- csv://test_csv.py #! csv2sqlite
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2, output
+        assert output.find("Wrong")>= 0, output
+        #assert output.find("Is this file a valid CSV file ?")>= 0, output
+
+    @isolate(['tests.sqlite'])
+    def test_binary_file_should_fail_with_csv_2sqlite(self):
+        """ A binary file that is not a csv should make the process fail"""
+        project = """sqlite://db.sqlite/tables/pop <- csv://tests.sqlite #! csv2sqlite
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2, output
+        assert output.find("Is this file a valid CSV file ?")>= 0, output
 
     # @isolate(['tests.sqlite'])
     # def test_sql_error_in_sqlite_processor(self):

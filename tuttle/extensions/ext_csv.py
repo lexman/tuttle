@@ -60,6 +60,8 @@ def open_csv(csv_file):
         sys.stderr.write(k)
         sys.stderr.write(" -> ")
         val = getattr(dialect, k)
+        if not val:
+            val = ""
         sys.stderr.write(str(type(val)))
         sys.stderr.write(str(val))
         sys.stderr.write("\n")
@@ -125,11 +127,17 @@ class CSV2SQLiteProcessor:
             try:
                 db = sqlite3.connect(sqlite_filename)
                 csv2sqlite(db, table, csv_file)
-            except DatabaseError as e:
+            except TuttleError as e:
+                # Any well defined error it re-emitted as-is
+                raise
+            except Exception as e:
+                lerr.write("Unexpected error while importing {} in SQLite database :".format(input_res._path))
                 lerr.write(e.message)
                 lerr.write("\n")
-                msg = "SQLite error on process {} while importing '{}' : '{}'".format(process.id, input_res.url,
-                                                                                      e.message)
+                import traceback
+                traceback.print_exc(lerr)
+                msg = "SQLite error on process {} while importing '{}' : '{}. Is this file a valid CSV file ? " \
+                      "More detail about the error in the error logs'".format(process.id, input_res.url, e.message)
                 raise TuttleError(msg)
             finally:
                 db.close()
