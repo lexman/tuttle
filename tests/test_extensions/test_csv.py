@@ -114,6 +114,38 @@ United Arab Emirates,ARE,9346129""".split("\n")
             except:
                 assert True
 
+    @isolate(['bad_csv.csv'])
+    def test_bad_csv__should_fail_with_csv_2sqlite(self):
+        """ A csv without the good number of columns in one raw should make the process fail"""
+        project = """sqlite://db.sqlite/tables/pop <- csv://bad_csv.csv #! csv2sqlite
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2, output
+        assert output.find("Wrong number of columns on line 4")>= 0
+
+    def assertF(self, output, truc):
+        assert False, output
+
+    # @isolate(['test_csv.py'])
+    # def test_text_file_should_fail_with_csv_2sqlite(self):
+    #     """ A file that is not a csv should make the process fail"""
+    #     project = """sqlite://db.sqlite/tables/pop <- csv://test_csv.py #! csv2sqlite
+    #     """
+    #     rcode, output = run_tuttle_file(project)
+    #     assert rcode == 2, output
+    #     truc = output.split("\n")
+    #     self.assertF(output, truc)
+    #
+    # @isolate(['tests.sqlite'])
+    # def test_binary_file_should_fail_with_csv_2sqlite(self):
+    #     """ A file that is not a csv should make the process fail"""
+    #     project = """sqlite://db.sqlite/tables/pop <- csv://tests.sqlite #! csv2sqlite
+    #     """
+    #     rcode, output = run_tuttle_file(project)
+    #     assert rcode == 2, output
+    #     truc = output.split("\n")
+    #     self.assertF(output, truc)
+    #
 
     # @isolate(['tests.sqlite'])
     # def test_sql_error_in_sqlite_processor(self):

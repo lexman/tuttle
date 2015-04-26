@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 import csv
 import sqlite3
-from sqlite3 import OperationalError
+from sqlite3 import OperationalError, DatabaseError
 from os import remove
 
 from os.path import abspath, exists
@@ -53,14 +53,35 @@ def open_csv(csv_file):
     sample = csv_file.read(1024)
     csv_file.seek(0)
     dialect = csv.Sniffer().sniff(sample)
+    print "T" * 60
+    print "dialect = ", dialect
+    import sys
+    for k in dir(dialect).__iter__():
+        sys.stderr.write(k)
+        sys.stderr.write(" -> ")
+        val = getattr(dialect, k)
+        sys.stderr.write(str(type(val)))
+        sys.stderr.write(str(val))
+        sys.stderr.write("\n")
+        print k, " -> ", getattr(dialect, k, "")
     return csv.reader(csv_file, dialect)
+
+
+def check_csv_row(csv_reader, nb_cols):
+    line_num = 2 # first line after the header
+    for row in csv_reader:
+        if len(row) != nb_cols:
+            msg = "Wrong number of columns on line {}".format(line_num)
+            raise TuttleError(msg)
+        yield row
+        line_num += 1
 
 
 def fill_table(db, table_name, column_names, csv_reader):
     place_holders = ",".join(["?" for _ in column_names])
     columns = column_list(column_names)
     sql = "INSERT INTO `{}` ({}) VALUES ({})".format(table_name, columns, place_holders)
-    db.executemany(sql, csv_reader)
+    db.executemany(sql, check_csv_row(csv_reader, len(column_names)))
     db.commit()
 
 
@@ -104,7 +125,7 @@ class CSV2SQLiteProcessor:
             try:
                 db = sqlite3.connect(sqlite_filename)
                 csv2sqlite(db, table, csv_file)
-            except OperationalError as e:
+            except DatabaseError as e:
                 lerr.write(e.message)
                 lerr.write("\n")
                 msg = "SQLite error on process {} while importing '{}' : '{}'".format(process.id, input_res.url,
