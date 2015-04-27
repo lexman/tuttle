@@ -1,9 +1,9 @@
-#file://internet_users.zip <- http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv #! download
+file://internet_users.zip <- http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv #! download
 
 file://it.net.user.p2_Indicator_en_csv_v2.csv <- file://internet_users.zip
     7za.exe x internet_users.zip it.net.user.p2_Indicator_en_csv_v2.csv
 
-#file://world_population.zip <- http://api.worldbank.org/v2/en/indicator/sp.pop.totl?downloadformat=csv #! download
+file://world_population.zip <- http://api.worldbank.org/v2/en/indicator/sp.pop.totl?downloadformat=csv #! download
 
 file://sp.pop.totl_Indicator_en_csv_v2.csv <- file://world_population.zip
     7za x world_population.zip sp.pop.totl_Indicator_en_csv_v2.csv
@@ -27,14 +27,17 @@ sqlite://stats.sqlite/tables/nb_internet_users <- sqlite://stats.sqlite/tables/w
         wb_internet_users.`Country Code` AS country_code,
         wb_internet_users.`2013` as pct_internauts,
         world_population.`2013` as population,
-        wb_internet_users.`2013` * world_population.`2013` / 100 as nb_internauts
+        CAST(wb_internet_users.`2013` * world_population.`2013` / 100 AS INT) as nb_internauts
     FROM wb_internet_users LEFT JOIN world_population ON wb_internet_users.`Country Code` = world_population.`Country Code`
 
 sqlite://stats.sqlite/tables/market_penetration <- sqlite://stats.sqlite/tables/nb_internet_users, sqlite://stats.sqlite/tables/sales #! sqlite
     CREATE TABLE market_penetration AS
     SELECT
         nb_internet_users.country_name,
-        (nb_sales  / nb_internauts) * 100 AS penetration_rate
+        nb_internet_users.country_code,
+        nb_internet_users.nb_internauts,
+        sales.nb_sales,
+        (nb_sales * 100.0 / nb_internauts) AS penetration_rate
     FROM nb_internet_users JOIN sales ON nb_internet_users.country_name = sales.country_name
 
 sqlite://stats.sqlite/tables/penetration_performance, sqlite://stats.sqlite/tables/spread <- sqlite://stats.sqlite/tables/market_penetration #! sqlite
@@ -45,11 +48,15 @@ sqlite://stats.sqlite/tables/penetration_performance, sqlite://stats.sqlite/tabl
         mean
     FROM market_penetration, (SELECT AVG(penetration_rate) AS mean FROM market_penetration) AS sub;
 
-    -- Then, 
+    -- Then, check wether performance is in the norm
     CREATE TABLE penetration_performance AS
     SELECT
         country_name,
+        country_code,
         mean, 
         penetration_rate, 
         (penetration_rate - mean) * abs(penetration_rate - mean) / variance AS norm_spread 
     FROM market_penetration, spread WHERE penetration_rate IS NOT NULL;
+	
+file://penetration_rate.html <- sqlite://stats.sqlite/tables/market_penetration, sqlite://stats.sqlite/tables/penetration_performance, file://layout_stats.py, file://perf.tpl.html
+	python layout_stats.py 
