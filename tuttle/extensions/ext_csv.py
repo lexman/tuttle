@@ -53,19 +53,6 @@ def open_csv(csv_file):
     sample = csv_file.read(1024)
     csv_file.seek(0)
     dialect = csv.Sniffer().sniff(sample)
-    print "T" * 60
-    print "dialect = ", dialect
-    import sys
-    for k in dir(dialect).__iter__():
-        sys.stderr.write(k)
-        sys.stderr.write(" -> ")
-        val = getattr(dialect, k)
-        if not val:
-            val = ""
-        sys.stderr.write(str(type(val)))
-        sys.stderr.write(str(val))
-        sys.stderr.write("\n")
-        print k, " -> ", getattr(dialect, k, "")
     return csv.reader(csv_file, dialect)
 
 
@@ -124,8 +111,8 @@ class CSV2SQLiteProcessor:
         with open(log_stdout, "w") as lout, \
              open(log_stderr, "w") as lerr, \
              open(csv_filename, 'rb') as csv_file:
+            db = sqlite3.connect(sqlite_filename)
             try:
-                db = sqlite3.connect(sqlite_filename)
                 csv2sqlite(db, table, csv_file)
             except TuttleError as e:
                 # Any well defined error it re-emitted as-is
