@@ -97,6 +97,10 @@ Refactor short names Partialy DONE (for the moment)
 
 dump process status and start time just before running and just after, in case somebody would need this info at any time
 
-Create immutable processes from constructor no more add_input()
+Create immutable processes from constructor : no more add_input()
 
 Refactor id
+
+Improve tests on csv2sqlite
+
+Remove csv resource
