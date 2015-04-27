@@ -17,12 +17,13 @@
         <div class="text-center" id="dependency_graph"></div>
         {% for process in processes %}
         <div class="process">
-            <h2 id="{{ process.id }}" name="{{ process.id }}"> {% if not process.start %}
+            <h2 id="{{ process.id }}" name="{{ process.id }}">
+            {{ process.id }} : {{process.processor}}
+            {% if not process.start %}
             {% elif not process.end %} <span class="label label-info">Running</span>
             {% elif process.success %} <span class="label label-success">Success</span>
             {% else %} <span class="label label-danger">Failure</span>
             {% endif %}
-            {{ process.id }}
             </h2>
             <div class="col-sm-5">
                 <ul> {% for output in process.outputs %}  <li>{{ output.url }}</li>  {% endfor %} </ul>
@@ -34,7 +35,9 @@
                 <ul>{% for input in process.inputs %} <li>{{ input.url }}</li>  {% endfor %}</ul>
             </div>
             <br/>
-            <pre><code>{{process._code}}</code></pre>
+            {% if process.code %}
+            <pre><code>{{process.code}}</code></pre>
+            {% endif %}
             {% if process.start %}
             <table class="table table-condensed">
                 <thread>

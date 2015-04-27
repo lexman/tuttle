@@ -32,6 +32,7 @@ def format_process(process):
 
     return {
         'id' : process.id,
+        'processor' : process._processor.name,
         'start' : start,
         'end' : end,
         'duration' : duration,
@@ -39,7 +40,7 @@ def format_process(process):
         'log_stderr' : process.log_stderr,
         'outputs' : process.iter_outputs(),
         'inputs' : process.iter_inputs(),
-        '_code' : process._code,
+        'code' : process._code,
         'success' : process.success,
     }
 
