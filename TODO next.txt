@@ -103,4 +103,7 @@ Refactor id
 
 Improve tests on csv2sqlite
 
-Remove csv resource
+Remove csv resource - DONE
+
+A meaningfull example
+
