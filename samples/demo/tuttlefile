@@ -1,0 +1,55 @@
+#file://internet_users.zip <- http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv #! download
+
+file://it.net.user.p2_Indicator_en_csv_v2.csv <- file://internet_users.zip
+    7za.exe x internet_users.zip it.net.user.p2_Indicator_en_csv_v2.csv
+
+#file://world_population.zip <- http://api.worldbank.org/v2/en/indicator/sp.pop.totl?downloadformat=csv #! download
+
+file://sp.pop.totl_Indicator_en_csv_v2.csv <- file://world_population.zip
+    7za x world_population.zip sp.pop.totl_Indicator_en_csv_v2.csv
+
+file://world_population_2013.tsv <- file://sp.pop.totl_Indicator_en_csv_v2.csv
+    more  +2 sp.pop.totl_Indicator_en_csv_v2.csv > world_population_2013.tsv
+
+file://wb_internet_users_2013.tsv <- file://it.net.user.p2_Indicator_en_csv_v2.csv
+    more +2 it.net.user.p2_Indicator_en_csv_v2.csv > wb_internet_users_2013.tsv
+
+sqlite://stats.sqlite/tables/wb_internet_users <- file://wb_internet_users_2013.tsv #! csv2sqlite
+
+sqlite://stats.sqlite/tables/world_population <- file://world_population_2013.tsv #! csv2sqlite
+
+sqlite://stats.sqlite/tables/sales <- file://sales.tsv #! csv2sqlite
+
+sqlite://stats.sqlite/tables/nb_internet_users <- sqlite://stats.sqlite/tables/wb_internet_users, sqlite://stats.sqlite/tables/world_population #! sqlite
+    CREATE TABLE nb_internet_users AS
+    SELECT
+        wb_internet_users.`Country Name` AS country_name,
+        wb_internet_users.`Country Code` AS country_code,
+        wb_internet_users.`2013` as pct_internauts,
+        world_population.`2013` as population,
+        wb_internet_users.`2013` * world_population.`2013` / 100 as nb_internauts
+    FROM wb_internet_users LEFT JOIN world_population ON wb_internet_users.`Country Code` = world_population.`Country Code`
+
+sqlite://stats.sqlite/tables/market_penetration <- sqlite://stats.sqlite/tables/nb_internet_users, sqlite://stats.sqlite/tables/sales #! sqlite
+    CREATE TABLE market_penetration AS
+    SELECT
+        nb_internet_users.country_name,
+        (nb_sales  / nb_internauts) * 100 AS penetration_rate
+    FROM nb_internet_users JOIN sales ON nb_internet_users.country_name = sales.country_name
+
+sqlite://stats.sqlite/tables/penetration_performance, sqlite://stats.sqlite/tables/spread <- sqlite://stats.sqlite/tables/market_penetration #! sqlite
+    -- Compute variance (square of the standard deviation)
+    CREATE TABLE spread AS 
+    SELECT
+        AVG((penetration_rate - sub.mean) * (penetration_rate - sub.mean)) as variance,
+        mean
+    FROM market_penetration, (SELECT AVG(penetration_rate) AS mean FROM market_penetration) AS sub;
+
+    -- Then, 
+    CREATE TABLE penetration_performance AS
+    SELECT
+        country_name,
+        mean, 
+        penetration_rate, 
+        (penetration_rate - mean) * abs(penetration_rate - mean) / variance AS norm_spread 
+    FROM market_penetration, spread WHERE penetration_rate IS NOT NULL;
