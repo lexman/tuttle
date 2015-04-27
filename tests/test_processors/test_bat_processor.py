@@ -13,11 +13,11 @@ class TestBatProcessor():
         bp = BatProcessor()
         code = "bla bla\nblou"
         processor = BatProcessor()
-        process = Process(processor, 23)
+        process = Process(processor, "tuttlefile", 23)
         process.set_code(code)
-        bp.generate_executable(process, "bat_25")
+        bp.generate_executable(process, "tuttlefile_25")
         print glob('*')
-        content = open(join("bat_25", "bat_23.bat")).read()
+        content = open(join("tuttlefile_25", "tuttlefile_23.bat")).read()
         assert content.startswith("@echo off")
         assert content.find("bla bla") >= 0
         assert content.find("blou") >= 0

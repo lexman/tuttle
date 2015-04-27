@@ -99,7 +99,7 @@ dump process status and start time just before running and just after, in case s
 
 Create immutable processes from constructor : no more add_input()
 
-Refactor id
+Refactor id - DONE
 
 Improve tests on csv2sqlite
 

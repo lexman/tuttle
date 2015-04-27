@@ -47,9 +47,9 @@ class WorkflowBuilder():
         ResDefClass = self._resources_definition[scheme]
         return ResDefClass(url)
     
-    def build_process(self, line_num, processor):
+    def build_process(self, processor, file_name, line_num):
         if processor in self._processors:
-            return Process(self._processors[processor], line_num)
+            return Process(self._processors[processor], file_name, line_num)
         else:
             return False
 

@@ -8,10 +8,11 @@ class Process:
     some code that produces outputs from inputs, a processor that handle the language specificities
     """
 
-    def __init__(self, processor, line_num):
+    def __init__(self, processor, filename, line_num):
         self._start = None
         self._end = None
         self._processor = processor
+        self._filename = filename
         self._line_num = line_num
         self._inputs = []
         self._outputs = []
@@ -19,7 +20,7 @@ class Process:
         self.log_stdout = None
         self.log_stderr = None
         self.success = None
-        self._id = "{}_{}".format( self._processor.name, self._line_num)
+        self._id = "{}_{}".format( self._filename, self._line_num)
 
     @property
     def start(self):

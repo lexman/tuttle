@@ -3,6 +3,7 @@
 from error import TuttleError
 from workflow_builder import WorkflowBuilder
 from workflow import Workflow
+from os.path import basename
 
 
 class ParsingError(TuttleError):
@@ -39,8 +40,10 @@ class ProjectParser():
         self._line = ""
         self._num_line = 0
         self._eof = True
+        self._filename = "_"
 
     def parse_and_check_file(self, filename):
+        self._filename = basename(filename)
         with open(filename) as f:
             self.set_project(f.read())
         return self.parse_and_check_project()
@@ -98,7 +101,7 @@ class ProjectParser():
             processor_name = "default"
         else:
             processor_name = self._line[shebang_pos + 2:].strip()
-        process = self.wb.build_process(self._num_line, processor_name)
+        process = self.wb.build_process(processor_name, self._filename, self._num_line)
         if not process:
             raise InvalidProcessorError("Invalid processor : '{}' ".format(processor_name), self._num_line)
         input_urls = self._line[arrow_pos + 2:shebang_pos].split(',')
