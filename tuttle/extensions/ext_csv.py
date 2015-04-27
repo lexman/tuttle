@@ -1,32 +1,10 @@
 # -*- coding: utf8 -*-
 import csv
 import sqlite3
-from sqlite3 import OperationalError, DatabaseError
-from os import remove
 
-from os.path import abspath, exists
 from tuttle.error import TuttleError
 from tuttle.extensions.sqlite import SQLiteResource
-from tuttle.resources import ResourceMixIn
-
-
-class CSVResource(ResourceMixIn, object):
-    """A resource for a CSV file (with header) """
-    """eg : csv://relative/path/to/myfile.csv"""
-    scheme = 'csv'
-
-    def __init__(self, url):
-        super(CSVResource, self).__init__(url)
-        self._path = self._get_path()
-
-    def _get_path(self):
-        return abspath(self.url[len("csv://"):])
-
-    def exists(self):
-        return exists(self._path)
-
-    def remove(self):
-        remove(self._path)
+from tuttle.resources import ResourceMixIn, FileResource
 
 
 def strip_backstophes(st):
@@ -92,7 +70,7 @@ class CSV2SQLiteProcessor:
         outputs = [res for res in process.iter_outputs()]
         if len(inputs) != 1 \
            or len(outputs) != 1 \
-           or inputs[0].scheme != 'csv' \
+           or inputs[0].scheme != 'file' \
            or outputs[0].scheme != 'sqlite':
             raise TuttleError("CSV2SQLite processor {} don't know how to handle his inputs / outputs".format(process.id))
 
@@ -100,7 +78,7 @@ class CSV2SQLiteProcessor:
         # TODO : log queries
         # pre_check ensured we know what are inputs and outputs
         input_res = process.iter_inputs().next()
-        assert isinstance(input_res, CSVResource)
+        assert isinstance(input_res, FileResource)
         csv_filename = input_res._path
 
         output_res = process.iter_outputs().next()

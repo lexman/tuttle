@@ -3,7 +3,7 @@
 from resources import FileResource
 from processors import *
 from process import Process
-from tuttle.extensions.ext_csv import CSV2SQLiteProcessor, CSVResource
+from tuttle.extensions.ext_csv import CSV2SQLiteProcessor
 from tuttle.extensions.sqlite import SQLiteProcessor, SQLiteResource
 from tuttle.resources import HTTPResource
 import os
@@ -20,7 +20,6 @@ class WorkflowBuilder():
         self._resources_definition['file'] = FileResource
         self._resources_definition['http'] = HTTPResource
         self._resources_definition['sqlite'] = SQLiteResource
-        self._resources_definition['csv'] = CSVResource
         self._processors['shell'] = ShellProcessor()
         self._processors['bat'] = BatProcessor()
         self._processors['download'] = DownloadProcessor()
