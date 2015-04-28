@@ -15,6 +15,7 @@ def invalidate(workflow):
     if previous_workflow is not None:
         invalid = previous_workflow.resources_to_invalidate(workflow)
         workflow.retrieve_execution_info(previous_workflow, invalid)
+
         failing_process = workflow.pick_a_failing_process()
         if failing_process:
             raise AlreadyFailedError("Workflow already failed on process '{}'. Fix the process and run tuttle again".

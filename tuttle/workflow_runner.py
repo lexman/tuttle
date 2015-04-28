@@ -34,17 +34,6 @@ def prepare_paths(process):
     return reserved_path, log_stdout, log_stderr
 
 
-def run_process(process):
-    reserved_path, log_stdout, log_stderr = prepare_paths(process)
-    process.run(reserved_path, log_stdout, log_stderr)
-    for res in process.iter_outputs():
-        if not res.exists():
-            process.post_fail()
-            msg = "After execution of process {} : resource {} should have been created".format(process.id,
-                                                                                                res.url)
-            raise ResourceError(msg)
-
-
 def create_tuttle_dirs():
     if not isdir(_processes_dir):
         makedirs(_processes_dir)

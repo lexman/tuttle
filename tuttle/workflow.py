@@ -1,7 +1,8 @@
 # -*- coding: utf8 -*-
 from report.html_repport import create_html_report
 from pickle import dump, load
-from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, run_process
+from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
+    prepare_paths
 
 
 class InvalidationReason:
@@ -34,6 +35,7 @@ class Workflow:
     def __init__(self):
         self._processes = []
         self.resources = None
+        self._resources_fingerprints = []
 
     def add_process(self, process):
         """ Adds a process
@@ -108,6 +110,19 @@ class Workflow:
         for process in self.iter_processes():
             process.pre_check()
 
+    def run_process(self, process):
+        reserved_path, log_stdout, log_stderr = prepare_paths(process)
+        process.run(reserved_path, log_stdout, log_stderr)
+        for res in process.iter_outputs():
+            if not res.exists():
+                process.post_fail()
+                msg = "After execution of process {} : resource {} should have been created".format(process.id,
+                                                                                                    res.url)
+                raise ResourceError(msg)
+        #for res in process.iter_outputs():
+        #    self._resources_fingerprints[res.url] = res.fingerprint()
+
+
     def run(self):
         """ Runs a workflow by running every process in the right order
 
@@ -119,7 +134,7 @@ class Workflow:
         while process is not None:
             print_header(process)
             try:
-                run_process(process)
+                self.run_process(process)
             finally:
                 self.dump()
                 self.create_reports()

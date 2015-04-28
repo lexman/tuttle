@@ -126,7 +126,7 @@ file://file3 <- file://file1
             """)
         process = workflow._processes[0]
         create_tuttle_dirs()
-        run_process(process)
+        workflow.run_process(process)
         assert path.isfile("result")
 
     @isolate(['A'])
@@ -156,7 +156,7 @@ file://file3 <- file://file1
         try:
             process = workflow._processes[0]
             create_tuttle_dirs()
-            run_process(process)
+            workflow.run_process(process)
             assert False, "Exception has not been not raised"
         except ResourceError:
             assert True
