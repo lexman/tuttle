@@ -74,7 +74,6 @@ class SQLiteResource(ResourceMixIn, object):
         self.db_file = m.group(1)
         self.table = m.group(2)
 
-
     def exists(self):
         if not isfile(self.db_file):
             return False
@@ -88,6 +87,9 @@ class SQLiteResource(ResourceMixIn, object):
         finally:
             db.close()
         return True
+
+    def fingerprint(self):
+        return ""
 
     def remove_file_if_empty(self, db):
         cur = db.cursor()

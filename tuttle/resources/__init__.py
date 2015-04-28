@@ -4,6 +4,7 @@
 from os.path import abspath, exists
 from os import remove
 from tuttle.error import TuttleError
+from hashlib import sha1
 
 from tuttle import __version__
 from urllib2 import Request, urlopen, URLError, HTTPError
@@ -41,6 +42,14 @@ class ResourceMixIn:
         return self_inputs == other_inputs
 
 
+def hash_file(file_like_object):
+    """Generate a hash for the contents of a file."""
+    checksum = sha1()
+    for chunk in iter(lambda: file_like_object.read(32768), b''):
+        checksum.update(chunk)
+    return checksum.hexdigest()
+
+
 class FileResource(ResourceMixIn, object):
     """A resource for a local file"""
     scheme = 'file'
@@ -54,6 +63,11 @@ class FileResource(ResourceMixIn, object):
 
     def exists(self):
         return exists(self._path)
+
+    def fingerprint(self):
+        with open(self._path) as f:
+            sha1 = hash_file(f)
+            return "sha1:{}".format(sha1)
 
     def remove(self):
         remove(self._path)
@@ -79,3 +93,6 @@ class HTTPResource(ResourceMixIn, object):
 
     def remove(self):
         raise TuttleError("HTTP resources can't be removed !")
+
+    def fingerprint(self):
+        return ""
