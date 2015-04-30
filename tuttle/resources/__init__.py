@@ -1,14 +1,14 @@
-#!/usr/bin/env python
 # -*- coding: utf8 -*-
 
 from os.path import abspath, exists
 from os import remove
-from tuttle.error import TuttleError
 from hashlib import sha1
-
-from tuttle import __version__
+#from tuttle import __version__
+from tuttle.error import TuttleError
 from urllib2 import Request, urlopen, URLError, HTTPError
 
+
+__version__ = "0.1"
 
 class MalformedUrl(TuttleError):
     pass
@@ -65,9 +65,13 @@ class FileResource(ResourceMixIn, object):
         return exists(self._path)
 
     def fingerprint(self):
-        with open(self._path) as f:
-            sha1 = hash_file(f)
-            return "sha1:{}".format(sha1)
+        sha1 = None
+        try:
+            with open(self._path) as f:
+                sha1 = hash_file(f)
+        except IOError:
+            pass
+        return "sha1:{}".format(sha1)
 
     def remove(self):
         remove(self._path)
