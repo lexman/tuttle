@@ -46,6 +46,7 @@ def parse_invalidate_and_run(tuttlefile):
             workflow = pp.parse_and_check_file(tuttlefile)
             workflow.pre_check_processes()
             previous_workflow = Workflow.load()
+            to_remove = []
             if previous_workflow is not None:
                 different = previous_workflow.resources_not_created_the_same_way(workflow)
                 resultant = previous_workflow.dependant_resources([resource for (resource, _) in different])
@@ -54,6 +55,12 @@ def parse_invalidate_and_run(tuttlefile):
                 remove_resources(to_remove)
                 remove_urls = [resource.url for resource in to_remove]
                 workflow.retrieve_execution_info2(previous_workflow, remove_urls)
+
+            # si une ressource était présente au dernier workflow
+            # il faut vérifier si elle a changé depuis
+            # sinon, il faut enregistrer sa signature
+            #modified_primary_resources = workflow.update_primary_resources_signatures()
+            #resultant = previous_workflow.dependant_resources(modified_primary_resources)
 
             not_created = workflow.resources_not_created_by_tuttle()
             display_invalidity2(not_created)
