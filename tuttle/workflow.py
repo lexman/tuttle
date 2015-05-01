@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from itertools import chain
 from report.html_repport import create_html_report
 from pickle import dump, load
 from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
@@ -185,6 +186,7 @@ class Workflow:
         :param newer_workflow:
         :return:
         """
+        assert isinstance(newer_workflow, Workflow), newer_workflow
         changing_resources = []
         # TODO : could be optimized by not checking twice a process that creates two outputs
         for url, resource in self.resources.iteritems():
@@ -238,6 +240,19 @@ class Workflow:
                                                   InvalidationReason(InvalidationReason.DEPENDENCY_CHANGED)))
         return invalid_resources
 
+    def dependant_resources(self, invalid_resources):
+        """
+        """
+        self.compute_dependencies()
+        result = []
+        for resource in chain(invalid_resources, result):
+            for dependant_process in resource.dependant_processes:
+                for dependant_resource in dependant_process.iter_outputs():
+                    if dependant_resource not in invalid_resources and dependant_resource not in result:
+                        result.append(dependant_resource)
+        return result
+
+
     def retrieve_execution_info(self, previous, invalidated_resources):
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
          where the processes are in common. No need to retrieve information for the processes that are not in common
@@ -252,6 +267,21 @@ class Workflow:
                 process = self.find_process_that_creates(prev_output.url)
                 process.retrieve_execution_info(prev_process)
                 pass
+
+    def retrieve_execution_info2(self, previous, ignore_urls):
+        """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
+         where the processes are in common. No need to retrieve information for the processes that are not in common
+         """
+        for prev_process in previous.iter_processes():
+            prev_output = prev_process.pick_an_output()
+            if prev_output and prev_output.url not in ignore_urls:
+                # When running this function, invalidation has been computed already
+                # So if process from previous workflow creates a resource, it creates all the same
+                # resources as the process in the current workflow
+                process = self.find_process_that_creates(prev_output.url)
+                process.retrieve_execution_info(prev_process)
+                pass
+
 
     def pick_a_failing_process(self):
         for process in self.iter_processes():

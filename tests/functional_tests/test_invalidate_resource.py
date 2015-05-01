@@ -36,20 +36,20 @@ file://D <- file://A
 """
         rcode, output = run_tuttle_file(second)
         assert rcode == 0
-        assert output.find("* file://B") >= 0
-        assert output.find("* file://C") >= 0
-        assert output.find("* file://D") == -1
+        assert output.find("* file://B") >= 0, output
+        assert output.find("* file://C") >= 0, output
+        assert output.find("* file://D") == -1, output
 
     @isolate(['A', 'B'])
     def test_resource_should_be_created_by_tuttle(self):
-        """If a resource is removed from a tuttlefile, it should be invalidated"""
+        """If a resource was not created by tuttle, it should be invalidated"""
         first = """file://B <- file://A
     echo A produces B
     echo B > B
 """
         rcode, output = run_tuttle_file(first)
         assert rcode == 0
-        assert output.find("* file://B") >= 0
+        assert output.find("* file://B") >= 0, output
 
     @isolate(['A'])
     def test_code_changes(self):
@@ -64,7 +64,7 @@ file://D <- file://A
         """
         rcode, output = run_tuttle_file(project2)
         assert rcode == 0
-        assert output.find("* file://B") >= 0
+        assert output.find("* file://B") >= 0, output
 
     @isolate(['A', 'B'])
     def test_resource_is_now_created_by_tuttle(self):
