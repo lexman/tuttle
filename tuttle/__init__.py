@@ -24,6 +24,13 @@ def display_invalidity2(not_created):
         print "* {} - {}".format(resource.url, reason)
 
 
+def display_invalidity_unified(invalid):
+    if invalid:
+        print "The following resources are not valid any more and will be removed :"
+        for resource, reason in invalid:
+            print "* {} - {}".format(resource.url, reason)
+
+
 # TODO : should'nt we be able to know if the resource exists without asking ?
 def remove_resources(to_remove):
     for resource in to_remove:
@@ -39,6 +46,31 @@ def resources_to_remove(different, resultant):
         result.append(resource)
     return result
 
+NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
+DEPENDENCY_CHANGED = "Resource depends on another resource that have changed"
+
+
+class InvalidResourceCollector():
+    def __init__(self):
+        self.res_and_reason = []
+
+    def collect(self, l):
+        self.res_and_reason += l
+
+    def collect_resources_with_same_reason(self, list_of_resources, reason):
+        self.res_and_reason += [(resource, reason) for resource in list_of_resources]
+
+    def display(self):
+        if self.res_and_reason:
+            print "The following resources are not valid any more and will be removed :"
+            for resource, reason in self.res_and_reason:
+                print "* {} - {}".format(resource.url, reason)
+
+    def remove(self):
+        for resource, reason in self.res_and_reason:
+            if resource.exists():
+                resource.remove()
+
 
 def parse_invalidate_and_run(tuttlefile):
         try:
@@ -46,15 +78,14 @@ def parse_invalidate_and_run(tuttlefile):
             workflow = pp.parse_and_check_file(tuttlefile)
             workflow.pre_check_processes()
             previous_workflow = Workflow.load()
-            to_remove = []
+            inv_collector = InvalidResourceCollector()
             if previous_workflow is not None:
                 different = previous_workflow.resources_not_created_the_same_way(workflow)
-                resultant = previous_workflow.dependant_resources([resource for (resource, _) in different])
-                display_invalidity(different, [], resultant)
-                to_remove = resources_to_remove(different, resultant)
-                remove_resources(to_remove)
-                remove_urls = [resource.url for resource in to_remove]
-                workflow.retrieve_execution_info2(previous_workflow, remove_urls)
+                inv_collector.collect(different)
+                resultant_from_dif = previous_workflow.dependant_resources([resource for (resource, _) in different])
+                inv_collector.collect_resources_with_same_reason(resultant_from_dif, DEPENDENCY_CHANGED)
+                ignore_resources = [resource for resource, _ in different] + resultant_from_dif
+                workflow.retrieve_execution_info2(previous_workflow, ignore_resources)
 
             # si une ressource était présente au dernier workflow
             # il faut vérifier si elle a changé depuis
@@ -63,8 +94,9 @@ def parse_invalidate_and_run(tuttlefile):
             #resultant = previous_workflow.dependant_resources(modified_primary_resources)
 
             not_created = workflow.resources_not_created_by_tuttle()
-            display_invalidity2(not_created)
-            remove_resources([res for res, _ in not_created])
+            inv_collector.collect_resources_with_same_reason(not_created, NOT_CREATED_BY_TUTTLE)
+            inv_collector.display()
+            inv_collector.remove()
 
             workflow.create_reports()
             failing_process = workflow.pick_a_failing_process()

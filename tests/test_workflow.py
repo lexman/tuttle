@@ -47,7 +47,7 @@ class TestWorkflow():
         assert len(invalid) == 1, [(res.url, reason._reason) for (res, reason,) in invalid]
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://result"
-        assert invalidation_reason._reason == InvalidationReason.PROCESS_CHANGED, invalidation_reason._reason
+        assert invalidation_reason == PROCESS_CHANGED, invalidation_reason
 
     def test_invalidate_removed_resource(self):
         """ Should invalidate a resource if it is not created anymore
@@ -65,7 +65,7 @@ file://file3 <- file://file1
         assert len(invalid) == 1, [(res.url, reason._reason) for (res, reason,) in invalid]
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://file2"
-        assert invalidation_reason._reason == InvalidationReason.NO_LONGER_CREATED
+        assert invalidation_reason == NO_LONGER_CREATED, invalidation_reason
 
     def test_invalidate_if_resource_dependency_change(self):
         """ Should invalidate a resource if it does not depend on the same resource anymore
@@ -82,7 +82,7 @@ file://file3 <- file://file1
         assert len(invalid) == 1, [(res.url, reason._reason) for (res, reason,) in invalid]
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://result"
-        assert invalidation_reason._reason == InvalidationReason.NOT_SAME_INPUTS
+        assert invalidation_reason == NOT_SAME_INPUTS
 
     def test_invalidation_in_cascade(self):
         """ When a resource is invalidated all resulting resources should be invalidated too
@@ -101,7 +101,7 @@ file://file3 <- file://file2""")
         assert len(invalid) == 2, [(res.url, reason._reason) for (res, reason,) in invalid]
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://file2"
-        assert invalidation_reason._reason == InvalidationReason.PROCESS_CHANGED
+        assert invalidation_reason == PROCESS_CHANGED
 
     def test_compute_dependencies(self):
         """ Every resource should know the processes dependant from it """
@@ -113,7 +113,8 @@ file://file3 <- file://file1
 
 """)
         workflow.compute_dependencies()
-        assert workflow.resources['file://file1'].dependant_processes == [workflow._processes[0], workflow._processes[1]]
+        assert workflow.resources['file://file1'].dependant_processes == [workflow._processes[0],
+                                                                          workflow._processes[1]]
 
     @isolate
     def test_run_process(self):
@@ -141,7 +142,6 @@ file://file3 <- file://file1
         rcode, output = run_tuttle_file(project)
         assert rcode == 2
         assert path.isfile(path.join(".tuttle", "last_workflow.pickle"))
-
 
     @isolate
     def test_check_process_output(self):

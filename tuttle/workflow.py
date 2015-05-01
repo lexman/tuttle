@@ -6,6 +6,14 @@ from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs,
     prepare_paths
 
 
+NO_LONGER_CREATED = "Resource no longer created by the newer process"
+NOT_SAME_INPUTS = "Resource was created with different inputs"
+PROCESS_CHANGED = "Process code changed"
+MUST_CREATE_RESOURCE = "The former primary resource has to be created by tuttle"
+RESOURCE_NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
+
+
+
 class InvalidationReason:
     NO_LONGER_CREATED = 0
     NOT_SAME_INPUTS = 1
@@ -193,15 +201,15 @@ class Workflow:
             newer_resource = newer_workflow.find_resource(url)
             if newer_resource is None:
                 if not resource.is_primary():
-                    changing_resources.append((resource, InvalidationReason(InvalidationReason.NO_LONGER_CREATED)))
+                    changing_resources.append((resource, NO_LONGER_CREATED))
             elif not newer_resource.is_primary():
                 # Only not generated resources need to be invalidated
                 if resource.is_primary():
-                    changing_resources.append((resource, InvalidationReason(InvalidationReason.MUST_CREATE_RESOURCE)))
+                    changing_resources.append((resource, MUST_CREATE_RESOURCE))
                 elif not resource.created_by_same_inputs(newer_resource):
-                    changing_resources.append((resource, InvalidationReason(InvalidationReason.NOT_SAME_INPUTS)))
+                    changing_resources.append((resource, NOT_SAME_INPUTS))
                 elif resource.creator_process._code != newer_resource.creator_process._code:
-                    changing_resources.append((resource, InvalidationReason(InvalidationReason.PROCESS_CHANGED)))
+                    changing_resources.append((resource, PROCESS_CHANGED))
             # Primary resources must not be invalidated
         return changing_resources
 
@@ -209,7 +217,7 @@ class Workflow:
         result = []
         for resource in self.resources.itervalues():
             if resource.exists() and resource.creator_process and resource.creator_process.end is None:
-                result.append((resource, InvalidationReason(InvalidationReason.RESOURCE_NOT_CREATED_BY_TUTTLE)))
+                result.append(resource)
         return result
 
     def compute_dependencies(self):
@@ -268,10 +276,12 @@ class Workflow:
                 process.retrieve_execution_info(prev_process)
                 pass
 
-    def retrieve_execution_info2(self, previous, ignore_urls):
+    def retrieve_execution_info2(self, previous, ignore_resources):
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
          where the processes are in common. No need to retrieve information for the processes that are not in common
          """
+        ignore_urls = [resource.url for resource in chain(ignore_resources,
+                                                          previous.dependant_resources(ignore_resources))]
         for prev_process in previous.iter_processes():
             prev_output = prev_process.pick_an_output()
             if prev_output and prev_output.url not in ignore_urls:
