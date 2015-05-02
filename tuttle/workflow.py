@@ -11,6 +11,7 @@ NOT_SAME_INPUTS = "Resource was created with different inputs"
 PROCESS_CHANGED = "Process code changed"
 MUST_CREATE_RESOURCE = "The former primary resource has to be created by tuttle"
 RESOURCE_NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
+DEPENDENCY_CHANGED = "Resource depends on another resource that have changed"
 
 
 class Workflow:
@@ -220,7 +221,7 @@ class Workflow:
                 for dependant_resource in dependant_process.iter_outputs():
                     if dependant_resource not in invalid_resources:
                         invalid_resources.append((dependant_resource,
-                                                  InvalidationReason(InvalidationReason.DEPENDENCY_CHANGED)))
+                                                  DEPENDENCY_CHANGED))
         return invalid_resources
 
     def dependant_resources(self, invalid_resources):
@@ -235,12 +236,18 @@ class Workflow:
                         result.append(dependant_resource)
         return result
 
-    def retrieve_execution_info2(self, previous, ignore_resources):
+    def retrieve_execution_info(self, previous, ignore_resources):
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
          where the processes are in common. No need to retrieve information for the processes that are not in common
          """
+
         ignore_urls = [resource.url for resource in chain(ignore_resources,
                                                           previous.dependant_resources(ignore_resources))]
+
+        for url, fingerprint in previous._resources_fingerprints.iteritems():
+            if url not in ignore_urls:
+                self._resources_fingerprints[url] = fingerprint
+
         for prev_process in previous.iter_processes():
             prev_output = prev_process.pick_an_output()
             if prev_output and prev_output.url not in ignore_urls:

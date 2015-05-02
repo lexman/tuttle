@@ -47,7 +47,7 @@ def parse_invalidate_and_run(tuttlefile):
                 resultant_from_dif = previous_workflow.dependant_resources([resource for (resource, _) in different])
                 inv_collector.collect_resources_with_same_reason(resultant_from_dif, DEPENDENCY_CHANGED)
                 ignore_resources = [resource for resource, _ in different] + resultant_from_dif
-                workflow.retrieve_execution_info2(previous_workflow, ignore_resources)
+                workflow.retrieve_execution_info(previous_workflow, ignore_resources)
 
             # si une ressource était présente au dernier workflow
             # il faut vérifier si elle a changé depuis

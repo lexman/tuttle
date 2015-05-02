@@ -97,11 +97,14 @@ file://file3 <- file://file2""")
             Updated code
 
 file://file3 <- file://file2""")
-        invalid = workflow1.resources_to_invalidate(workflow2)
-        assert len(invalid) == 2, [(res.url, reason._reason) for (res, reason,) in invalid]
+        invalid = workflow1.resources_not_created_the_same_way(workflow2)
+        assert len(invalid) == 1, [(res.url, reason) for (res, reason,) in invalid]
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://file2"
         assert invalidation_reason == PROCESS_CHANGED
+        resultant_from_dif = workflow1.dependant_resources([resource for (resource, _) in invalid])
+        assert len(resultant_from_dif) == 1, resultant_from_dif
+        assert resultant_from_dif[0].url == "file://file3"
 
     def test_compute_dependencies(self):
         """ Every resource should know the processes dependant from it """
