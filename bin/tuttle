@@ -3,9 +3,12 @@
 
 import sys
 from optparse import OptionParser
-from tuttle import parse_invalidate_and_run
+from os.path import abspath, exists, dirname, join
 
-from os.path import abspath, exists
+tuttle_module = join(dirname(abspath(__file__)), '..', '..', 'tuttle')
+sys.path.insert(0,tuttle_module)
+
+from tuttle import parse_invalidate_and_run
 from tuttle.utils import CurrentDir
 
 
@@ -13,15 +16,16 @@ def parse_options():
     usage = 'bin/tuttle'
     parser = OptionParser(usage=usage)
     parser.add_option('-f', '--file',
-                  default='tuttlefile',
-                  dest='tuttlefile',
-                  help='Path to the tuttlefile : file describing the workflow')
+                      default='tuttlefile',
+                      dest='tuttlefile',
+                      help='Path to the tuttlefile : file describing the workflow')
     parser.add_option('-w', '--workspace',
-                  default='.',
-                  dest='workspace',
-                  help='Directory where the workspace lies. Default is the current directory')
+                      default='.',
+                      dest='workspace',
+                      help='Directory where the workspace lies. Default is the current directory')
     options, _ = parser.parse_args()
     return options
+
 
 def main():
     """Main entry point for the project."""
