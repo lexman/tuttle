@@ -104,7 +104,9 @@ file://file3 <- file://file2""")
         assert invalidation_reason == PROCESS_CHANGED
         resultant_from_dif = workflow1.dependant_resources([resource for (resource, _) in invalid])
         assert len(resultant_from_dif) == 1, resultant_from_dif
-        assert resultant_from_dif[0].url == "file://file3"
+        (resource, invalidation_reason) = resultant_from_dif[0]
+        assert resource.url == "file://file3"
+        assert invalidation_reason.find("file://file2") >= 0, invalidation_reason
 
     def test_compute_dependencies(self):
         """ Every resource should know the processes dependant from it """

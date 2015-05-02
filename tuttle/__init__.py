@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from itertools import chain
 from tuttle import workflow
 
 __version__ = '0.1'
@@ -9,7 +10,6 @@ from workflow import Workflow
 
 
 NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
-DEPENDENCY_CHANGED = "Resource depends on another resource that have changed"
 
 
 class InvalidResourceCollector():
@@ -39,20 +39,20 @@ def parse_invalidate_and_run(tuttlefile):
             pp = ProjectParser()
             workflow = pp.parse_and_check_file(tuttlefile)
             workflow.pre_check_processes()
-            previous_workflow = Workflow.load()
             inv_collector = InvalidResourceCollector()
-            if previous_workflow is not None:
+            previous_workflow = Workflow.load()
+            if previous_workflow:
                 different = previous_workflow.resources_not_created_the_same_way(workflow)
                 inv_collector.collect(different)
                 resultant_from_dif = previous_workflow.dependant_resources([resource for (resource, _) in different])
-                inv_collector.collect_with_reason(resultant_from_dif, DEPENDENCY_CHANGED)
-                ignore_resources = [resource for resource, _ in different] + resultant_from_dif
-                workflow.retrieve_execution_info(previous_workflow, ignore_resources)
-                workflow.retrieve_fingerprints(previous_workflow, ignore_resources)
+                inv_collector.collect(resultant_from_dif)
+                ignore_urls = {resource.url for resource, _ in chain(different, resultant_from_dif)}
+                workflow.retrieve_execution_info(previous_workflow, ignore_urls)
+                workflow.retrieve_fingerprints(previous_workflow, ignore_urls)
 
             modified_primary_resources = workflow.update_primary_resource_fingerprints()
             resultant_from_modif = workflow.dependant_resources(modified_primary_resources)
-            inv_collector.collect_with_reason(resultant_from_modif, DEPENDENCY_CHANGED)
+            inv_collector.collect(resultant_from_modif)
 
             not_created = workflow.resources_not_created_by_tuttle()
             inv_collector.collect_with_reason(not_created, NOT_CREATED_BY_TUTTLE)

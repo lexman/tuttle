@@ -11,7 +11,7 @@ NOT_SAME_INPUTS = "Resource was created with different inputs"
 PROCESS_CHANGED = "Process code changed"
 MUST_CREATE_RESOURCE = "The former primary resource has to be created by tuttle"
 RESOURCE_NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
-DEPENDENCY_CHANGED = "Resource depends on another resource that have changed"
+DEPENDENCY_CHANGED = "Resource depends on {} that have changed"
 
 
 class Workflow:
@@ -207,48 +207,32 @@ class Workflow:
             for resource in process.iter_inputs():
                 resource.dependant_processes.append(process)
 
-    def resources_to_invalidate(self, newer_workflow):
-        """
-        Returns the resources to invalidate in this workflow, before launching newer_workflow
-        Other resources are guaranteed to remain the same
-        :param newer_workflow:
-        :return:
-        """
-        invalid_resources = self.resources_not_created_the_same_way(newer_workflow)
-        self.compute_dependencies()
-        for (resource, _) in invalid_resources:
-            for dependant_process in resource.dependant_processes:
-                for dependant_resource in dependant_process.iter_outputs():
-                    if dependant_resource not in invalid_resources:
-                        invalid_resources.append((dependant_resource,
-                                                  DEPENDENCY_CHANGED))
-        return invalid_resources
-
-    def dependant_resources(self, invalid_resources):
+    def dependant_resources(self, from_resources):
         """
         """
         self.compute_dependencies()
         result = []
-        for resource in chain(invalid_resources, result):
+        invalid_resources = [resource for resource in from_resources]
+        for resource in invalid_resources:
             for dependant_process in resource.dependant_processes:
                 for dependant_resource in dependant_process.iter_outputs():
-                    if dependant_resource not in invalid_resources and dependant_resource not in result:
-                        result.append(dependant_resource)
+                    if dependant_resource not in invalid_resources :
+                        invalid_resources.append(dependant_resource)
+                        result.append((dependant_resource, DEPENDENCY_CHANGED.format(resource.url)))
+
         return result
 
-    def retrieve_fingerprints(self, previous, ignore_resources):
-        ignore_urls = {resource.url for resource in ignore_resources}
+    def retrieve_fingerprints(self, previous, ignore_urls):
         for url, fingerprint in previous._resources_fingerprints.iteritems():
             if url not in ignore_urls:
                 self._resources_fingerprints[url] = fingerprint
 
 
-    def retrieve_execution_info(self, previous, ignore_resources):
+    def retrieve_execution_info(self, previous, ignore_urls):
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
          where the processes are in common. No need to retrieve information for the processes that are not in common
          """
 
-        ignore_urls = {resource.url for resource in ignore_resources}
         for prev_process in previous.iter_processes():
             prev_output = prev_process.pick_an_output()
             if prev_output and prev_output.url not in ignore_urls:

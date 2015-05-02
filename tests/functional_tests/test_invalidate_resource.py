@@ -87,7 +87,7 @@ file://C <- file://B
         assert output.find("* file://B") >= 0, output
 
     @isolate(['A'])
-    def test_modified_primary_resource_should_invalidate_dependancies(self):
+    def test_modified_primary_resource_should_invalidate_dependencies(self):
         """ If a primary resource is modified, it should invalidate dependancies"""
         project = """file://B <- file://A
     echo A produces B
