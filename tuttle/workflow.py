@@ -17,9 +17,9 @@ DEPENDENCY_CHANGED = "Resource depends on {} that have changed"
 class Workflow:
     """ A workflow is a dependency tree of processes
     """
-    def __init__(self):
+    def __init__(self, resources):
         self._processes = []
-        self.resources = None
+        self.resources = resources
         self._resources_fingerprints = {}
 
     def add_process(self, process):
@@ -224,7 +224,7 @@ class Workflow:
 
     def retrieve_fingerprints(self, previous, ignore_urls):
         for url, fingerprint in previous._resources_fingerprints.iteritems():
-            if url not in ignore_urls:
+            if url in self.resources and url not in ignore_urls:
                 self._resources_fingerprints[url] = fingerprint
 
 

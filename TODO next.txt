@@ -107,8 +107,8 @@ Remove csv resource - DONE
 
 A meaningfull example
 
-Ensure we minimise the number of call to exists()
+Ensure we minimise the number of call to exists() and fingerprint()
 
-Write a test for pick_a_failling_process late
+Write a test for pick_a_failing_process late
 
-write ate test for retrieve_fingerprints ignoring resources removed from the previous workflow
+Detect corrupted resources through fingerprint

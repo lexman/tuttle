@@ -99,5 +99,5 @@ file://C <- file://B
             f.write("A has changed")
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
-        #assert output.find('* file://A') >= 0, output
+        assert output.find('* file://A') == -1, output
         assert output.find('* file://B') >= 0, output
