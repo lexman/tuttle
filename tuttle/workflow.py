@@ -236,18 +236,19 @@ class Workflow:
                         result.append(dependant_resource)
         return result
 
+    def retrieve_fingerprints(self, previous, ignore_resources):
+        ignore_urls = {resource.url for resource in ignore_resources}
+        for url, fingerprint in previous._resources_fingerprints.iteritems():
+            if url not in ignore_urls:
+                self._resources_fingerprints[url] = fingerprint
+
+
     def retrieve_execution_info(self, previous, ignore_resources):
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
          where the processes are in common. No need to retrieve information for the processes that are not in common
          """
 
-        ignore_urls = [resource.url for resource in chain(ignore_resources,
-                                                          previous.dependant_resources(ignore_resources))]
-
-        for url, fingerprint in previous._resources_fingerprints.iteritems():
-            if url not in ignore_urls:
-                self._resources_fingerprints[url] = fingerprint
-
+        ignore_urls = {resource.url for resource in ignore_resources}
         for prev_process in previous.iter_processes():
             prev_output = prev_process.pick_an_output()
             if prev_output and prev_output.url not in ignore_urls:
@@ -258,7 +259,11 @@ class Workflow:
                 process.retrieve_execution_info(prev_process)
                 pass
 
-    def update_primary_resources_signatures(self):
+    def update_primary_resource_fingerprints(self):
+        """ Updates the list of primary resources with current fingerprints
+         returns the list of resources that have changed
+        :return:
+        """
         result = []
         for resource in self.resources.itervalues():
             if resource.is_primary():

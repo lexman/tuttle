@@ -19,7 +19,7 @@ class InvalidResourceCollector():
     def collect(self, l):
         self.res_and_reason += l
 
-    def collect_resources_with_same_reason(self, list_of_resources, reason):
+    def collect_with_reason(self, list_of_resources, reason):
         self.res_and_reason += [(resource, reason) for resource in list_of_resources]
 
     def display(self):
@@ -45,19 +45,17 @@ def parse_invalidate_and_run(tuttlefile):
                 different = previous_workflow.resources_not_created_the_same_way(workflow)
                 inv_collector.collect(different)
                 resultant_from_dif = previous_workflow.dependant_resources([resource for (resource, _) in different])
-                inv_collector.collect_resources_with_same_reason(resultant_from_dif, DEPENDENCY_CHANGED)
+                inv_collector.collect_with_reason(resultant_from_dif, DEPENDENCY_CHANGED)
                 ignore_resources = [resource for resource, _ in different] + resultant_from_dif
                 workflow.retrieve_execution_info(previous_workflow, ignore_resources)
+                workflow.retrieve_fingerprints(previous_workflow, ignore_resources)
 
-            # si une ressource était présente au dernier workflow
-            # il faut vérifier si elle a changé depuis
-            # sinon, il faut enregistrer sa signature
-            modified_primary_resources = workflow.update_primary_resources_signatures()
+            modified_primary_resources = workflow.update_primary_resource_fingerprints()
             resultant_from_modif = workflow.dependant_resources(modified_primary_resources)
-            inv_collector.collect_resources_with_same_reason(resultant_from_modif, DEPENDENCY_CHANGED)
+            inv_collector.collect_with_reason(resultant_from_modif, DEPENDENCY_CHANGED)
 
             not_created = workflow.resources_not_created_by_tuttle()
-            inv_collector.collect_resources_with_same_reason(not_created, NOT_CREATED_BY_TUTTLE)
+            inv_collector.collect_with_reason(not_created, NOT_CREATED_BY_TUTTLE)
             inv_collector.display()
             inv_collector.remove()
 
