@@ -13,38 +13,13 @@ MUST_CREATE_RESOURCE = "The former primary resource has to be created by tuttle"
 RESOURCE_NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
 
 
-
-class InvalidationReason:
-    NO_LONGER_CREATED = 0
-    NOT_SAME_INPUTS = 1
-    PROCESS_CHANGED = 2
-    MUST_CREATE_RESOURCE = 3
-    RESOURCE_NOT_CREATED_BY_TUTTLE = 4
-    DEPENDENCY_CHANGED = 5
-
-    messages = [
-        "Resource no longer created by the newer process",
-        "Resource was created with different inputs",
-        "Process code changed",
-        "The former primary resource has to be created by tuttle",
-        "The existing resource has not been created by tuttle",
-        "Resource depends on another resource that have changed",
-    ]
-
-    def __init__(self, reason):
-        self._reason = reason
-
-    def __str__(self):
-        return self.messages[self._reason]
-
-
 class Workflow:
     """ A workflow is a dependency tree of processes
     """
     def __init__(self):
         self._processes = []
         self.resources = None
-        self._resources_fingerprints = []
+        self._resources_fingerprints = {}
 
     def add_process(self, process):
         """ Adds a process
@@ -128,8 +103,8 @@ class Workflow:
                 msg = "After execution of process {} : resource {} should have been created".format(process.id,
                                                                                                     res.url)
                 raise ResourceError(msg)
-        #for res in process.iter_outputs():
-        #    self._resources_fingerprints[res.url] = res.fingerprint()
+        for res in process.iter_outputs():
+            self._resources_fingerprints[res.url] = res.fingerprint()
 
 
     def run(self):
@@ -260,22 +235,6 @@ class Workflow:
                         result.append(dependant_resource)
         return result
 
-
-    def retrieve_execution_info(self, previous, invalidated_resources):
-        """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
-         where the processes are in common. No need to retrieve information for the processes that are not in common
-         """
-        inv_urls = [res[0].url for res in invalidated_resources]
-        for prev_process in previous.iter_processes():
-            prev_output = prev_process.pick_an_output()
-            if prev_output and prev_output.url not in inv_urls:
-                # When running this function, invalidation has been computed already
-                # So if process from previous workflow creates a resource, it creates all the same
-                # resources as the process in the current workflow
-                process = self.find_process_that_creates(prev_output.url)
-                process.retrieve_execution_info(prev_process)
-                pass
-
     def retrieve_execution_info2(self, previous, ignore_resources):
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
          where the processes are in common. No need to retrieve information for the processes that are not in common
@@ -292,6 +251,17 @@ class Workflow:
                 process.retrieve_execution_info(prev_process)
                 pass
 
+    def update_primary_resources_signatures(self):
+        result = []
+        for resource in self.resources.itervalues():
+            if resource.is_primary():
+                fingerprint = resource.fingerprint()
+                if resource.url not in self._resources_fingerprints:
+                    self._resources_fingerprints[resource.url] = fingerprint
+                elif self._resources_fingerprints[resource.url] != fingerprint :
+                    self._resources_fingerprints[resource.url] = fingerprint
+                    result.append(resource)
+        return result
 
     def pick_a_failing_process(self):
         for process in self.iter_processes():

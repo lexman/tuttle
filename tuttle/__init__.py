@@ -6,45 +6,7 @@ __version__ = '0.1'
 from error import TuttleError
 from project_parser import ProjectParser
 from workflow import Workflow
-from invalidation import invalidate
 
-
-def display_invalidity(different, modified, resultant):
-    print "The following resources are not valid any more and will be removed :"
-    for resource, reason in different:
-        print "* {} - {}".format(resource.url, reason)
-    for resource in modified:
-        print "* {} - This primary resource has been modified".format(resource.url)
-    for resource in resultant:
-        print "* {} - Resource depends on another resource that have changed".format(resource.url)
-
-
-def display_invalidity2(not_created):
-    for resource, reason in not_created:
-        print "* {} - {}".format(resource.url, reason)
-
-
-def display_invalidity_unified(invalid):
-    if invalid:
-        print "The following resources are not valid any more and will be removed :"
-        for resource, reason in invalid:
-            print "* {} - {}".format(resource.url, reason)
-
-
-# TODO : should'nt we be able to know if the resource exists without asking ?
-def remove_resources(to_remove):
-    for resource in to_remove:
-        if resource.exists():
-            resource.remove()
-
-
-def resources_to_remove(different, resultant):
-    result = []
-    for resource, _ in different:
-        result.append(resource)
-    for resource in resultant:
-        result.append(resource)
-    return result
 
 NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
 DEPENDENCY_CHANGED = "Resource depends on another resource that have changed"
@@ -90,8 +52,9 @@ def parse_invalidate_and_run(tuttlefile):
             # si une ressource était présente au dernier workflow
             # il faut vérifier si elle a changé depuis
             # sinon, il faut enregistrer sa signature
-            #modified_primary_resources = workflow.update_primary_resources_signatures()
-            #resultant = previous_workflow.dependant_resources(modified_primary_resources)
+            modified_primary_resources = workflow.update_primary_resources_signatures()
+            resultant_from_modif = workflow.dependant_resources(modified_primary_resources)
+            inv_collector.collect_resources_with_same_reason(resultant_from_modif, DEPENDENCY_CHANGED)
 
             not_created = workflow.resources_not_created_by_tuttle()
             inv_collector.collect_resources_with_same_reason(not_created, NOT_CREATED_BY_TUTTLE)
