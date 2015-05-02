@@ -3,7 +3,7 @@ from itertools import chain
 from tuttle import workflow
 from tuttle.invalidation import InvalidResourceCollector
 
-__version__ = '0.1'
+__version__ = '0.1-preview'
 
 from error import TuttleError
 from project_parser import ProjectParser
