@@ -2,12 +2,12 @@
 from itertools import chain
 from tuttle import workflow
 from tuttle.invalidation import InvalidResourceCollector
-
-__version__ = '0.1-preview'
-
 from error import TuttleError
 from project_parser import ProjectParser
 from workflow import Workflow
+
+
+__version__ = '0.1-rc0'
 
 
 NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
