@@ -107,7 +107,6 @@ class Workflow:
         for res in process.iter_outputs():
             self._resources_fingerprints[res.url] = res.fingerprint()
 
-
     def run(self):
         """ Runs a workflow by running every process in the right order
 
@@ -172,7 +171,6 @@ class Workflow:
         """
         assert isinstance(newer_workflow, Workflow), newer_workflow
         changing_resources = []
-        # TODO : could be optimized by not checking twice a process that creates two outputs
         for url, resource in self.resources.iteritems():
             newer_resource = newer_workflow.find_resource(url)
             if newer_resource is None:
@@ -216,17 +214,17 @@ class Workflow:
         for resource in invalid_resources:
             for dependant_process in resource.dependant_processes:
                 for dependant_resource in dependant_process.iter_outputs():
-                    if dependant_resource not in invalid_resources :
+                    if dependant_resource not in invalid_resources:
                         invalid_resources.append(dependant_resource)
                         result.append((dependant_resource, DEPENDENCY_CHANGED.format(resource.url)))
 
         return result
 
     def retrieve_fingerprints(self, previous, ignore_urls):
+        """Retreive the fingerprints from the former workflow. Usefull to detect what has changed."""
         for url, fingerprint in previous._resources_fingerprints.iteritems():
             if url in self.resources and url not in ignore_urls:
                 self._resources_fingerprints[url] = fingerprint
-
 
     def retrieve_execution_info(self, previous, ignore_urls):
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
@@ -254,7 +252,7 @@ class Workflow:
                 fingerprint = resource.fingerprint()
                 if resource.url not in self._resources_fingerprints:
                     self._resources_fingerprints[resource.url] = fingerprint
-                elif self._resources_fingerprints[resource.url] != fingerprint :
+                elif self._resources_fingerprints[resource.url] != fingerprint:
                     self._resources_fingerprints[resource.url] = fingerprint
                     result.append(resource)
         return result
