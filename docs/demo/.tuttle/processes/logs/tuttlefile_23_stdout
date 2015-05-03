@@ -1,0 +1,9 @@
+CREATE TABLE nb_internet_users AS
+SELECT
+    wb_internet_users.`Country Name` AS country_name,
+    wb_internet_users.`Country Code` AS country_code,
+    wb_internet_users.`2013` as pct_internauts,
+    world_population.`2013` as population,
+    CAST(wb_internet_users.`2013` * world_population.`2013` / 100 AS INT) as nb_internauts
+FROM wb_internet_users LEFT JOIN world_population ON wb_internet_users.`Country Code` = world_population.`Country Code`
+

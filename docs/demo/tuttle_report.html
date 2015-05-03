@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Workflow : process detail</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <style>
+        h1 {
+          text-align: center;
+          padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Detail of processes</h1>
+        <div class="text-center" id="dependency_graph"></div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_1" name="tuttlefile_1">
+            tuttlefile_1 : download
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>file://internet_users.zip</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv</li>  </ul>
+            </div>
+            <br/>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 00:53:12</td>
+                        <td>Sun, 03 May 2015 00:53:13</td>
+                        <td>0.783999919891</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_1_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_1_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_3" name="tuttlefile_3">
+            tuttlefile_3 : bat
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>file://it.net.user.p2_Indicator_en_csv_v2.csv</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>file://internet_users.zip</li>  </ul>
+            </div>
+            <br/>
+            
+            <pre><code>7za.exe x internet_users.zip it.net.user.p2_Indicator_en_csv_v2.csv
+</code></pre>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 00:53:13</td>
+                        <td>Sun, 03 May 2015 00:53:13</td>
+                        <td>0.27799987793</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_3_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_3_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_6" name="tuttlefile_6">
+            tuttlefile_6 : download
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>file://world_population.zip</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>http://api.worldbank.org/v2/en/indicator/sp.pop.totl?downloadformat=csv</li>  </ul>
+            </div>
+            <br/>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 00:53:14</td>
+                        <td>Sun, 03 May 2015 00:53:15</td>
+                        <td>1.34500002861</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_6_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_6_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_8" name="tuttlefile_8">
+            tuttlefile_8 : bat
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>file://sp.pop.totl_Indicator_en_csv_v2.csv</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>file://world_population.zip</li>  </ul>
+            </div>
+            <br/>
+            
+            <pre><code>7za x world_population.zip sp.pop.totl_Indicator_en_csv_v2.csv
+</code></pre>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 00:53:15</td>
+                        <td>Sun, 03 May 2015 00:53:15</td>
+                        <td>0.174000024796</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_8_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_8_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_11" name="tuttlefile_11">
+            tuttlefile_11 : bat
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>file://world_population_2013.tsv</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>file://sp.pop.totl_Indicator_en_csv_v2.csv</li>  </ul>
+            </div>
+            <br/>
+            
+            <pre><code>more  +2 sp.pop.totl_Indicator_en_csv_v2.csv > world_population_2013.tsv
+</code></pre>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 00:53:15</td>
+                        <td>Sun, 03 May 2015 00:53:16</td>
+                        <td>0.236999988556</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_11_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_11_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_14" name="tuttlefile_14">
+            tuttlefile_14 : bat
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>file://wb_internet_users_2013.tsv</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>file://it.net.user.p2_Indicator_en_csv_v2.csv</li>  </ul>
+            </div>
+            <br/>
+            
+            <pre><code>more +2 it.net.user.p2_Indicator_en_csv_v2.csv > wb_internet_users_2013.tsv
+</code></pre>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 00:53:16</td>
+                        <td>Sun, 03 May 2015 00:53:16</td>
+                        <td>0.200999975204</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_14_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_14_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_17" name="tuttlefile_17">
+            tuttlefile_17 : csv2sqlite
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>sqlite://stats.sqlite/tables/wb_internet_users</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>file://wb_internet_users_2013.tsv</li>  </ul>
+            </div>
+            <br/>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 00:53:16</td>
+                        <td>Sun, 03 May 2015 00:53:16</td>
+                        <td>0.095999956131</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_17_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_17_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_19" name="tuttlefile_19">
+            tuttlefile_19 : csv2sqlite
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>sqlite://stats.sqlite/tables/world_population</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>file://world_population_2013.tsv</li>  </ul>
+            </div>
+            <br/>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 00:53:16</td>
+                        <td>Sun, 03 May 2015 00:53:16</td>
+                        <td>0.111999988556</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_19_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_19_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_21" name="tuttlefile_21">
+            tuttlefile_21 : csv2sqlite
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>sqlite://stats.sqlite/tables/sales</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>file://sales.tsv</li>  </ul>
+            </div>
+            <br/>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 00:53:16</td>
+                        <td>Sun, 03 May 2015 00:53:17</td>
+                        <td>0.074000120163</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_21_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_21_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_23" name="tuttlefile_23">
+            tuttlefile_23 : sqlite
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>sqlite://stats.sqlite/tables/nb_internet_users</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>sqlite://stats.sqlite/tables/wb_internet_users</li>   <li>sqlite://stats.sqlite/tables/world_population</li>  </ul>
+            </div>
+            <br/>
+            
+            <pre><code>CREATE TABLE nb_internet_users AS
+SELECT
+    wb_internet_users.`Country Name` AS country_name,
+    wb_internet_users.`Country Code` AS country_code,
+    wb_internet_users.`2013` as pct_internauts,
+    world_population.`2013` as population,
+    CAST(wb_internet_users.`2013` * world_population.`2013` / 100 AS INT) as nb_internauts
+FROM wb_internet_users LEFT JOIN world_population ON wb_internet_users.`Country Code` = world_population.`Country Code`
+</code></pre>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 00:53:17</td>
+                        <td>Sun, 03 May 2015 00:53:17</td>
+                        <td>0.165999889374</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_23_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_23_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_33" name="tuttlefile_33">
+            tuttlefile_33 : sqlite
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>sqlite://stats.sqlite/tables/market_penetration</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>sqlite://stats.sqlite/tables/nb_internet_users</li>   <li>sqlite://stats.sqlite/tables/sales</li>  </ul>
+            </div>
+            <br/>
+            
+            <pre><code>CREATE TABLE market_penetration AS
+SELECT
+    nb_internet_users.country_name,
+    nb_internet_users.country_code,
+    nb_internet_users.nb_internauts,
+    sales.nb_sales,
+    (nb_sales * 100.0 / nb_internauts) AS penetration_rate
+FROM nb_internet_users JOIN sales ON nb_internet_users.country_name = sales.country_name
+</code></pre>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 00:53:17</td>
+                        <td>Sun, 03 May 2015 00:53:17</td>
+                        <td>0.0550000667572</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_33_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_33_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_43" name="tuttlefile_43">
+            tuttlefile_43 : sqlite
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>sqlite://stats.sqlite/tables/penetration_performance</li>    <li>sqlite://stats.sqlite/tables/spread</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>sqlite://stats.sqlite/tables/market_penetration</li>  </ul>
+            </div>
+            <br/>
+            
+            <pre><code>-- Compute variance (square of the standard deviation)
+CREATE TABLE spread AS 
+SELECT
+    AVG((penetration_rate - sub.mean) * (penetration_rate - sub.mean)) as variance,
+    mean
+FROM market_penetration, (SELECT AVG(penetration_rate) AS mean FROM market_penetration) AS sub;
+-- Then, check wether performance is in the norm
+CREATE TABLE penetration_performance AS
+SELECT
+    country_name,
+    country_code,
+    mean, 
+    penetration_rate, 
+    (penetration_rate - mean) * abs(penetration_rate - mean) / variance AS norm_spread 
+FROM market_penetration, spread WHERE penetration_rate IS NOT NULL;
+</code></pre>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 00:53:17</td>
+                        <td>Sun, 03 May 2015 00:53:17</td>
+                        <td>0.180999994278</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_43_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_43_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_61" name="tuttlefile_61">
+            tuttlefile_61 : bat
+             <span class="label label-success">Success</span>
+            
+            </h2>
+            <div class="col-sm-5">
+                <ul>   <li>file://penetration_rate.html</li>   </ul>
+            </div>
+            <div class="col-sm-2">
+                &larr;
+            </div>
+            <div class="col-sm-5">
+                <ul> <li>sqlite://stats.sqlite/tables/market_penetration</li>   <li>sqlite://stats.sqlite/tables/penetration_performance</li>   <li>file://layout_stats.py</li>   <li>file://perf.tpl.html</li>  </ul>
+            </div>
+            <br/>
+            
+            <pre><code>python layout_stats.py
+</code></pre>
+            
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Sun, 03 May 2015 13:00:43</td>
+                        <td>Sun, 03 May 2015 13:00:43</td>
+                        <td>0.398000001907</td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_61_stdout"> view </a></td>
+                        <td><a href=".tuttle\processes\logs\tuttlefile_61_err"> view </a></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) & Boostrap -->
+    <script src=".tuttle/html_report_assets/jquery.min.js"></script>
+    <script src=".tuttle/html_report_assets/bootstrap.min.js"></script>
+    <!-- For viewing dependency graph in the dot language -->
+    <script src=".tuttle/html_report_assets/viz.js"></script>
+    <script type="text/vnd.graphviz" id="dependency_graph_source">
+        digraph workflow {
+    Node [style="rounded,filled", shape=box, fillcolor=none]
+    p_tuttlefile_1 [shape="none", label="tuttlefile_1", URL="#tuttlefile_1", width=0, height=0] ;
+    "it.net.user.p2?downloadformat=csv" -> p_tuttlefile_1 [arrowhead="none"] 
+    "it.net.user.p2?downloadformat=csv" [fillcolor=beige] ;
+    p_tuttlefile_1 -> "internet_users.zip" 
+    "internet_users.zip" [fillcolor=green] ;
+    p_tuttlefile_3 [shape="none", label="tuttlefile_3", URL="#tuttlefile_3", width=0, height=0] ;
+    "internet_users.zip" -> p_tuttlefile_3 [arrowhead="none"] 
+    p_tuttlefile_3 -> "it.net.user.p2_Indicator_en_csv_v2.csv" 
+    "it.net.user.p2_Indicator_en_csv_v2.csv" [fillcolor=green] ;
+    p_tuttlefile_6 [shape="none", label="tuttlefile_6", URL="#tuttlefile_6", width=0, height=0] ;
+    "sp.pop.totl?downloadformat=csv" -> p_tuttlefile_6 [arrowhead="none"] 
+    "sp.pop.totl?downloadformat=csv" [fillcolor=beige] ;
+    p_tuttlefile_6 -> "world_population.zip" 
+    "world_population.zip" [fillcolor=green] ;
+    p_tuttlefile_8 [shape="none", label="tuttlefile_8", URL="#tuttlefile_8", width=0, height=0] ;
+    "world_population.zip" -> p_tuttlefile_8 [arrowhead="none"] 
+    p_tuttlefile_8 -> "sp.pop.totl_Indicator_en_csv_v2.csv" 
+    "sp.pop.totl_Indicator_en_csv_v2.csv" [fillcolor=green] ;
+    p_tuttlefile_11 [shape="none", label="tuttlefile_11", URL="#tuttlefile_11", width=0, height=0] ;
+    "sp.pop.totl_Indicator_en_csv_v2.csv" -> p_tuttlefile_11 [arrowhead="none"] 
+    p_tuttlefile_11 -> "world_population_2013.tsv" 
+    "world_population_2013.tsv" [fillcolor=green] ;
+    p_tuttlefile_14 [shape="none", label="tuttlefile_14", URL="#tuttlefile_14", width=0, height=0] ;
+    "it.net.user.p2_Indicator_en_csv_v2.csv" -> p_tuttlefile_14 [arrowhead="none"] 
+    p_tuttlefile_14 -> "wb_internet_users_2013.tsv" 
+    "wb_internet_users_2013.tsv" [fillcolor=green] ;
+    p_tuttlefile_17 [shape="none", label="tuttlefile_17", URL="#tuttlefile_17", width=0, height=0] ;
+    "wb_internet_users_2013.tsv" -> p_tuttlefile_17 [arrowhead="none"] 
+    p_tuttlefile_17 -> "wb_internet_users" 
+    "wb_internet_users" [fillcolor=green] ;
+    p_tuttlefile_19 [shape="none", label="tuttlefile_19", URL="#tuttlefile_19", width=0, height=0] ;
+    "world_population_2013.tsv" -> p_tuttlefile_19 [arrowhead="none"] 
+    p_tuttlefile_19 -> "world_population" 
+    "world_population" [fillcolor=green] ;
+    p_tuttlefile_21 [shape="none", label="tuttlefile_21", URL="#tuttlefile_21", width=0, height=0] ;
+    "sales.tsv" -> p_tuttlefile_21 [arrowhead="none"] 
+    "sales.tsv" [fillcolor=beige] ;
+    p_tuttlefile_21 -> "sales" 
+    "sales" [fillcolor=green] ;
+    p_tuttlefile_23 [shape="none", label="tuttlefile_23", URL="#tuttlefile_23", width=0, height=0] ;
+    "wb_internet_users" -> p_tuttlefile_23 [arrowhead="none"] 
+    "world_population" -> p_tuttlefile_23 [arrowhead="none"] 
+    p_tuttlefile_23 -> "nb_internet_users" 
+    "nb_internet_users" [fillcolor=green] ;
+    p_tuttlefile_33 [shape="none", label="tuttlefile_33", URL="#tuttlefile_33", width=0, height=0] ;
+    "nb_internet_users" -> p_tuttlefile_33 [arrowhead="none"] 
+    "sales" -> p_tuttlefile_33 [arrowhead="none"] 
+    p_tuttlefile_33 -> "market_penetration" 
+    "market_penetration" [fillcolor=green] ;
+    p_tuttlefile_43 [shape="none", label="tuttlefile_43", URL="#tuttlefile_43", width=0, height=0] ;
+    "market_penetration" -> p_tuttlefile_43 [arrowhead="none"] 
+    p_tuttlefile_43 -> "penetration_performance" 
+    "penetration_performance" [fillcolor=green] ;
+    p_tuttlefile_43 -> "spread" 
+    "spread" [fillcolor=green] ;
+    p_tuttlefile_61 [shape="none", label="tuttlefile_61", URL="#tuttlefile_61", width=0, height=0] ;
+    "market_penetration" -> p_tuttlefile_61 [arrowhead="none"] 
+    "penetration_performance" -> p_tuttlefile_61 [arrowhead="none"] 
+    "layout_stats.py" -> p_tuttlefile_61 [arrowhead="none"] 
+    "layout_stats.py" [fillcolor=beige] ;
+    "perf.tpl.html" -> p_tuttlefile_61 [arrowhead="none"] 
+    "perf.tpl.html" [fillcolor=beige] ;
+    p_tuttlefile_61 -> "penetration_rate.html" 
+    "penetration_rate.html" [fillcolor=green] ;
+}
+    </script>
+    <script>
+        function insert_graph() {
+            dot_src = $("#dependency_graph_source").html();
+            svg = Viz(dot_src, "svg");
+            $("#dependency_graph").html(svg)
+        }
+        insert_graph();
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+-- Compute variance (square of the standard deviation)
+CREATE TABLE spread AS 
+SELECT
+    AVG((penetration_rate - sub.mean) * (penetration_rate - sub.mean)) as variance,
+    mean
+FROM market_penetration, (SELECT AVG(penetration_rate) AS mean FROM market_penetration) AS sub;
+-- Then, check wether performance is in the norm
+CREATE TABLE penetration_performance AS
+SELECT
+    country_name,
+    country_code,
+    mean, 
+    penetration_rate, 
+    (penetration_rate - mean) * abs(penetration_rate - mean) / variance AS norm_spread 
+FROM market_penetration, spread WHERE penetration_rate IS NOT NULL;
+

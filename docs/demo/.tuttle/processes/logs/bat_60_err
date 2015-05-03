@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "layout_stats.py", line 38, in <module>
+    sys.exit(main())
+  File "layout_stats.py", line 34, in main
+    export_layout(db, html_writer)
+  File "layout_stats.py", line 23, in export_layout
+    cur.execute(sql)
+sqlite3.OperationalError: no such column: penetration_performance.country_code

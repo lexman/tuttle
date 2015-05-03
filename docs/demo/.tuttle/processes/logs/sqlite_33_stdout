@@ -1,0 +1,9 @@
+CREATE TABLE market_penetration AS
+SELECT
+    nb_internet_users.country_name,
+    nb_internet_users.country_code,
+    nb_internet_users.nb_internauts,
+    sales.nb_sales,
+    (nb_sales * 100.0 / nb_internauts) AS penetration_rate
+FROM nb_internet_users JOIN sales ON nb_internet_users.country_name = sales.country_name
+

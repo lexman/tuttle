@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "layout_stats.py", line 39, in <module>
+    sys.exit(main())
+  File "layout_stats.py", line 35, in main
+    export_layout(db, html_writer)
+  File "layout_stats.py", line 24, in export_layout
+    cur.execute(sql)
+sqlite3.OperationalError: no such column: nb_sales
