@@ -1,12 +1,11 @@
 # Tuttle : Make for data
 
-Reliably process data.
 
-This tool is designed to help you work in team in an industrial environment. You can change your scripts, you can merge your work with teammate's, you can checkout another branch of code, Tuttle will re-compute the data for you, but only the part that changed.
-Most of all, Tuttle GUARANTIES the result you expect from your source files, every time you run it.
+This tool has been designed to help you create data as a team in an industrial environment, with reliability in mind.
 
+You can change your scripts, you can merge your work with teammate's, you can checkout another branch of code, Tuttle will re-compute the data for you, but only the part that changed.
+Most of all, Tuttle GUARANTIES you get the result you expect from your source files, every time you run it.
 
-Tuttle is at a very early stage of development and must be considered as alpha, therefore syntax is likely to change.
 
 # Demo
 
@@ -14,6 +13,8 @@ A demo Tuttle project can be found in https://github.com/abonnasseau/tuttle/tree
 
 When you run this project (under Windows), you get a report of every thing that has been run, when, whether it succeeded,
  an access to the logs, and... The nice dependency graph like [this one !](http://abonnasseau.github.io/tuttle/docs/demo/tuttle_report.html)
+
+Please note that Tuttle is at a very early stage of development and must be considered as alpha, therefore syntax is likely to change.
 
 
 # Install
