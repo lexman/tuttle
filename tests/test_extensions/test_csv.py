@@ -133,8 +133,9 @@ United Arab Emirates,ARE,9346129""".split("\n")
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 2, output
-        assert output.find("Wrong")>= 0, output
-        #assert output.find("Is this file a valid CSV file ?")>= 0, output
+        error_text_found = output.find("Wrong")>= 0
+        error_text_found = error_text_found or output.find("Is this file a valid CSV file ?") >= 0
+        assert error_text_found, output
 
     @isolate(['tests.sqlite'])
     def test_binary_file_should_fail_with_csv_2sqlite(self):
