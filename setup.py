@@ -31,8 +31,8 @@ setup(name='tuttle',
       author='Lexman',
       author_email='tuttle@lexman.org',
       description='Make for data',
-      long_description='Reliably create data from source as a team in an industrial environment... A tool for '
-                       'continuous data processing',
+      long_description='Reliably create data from different sources. Work as a team in an industrial environment... '
+                       'A tool for continuous data processing',
       platforms=['Linux', 'Windows'],
       url='http://tuttle.lexman.org/',
       license='MIT',
