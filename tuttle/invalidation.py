@@ -17,8 +17,7 @@ class InvalidResourceCollector():
             for resource, reason in self.res_and_reason:
                 print "* {} - {}".format(resource.url, reason)
 
-    def remove(self):
+    def remove_resources(self):
         for resource, reason in self.res_and_reason:
             if resource.exists():
                 resource.remove()
-

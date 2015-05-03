@@ -101,3 +101,4 @@ file://C <- file://B
         assert rcode == 0, output
         assert output.find('* file://A') == -1, output
         assert output.find('* file://B') >= 0, output
+        assert output.find('A produces B') >= 0, output

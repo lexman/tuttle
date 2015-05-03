@@ -221,7 +221,7 @@ class Workflow:
         return result
 
     def retrieve_fingerprints(self, previous, ignore_urls):
-        """Retreive the fingerprints from the former workflow. Usefull to detect what has changed."""
+        """Retrieve the fingerprints from the former workflow. Usefull to detect what has changed."""
         for url, fingerprint in previous._resources_fingerprints.iteritems():
             if url in self.resources and url not in ignore_urls:
                 self._resources_fingerprints[url] = fingerprint
@@ -230,7 +230,6 @@ class Workflow:
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
          where the processes are in common. No need to retrieve information for the processes that are not in common
          """
-
         for prev_process in previous.iter_processes():
             prev_output = prev_process.pick_an_output()
             if prev_output and prev_output.url not in ignore_urls:
@@ -262,3 +261,10 @@ class Workflow:
             if process.end is not None and process.success is False:
                 return process
         return None
+
+    def reset_process_exec_info(self, invalidated_resources):
+        self.compute_dependencies()
+        for resource in invalidated_resources:
+            for dependant_process in resource.dependant_processes:
+                dependant_process.reset_execution_info()
+

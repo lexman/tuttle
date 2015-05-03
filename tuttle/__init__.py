@@ -36,7 +36,8 @@ def parse_invalidate_and_run(tuttlefile):
             not_created = workflow.resources_not_created_by_tuttle()
             inv_collector.collect_with_reason(not_created, NOT_CREATED_BY_TUTTLE)
             inv_collector.display()
-            inv_collector.remove()
+            inv_collector.remove_resources()
+            workflow.reset_process_exec_info(modified_primary_resources)
 
             workflow.create_reports()
             failing_process = workflow.pick_a_failing_process()

@@ -76,6 +76,18 @@ class Process:
         self.log_stdout = process.log_stdout
         self.log_stderr = process.log_stderr
 
+    def reset_execution_info(self):
+        """ Reset the execution info (all the properties set by function run()) because the resources produced
+        by this process have been invalidated
+        :param process:
+        :return:
+        """
+        self._start = None
+        self._end = None
+        self.log_stdout = None
+        self.log_stderr = None
+        self.success = None
+
     def pre_check(self):
         """
         Runs a verification that the process won't obviously fail. This is used for static analysis before any process is run
