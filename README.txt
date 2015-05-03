@@ -4,8 +4,16 @@ Reliably create data from different sources.
 
 This tool is design to help you work in team in an industrial environment... To achieve continuous data processing.
 
-
 Tuttle is at a very early stage of development and must be considered as alpha, therefore Syntax is likely to change.
+
+# Demo
+
+A demo project can be found in https://github.com/abonnasseau/tuttle/tree/master/samples/demo
+
+When you run this project (under Windows), you get a report of every thing that has been run, when, whether it succeeded,
+ an access to the logs, and... The nice dependency graph !
+
+
 
 # Install
 You can find install instruction for Windows and Linux on the release page :
