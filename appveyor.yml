@@ -44,7 +44,7 @@ after_test:
   - ps: "ls build"
 
 artifacts:
-  # Archive the generated wheel package in the ci.appveyor.com build report.
+  # Archive the generated package in the ci.appveyor.com build report.
   - path: build\*
 
 #on_success:
