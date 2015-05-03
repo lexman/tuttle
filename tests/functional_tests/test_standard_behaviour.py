@@ -85,3 +85,17 @@ file://C <- file://B
         rcode, output = run_tuttle_file(project)
         assert not path.exists('C')
 
+    @isolate(['A'])
+    def test_should_tell_if_already_ok(self):
+        """ If nothing has to run, the user should be informed every thing is ok
+        """
+        project = """file://B <- file://A
+        echo A produces B > B
+        echo A produces B
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert output.find("A produces B") >= 0
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert output.find("Everything up to date") >= 0, output

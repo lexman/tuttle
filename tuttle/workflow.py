@@ -114,8 +114,10 @@ class Workflow:
         :raises ExecutionError if an error occurs
         """
         create_tuttle_dirs()
+        nb_process_run = 0
         process = self.pick_a_process_to_run()
         while process is not None:
+            nb_process_run += 1
             print_header(process)
             try:
                 self.run_process(process)
@@ -124,6 +126,7 @@ class Workflow:
                 self.create_reports()
                 print_logs(process)
             process = self.pick_a_process_to_run()
+        return nb_process_run
 
     def create_reports(self):
         """ Write to disk files describing the workflow, with color for states

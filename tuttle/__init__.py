@@ -44,7 +44,10 @@ def parse_invalidate_and_run(tuttlefile):
             if failing_process:
                 raise TuttleError("Workflow already failed on process '{}'. Fix the process and run tuttle again".
                                   format(failing_process.id))
-            workflow.run()
+            nb_process_run = workflow.run()
+            if nb_process_run == 0:
+                print "Everything up to date"
+
         except TuttleError as e:
             print e
             return 2
