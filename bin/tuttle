@@ -5,7 +5,12 @@ import sys
 from optparse import OptionParser
 from os.path import abspath, exists, dirname, join
 
-tuttle_module = join(dirname(abspath(__file__)), '..', '..', 'tuttle')
+if getattr(sys, 'frozen', False):
+    # frozen
+    tuttle_module = join(dirname(abspath(sys.executable)), '..', '..', 'tuttle')
+else:
+    # unfrozen
+    tuttle_module = join(dirname(abspath(__file__)), '..', '..', 'tuttle')
 sys.path.insert(0,tuttle_module)
 
 from tuttle import parse_invalidate_and_run
