@@ -59,4 +59,4 @@ sqlite://stats.sqlite/tables/penetration_performance, sqlite://stats.sqlite/tabl
     FROM market_penetration, spread WHERE penetration_rate IS NOT NULL;
 	
 file://penetration_rate.html <- sqlite://stats.sqlite/tables/market_penetration, sqlite://stats.sqlite/tables/penetration_performance, file://layout_stats.py, file://perf.tpl.html
-	python layout_stats.py 
+	python layout_stats.py
