@@ -11,8 +11,7 @@ Tuttle is at a very early stage of development and must be considered as alpha, 
 A demo project can be found in https://github.com/abonnasseau/tuttle/tree/master/samples/demo
 
 When you run this project (under Windows), you get a report of every thing that has been run, when, whether it succeeded,
- an access to the logs, and... The nice dependency graph !
-
+ an access to the logs, and... The nice dependency graph like [this one !](http://abonnasseau.github.io/tuttle/doc/demo/tuttle_report.html)
 
 
 # Install
@@ -21,8 +20,8 @@ https://github.com/abonnasseau/tuttle/releases
 
 
 # Hacking
-.. image:: https://ci.appveyor.com/api/projects/status/github/tuttle
-.. image:: https://travis-ci.org/abonnasseau/tuttle.svg
+![AppVeyor Windows build status](https://ci.appveyor.com/api/projects/status/github/tuttle)
+![Travis Linux build status](https://travis-ci.org/abonnasseau/tuttle.png)
 
 Tuttle is a python project you can download and install :
 
