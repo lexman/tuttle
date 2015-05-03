@@ -112,3 +112,5 @@ Ensure we minimise the number of call to exists() and fingerprint()
 Write a test for pick_a_failing_process late
 
 Detect corrupted resources through fingerprint
+
+Add logs to download processor
