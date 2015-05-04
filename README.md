@@ -9,9 +9,12 @@ Most of all, Tuttle GUARANTIES you get the result you expect from your source fi
 
 # Demo
 
-A demo Tuttle project can be found in https://github.com/abonnasseau/tuttle/tree/master/samples/demo/tuttlefile
+A demo Tuttle project can be found :
+* https://github.com/abonnasseau/tuttle/tree/master/samples/demo_linux for a project working under Linux
+* https://github.com/abonnasseau/tuttle/tree/master/samples/demo for a project working under Windows
+Have a look at the tuttlefile which describes the workflow...
 
-When you run this project (under Windows), you get a report of every thing that has been run, when, whether it succeeded,
+When you run this project, you get a report of every thing that has been run, when, whether it succeeded,
  an access to the logs, and... The nice dependency graph like [this one !](http://abonnasseau.github.io/tuttle/docs/demo/tuttle_report.html)
 
 Please note that Tuttle is at a very early stage of development and must be considered as alpha, therefore syntax is likely to change.
