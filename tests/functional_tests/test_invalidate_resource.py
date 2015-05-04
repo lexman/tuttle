@@ -96,9 +96,58 @@ file://C <- file://B
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
         with open('A', 'w') as f:
-            f.write("A has changed")
+            f.write('A has changed')
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
         assert output.find('* file://A') == -1, output
         assert output.find('* file://B') >= 0, output
         assert output.find('A produces B') >= 0, output
+
+    @isolate(['A', 'B'])
+    def test_should_display_invalid_resource_only_once(self):
+        """ If a resource has several reasons to be invalidated, it should be displayed only once"""
+        project = """file://C <- file://A, file://B
+    echo A and B produces C
+    echo A and B produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        with open('A', 'w') as f:
+            f.write('A has changed')
+        with open('B', 'w') as f:
+            f.write('B has changed')
+        project = """file://C <- file://A, file://B
+    echo A and B produces C differently
+    echo A and B produces C differently > C
+"""
+
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        pos_start = output.find('* file://C')
+        pos_end = pos_start + len('* file://C')
+        assert pos_start >= 0, output
+        pos2 = output.find('* file://C', pos_end)
+        assert pos2 == -1, output
+
+
+    @isolate(['A'])
+    def test_should_not_display_invalid_twice(self):
+        """ Fixes a bug where resources where displayed twice"""
+        project1 = """file://B <- file://A
+    echo A produces B
+    echo A produces B > B
+"""
+        rcode, output = run_tuttle_file(project1)
+        assert rcode == 0, output
+
+        project1 = """file://B <- file://A
+    echo A produces B somehow differently
+    echo A produces B somehow differently > B
+"""
+        rcode, output = run_tuttle_file(project1)
+        assert rcode == 0, output
+        pos_start = output.find('* file://B')
+        pos_end = pos_start + len('* file://B')
+        assert pos_start >= 0, output
+        assert output.find('* file://B', pos_end) == -1, output
+        assert output.find('* has not been', pos_end) == -1, output
