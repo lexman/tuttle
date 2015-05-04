@@ -96,6 +96,11 @@ class DownloadProcessor:
            or outputs[0].scheme != 'file':
             raise TuttleError("Download processor {} don't know how to handle his inputs / outputs".format(process.id))
 
+    def reader2writer(self, reader, writer, notifier):
+        for chunk in iter(lambda: reader.read(32768), b''):
+            writer.write(chunk)
+            notifier.write('.')
+
     def run(self, process, reserved_path, log_stdout, log_stderr):
         # TODO how do we handle errors ?
         inputs = [res for res in process.iter_inputs()]
@@ -105,6 +110,8 @@ class DownloadProcessor:
         headers = {"User-Agent" : self.user_agent}
         req = Request(url, headers = headers)
         fin = urlopen(req)
-        with open(file_name, 'wb') as fout:
-            copyfileobj(fin, fout)
+        with open(file_name, 'wb') as fout, \
+             open(log_stdout, 'wb') as stdout:
+            stdout.write("Downlaod {}\nIn progress".format(url, file_name))
+            self.reader2writer(fin, fout, stdout)
         return 0

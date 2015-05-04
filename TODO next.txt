@@ -109,7 +109,7 @@ A meaningfull example
 
 Ensure we minimise the number of call to exists() and fingerprint()
 
-Write a test for pick_a_failing_process late
+Write a test for pick_a_failing_process late, and define what has to be done
 
 Detect corrupted resources through fingerprint
 

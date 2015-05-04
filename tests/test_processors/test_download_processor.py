@@ -1,9 +1,11 @@
 # -*- coding: utf8 -*-
-from os.path import isfile
+from os import getcwd
+from os.path import isfile, join
 
 from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.project_parser import ProjectParser
 
+from glob import glob
 
 class TestDownloadProcessor():
 
@@ -19,6 +21,21 @@ class TestDownloadProcessor():
         assert isfile("google.html")
         content = open("google.html").read()
         assert content.find("<title>Google</title>") >= 0
+        logs = open(join(".tuttle", "processes", "logs", "__1_stdout"), "r").read()
+        assert logs.find(".") >= 0
+
+    @isolate
+    def test_long_download(self):
+        """ Progress dots should appear in the logs in a long download"""
+        project = " file://jquery.js <- http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js #! download"
+        pp = ProjectParser()
+        pp.set_project(project)
+        workflow = pp.parse_and_check_project()
+        workflow.pre_check_processes()
+        workflow.run()
+        assert isfile("jquery.js")
+        logs = open(join(".tuttle", "processes", "logs", "__1_stdout"), "r").read()
+        assert logs.find("rogress...") >= 0
 
     @isolate
     def test_pre_check(self):
