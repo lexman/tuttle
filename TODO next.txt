@@ -115,4 +115,7 @@ Detect corrupted resources through fingerprint
 
 Add logs to download processor - DONE
 
-Report the size of the logs
+Report the size of the logs - DONE
+    Add a test...
+
+Remove logs and all files when reseting a process ?

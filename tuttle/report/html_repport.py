@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 
 from jinja2 import Template
-from os import path, mkdir
+from os import path, mkdir, error
 from shutil import copytree
 from time import strftime, localtime
 from dot_repport import dot
@@ -18,6 +18,27 @@ def data_path(*path_parts):
         # Change this bit to match where you store your data files:
         datadir = dirname(__file__)
     return join(datadir, *path_parts)
+
+
+
+def nice_file_size(filename):
+    if not filename:
+        return ""
+    try:
+        file_size = path.getsize(filename)
+        if file_size == 0:
+            return "empty"
+        elif file_size < 1000:
+            return "{} B".format(file_size)
+        elif file_size < 1000 * 1000:
+            return "{} KB".format(file_size / 1024)
+        elif file_size < 1000 * 1000 * 1000:
+            return "{} MB".format(file_size / (1024 * 1024))
+        elif file_size < 1000 * 1000 * 1000 * 1000:
+            return "{} GB".format(file_size / (1024 * 1024 * 1024))
+    except error:
+        return "empty"
+
 
 
 def format_process(process):
@@ -37,7 +58,9 @@ def format_process(process):
         'end' : end,
         'duration' : duration,
         'log_stdout' : process.log_stdout,
+        'log_stdout_size' : nice_file_size(process.log_stdout),
         'log_stderr' : process.log_stderr,
+        'log_stderr_size' : nice_file_size(process.log_stderr),
         'outputs' : process.iter_outputs(),
         'inputs' : process.iter_inputs(),
         'code' : process._code,
