@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from tuttle.project_parser import ProjectParser
 
-from tuttle.resources import HTTPResource
+from tuttle.extensions.net import HTTPResource
 
 
 class TestHttpResource():

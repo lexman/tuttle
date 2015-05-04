@@ -7,6 +7,7 @@ from project_parser import ProjectParser
 from workflow import Workflow
 
 
+version = '0.1-rc0'
 __version__ = '0.1-rc0'
 
 

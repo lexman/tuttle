@@ -4,8 +4,8 @@ from resources import FileResource
 from processors import *
 from process import Process
 from tuttle.extensions.ext_csv import CSV2SQLiteProcessor
+from tuttle.extensions.net import DownloadProcessor, HTTPResource
 from tuttle.extensions.sqlite import SQLiteProcessor, SQLiteResource
-from tuttle.resources import HTTPResource
 import os
 
 class WorkflowBuilder():
