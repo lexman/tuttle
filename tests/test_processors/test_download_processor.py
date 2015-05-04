@@ -22,7 +22,8 @@ class TestDownloadProcessor():
         content = open("google.html").read()
         assert content.find("<title>Google</title>") >= 0
         logs = open(join(".tuttle", "processes", "logs", "__1_stdout"), "r").read()
-        assert logs.find(".") >= 0
+        assert logs.find("\n.\n") >= 0
+        assert isfile(join(".tuttle", "processes", "logs", "__1_err"))
 
     @isolate
     def test_long_download(self):
@@ -35,7 +36,7 @@ class TestDownloadProcessor():
         workflow.run()
         assert isfile("jquery.js")
         logs = open(join(".tuttle", "processes", "logs", "__1_stdout"), "r").read()
-        assert logs.find("rogress...") >= 0
+        assert logs.find("...") >= 0
 
     @isolate
     def test_pre_check(self):

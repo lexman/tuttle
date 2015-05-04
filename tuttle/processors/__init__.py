@@ -111,7 +111,9 @@ class DownloadProcessor:
         req = Request(url, headers = headers)
         fin = urlopen(req)
         with open(file_name, 'wb') as fout, \
-             open(log_stdout, 'wb') as stdout:
-            stdout.write("Downlaod {}\nIn progress".format(url, file_name))
+             open(log_stdout, 'wb') as stdout, \
+             open(log_stderr, 'wb') as stderr:
+            stdout.write("Downloading {}\n".format(url, file_name))
             self.reader2writer(fin, fout, stdout)
+            stdout.write("\ndone\n ")
         return 0

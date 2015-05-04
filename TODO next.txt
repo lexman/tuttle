@@ -113,4 +113,6 @@ Write a test for pick_a_failing_process late, and define what has to be done
 
 Detect corrupted resources through fingerprint
 
-Add logs to download processor
+Add logs to download processor - DONE
+
+Report the size of the logs
