@@ -21,6 +21,17 @@ def data_path(*path_parts):
 
 
 
+def nice_size(size):
+    if size < 1000:
+        return "{} B".format(size)
+    elif size < 1000 * 1000:
+        return "{} KB".format(size / 1024)
+    elif size < 1000 * 1000 * 1000:
+        return "{} MB".format(size / (1024 * 1024))
+    elif size < 1000 * 1000 * 1000 * 1000:
+        return "{} GB".format(size / (1024 * 1024 * 1024))
+
+
 def nice_file_size(filename):
     if not filename:
         return ""
@@ -28,14 +39,8 @@ def nice_file_size(filename):
         file_size = path.getsize(filename)
         if file_size == 0:
             return "empty"
-        elif file_size < 1000:
-            return "{} B".format(file_size)
-        elif file_size < 1000 * 1000:
-            return "{} KB".format(file_size / 1024)
-        elif file_size < 1000 * 1000 * 1000:
-            return "{} MB".format(file_size / (1024 * 1024))
-        elif file_size < 1000 * 1000 * 1000 * 1000:
-            return "{} GB".format(file_size / (1024 * 1024 * 1024))
+        else:
+            return nice_size(file_size)
     except error:
         return "empty"
 
