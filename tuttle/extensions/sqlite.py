@@ -88,7 +88,7 @@ class SQLiteResource(ResourceMixIn, object):
             db.close()
         return True
 
-    def fingerprint(self):
+    def signature(self):
         return ""
 
     def remove_file_if_empty(self, db):

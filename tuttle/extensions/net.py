@@ -29,7 +29,7 @@ class HTTPResource(ResourceMixIn, object):
     def remove(self):
         raise TuttleError("HTTP resources can't be removed !")
 
-    def fingerprint(self):
+    def signature(self):
         return ""
 
 

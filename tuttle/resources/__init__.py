@@ -60,7 +60,7 @@ class FileResource(ResourceMixIn, object):
     def exists(self):
         return exists(self._path)
 
-    def fingerprint(self):
+    def signature(self):
         sha1 = None
         try:
             with open(self._path) as f:

@@ -1,9 +1,9 @@
-file://internet_users.zip <- http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv #! download
+#file://internet_users.zip <- http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv #! download
 
 file://it.net.user.p2_Indicator_en_csv_v2.csv <- file://internet_users.zip
     unzip internet_users.zip it.net.user.p2_Indicator_en_csv_v2.csv
 
-file://world_population.zip <- http://api.worldbank.org/v2/en/indicator/sp.pop.totl?downloadformat=csv #! download
+#file://world_population.zip <- http://api.worldbank.org/v2/en/indicator/sp.pop.totl?downloadformat=csv #! download
 
 file://sp.pop.totl_Indicator_en_csv_v2.csv <- file://world_population.zip
     unzip world_population.zip sp.pop.totl_Indicator_en_csv_v2.csv

@@ -107,15 +107,15 @@ Remove csv resource - DONE
 
 A meaningfull example
 
-Ensure we minimise the number of call to exists() and fingerprint()
+Ensure we minimise the number of call to exists() and signature()
 
 Write a test for pick_a_failing_process late, and define what has to be done
 
-Detect corrupted resources through fingerprint
+Detect corrupted resources through signature
 
 Add logs to download processor - DONE
 
 Report the size of the logs - DONE
-    Add a test...
+    Add a test... - DONE
 
 Remove logs and all files when reseting a process ?

@@ -28,9 +28,9 @@ def parse_invalidate_and_run(tuttlefile):
                 inv_collector.collect(resultant_from_dif)
                 ignore_urls = {resource.url for resource, _ in chain(different, resultant_from_dif)}
                 workflow.retrieve_execution_info(previous_workflow, ignore_urls)
-                workflow.retrieve_fingerprints(previous_workflow, ignore_urls)
+                workflow.retrieve_signatures(previous_workflow, ignore_urls)
 
-            modified_primary_resources = workflow.update_primary_resource_fingerprints()
+            modified_primary_resources = workflow.update_primary_resource_signatures()
             resultant_from_modif = workflow.dependant_resources(modified_primary_resources)
             inv_collector.collect(resultant_from_modif)
 

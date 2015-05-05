@@ -20,7 +20,7 @@ class Workflow:
     def __init__(self, resources):
         self._processes = []
         self.resources = resources
-        self._resources_fingerprints = {}
+        self._resources_signatures = {}
 
     def add_process(self, process):
         """ Adds a process
@@ -105,7 +105,7 @@ class Workflow:
                                                                                                     res.url)
                 raise ResourceError(msg)
         for res in process.iter_outputs():
-            self._resources_fingerprints[res.url] = res.fingerprint()
+            self._resources_signatures[res.url] = res.signature()
 
     def run(self):
         """ Runs a workflow by running every process in the right order
@@ -223,11 +223,11 @@ class Workflow:
 
         return result
 
-    def retrieve_fingerprints(self, previous, ignore_urls):
-        """Retrieve the fingerprints from the former workflow. Usefull to detect what has changed."""
-        for url, fingerprint in previous._resources_fingerprints.iteritems():
+    def retrieve_signatures(self, previous, ignore_urls):
+        """Retrieve the signatures from the former workflow. Usefull to detect what has changed."""
+        for url, signature in previous._resources_signatures.iteritems():
             if url in self.resources and url not in ignore_urls:
-                self._resources_fingerprints[url] = fingerprint
+                self._resources_signatures[url] = signature
 
     def retrieve_execution_info(self, previous, ignore_urls):
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
@@ -243,19 +243,19 @@ class Workflow:
                 process.retrieve_execution_info(prev_process)
                 pass
 
-    def update_primary_resource_fingerprints(self):
-        """ Updates the list of primary resources with current fingerprints
+    def update_primary_resource_signatures(self):
+        """ Updates the list of primary resources with current signatures
          returns the list of resources that have changed
         :return:
         """
         result = []
         for resource in self.resources.itervalues():
             if resource.is_primary():
-                fingerprint = resource.fingerprint()
-                if resource.url not in self._resources_fingerprints:
-                    self._resources_fingerprints[resource.url] = fingerprint
-                elif self._resources_fingerprints[resource.url] != fingerprint:
-                    self._resources_fingerprints[resource.url] = fingerprint
+                signature = resource.signature()
+                if resource.url not in self._resources_signatures:
+                    self._resources_signatures[resource.url] = signature
+                elif self._resources_signatures[resource.url] != signature:
+                    self._resources_signatures[resource.url] = signature
                     result.append(resource)
         return result
 
