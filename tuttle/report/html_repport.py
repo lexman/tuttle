@@ -45,8 +45,17 @@ def nice_file_size(filename):
         return "empty"
 
 
+def format_resource(resource, workflow):
+    sig = None
+    if resource.url in workflow._resources_signatures:
+        sig = workflow._resources_signatures[resource.url]
+    return {
+        'url': resource.url,
+        'signature' : sig,
+    }
 
-def format_process(process):
+
+def format_process(process, workflow):
     duration = ""
     start = ""
     end = ""
@@ -57,19 +66,19 @@ def format_process(process):
             duration = process.end - process.start
 
     return {
-        'id' : process.id,
-        'processor' : process._processor.name,
-        'start' : start,
-        'end' : end,
-        'duration' : duration,
-        'log_stdout' : process.log_stdout,
-        'log_stdout_size' : nice_file_size(process.log_stdout),
-        'log_stderr' : process.log_stderr,
-        'log_stderr_size' : nice_file_size(process.log_stderr),
-        'outputs' : process.iter_outputs(),
-        'inputs' : process.iter_inputs(),
+        'id': process.id,
+        'processor': process._processor.name,
+        'start': start,
+        'end': end,
+        'duration': duration,
+        'log_stdout': process.log_stdout,
+        'log_stdout_size': nice_file_size(process.log_stdout),
+        'log_stderr': process.log_stderr,
+        'log_stderr_size': nice_file_size(process.log_stderr),
+        'outputs': (format_resource(resource, workflow) for resource in process.iter_outputs()),
+        'inputs': (format_resource(resource, workflow) for resource in process.iter_inputs()),
         'code' : process._code,
-        'success' : process.success,
+        'success': process.success,
     }
 
 
@@ -93,6 +102,6 @@ def create_html_report(workflow, filename):
     tpl_filename = data_path("report_template.html")
     with open(tpl_filename, "r") as ftpl:
         t = Template(ftpl.read())
-    processes = [format_process(p) for p in workflow.iter_processes()]
+    processes = [format_process(p, workflow) for p in workflow.iter_processes()]
     with open(filename, "w") as fout:
-        fout.write(t.render(processes = processes, dot_src = dot(workflow)))
+        fout.write(t.render(processes=processes, dot_src=dot(workflow)))

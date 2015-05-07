@@ -26,13 +26,27 @@
             {% endif %}
             </h2>
             <div class="col-sm-5">
-                <ul> {% for output in process.outputs %}  <li>{{ output.url }}</li>  {% endfor %} </ul>
+                <ul> {% for output in process.outputs %}
+                        <li>
+                        {% if output.signature %} <span title="{{output.signature}}"> {% endif %}
+                        {{ output.url }}
+                        {% if output.signature %} </span> {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
             <div class="col-sm-2">
                 &larr;
             </div>
             <div class="col-sm-5">
-                <ul>{% for input in process.inputs %} <li>{{ input.url }}</li>  {% endfor %}</ul>
+                <ul> {% for input in process.inputs %}
+                        <li>
+                        {% if input.signature %} <span title="{{input.signature}}"> {% endif %}
+                        {{ input.url }}
+                        {% if input.signature %} </span> {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
             <br/>
             {% if process.code %}
