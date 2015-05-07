@@ -18,8 +18,8 @@ class HTTPResource(ResourceMixIn, object):
 
     def exists(self):
         try:
-            headers = {"User-Agent" : USER_AGENT}
-            req = Request(self.url, headers = headers)
+            headers = {"User-Agent": USER_AGENT}
+            req = Request(self.url, headers=headers)
             response = urlopen(req)
             some_data = response.read(0)
         except (URLError, HTTPError):
@@ -29,7 +29,28 @@ class HTTPResource(ResourceMixIn, object):
     def remove(self):
         raise TuttleError("HTTP resources can't be removed !")
 
+    def get_header(self, info, header):
+        for a_header in info.headers:
+            if a_header.startswith(header):
+                return a_header
+        return None
+
     def signature(self):
+        try:
+            headers = {"User-Agent": USER_AGENT}
+            req = Request(self.url, headers=headers)
+            response = urlopen(req)
+            info = response.info()
+            etag = self.get_header(info, "Etag")
+            if etag:
+                # The most reliable is etag
+                return etag.strip()
+            lastmod = self.get_header(info, "Last-Modified")
+            if lastmod:
+                return lastmod.strip()
+            some_data = response.read(0)
+        except (URLError, HTTPError):
+            return False
         return ""
 
 
@@ -58,8 +79,8 @@ class DownloadProcessor:
         outputs = [res for res in process.iter_outputs()]
         file_name = outputs[0]._path
         url = inputs[0].url
-        headers = {"User-Agent" : USER_AGENT}
-        req = Request(url, headers = headers)
+        headers = {"User-Agent": USER_AGENT}
+        req = Request(url, headers=headers)
         fin = urlopen(req)
         with open(file_name, 'wb') as fout, \
              open(log_stdout, 'wb') as stdout, \
@@ -68,4 +89,3 @@ class DownloadProcessor:
             self.reader2writer(fin, fout, stdout)
             stdout.write("\ndone\n ")
         return 0
-

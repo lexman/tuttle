@@ -30,6 +30,15 @@ class TestHttpResource():
         inputs = [res for res in workflow._processes[0].iter_inputs()]
         assert len(inputs) == 1
 
+    def test_resource_etag_signature(self):
+        """A real resource should exist"""
+        res = HTTPResource("http://www.example.com/")
+        print res.exists()
+        fig = res.signature()
+        assert fig == 'Etag: "359670651"', fig
+
+# ETag : http://upload.wikimedia.org/wikipedia/commons/8/8d/Tuttle_baseball_glove.jpg
+
 
 class TestDownloadProcessor():
 
@@ -117,3 +126,4 @@ file://google.html <- file://A #! download
         assert rcode == 2
         assert output.find("* file://B") == -1
         assert output.find("Download processor") >= 0, output
+
