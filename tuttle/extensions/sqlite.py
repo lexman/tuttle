@@ -96,6 +96,7 @@ class SQLiteResource(ResourceMixIn, object):
             cur = db.cursor()
             cur.execute("SELECT COUNT(*) AS nb FROM `{}`".format(self.table))
             row = cur.fetchone()
+            nb = row[0]
             cur.execute("SELECT * FROM sqlite_master WHERE name=?", (self.table, ))
             sum_up = cur.fetchone()
             result = "|".join((sum_up[0], sum_up[1], sum_up[2], str(sum_up[3]), sum_up[4], str(nb), ))
