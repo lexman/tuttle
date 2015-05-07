@@ -46,4 +46,4 @@ Contributions are very welcome through pull request. You can contribute to :
 * code : improve tuttle kernel, add new extensions : spreadshits, mongodb, hdfs, etc.
 * tests : use Tuttle for your projects and report bugs
 * syntax : help define the perfect way to describe workflows
-* design : please help us improve the look of the [report !](http://abonnasseau.github.io/tuttle/docs/demo/tuttle_report.html) to ease readability !
+* design : please help us improve the look of the [report](http://abonnasseau.github.io/tuttle/docs/demo/tuttle_report.html) to ease readability !
