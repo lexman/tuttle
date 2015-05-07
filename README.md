@@ -9,8 +9,8 @@ Most of all, Tuttle GUARANTIES the result you expect from your source files, eve
 
 # Demo
 
-A demo Tuttle project is available [under Windows!](https://github.com/abonnasseau/tuttle/tree/master/samples/demo) and
- and [under Linux!](https://github.com/abonnasseau/tuttle/tree/master/samples/demo_linux). It consist of a ``tuttlefile`` that
+A demo Tuttle project is available [under Windows](https://github.com/abonnasseau/tuttle/tree/master/samples/demo) and
+ and [under Linux](https://github.com/abonnasseau/tuttle/tree/master/samples/demo_linux). It consist of a ``tuttlefile`` that
  describe a whole workflow of processing :
 * download some files about population and internet from the world bank
 * unzip them
@@ -18,7 +18,7 @@ A demo Tuttle project is available [under Windows!](https://github.com/abonnasse
 * join the figures with a ``sales.tsv`` to compute how well sales relate to the number of internet users per country
 * insert the data in an html template for rendering (through a python script)
 
-When you run this project, you get a [report !](http://abonnasseau.github.io/tuttle/docs/demo/tuttle_report.html) of every thing that has been run, when, whether it succeeded,
+When you run this project, you get a [report](http://abonnasseau.github.io/tuttle/docs/demo/tuttle_report.html) of every thing that has been run, when, whether it succeeded,
  an access to the logs, and... A nice dependency graph !
 
 Please note that Tuttle is at a very early stage of development and must be considered as alpha, therefore syntax as
