@@ -118,7 +118,7 @@ file://file3 <- file://file1
 
 """)
         workflow.compute_dependencies()
-        assert workflow.resources['file://file1'].dependant_processes == [workflow._processes[0],
+        assert workflow._resources['file://file1'].dependant_processes == [workflow._processes[0],
                                                                           workflow._processes[1]]
 
     @isolate

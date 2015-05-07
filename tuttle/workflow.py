@@ -19,7 +19,7 @@ class Workflow:
     """
     def __init__(self, resources):
         self._processes = []
-        self.resources = resources
+        self._resources = resources
         self._resources_signatures = {}
 
     def add_process(self, process):
@@ -39,7 +39,7 @@ class Workflow:
         :rtype: list
         """
         missing = []
-        for resource in self.resources.itervalues():
+        for resource in self._resources.itervalues():
             if resource.is_primary():
                 if not resource.exists():
                     missing.append(resource)
@@ -51,7 +51,7 @@ class Workflow:
         :return: a list of process that won't be able to run. No special indication about circular groups
         :rtype: list
         """
-        resources_to_build = [r for r in self.resources.itervalues() if r.creator_process]
+        resources_to_build = [r for r in self._resources.itervalues() if r.creator_process]
         processes_to_run = [p for p in self.iter_processes()]
 
         def all_inputs_built(process):
@@ -155,11 +155,11 @@ class Workflow:
         so check creates_url() before calling this method
         :return:
         """
-        return self.resources[url].creator_process
+        return self._resources[url].creator_process
 
     def find_resource(self, url):
-        if url in self.resources:
-            return self.resources[url]
+        if url in self._resources:
+            return self._resources[url]
         else:
             return None
 
@@ -174,7 +174,7 @@ class Workflow:
         """
         assert isinstance(newer_workflow, Workflow), newer_workflow
         changing_resources = []
-        for url, resource in self.resources.iteritems():
+        for url, resource in self._resources.iteritems():
             newer_resource = newer_workflow.find_resource(url)
             if newer_resource is None:
                 if not resource.is_primary():
@@ -192,7 +192,7 @@ class Workflow:
 
     def resources_not_created_by_tuttle(self):
         result = []
-        for resource in self.resources.itervalues():
+        for resource in self._resources.itervalues():
             if resource.exists() and resource.creator_process and resource.creator_process.end is None:
                 result.append(resource)
         return result
@@ -201,7 +201,7 @@ class Workflow:
         """ Feeds the dependant_processes field in every resource
         :return: Nothing
         """
-        for resource in self.resources.itervalues():
+        for resource in self._resources.itervalues():
             resource.dependant_processes = []
 
         for process in self.iter_processes():
@@ -226,7 +226,7 @@ class Workflow:
     def retrieve_signatures(self, previous, ignore_urls):
         """Retrieve the signatures from the former workflow. Usefull to detect what has changed."""
         for url, signature in previous._resources_signatures.iteritems():
-            if url in self.resources and url not in ignore_urls:
+            if url in self._resources and url not in ignore_urls:
                 self._resources_signatures[url] = signature
 
     def retrieve_execution_info(self, previous, ignore_urls):
@@ -249,7 +249,7 @@ class Workflow:
         :return:
         """
         result = []
-        for resource in self.resources.itervalues():
+        for resource in self._resources.itervalues():
             if resource.is_primary():
                 signature = resource.signature()
                 if resource.url not in self._resources_signatures:
