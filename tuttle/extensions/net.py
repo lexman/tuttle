@@ -3,12 +3,14 @@
 from urllib2 import Request, urlopen, URLError, HTTPError
 from tuttle.error import TuttleError
 from tuttle.resources import ResourceMixIn
+from hashlib import sha1
 
 version = "0.1"
 
 USER_AGENT = "tuttle/{}".format(version)
 
 
+# TODO : should we follow resources in case of http redirection ?
 class HTTPResource(ResourceMixIn, object):
     """An HTTP resource"""
     scheme = 'http'
@@ -48,10 +50,17 @@ class HTTPResource(ResourceMixIn, object):
             lastmod = self.get_header(info, "Last-Modified")
             if lastmod:
                 return lastmod.strip()
-            some_data = response.read(0)
+            lastmod = self.get_header(info, "Last-Modified")
+            if lastmod:
+                return lastmod.strip()
+            # If we can't rely on the headers, then we compute
+            # a hash from the beginning of the resource
+            chunk_32k = response.read(32768)
+            checksum = sha1()
+            checksum.update(chunk_32k)
+            return "sha1-32K: {}".format(checksum.hexdigest())
         except (URLError, HTTPError):
             return False
-        return ""
 
 
 class DownloadProcessor:

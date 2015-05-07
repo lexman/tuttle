@@ -30,14 +30,24 @@ class TestHttpResource():
         inputs = [res for res in workflow._processes[0].iter_inputs()]
         assert len(inputs) == 1
 
+    # TODO : should we follow resources in case of http redirection ?
     def test_resource_etag_signature(self):
-        """A real resource should exist"""
+        """ An HTTPResource with an Etag should use it as signature """
         res = HTTPResource("http://www.example.com/")
-        print res.exists()
-        fig = res.signature()
-        assert fig == 'Etag: "359670651"', fig
+        sig = res.signature()
+        assert sig == 'Etag: "359670651"', sig
 
-# ETag : http://upload.wikimedia.org/wikipedia/commons/8/8d/Tuttle_baseball_glove.jpg
+    def test_resource_last_modified_signature(self):
+        """ An HTTPResource with an Last-Modified should use it as signature in case it doesn't have Etag"""
+        res = HTTPResource("http://www.wikipedia.org/")
+        sig = res.signature()
+        assert sig == 'Last-Modified: Sun, 19 Apr 2015 19:01:00 GMT', sig
+
+    def test_ressource_signature_without_etag_nor_last_modified(self):
+        """ An HTTPResource signature should be a hash of the beginning of the file if we can't rely on headers """
+        res = HTTPResource("http://www.4chan.org/legal")
+        sig = res.signature()
+        assert sig == 'sha1-32K: fc0e8360cb576610d54df896a08f1b799b796a3b', sig
 
 
 class TestDownloadProcessor():
