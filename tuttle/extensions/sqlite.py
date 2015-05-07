@@ -88,8 +88,20 @@ class SQLiteResource(ResourceMixIn, object):
             db.close()
         return True
 
+    # TODO : should we make a checksum of all the  data ?
+    # or should we speedup the process by using the aproximate number of rows in sqlite_stat1 ?
     def signature(self):
-        return ""
+        db = sqlite3.connect(self.db_file)
+        try:
+            cur = db.cursor()
+            cur.execute("SELECT COUNT(*) AS nb FROM `{}`".format(self.table))
+            row = cur.fetchone()
+            cur.execute("SELECT * FROM sqlite_master WHERE name=?", (self.table, ))
+            sum_up = cur.fetchone()
+            result = "|".join((sum_up[0], sum_up[1], sum_up[2], str(sum_up[3]), sum_up[4], str(nb), ))
+        finally:
+            db.close()
+        return result
 
     def remove_file_if_empty(self, db):
         cur = db.cursor()
@@ -102,7 +114,7 @@ class SQLiteResource(ResourceMixIn, object):
     def remove(self):
         db = sqlite3.connect(self.db_file)
         try:
-            db.execute("DROP TABLE {}".format(self.table))
+            db.execute("DROP TABLE `{}`".format(self.table))
             self.remove_file_if_empty(db)
         finally:
             db.close()

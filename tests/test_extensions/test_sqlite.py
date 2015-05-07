@@ -174,3 +174,14 @@ class TestSQLiteResource():
         res.remove()
         assert not res.exists()
         assert isfile("tests.sqlite")
+
+    @isolate(['tests.sqlite'])
+    def test_sqlite_table_signature(self):
+        """signature() should return the number of lines and creation info"""
+        url = "sqlite://tests.sqlite/tables/test_table"
+        res = SQLiteResource(url)
+        sig = res.signature()
+        expected = "table|test_table|test_table|2|CREATE TABLE test_table (int id, col1 string, col2 string)|0"
+        assert sig == expected, sig
+
+    # TODO test a table with space in name
