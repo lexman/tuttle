@@ -18,40 +18,45 @@
         {% for process in processes %}
         <div class="process">
             <h2 id="{{ process.id }}" name="{{ process.id }}">
-            {{ process.id }} : {{process.processor}}
             {% if not process.start %}
             {% elif not process.end %} <span class="label label-info">Running</span>
             {% elif process.success %} <span class="label label-success">Success</span>
             {% else %} <span class="label label-danger">Failure</span>
             {% endif %}
+            {{ process.id }}
             </h2>
-            <div class="col-sm-5">
-                <ul> {% for output in process.outputs %}
-                        <li>
-                        {% if output.signature %} <span title="{{output.signature}}"> {% endif %}
-                        {{ output.url }}
-                        {% if output.signature %} </span> {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
+            <div class="row">
+                <div class="col-sm-4">
+                    <ul> {% for output in process.outputs %}
+                            <li>
+                            {% if output.signature %} <span title="{{output.signature}}"> {% endif %}
+                            {{ output.url }}
+                            {% if output.signature %} </span> {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-sm-1">
+                    <big><strong>&larr;</strong></big>
+                </div>
+                <div class="col-sm-4">
+                    <ul> {% for input in process.inputs %}
+                            <li>
+                            {% if input.signature %} <span title="{{input.signature}}"> {% endif %}
+                            {{ input.url }}
+                            {% if input.signature %} </span> {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
-            <div class="col-sm-2">
-                &larr;
-            </div>
-            <div class="col-sm-5">
-                <ul> {% for input in process.inputs %}
-                        <li>
-                        {% if input.signature %} <span title="{{input.signature}}"> {% endif %}
-                        {{ input.url }}
-                        {% if input.signature %} </span> {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <br/>
+            <div>
+            Processor : <strong>{{process.processor}}</strong>
             {% if process.code %}
             <pre><code>{{process.code}}</code></pre>
             {% endif %}
+            <br/>
+            </div>
             {% if process.start %}
             <table class="table table-condensed">
                 <thread>
