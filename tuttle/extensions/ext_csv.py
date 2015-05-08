@@ -65,7 +65,7 @@ class CSV2SQLiteProcessor:
     """
     name = 'csv2sqlite'
 
-    def pre_check(self, process):
+    def static_check(self, process):
         inputs = [res for res in process.iter_inputs()]
         outputs = [res for res in process.iter_outputs()]
         if len(inputs) != 1 \
@@ -76,7 +76,7 @@ class CSV2SQLiteProcessor:
 
     def run(self, process, reserved_path, log_stdout, log_stderr):
         # TODO : log queries
-        # pre_check ensured we know what are inputs and outputs
+        # static_check ensured we know what are inputs and outputs
         input_res = process.iter_inputs().next()
         assert isinstance(input_res, FileResource)
         csv_filename = input_res._path

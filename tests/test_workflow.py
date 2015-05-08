@@ -157,7 +157,7 @@ file://file3 <- file://file1
             """file://result <- file://source
             echo test
             """)
-        workflow.pre_check_processes()
+        workflow.static_check_processes()
         try:
             process = workflow._processes[0]
             create_tuttle_dirs()

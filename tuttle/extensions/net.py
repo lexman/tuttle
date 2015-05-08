@@ -68,7 +68,7 @@ class DownloadProcessor:
     """
     name = 'download'
 
-    def pre_check(self, process):
+    def static_check(self, process):
         inputs = [res for res in process.iter_inputs()]
         outputs = [res for res in process.iter_outputs()]
         if len(inputs) != 1 \

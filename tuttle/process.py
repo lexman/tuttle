@@ -88,11 +88,11 @@ class Process:
         self.log_stderr = None
         self.success = None
 
-    def pre_check(self):
+    def static_check(self):
         """
         Runs a verification that the process won't obviously fail. This is used for static analysis before any process is run
         """
-        self._processor.pre_check(self)
+        self._processor.static_check(self)
 
     def run(self, reserved_path, log_stdout, log_stderr):
         """

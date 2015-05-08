@@ -31,7 +31,7 @@ class SQLiteProcessor:
                         "Found files {} and {}.".format(filename, resource.db_file))
         return filename
 
-    def pre_check(self, process):
+    def static_check(self, process):
         # Will raise if file is ambiguous
         for resource in chain(process.iter_inputs(), process.iter_outputs()):
             if not isinstance(resource, SQLiteResource):

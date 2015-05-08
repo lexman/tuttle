@@ -18,7 +18,7 @@ def parse_invalidate_and_run(tuttlefile):
         try:
             pp = ProjectParser()
             workflow = pp.parse_and_check_file(tuttlefile)
-            workflow.pre_check_processes()
+            workflow.static_check_processes()
             inv_collector = InvalidResourceCollector()
             previous_workflow = Workflow.load()
             if previous_workflow:

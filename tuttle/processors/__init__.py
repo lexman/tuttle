@@ -44,7 +44,7 @@ class ShellProcessor:
         self.generate_executable(process, reserved_path)
         run_and_log(reserved_path, log_stdout, log_stderr)
 
-    def pre_check(self, process):
+    def static_check(self, process):
         pass
 
 
@@ -75,6 +75,6 @@ class BatProcessor:
         prog = self.generate_executable(process, reserved_path)
         run_and_log(prog, log_stdout, log_stderr)
 
-    def pre_check(self, process):
+    def static_check(self, process):
         pass
 

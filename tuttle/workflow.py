@@ -88,12 +88,12 @@ class Workflow:
                 return process
         return None
 
-    def pre_check_processes(self):
+    def static_check_processes(self):
         """ Runs a pre-check for every process, in order to catch early obvious errors, even before invalidation
         :return: None
         """
         for process in self.iter_processes():
-            process.pre_check()
+            process.static_check()
 
     def run_process(self, process):
         reserved_path, log_stdout, log_stderr = prepare_paths(process)
