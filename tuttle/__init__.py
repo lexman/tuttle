@@ -4,6 +4,7 @@ from tuttle import workflow
 from tuttle.invalidation import InvalidResourceCollector
 from error import TuttleError
 from project_parser import ProjectParser
+from tuttle.project_parser import WorkflowError
 from workflow import Workflow
 
 
@@ -39,6 +40,13 @@ def parse_invalidate_and_run(tuttlefile):
             inv_collector.display()
             inv_collector.remove_resources()
             workflow.reset_process_exec_info(modified_primary_resources)
+
+            missing = workflow.missing_inputs()
+            if missing:
+                error_msg = "Missing the following resources to launch the workflow :\n"
+                for mis in missing:
+                    error_msg += "* {}\n".format(mis.url)
+                raise TuttleError(error_msg)
 
             workflow.create_reports()
             failing_process = workflow.pick_a_failing_process()

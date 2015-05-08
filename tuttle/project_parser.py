@@ -50,13 +50,6 @@ class ProjectParser():
 
     def parse_and_check_project(self):
         workflow = self.parse_project()
-        missing = workflow.missing_inputs()
-        if missing:
-            error_msg = "Missing the following resources to launch the workflow :\n"
-            for mis in missing:
-                error_msg += "* {}\n".format(mis.url)
-            # TODO : improve line reference
-            raise WorkflowError(error_msg, self._nb_lines)
         unreachable = workflow.circular_references()
         if unreachable:
             error_msg = "The following resources references one another as inputs in a circular way that don't allow " \
