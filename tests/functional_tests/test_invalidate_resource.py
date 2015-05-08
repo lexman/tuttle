@@ -111,6 +111,31 @@ file://C <- file://B
         assert output.find('* file://B') >= 0, output
         assert output.find('A produces B') >= 0, output
 
+    @isolate(['A'])
+    def test_modified_primary_resource_should_invalidate_dependencies_in_cascade(self):
+        """ If a primary resource is modified, it should invalidate direct dependencies
+        and dependencies of dependencies """
+        project = """file://B <- file://A
+    echo A produces B
+    echo A produces B > B
+
+file://C <- file://B
+    echo B produces C
+    echo B produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        with open('A', 'w') as f:
+            f.write('A has changed')
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert output.find('* file://A') == -1, output
+        assert output.find('* file://B') >= 0, output
+        assert output.find('* file://C') >= 0, output
+        assert output.find('A produces B') >= 0, output
+        assert output.find('B produces C') >= 0, output
+
+
     @isolate(['A', 'B'])
     def test_should_display_invalid_resource_only_once(self):
         """ If a resource has several reasons to be invalidated, it should be displayed only once"""

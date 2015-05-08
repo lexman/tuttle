@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from report.html_repport import create_html_report
 from pickle import dump, load
+from tuttle.invalidation import dependency_map
 from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
     prepare_paths
 
@@ -219,7 +220,7 @@ class Workflow:
 
     def retrieve_execution_info(self, previous, ignore_urls):
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
-         where the processes are in common. No need to retrieve information for the processes that are not in common
+         where the processes are in common. Ignore information for the processes that are not in common
          """
         for prev_process in previous.iter_processes():
             prev_output = prev_process.pick_an_output()
@@ -254,8 +255,9 @@ class Workflow:
         return None
 
     def reset_process_exec_info(self, invalidated_resources):
-        self.compute_dependencies()
+        dependencies = dependency_map(self)
         for resource in invalidated_resources:
-            for dependant_process in resource.dependant_processes:
-                dependant_process.reset_execution_info()
+            if resource.url in dependencies:
+                for dependant_process in dependencies[resource.url]:
+                    dependant_process.reset_execution_info()
 

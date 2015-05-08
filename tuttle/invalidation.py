@@ -16,6 +16,7 @@ def dependency_map(workflow):
             dependencies[resource.url].append(process)
     return dependencies
 
+
 def dependant_resources(workflow, from_resources):
     dependencies = dependency_map(workflow)
     result = []
@@ -40,6 +41,10 @@ class InvalidResourceCollector():
 
     def urls(self):
         return self._resources_urls
+
+    def resources(self):
+        for resource, _ in self._resources_and_reasons:
+            yield resource
 
     def collect_resource(self, resource, reason):
         if resource.url not in self._resources_urls:
@@ -72,3 +77,4 @@ class InvalidResourceCollector():
         for resource, reason in self._resources_and_reasons:
             if resource.exists():
                 resource.remove()
+

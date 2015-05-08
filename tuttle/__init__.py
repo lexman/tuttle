@@ -33,8 +33,9 @@ def collect_differences_and_update_similarities(workflow, previous_workflow, inv
     """
     different_res = previous_workflow.resources_not_created_the_same_way(workflow)
     inv_collector.collect_with_dependencies(different_res, previous_workflow)
-    workflow.retrieve_execution_info(previous_workflow, inv_collector.urls())
-    workflow.retrieve_signatures(previous_workflow, inv_collector.urls())
+    ignore_urls = inv_collector.urls()
+    workflow.retrieve_execution_info(previous_workflow, ignore_urls)
+    workflow.retrieve_signatures(previous_workflow, ignore_urls)
 
 
 def collect_primary_resources_changes(workflow, inv_collector):
@@ -77,6 +78,7 @@ def parse_invalidate_and_run(tuttlefile):
 
             inv_collector.display()
             inv_collector.remove_resources()
+            workflow.reset_process_exec_info([resource for resource, _ in inv_collector._resources_and_reasons])
             workflow.reset_process_exec_info(modified_primary_resources)
             workflow.create_reports()
 
