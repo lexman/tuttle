@@ -1,5 +1,4 @@
 # -*- coding: utf8 -*-
-from itertools import chain
 from report.html_repport import create_html_report
 from pickle import dump, load
 from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
@@ -32,6 +31,10 @@ class Workflow:
     def iter_processes(self):
         for process in self._processes:
             yield process
+
+    def iter_resources(self):
+        for resource in self._resources.itervalues():
+            yield resource
 
     def missing_inputs(self):
         """ Check that all primary resources (external resources) that are necessary to run the workflow exist
