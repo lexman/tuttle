@@ -15,49 +15,80 @@ __version__ = '0.1-rc0'
 NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
 
 
+def parse_project(tuttlefile):
+    pp = ProjectParser()
+    workflow = pp.parse_and_check_file(tuttlefile)
+    workflow.static_check_processes()
+    return workflow
+
+
+def collect_differences_and_update_similarities(workflow, previous_workflow, inv_collector):
+    """ Compare both workflow (the current one) and previous_workflow
+        Resources where workflow differs are collected for invalidation
+        The common part is updated from previous_workflow with process execution results and resources signatures
+    :param inv_collector:
+    :param previous_workflow:
+    :param workflow:
+    :return:
+    """
+    different = previous_workflow.resources_not_created_the_same_way(workflow)
+    inv_collector.collect(different)
+    resultant_from_dif = previous_workflow.dependant_resources([resource for (resource, _) in different])
+    inv_collector.collect(resultant_from_dif)
+    ignore_urls = {resource.url for resource, _ in chain(different, resultant_from_dif)}
+    workflow.retrieve_execution_info(previous_workflow, ignore_urls)
+    workflow.retrieve_signatures(previous_workflow, ignore_urls)
+
+
+def collect_primary_resources_changes(workflow, inv_collector):
+    modified_primary_resources = workflow.update_primary_resource_signatures()
+    resultant_from_modif = workflow.dependant_resources(modified_primary_resources)
+    inv_collector.collect(resultant_from_modif)
+    return modified_primary_resources
+
+
+def collect_suspicious_resources(workflow, inv_collector):
+    not_created = workflow.resources_not_created_by_tuttle()
+    inv_collector.collect_with_reason(not_created, NOT_CREATED_BY_TUTTLE)
+
+
+def run(workflow):
+    missing = workflow.missing_inputs()
+    if missing:
+        error_msg = "Missing the following resources to launch the workflow :\n"
+        for mis in missing:
+            error_msg += "* {}\n".format(mis.url)
+        raise TuttleError(error_msg)
+    failing_process = workflow.pick_a_failing_process()
+    if failing_process:
+        raise TuttleError("Workflow already failed on process '{}'. Fix the process and run tuttle again".
+                          format(failing_process.id))
+    nb_process_run = workflow.run()
+    return nb_process_run
+
+
 def parse_invalidate_and_run(tuttlefile):
         try:
-            pp = ProjectParser()
-            workflow = pp.parse_and_check_file(tuttlefile)
-            workflow.static_check_processes()
-            inv_collector = InvalidResourceCollector()
+            workflow = parse_project(tuttlefile)
             previous_workflow = Workflow.load()
+
+            inv_collector = InvalidResourceCollector()
             if previous_workflow:
-                different = previous_workflow.resources_not_created_the_same_way(workflow)
-                inv_collector.collect(different)
-                resultant_from_dif = previous_workflow.dependant_resources([resource for (resource, _) in different])
-                inv_collector.collect(resultant_from_dif)
-                ignore_urls = {resource.url for resource, _ in chain(different, resultant_from_dif)}
-                workflow.retrieve_execution_info(previous_workflow, ignore_urls)
-                workflow.retrieve_signatures(previous_workflow, ignore_urls)
+                    collect_differences_and_update_similarities(workflow, previous_workflow, inv_collector)
 
-            modified_primary_resources = workflow.update_primary_resource_signatures()
-            resultant_from_modif = workflow.dependant_resources(modified_primary_resources)
-            inv_collector.collect(resultant_from_modif)
+            modified_primary_resources = collect_primary_resources_changes(workflow, inv_collector)
+            collect_suspicious_resources(workflow, inv_collector)
 
-            not_created = workflow.resources_not_created_by_tuttle()
-            inv_collector.collect_with_reason(not_created, NOT_CREATED_BY_TUTTLE)
             inv_collector.display()
             inv_collector.remove_resources()
             workflow.reset_process_exec_info(modified_primary_resources)
-
-            missing = workflow.missing_inputs()
-            if missing:
-                error_msg = "Missing the following resources to launch the workflow :\n"
-                for mis in missing:
-                    error_msg += "* {}\n".format(mis.url)
-                raise TuttleError(error_msg)
-
             workflow.create_reports()
-            failing_process = workflow.pick_a_failing_process()
-            if failing_process:
-                raise TuttleError("Workflow already failed on process '{}'. Fix the process and run tuttle again".
-                                  format(failing_process.id))
-            nb_process_run = workflow.run()
+
+            nb_process_run = run(workflow)
             if nb_process_run == 0:
-                print "Everything up to date"
+                print("Everything up to date")
 
         except TuttleError as e:
-            print e
+            print(e)
             return 2
         return 0
