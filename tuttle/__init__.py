@@ -31,25 +31,21 @@ def collect_differences_and_update_similarities(workflow, previous_workflow, inv
     :param workflow:
     :return:
     """
-    different = previous_workflow.resources_not_created_the_same_way(workflow)
-    inv_collector.collect(different)
-    resultant_from_dif = previous_workflow.dependant_resources([resource for (resource, _) in different])
-    inv_collector.collect(resultant_from_dif)
-    ignore_urls = {resource.url for resource, _ in chain(different, resultant_from_dif)}
-    workflow.retrieve_execution_info(previous_workflow, ignore_urls)
-    workflow.retrieve_signatures(previous_workflow, ignore_urls)
+    different_res = previous_workflow.resources_not_created_the_same_way(workflow)
+    inv_collector.collect_with_dependencies(different_res, previous_workflow)
+    workflow.retrieve_execution_info(previous_workflow, inv_collector.urls())
+    workflow.retrieve_signatures(previous_workflow, inv_collector.urls())
 
 
 def collect_primary_resources_changes(workflow, inv_collector):
     modified_primary_resources = workflow.update_primary_resource_signatures()
-    resultant_from_modif = workflow.dependant_resources(modified_primary_resources)
-    inv_collector.collect(resultant_from_modif)
+    inv_collector.collect_dependencies_only(modified_primary_resources, workflow)
     return modified_primary_resources
 
 
 def collect_suspicious_resources(workflow, inv_collector):
     not_created = workflow.resources_not_created_by_tuttle()
-    inv_collector.collect_with_reason(not_created, NOT_CREATED_BY_TUTTLE)
+    inv_collector.collect_resources(not_created, NOT_CREATED_BY_TUTTLE)
 
 
 def run(workflow):

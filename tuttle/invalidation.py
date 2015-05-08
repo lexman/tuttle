@@ -25,7 +25,7 @@ def dependant_resources(workflow, from_resources):
             for dependant_resource in dependant_process.iter_outputs():
                 if dependant_resource not in result:
                     discovered.append(dependant_resource)
-                    result.append((dependant_resource, resource.url))
+                    result.append((dependant_resource, resource))
     return result
 
 
@@ -38,15 +38,13 @@ class InvalidResourceCollector():
         self._resources_and_reasons = []
         self._resources_urls = set()
 
-    def collect(self, l):
-        for resource, reason in l:
-            if resource.url not in self._resources_urls:
-                self._resources_and_reasons.append((resource, reason))
-                self._resources_urls.add(resource.url)
+    def urls(self):
+        return self._resources_urls
 
     def collect_resource(self, resource, reason):
-        self._resources_and_reasons.append((resource, reason))
-        self._resources_urls.add(resource.url)
+        if resource.url not in self._resources_urls:
+            self._resources_and_reasons.append((resource, reason))
+            self._resources_urls.add(resource.url)
 
     def collect_with_dependencies(self, resources_and_reasons, workflow):
         for resource, reason in resources_and_reasons:
@@ -59,11 +57,10 @@ class InvalidResourceCollector():
             reason = DEPENDENCY_CHANGED.format(parent.url)
             self.collect_resource(child, reason)
 
-    def collect_with_reason(self, list_of_resources, reason):
-        for resource in list_of_resources:
+    def collect_resources(self, resources, collective_reason):
+        for resource in resources:
             if resource.url not in self._resources_urls:
-                self._resources_and_reasons.append((resource, reason))
-                self._resources_urls.add(resource.url)
+                self.collect_resource(resource, collective_reason)
 
     def display(self):
         if self._resources_and_reasons:
