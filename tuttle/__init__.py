@@ -74,7 +74,7 @@ def parse_invalidate_and_run(tuttlefile):
 
             inv_collector = InvalidResourceCollector()
             if previous_workflow:
-                    collect_differences_and_update_similarities(workflow, previous_workflow, inv_collector)
+                collect_differences_and_update_similarities(workflow, previous_workflow, inv_collector)
 
             modified_primary_resources = collect_primary_resources_changes(workflow, inv_collector)
             collect_suspicious_resources(workflow, inv_collector)

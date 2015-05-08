@@ -88,7 +88,7 @@ file://C <- file://B
 
     @isolate(['A'])
     def test_modified_primary_resource_should_invalidate_dependencies(self):
-        """ If a primary resource is modified, it should invalidate dependancies"""
+        """ If a primary resource is modified, it should invalidate dependencies"""
         project = """file://B <- file://A
     echo A produces B
     echo B > B
