@@ -211,21 +211,6 @@ class Workflow:
             for resource in process.iter_inputs():
                 resource.dependant_processes.append(process)
 
-    def dependant_resources(self, from_resources):
-        """
-        """
-        self.compute_dependencies()
-        result = []
-        invalid_resources = [resource for resource in from_resources]
-        for resource in invalid_resources:
-            for dependant_process in resource.dependant_processes:
-                for dependant_resource in dependant_process.iter_outputs():
-                    if dependant_resource not in invalid_resources:
-                        invalid_resources.append(dependant_resource)
-                        result.append((dependant_resource, DEPENDENCY_CHANGED.format(resource.url)))
-
-        return result
-
     def retrieve_signatures(self, previous, ignore_urls):
         """Retrieve the signatures from the former workflow. Usefull to detect what has changed."""
         for url, signature in previous._resources_signatures.iteritems():

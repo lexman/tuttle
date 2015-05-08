@@ -3,9 +3,17 @@ from os.path import isfile
 
 from os import path
 from tests.functional_tests import isolate, run_tuttle_file
+from tuttle.invalidation import InvalidResourceCollector
+from tuttle.project_parser import ProjectParser
+from tuttle.workflow import PROCESS_CHANGED
 
 
 class TestInvalidateResource():
+
+    def get_workflow(self, project_source):
+        pp = ProjectParser()
+        pp.set_project(project_source)
+        return pp.parse_project()
 
     @isolate(['A'])
     def test_remove_resource(self):
@@ -151,3 +159,31 @@ file://C <- file://B
         assert pos_start >= 0, output
         assert output.find('* file://B', pos_end) == -1, output
         assert output.find('* has not been', pos_end) == -1, output
+
+    def test_invalidation_in_cascade(self):
+        """ When a resource is invalidated all resulting resources should be invalidated too
+        """
+        workflow1 = self.get_workflow(
+            """file://file2 <- file://file1
+            Original code
+
+file://file3 <- file://file2""")
+        workflow2 = self.get_workflow(
+            """file://file2 <- file://file1
+            Updated code
+
+file://file3 <- file://file2""")
+        inv_collector = InvalidResourceCollector()
+        different_res = workflow1.resources_not_created_the_same_way(workflow2)
+        assert len(different_res) == 1, [(res.url, reason) for (res, reason,) in invalid]
+        (resource, invalidation_reason) = different_res[0]
+        assert resource.url == "file://file2"
+        assert invalidation_reason == PROCESS_CHANGED
+
+        inv_collector.collect_with_dependencies(different_res, workflow1)
+        assert len(inv_collector._resources_and_reasons) == 2, inv_collector._resources_and_reasons
+        (resource, invalidation_reason) = inv_collector._resources_and_reasons[1]
+        assert resource.url == "file://file3"
+        assert invalidation_reason.find("file://file2") >= 0, invalidation_reason
+
+
