@@ -257,9 +257,6 @@ class Workflow:
         return None
 
     def reset_process_exec_info(self, invalidated_resources):
-        dependencies = dependency_map(self)
         for resource in invalidated_resources:
-            if resource.url in dependencies:
-                for dependant_process in dependencies[resource.url]:
-                    dependant_process.reset_execution_info()
-
+            if resource.creator_process:
+                resource.creator_process.reset_execution_info()
