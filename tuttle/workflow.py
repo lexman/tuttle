@@ -159,7 +159,8 @@ class Workflow:
         so check creates_url() before calling this method
         :return:
         """
-        return self._resources[url].creator_process
+        if url in self._resources:
+            return self._resources[url].creator_process
 
     def find_resource(self, url):
         if url in self._resources:
@@ -230,8 +231,8 @@ class Workflow:
                 # So if process from previous workflow creates a resource, it creates all the same
                 # resources as the process in the current workflow
                 process = self.find_process_that_creates(prev_output.url)
-                process.retrieve_execution_info(prev_process)
-                pass
+                if process:
+                    process.retrieve_execution_info(prev_process)
 
     def update_primary_resource_signatures(self):
         """ Updates the list of primary resources with current signatures

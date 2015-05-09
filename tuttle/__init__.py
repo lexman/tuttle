@@ -22,33 +22,6 @@ def parse_project(tuttlefile):
     return workflow
 
 
-def collect_differences_and_update_similarities(workflow, previous_workflow, inv_collector):
-    """ Compare both workflow (the current one) and previous_workflow
-        Resources where workflow differs are collected for invalidation
-        The common part is updated from previous_workflow with process execution results and resources signatures
-    :param inv_collector:
-    :param previous_workflow:
-    :param workflow:
-    :return:
-    """
-    different_res = previous_workflow.resources_not_created_the_same_way(workflow)
-    inv_collector.collect_with_dependencies(different_res, previous_workflow)
-    ignore_urls = inv_collector.urls()
-    workflow.retrieve_execution_info(previous_workflow, ignore_urls)
-    workflow.retrieve_signatures(previous_workflow, ignore_urls)
-
-
-def collect_primary_resources_changes(workflow, inv_collector):
-    modified_primary_resources = workflow.update_primary_resource_signatures()
-    inv_collector.collect_dependencies_only(modified_primary_resources, workflow)
-    return modified_primary_resources
-
-
-def collect_suspicious_resources(workflow, inv_collector):
-    not_created = workflow.resources_not_created_by_tuttle()
-    inv_collector.collect_resources(not_created, NOT_CREATED_BY_TUTTLE)
-
-
 def run(workflow):
     missing = workflow.missing_inputs()
     if missing:
@@ -71,10 +44,17 @@ def parse_invalidate_and_run(tuttlefile):
 
             inv_collector = InvalidResourceCollector()
             if previous_workflow:
-                collect_differences_and_update_similarities(workflow, previous_workflow, inv_collector)
+                different_res = previous_workflow.resources_not_created_the_same_way(workflow)
+                inv_collector.collect_with_dependencies(different_res, previous_workflow)
+                ignore_urls = inv_collector.urls()
+                ignore_urls = {}
+                workflow.retrieve_execution_info(previous_workflow, ignore_urls)
+                workflow.retrieve_signatures(previous_workflow, ignore_urls)
 
-            modified_primary_resources = collect_primary_resources_changes(workflow, inv_collector)
-            collect_suspicious_resources(workflow, inv_collector)
+            modified_primary_resources = workflow.update_primary_resource_signatures()
+            inv_collector.collect_dependencies_only(modified_primary_resources, workflow)
+            not_created = workflow.resources_not_created_by_tuttle()
+            inv_collector.collect_resources(not_created, NOT_CREATED_BY_TUTTLE)
 
             inv_collector.display()
             inv_collector.remove_resources()
