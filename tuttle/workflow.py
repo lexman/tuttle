@@ -197,8 +197,9 @@ class Workflow:
     def resources_not_created_by_tuttle(self):
         result = []
         for resource in self._resources.itervalues():
-            if resource.exists() and resource.creator_process and resource.creator_process.end is None:
-                result.append(resource)
+            if not resource.is_primary():
+                if resource.url not in self._resources_signatures and resource.exists():
+                    result.append(resource)
         return result
 
     def compute_dependencies(self):
