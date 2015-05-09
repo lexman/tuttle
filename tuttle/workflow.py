@@ -214,19 +214,19 @@ class Workflow:
             for resource in process.iter_inputs():
                 resource.dependant_processes.append(process)
 
-    def retrieve_signatures(self, previous, ignore_urls):
+    def retrieve_signatures(self, previous):
         """Retrieve the signatures from the former workflow. Usefull to detect what has changed."""
         for url, signature in previous._resources_signatures.iteritems():
-            if url in self._resources and url not in ignore_urls:
+            if url in self._resources:
                 self._resources_signatures[url] = signature
 
-    def retrieve_execution_info(self, previous, ignore_urls):
+    def retrieve_execution_info(self, previous):
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
          where the processes are in common. Ignore information for the processes that are not in common
          """
         for prev_process in previous.iter_processes():
             prev_output = prev_process.pick_an_output()
-            if prev_output and prev_output.url not in ignore_urls:
+            if prev_output and prev_output.url:
                 # When running this function, invalidation has been computed already
                 # So if process from previous workflow creates a resource, it creates all the same
                 # resources as the process in the current workflow

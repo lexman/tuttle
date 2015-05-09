@@ -44,22 +44,20 @@ def parse_invalidate_and_run(tuttlefile):
 
             inv_collector = InvalidResourceCollector()
             if previous_workflow:
+                workflow.retrieve_execution_info(previous_workflow)
+                workflow.retrieve_signatures(previous_workflow)
                 different_res = previous_workflow.resources_not_created_the_same_way(workflow)
                 inv_collector.collect_with_dependencies(different_res, previous_workflow)
-                ignore_urls = inv_collector.urls()
-                ignore_urls = {}
-                workflow.retrieve_execution_info(previous_workflow, ignore_urls)
-                workflow.retrieve_signatures(previous_workflow, ignore_urls)
 
             modified_primary_resources = workflow.update_primary_resource_signatures()
             inv_collector.collect_dependencies_only(modified_primary_resources, workflow)
             not_created = workflow.resources_not_created_by_tuttle()
             inv_collector.collect_resources(not_created, NOT_CREATED_BY_TUTTLE)
 
-            inv_collector.display()
-            inv_collector.remove_resources()
             workflow.reset_process_exec_info([resource for resource, _ in inv_collector._resources_and_reasons])
             workflow.reset_process_exec_info(modified_primary_resources)
+            inv_collector.display()
+            inv_collector.remove_resources()
             workflow.create_reports()
 
             nb_process_run = run(workflow)
