@@ -70,6 +70,10 @@ def parse_invalidate_and_run(tuttlefile):
 
 
 def invalidate_resources(tuttlefile, urls):
+    previous_workflow = Workflow.load()
+    if previous_workflow is None:
+        print("Nothing to invalidate : tuttle has not been run yet, so it has not produced anything")
+        return 2
     print("Invalidate")
     print("'* file://B")
     return 0

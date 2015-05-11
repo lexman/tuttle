@@ -38,7 +38,7 @@ def main():
                                        help='Run the missing part of workflow')
     parser_invalidate = subparsers.add_parser('invalidate', parents=[parent_parser],
                                               help='Remove some resources already computed and all their dependencies')
-    parser_invalidate.add_argument('resources', help='url of the resources to invalidate')
+    parser_invalidate.add_argument('resources', help='url of the resources to invalidate', nargs="*")
     params = parser.parse_args(sys.argv[1:])
 
     print params
