@@ -81,6 +81,12 @@ def invalidate_resources(tuttlefile, urls):
               "clean invalidation) :")
         print(e)
         return 2
+    inv_collector = InvalidResourceCollector()
+    workflow.retrieve_execution_info(previous_workflow)
+    workflow.retrieve_signatures(previous_workflow)
+    different_res = previous_workflow.resources_not_created_the_same_way(workflow)
+    inv_collector.collect_with_dependencies(different_res, previous_workflow)
+    inv_collector.display()
     print "Invalidate : "
     print "* file://B"
     return 0

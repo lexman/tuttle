@@ -57,15 +57,15 @@ class TestCommands():
     def test_try_invalidate_bad_project(self):
         """ Should display a message if the tuttlefile is incorrect"""
         project = """file://B <- file://A
-            echo A creates B
-            echo A creates B > B
+            echo A produces B
+            echo A produces B > B
             """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0
 
         bad_project = """file://B <- file://A,
-            echo A creates B
-            echo A creates B > B
+            echo A produces B
+            echo A produces B > B
             """
         open('tuttlefile', 'wb').write(bad_project)
 
@@ -76,3 +76,33 @@ class TestCommands():
         rcode = proc.wait()
         assert rcode == 2, output
         assert output.find('Invalidation has failed because tuttlefile is has errors') >= 0, output
+
+
+    @isolate(['A'])
+    def test_try_invalidate_no_urls(self):
+        """ Should remove everything that is not in the last version of the tuttlefile"""
+        project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+
+file://C <- file://B
+            echo B produces C
+            echo B produces C > C
+                        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0
+
+        new_project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+            """
+        open('tuttlefile', 'wb').write(new_project)
+
+        dir = dirname(__file__)
+        tuttle_cmd = abspath(join(dir, '..', '..', 'bin', 'tuttle'))
+        proc = Popen(['python', tuttle_cmd, 'invalidate'], stdout=PIPE)
+        output = proc.stdout.read()
+        rcode = proc.wait()
+        assert rcode == 0, output
+        assert output.find('* file://C') >= 0, output
+        assert output.find('no longer created') >= 0, output
