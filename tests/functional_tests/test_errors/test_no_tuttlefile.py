@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
 from subprocess import Popen, PIPE
 from os.path import abspath, join, dirname
+
 from tests.functional_tests import isolate
 
 
@@ -12,7 +12,7 @@ class TestNoTuttlefile():
         """ Should display a message if there is no tuttlefile in the current directory"""
         dir = dirname(__file__)
         tuttle_cmd = abspath(join(dir, '..', '..', '..', 'bin', 'tuttle'))
-        proc = Popen(['python', tuttle_cmd], stdout=PIPE)
+        proc = Popen(['python', tuttle_cmd, 'run'], stdout=PIPE)
         output = proc.stdout.read()
         rcode = proc.wait()
         assert rcode == 2
@@ -22,7 +22,7 @@ class TestNoTuttlefile():
         """ Should display a message if the tuttlefile passed as argument to the command line does not exist"""
         dir = dirname(__file__)
         tuttle_cmd = abspath(join(dir, '..', '..', '..', 'bin', 'tuttle'))
-        proc = Popen(['python', tuttle_cmd, '-f', 'inexistant_file'], stdout=PIPE)
+        proc = Popen(['python', tuttle_cmd, 'run', '-f', 'inexistant_file' ], stdout=PIPE)
         output = proc.stdout.read()
         rcode = proc.wait()
         assert rcode == 2

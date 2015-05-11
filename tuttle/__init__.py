@@ -67,3 +67,9 @@ def parse_invalidate_and_run(tuttlefile):
             print(e)
             return 2
         return 0
+
+
+def invalidate_resources(tuttlefile, urls):
+    print("Invalidate")
+    print("'* file://B")
+    return 0

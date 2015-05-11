@@ -2,7 +2,6 @@
 # -*- coding: utf8 -*-
 
 import sys
-from optparse import OptionParser
 from os.path import abspath, exists, dirname, join
 
 if getattr(sys, 'frozen', False):
@@ -13,35 +12,45 @@ else:
     tuttle_module = join(dirname(abspath(__file__)), '..', '..', 'tuttle')
 sys.path.insert(0,tuttle_module)
 
-from tuttle import parse_invalidate_and_run
+from argparse import ArgumentParser
+from tuttle import parse_invalidate_and_run, invalidate_resources
 from tuttle.utils import CurrentDir
 
 
-def parse_options():
-    usage = 'bin/tuttle'
-    parser = OptionParser(usage=usage)
-    parser.add_option('-f', '--file',
+
+def main():
+    parser = ArgumentParser(
+        description="Runs a workflow"
+    )
+    parent_parser = ArgumentParser(
+        add_help=False
+    )
+    parent_parser.add_argument('-f', '--file',
                       default='tuttlefile',
                       dest='tuttlefile',
-                      help='Path to the tuttlefile : file describing the workflow')
-    parser.add_option('-w', '--workspace',
+                      help='Path to the tuttlefile : project file describing the workflow')
+    parent_parser.add_argument('-w', '--workspace',
                       default='.',
                       dest='workspace',
                       help='Directory where the workspace lies. Default is the current directory')
-    options, _ = parser.parse_args()
-    return options
+    subparsers = parser.add_subparsers(help='commands help', dest='command')
+    parser_run = subparsers.add_parser('run', parents=[parent_parser],
+                                       help='Run the missing part of workflow')
+    parser_invalidate = subparsers.add_parser('invalidate', parents=[parent_parser],
+                                              help='Remove some resources already computed and all their dependencies')
+    parser_invalidate.add_argument('resources', help='url of the resources to invalidate')
+    params = parser.parse_args(sys.argv[1:])
 
-
-def main():
-    """Main entry point for the project."""
-
-    options = parse_options()
-    tuttlefile_path = abspath(options.tuttlefile)
+    print params
+    tuttlefile_path = abspath(params.tuttlefile)
     if not exists(tuttlefile_path):
         print "No tuttlefile"
         sys.exit(2)
-    with CurrentDir(options.workspace):
-        return parse_invalidate_and_run(tuttlefile_path)
+    with CurrentDir(params.workspace):
+        if params.command == 'run':
+            return parse_invalidate_and_run(tuttlefile_path)
+        elif params.command == 'invalidate':
+            return invalidate_resources(tuttlefile_path, [])
 
 
 if __name__ == '__main__':
