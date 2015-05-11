@@ -41,7 +41,6 @@ def main():
     parser_invalidate.add_argument('resources', help='url of the resources to invalidate', nargs="*")
     params = parser.parse_args(sys.argv[1:])
 
-    print params
     tuttlefile_path = abspath(params.tuttlefile)
     if not exists(tuttlefile_path):
         print "No tuttlefile"

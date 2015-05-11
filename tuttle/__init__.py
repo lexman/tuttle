@@ -4,7 +4,7 @@ from tuttle import workflow
 from tuttle.invalidation import InvalidResourceCollector
 from error import TuttleError
 from project_parser import ProjectParser
-from tuttle.project_parser import WorkflowError
+from tuttle.project_parser import WorkflowError, ParsingError
 from workflow import Workflow
 
 
@@ -74,6 +74,13 @@ def invalidate_resources(tuttlefile, urls):
     if previous_workflow is None:
         print("Tuttle has not run yet ! It has produced nothing, so there is nothing to invalidate.")
         return 2
-    print("Invalidate")
-    print("'* file://B")
+    try:
+        workflow = parse_project(tuttlefile)
+    except TuttleError as e:
+        print("Invalidation has failed because tuttlefile is has errors (a valid project is needed for "
+              "clean invalidation) :")
+        print(e)
+        return 2
+    print "Invalidate : "
+    print "* file://B"
     return 0
