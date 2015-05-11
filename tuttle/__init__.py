@@ -5,6 +5,7 @@ from tuttle.invalidation import InvalidResourceCollector
 from error import TuttleError
 from project_parser import ProjectParser
 from tuttle.project_parser import WorkflowError, ParsingError
+from tuttle.workflow_builder import WorkflowBuilder
 from workflow import Workflow
 
 
@@ -68,8 +69,21 @@ def parse_invalidate_and_run(tuttlefile):
             return 2
         return 0
 
+def get_resources(urls):
+    result = []
+    pb = WorkflowBuilder()
+    for url in urls:
+        resource = pb.build_resource(url)
+        if resource is None:
+            print("Tuttle cannot understand url '{}' as a valid resource url".format(url))
+            return False
+        result.append(resource)
+    return result
 
 def invalidate_resources(tuttlefile, urls):
+    resources = get_resources(urls)
+    if resources is False:
+        return 2
     previous_workflow = Workflow.load()
     if previous_workflow is None:
         print("Tuttle has not run yet ! It has produced nothing, so there is nothing to invalidate.")
@@ -81,12 +95,12 @@ def invalidate_resources(tuttlefile, urls):
               "clean invalidation) :")
         print(e)
         return 2
+
     inv_collector = InvalidResourceCollector()
     workflow.retrieve_execution_info(previous_workflow)
     workflow.retrieve_signatures(previous_workflow)
     different_res = previous_workflow.resources_not_created_the_same_way(workflow)
     inv_collector.collect_with_dependencies(different_res, previous_workflow)
     inv_collector.display()
-    print "Invalidate : "
-    print "* file://B"
+
     return 0

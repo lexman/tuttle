@@ -49,7 +49,7 @@ def main():
         if params.command == 'run':
             return parse_invalidate_and_run(tuttlefile_path)
         elif params.command == 'invalidate':
-            return invalidate_resources(tuttlefile_path, [])
+            return invalidate_resources(tuttlefile_path, params.resources)
 
 
 if __name__ == '__main__':
