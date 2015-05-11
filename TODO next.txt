@@ -122,3 +122,5 @@ Report the size of the logs - DONE
     Add a test... - DONE
 
 Remove logs and all files when reseting a process ?
+
+Invalidate : should tuttle fail if nothing has been run yet .

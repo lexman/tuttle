@@ -51,5 +51,5 @@ class TestCommands():
         output = proc.stdout.read()
         rcode = proc.wait()
         assert rcode == 2, output
-        assert output.find("Nothing to invalidate : tuttle has not been run yet, so it has not produced anything") >= 0, output
+        assert output.find("Tuttle has not run yet ! It has produced nothing, so there is nothing to invalidate.") >= 0, output
 
