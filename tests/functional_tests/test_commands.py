@@ -1,11 +1,27 @@
 # -*- coding: utf-8 -*-
 
+import sys
 from subprocess import Popen, PIPE
 from os.path import abspath, join, dirname, isfile
 from tests.functional_tests import isolate, run_tuttle_file
+from cStringIO import StringIO
+from tuttle import invalidate_resources
 
 
 class TestCommands():
+
+    def tuttle_invalide(self, content, urls):
+        with open('tuttlefile', "w") as f:
+            f.write(content)
+        oldout, olderr = sys.stdout, sys.stderr
+        out = StringIO()
+        try:
+            sys.stdout,sys.stderr = out, out
+            rcode = invalidate_resources('tuttlefile')
+        finally:
+            sys.stdout, sys.stderr = oldout, olderr
+        return rcode, out.getvalue()
+
 
     @isolate(['A'])
     def test_command_invalidate(self):
