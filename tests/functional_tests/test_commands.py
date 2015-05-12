@@ -79,8 +79,8 @@ class TestCommands():
 
 
     @isolate(['A'])
-    def test_try_invalidate_no_urls(self):
-        """ Should remove everything that is not in the last version of the tuttlefile"""
+    def test_invalidate_no_urls(self):
+        """ Should remove everything that is not in the last version of the tuttlefile """
         project = """file://B <- file://A
             echo A produces B
             echo A produces B > B
@@ -109,7 +109,7 @@ file://C <- file://B
 
     @isolate(['A'])
     def test_invalid_url_should_fail(self):
-        """ Should display a message if there is no tuttlefile in the current directory"""
+        """ Should display an error if the url passed in parameter is not valid or unknown scheme """
         project = """file://B <- file://A
             echo A creates B
             echo A creates B > B
@@ -124,3 +124,21 @@ file://C <- file://B
         rcode = proc.wait()
         assert rcode == 2, output
         assert output.find("'error://B'") >= 0, output
+
+    @isolate(['A'])
+    def test_unknown_resource_should_be_ignored(self):
+        """ Should display a message if there is no tuttlefile in the current directory"""
+        project = """file://B <- file://A
+            echo A creates B
+            echo A creates B > B
+            """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0
+
+        dir = dirname(__file__)
+        tuttle_cmd = abspath(join(dir, '..', '..', 'bin', 'tuttle'))
+        proc = Popen(['python', tuttle_cmd, 'invalidate', 'file://C'], stdout=PIPE)
+        output = proc.stdout.read()
+        rcode = proc.wait()
+        assert rcode == 0, output
+        assert output.find("Ignoring file://C") >= 0, output

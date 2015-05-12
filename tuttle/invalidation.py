@@ -67,6 +67,10 @@ class InvalidResourceCollector():
             if resource.url not in self._resources_urls:
                 self.collect_resource(resource, collective_reason)
 
+    def not_invalidated(self, urls):
+        urls_set = set(urls)
+        return urls_set - self._resources_urls
+
     def display(self):
         if self._resources_and_reasons:
             print "The following resources are not valid any more and will be removed :"

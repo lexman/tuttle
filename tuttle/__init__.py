@@ -96,11 +96,20 @@ def invalidate_resources(tuttlefile, urls):
         print(e)
         return 2
 
+    for url in urls:
+        pass
     inv_collector = InvalidResourceCollector()
     workflow.retrieve_execution_info(previous_workflow)
     workflow.retrieve_signatures(previous_workflow)
     different_res = previous_workflow.resources_not_created_the_same_way(workflow)
     inv_collector.collect_with_dependencies(different_res, previous_workflow)
+    not_invalidated = inv_collector.not_invalidated(urls)
+    for url in not_invalidated:
+        if not workflow.find_resource(url):
+            msg = "Ignoring {} : this resource does not belong to the workflow".format(url)
+            print(msg)
+            #not_invalidated.remove(url)
     inv_collector.display()
+
 
     return 0
