@@ -72,8 +72,9 @@ class InvalidResourceCollector():
         return urls_set - self._resources_urls
 
     def duration(self):
-        processes = {resource.creator_process for resource, _ in self._resources_and_reasons}
-        duration_sum = sum( (process.end - process.start for process in processes if process is not None) )
+        processes = {resource.creator_process for resource, _ in self._resources_and_reasons
+                     if resource.creator_process is not None}
+        duration_sum = sum( (process.end - process.start for process in processes if process.end is not None) )
         return int(duration_sum)
 
     def display(self):
