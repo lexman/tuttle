@@ -14,6 +14,7 @@ __version__ = '0.1-rc0'
 
 
 NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
+USER_REQUEST = "User request"
 
 
 def parse_project(tuttlefile):
@@ -101,19 +102,20 @@ def invalidate_resources(tuttlefile, urls):
     workflow.retrieve_signatures(previous_workflow)
     different_res = previous_workflow.resources_not_created_the_same_way(workflow)
     inv_collector.collect_with_dependencies(different_res, previous_workflow)
-    not_invalidated = inv_collector.not_invalidated(urls)
-    for url in not_invalidated:
+    url_not_invalidated = inv_collector.not_invalidated(urls)
+    to_invalidate = []
+    for url in url_not_invalidated:
         resource = workflow.find_resource(url)
         if not resource:
             msg = "Ignoring {} : this resource does not belong to the workflow.".format(url)
             print(msg)
-            #not_invalidated.remove(url)
         elif not resource.exists():
             msg = "Ignoring {} : this resource has not been produced yet.".format(url)
             print(msg)
-            #not_invalidated.remove(url)
-
+        else:
+            to_invalidate.append(resource)
+    inv_collector.collect_resources(to_invalidate, USER_REQUEST)
+    inv_collector.collect_dependencies_only(to_invalidate, workflow)
     inv_collector.display()
-
-
+    inv_collector.remove_resources()
     return 0
