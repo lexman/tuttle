@@ -55,6 +55,37 @@ file://C <- file://B
         assert not isfile('C'), output
 
 
+    @isolate(['A'])
+    def test_duration(self):
+        """ Should display a message if there is no tuttlefile in the current directory"""
+        project = """file://B <- file://A
+            echo A creates B
+            python -c "import time; time.sleep(1)"
+            echo A creates B > B
+
+file://C <- file://B
+            echo A creates C
+            python -c "import time; time.sleep(2)"
+            echo A creates C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert isfile('B')
+        assert isfile('C')
+
+        dir = dirname(__file__)
+        tuttle_cmd = abspath(join(dir, '..', '..', 'bin', 'tuttle'))
+        proc = Popen(['python', tuttle_cmd, 'invalidate', 'file://B'], stdout=PIPE)
+        output = proc.stdout.read()
+        rcode = proc.wait()
+        assert rcode == 0, output
+        assert output.find('* file://B') >= 0, output
+        assert output.find('* file://C') >= 0, output
+        assert output.find('3 seconds') >= 0, output
+        assert not isfile('B'), output
+        assert not isfile('C'), output
+
+
     @isolate
     def test_invalidate_no_tuttle_file(self):
         """ Should display a message when launching invalidate and there is tuttlefile in the current directory"""

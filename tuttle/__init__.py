@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from itertools import chain
+
 from tuttle import workflow
 from tuttle.invalidation import InvalidResourceCollector
 from error import TuttleError

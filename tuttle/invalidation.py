@@ -71,11 +71,17 @@ class InvalidResourceCollector():
         urls_set = set(urls)
         return urls_set - self._resources_urls
 
+    def duration(self):
+        processes = {resource.creator_process for resource, _ in self._resources_and_reasons}
+        duration_sum = sum( (process.end - process.start for process in processes if process is not None) )
+        return int(duration_sum)
+
     def display(self):
         if self._resources_and_reasons:
             print "The following resources are not valid any more and will be removed :"
             for resource, reason in self._resources_and_reasons:
                 print "* {} - {}".format(resource.url, reason)
+            print "{} seconds of processing will be lost".format(self.duration())
 
     def remove_resources(self):
         for resource, reason in self._resources_and_reasons:
