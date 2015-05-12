@@ -204,3 +204,28 @@ file://C <- file://B
         rcode, output = self.tuttle_invalide(project=project, urls=['file://C'])
         assert rcode == 0, output
         assert output.find("Ignoring file://C : this resource has not been produced yet") >= 0, output
+
+    @isolate(['A'])
+    def test_strange_case(self):
+        """ Should display a message if there is no tuttlefile in the current directory"""
+        project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+
+file://C <- file://B
+            echo B produces C
+            echo B produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        print output
+        assert rcode == 0, output
+
+        project = """
+file://C <- file://B
+            echo B produces C
+            echo B produces C > C
+"""
+        rcode, output = self.tuttle_invalide(project=project)
+        assert False, output
+        assert rcode == 0, output
+        assert output.find("Ignoring file://C : this resource has not been produced yet") >= 0, output
