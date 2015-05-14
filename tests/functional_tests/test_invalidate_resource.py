@@ -212,3 +212,31 @@ file://file3 <- file://file2""")
         assert invalidation_reason.find("file://file2") >= 0, invalidation_reason
 
 
+    @isolate(['A'])
+    def test_should_run_after_invalidation(self):
+        """ Should display a message if there is no tuttlefile in the current directory"""
+        project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+
+file://C <- file://B
+            echo B produces C
+            echo B produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+
+        project = """file://B <- file://A
+            echo A produces another B
+            echo A produces B > B
+
+file://C <- file://B
+            echo B produces C
+            echo B produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert output.find("file://B") >= 0, output
+        assert output.find("file://C") >= 0, output
+        assert output.find("A produces another B") >= 0, output
+        assert output.find("B produces C") >= 0, output
