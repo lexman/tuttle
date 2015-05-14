@@ -256,7 +256,8 @@ class Workflow:
                 return process
         return None
 
-    def reset_process_exec_info(self, invalidated_resources):
-        for resource in invalidated_resources:
-            if resource.creator_process:
+    def reset_process_exec_info(self, invalidated_urls):
+        for url in invalidated_urls:
+            resource = self.find_resource(url)
+            if resource and resource.creator_process:
                 resource.creator_process.reset_execution_info()
