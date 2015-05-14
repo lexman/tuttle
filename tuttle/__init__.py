@@ -117,6 +117,8 @@ def invalidate_resources(tuttlefile, urls):
     inv_collector.collect_resources(to_invalidate, USER_REQUEST)
     inv_collector.collect_dependencies_only(to_invalidate, workflow)
     if inv_collector.urls():
+        workflow.dump()
+        workflow.create_reports()
         inv_collector.display()
         inv_collector.remove_resources()
     else:
