@@ -63,7 +63,7 @@ def parse_invalidate_and_run(tuttlefile):
 
             nb_process_run = run(workflow)
             if nb_process_run == 0:
-                print("Everything up to date")
+                print("Nothing to do")
 
         except TuttleError as e:
             print(e)

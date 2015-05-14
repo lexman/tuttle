@@ -98,4 +98,4 @@ file://C <- file://B
         assert output.find("A produces B") >= 0
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
-        assert output.find("Everything up to date") >= 0, output
+        assert output.find("Nothing to do") >= 0, output
