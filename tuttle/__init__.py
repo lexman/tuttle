@@ -76,7 +76,7 @@ def get_resources(urls):
     for url in urls:
         resource = pb.build_resource(url)
         if resource is None:
-            print("Tuttle cannot understand url '{}' as a valid resource url".format(url))
+            print("Tuttle cannot understand '{}' as a valid resource url".format(url))
             return False
         result.append(resource)
     return result

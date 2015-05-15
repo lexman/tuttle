@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from os.path import isfile, join
+from os.path import isfile
 
 from os import path
 from tests.functional_tests import isolate, run_tuttle_file
