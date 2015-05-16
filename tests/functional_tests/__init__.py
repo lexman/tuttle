@@ -10,7 +10,7 @@ from cStringIO import StringIO
 from tuttle import parse_invalidate_and_run
 
 
-def run_tuttle_file(content):
+def run_tuttle_file(content, threshold=-1):
     with open('tuttlefile', "w") as f:
         f.write(content)
     oldout, olderr = sys.stdout, sys.stderr
