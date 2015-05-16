@@ -17,7 +17,7 @@ def run_tuttle_file(content, threshold=-1):
     out = StringIO()
     try:
         sys.stdout,sys.stderr = out, out
-        rcode = parse_invalidate_and_run('tuttlefile')
+        rcode = parse_invalidate_and_run('tuttlefile', threshold=threshold)
     finally:
         sys.stdout, sys.stderr = oldout, olderr
     return rcode, out.getvalue()

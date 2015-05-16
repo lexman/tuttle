@@ -39,7 +39,7 @@ def run(workflow):
     return nb_process_run
 
 
-def parse_invalidate_and_run(tuttlefile):
+def parse_invalidate_and_run(tuttlefile, threshold=-1):
         try:
             workflow = parse_project(tuttlefile)
             previous_workflow = Workflow.load()
@@ -58,6 +58,11 @@ def parse_invalidate_and_run(tuttlefile):
 
             workflow.reset_process_exec_info(inv_collector.urls())
             inv_collector.display()
+            inv_duration = inv_collector.duration()
+            if previous_workflow and inv_duration >= threshold:
+                msg = "You are about to loose {} seconds of processing time which exceeds threshold ({} seconds). \n" \
+                      "Aborting... ".format(inv_duration, threshold)
+                raise TuttleError(msg)
             inv_collector.remove_resources()
             workflow.create_reports()
 
