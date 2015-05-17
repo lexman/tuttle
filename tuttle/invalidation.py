@@ -78,23 +78,20 @@ class InvalidResourceCollector():
         duration_sum = sum( (process.end - process.start for process in processes if process.end is not None) )
         return int(duration_sum)
 
-    def display(self):
-        if self._resources_and_reasons:
-            print "The following resources are not valid any more and will be removed :"
-            for resource, reason in self._resources_and_reasons:
-                print "* {} - {}".format(resource.url, reason)
-            print "{} seconds of processing will be lost".format(self.duration())
-
     def remove_resources(self):
         for resource, reason in self._resources_and_reasons:
             if resource.exists():
                 resource.remove()
 
     def warn_and_remove(self, threshold):
-        self.display()
-        inv_duration = self.duration()
-        if threshold >= 0 and inv_duration >= threshold:
-            msg = "You are about to loose {} seconds of processing time which exceeds threshold ({} seconds). \n" \
-                  "Aborting... ".format(inv_duration, threshold)
-            raise TuttleError(msg)
-        self.remove_resources()
+        if self._resources_and_reasons:
+            inv_duration = self.duration()
+            print "The following resources are not valid any more and will be removed :"
+            for resource, reason in self._resources_and_reasons:
+                print "* {} - {}".format(resource.url, reason)
+            if threshold > -1 and inv_duration >= threshold:
+                msg = "You were about to loose {} seconds of processing time (which exceeds the {} seconds threshold). \n" \
+                      "Aborting... ".format(inv_duration, threshold)
+                raise TuttleError(msg)
+            print "{} seconds of processing will be lost".format(inv_duration)
+            self.remove_resources()
