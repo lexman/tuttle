@@ -39,13 +39,13 @@ test_script:
   - "%CMD_IN_ENV% python setup.py nosetests"
 
 after_test:
-  # If tests are successful, create a whl package for the project.
-  - "%CMD_IN_ENV% python package4win.py build"
+  # If tests are successful, create an installable package for the project.
+  - "%CMD_IN_ENV% python package4win.py msi"
   - ps: "ls build"
 
 artifacts:
   # Archive the generated package in the ci.appveyor.com build report.
-  - path: build\*
+  - path: dist\*
 
 #on_success:
 #  - TODO: upload the content of dist/*.exe to github releases
