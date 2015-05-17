@@ -43,8 +43,10 @@ after_test:
   - "%CMD_IN_ENV% python package4win.py bdist_msi"
   - ps: "ls build"
   - ps: msiexec /i dist/tuttle-0.1-win32.msi /quiet /qn /norestart /log install_tuttle.log
+  - ps: "ls C:\projects"
   - cmd: cd C:\projects\tuttle\samples\demo
-  - cmd tuttle run
+  - cmd: dir
+  - cmd: tuttle run
 
 artifacts:
   # Archive the generated package in the ci.appveyor.com build report.
