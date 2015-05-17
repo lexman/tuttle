@@ -6,6 +6,7 @@
 import sys
 from os.path import join
 try:
+    import setuptools
     from cx_Freeze import setup, Executable
 except ImportError:
     print("You need to install setuptools and cx_freeze modules in order to create a Windows installer for tuttle. "
@@ -35,4 +36,4 @@ cx_freeze_opts = {
 package_description = tuttle_description.copy()
 package_description.update(cx_freeze_opts)
 
-setup(**tuttle_description)
+setup(**package_description)
