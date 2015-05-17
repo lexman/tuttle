@@ -59,7 +59,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
             workflow.reset_process_exec_info(inv_collector.urls())
             inv_collector.display()
             inv_duration = inv_collector.duration()
-            if previous_workflow and inv_duration >= threshold:
+            if previous_workflow and threshold >= 0 and inv_duration >= threshold:
                 msg = "You are about to loose {} seconds of processing time which exceeds threshold ({} seconds). \n" \
                       "Aborting... ".format(inv_duration, threshold)
                 raise TuttleError(msg)

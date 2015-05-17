@@ -33,6 +33,14 @@ def main():
                       default='.',
                       dest='workspace',
                       help='Directory where the workspace lies. Default is the current directory')
+    parent_parser.add_argument('-t', '--threshold',
+                      default='-1',
+                      type=int,
+                      dest='threshold',
+                      help='Threshold for invalidation : \n'
+                           '0 - prevents any invalidation \n'
+                           'N - prevents invalidation if lost processing time >= N\n'
+                           '-1 (default) - no verification')
     subparsers = parser.add_subparsers(help='commands help', dest='command')
     parser_run = subparsers.add_parser('run', parents=[parent_parser],
                                        help='Run the missing part of workflow')
@@ -47,7 +55,7 @@ def main():
         sys.exit(2)
     with CurrentDir(params.workspace):
         if params.command == 'run':
-            return parse_invalidate_and_run(tuttlefile_path)
+            return parse_invalidate_and_run(tuttlefile_path, params.threshold)
         elif params.command == 'invalidate':
             return invalidate_resources(tuttlefile_path, params.resources)
 

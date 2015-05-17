@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from os.path import isfile
+from subprocess import Popen, PIPE
+from os.path import isfile, dirname, abspath, join
 
 from os import path
 from tests.functional_tests import isolate, run_tuttle_file
@@ -76,8 +77,9 @@ file://C <- file://B
 """
         rcode, output = run_tuttle_file(first)
         assert rcode == 0, output
-        assert isfile('tuttle_report.html')
-        assert path.isfile(path.join(".tuttle", "last_workflow.pickle"))
+        assert isfile('B')
+        assert isfile('C')
+
         second = """file://B <- file://A
     echo B has changed
     echo B has changed > B
@@ -89,3 +91,66 @@ file://C <- file://B
         rcode, output = run_tuttle_file(second, threshold=0)
         assert rcode == 2, output
         assert output.find("Aborting") >= 0, output
+        assert isfile('B')
+        assert isfile('C')
+
+    @isolate(['A'])
+    def test_threshold_in_command_line_run(self):
+        """ The threshold -t parameter should be available from the command line"""
+        first = """file://B <- file://A
+    echo A produces B
+    python -c "import time; time.sleep(1)"
+    echo B > B
+
+file://C <- file://B
+    echo B produces C
+    echo C > C
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+        assert isfile('B')
+
+        second = """file://B <- file://A
+    echo B has changed
+    echo B has changed > B
+"""
+        with open('tuttlefile', "w") as f:
+            f.write(second)
+        dir = dirname(__file__)
+        tuttle_cmd = abspath(join(dir, '..', '..', 'bin', 'tuttle'))
+        proc = Popen(['python', tuttle_cmd, 'run', '-t', '1'], stdout=PIPE)
+        output = proc.stdout.read()
+        rcode = proc.wait()
+        assert rcode == 2, output
+
+        assert output.find('Aborting') >= 0, output
+        assert isfile('B'), output
+
+    @isolate(['A'])
+    def test_ignore_default_threshold(self):
+        """ Threshold should be ignored if not provided or left to default value"""
+        first = """file://B <- file://A
+    echo A produces B
+    python -c "import time; time.sleep(2)"
+    echo B > B
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+        assert isfile('B')
+
+        second = """file://B <- file://A
+    echo B has changed
+    echo B has changed > B
+
+"""
+        with open('tuttefile', "w") as f:
+         f.write(second)
+
+        dir = dirname(__file__)
+        tuttle_cmd = abspath(join(dir, '..', '..', 'bin', 'tuttle'))
+        proc = Popen(['python', tuttle_cmd, 'run'], stdout=PIPE)
+        output = proc.stdout.read()
+        rcode = proc.wait()
+        assert rcode == 0, output
+
+        assert output.find('Aborting') == -1, output
