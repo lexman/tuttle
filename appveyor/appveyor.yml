@@ -40,7 +40,7 @@ test_script:
 
 after_test:
   # If tests are successful, create a whl package for the project.
-  - "%CMD_IN_ENV% python setup.py build"
+  - "%CMD_IN_ENV% python package4win.py build"
   - ps: "ls build"
 
 artifacts:
