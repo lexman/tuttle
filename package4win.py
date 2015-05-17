@@ -4,6 +4,7 @@
 """Tuttle"""
 
 import sys
+import re
 from os.path import join
 try:
     import setuptools
@@ -16,6 +17,11 @@ except ImportError:
 from setup import tuttle_description # Import description of the package from the standard setup
 
 
+def strip_rc(version):
+    m = re.search(r'^(\d+)\.(\d+)', version)
+    return m.group(0)
+
+
 # cx_freeze option for a command line application
 base = None
 build_exe_options = {
@@ -25,15 +31,22 @@ build_exe_options = {
         join("tuttle", "report"),
     )
 }
+build_msi_options = {
+    "add_to_path": True,
+}
+
 cx_freeze_opts = {
     'include_package_data':  True,
     'package_data':  {
         'tuttle.report':  ['*.html', 'html_report_assets/*'],
     },
-    'options':  {'build_exe': build_exe_options},
+    'options':  {
+        'build_exe': build_exe_options,
+        'bdist_msi': build_msi_options
+    },
     'executables':  [Executable(join("bin", "tuttle"), base=base)]
 }
-package_description = tuttle_description.copy()
+package_description = tuttle_description
 package_description.update(cx_freeze_opts)
-
+package_description['version'] = strip_rc(package_description['version'])
 setup(**package_description)
