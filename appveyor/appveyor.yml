@@ -46,7 +46,9 @@ after_test:
   - ps: "ls C:/projects"
   - cmd: cd C:\projects\tuttle\samples\demo
   - cmd: dir
-  - cmd: tuttle run
+  #- cmd: tuttle run
+  - cmd: dir "c:\Program Files"
+  - cmd: dir "c:\Program Files (x86)"
 
 artifacts:
   # Archive the generated package in the ci.appveyor.com build report.
