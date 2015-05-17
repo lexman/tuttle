@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 from itertools import chain
+from tuttle.error import TuttleError
 
 
 DEPENDENCY_CHANGED = "Resource depends on {} that have changed"
@@ -89,3 +90,11 @@ class InvalidResourceCollector():
             if resource.exists():
                 resource.remove()
 
+    def warn_and_remove(self, threshold):
+        self.display()
+        inv_duration = self.duration()
+        if threshold >= 0 and inv_duration >= threshold:
+            msg = "You are about to loose {} seconds of processing time which exceeds threshold ({} seconds). \n" \
+                  "Aborting... ".format(inv_duration, threshold)
+            raise TuttleError(msg)
+        self.remove_resources()

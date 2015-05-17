@@ -57,13 +57,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
             inv_collector.collect_resources(not_created, NOT_CREATED_BY_TUTTLE)
 
             workflow.reset_process_exec_info(inv_collector.urls())
-            inv_collector.display()
-            inv_duration = inv_collector.duration()
-            if previous_workflow and threshold >= 0 and inv_duration >= threshold:
-                msg = "You are about to loose {} seconds of processing time which exceeds threshold ({} seconds). \n" \
-                      "Aborting... ".format(inv_duration, threshold)
-                raise TuttleError(msg)
-            inv_collector.remove_resources()
+            inv_collector.warn_and_remove(threshold)
             workflow.create_reports()
 
             nb_process_run = run(workflow)
@@ -86,7 +80,7 @@ def get_resources(urls):
         result.append(resource)
     return result
 
-def invalidate_resources(tuttlefile, urls):
+def invalidate_resources(tuttlefile, urls, threshold=-1):
     resources = get_resources(urls)
     if resources is False:
         return 2
@@ -124,8 +118,11 @@ def invalidate_resources(tuttlefile, urls):
     if inv_collector.urls():
         workflow.dump()
         workflow.create_reports()
-        inv_collector.display()
-        inv_collector.remove_resources()
+        try:
+            inv_collector.warn_and_remove(threshold)
+        except TuttleError as e:
+            print(e)
+            return 2
     else:
         print("Nothing to do")
     return 0

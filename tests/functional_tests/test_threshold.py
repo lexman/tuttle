@@ -141,7 +141,6 @@ file://C <- file://B
         second = """file://B <- file://A
     echo B has changed
     echo B has changed > B
-
 """
         with open('tuttefile', "w") as f:
          f.write(second)
@@ -152,5 +151,26 @@ file://C <- file://B
         output = proc.stdout.read()
         rcode = proc.wait()
         assert rcode == 0, output
-
         assert output.find('Aborting') == -1, output
+
+    @isolate(['A'])
+    def test_threshold_in_command_line_invalidate(self):
+        """ The threshold -t parameter should be available from the invalidate command"""
+        first = """file://B <- file://A
+    echo A produces B
+    python -c "import time; time.sleep(2)"
+    echo B > B
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+        assert isfile('B')
+
+        dir = dirname(__file__)
+        tuttle_cmd = abspath(join(dir, '..', '..', 'bin', 'tuttle'))
+        proc = Popen(['python', tuttle_cmd, 'invalidate', '-t', '1', 'file://A'], stdout=PIPE)
+        output = proc.stdout.read()
+        rcode = proc.wait()
+        assert rcode == 2, output
+
+        assert output.find('Aborting') >= 0, output
+        assert isfile('B'), output
