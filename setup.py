@@ -1,50 +1,38 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-"""Tuttle"""
+""" Tuttle installation and packaging script """
 
 import sys
-from os.path import join
 from tuttle import __version__
 try:
     from setuptools import setup, find_packages
-    from cx_Freeze import setup, Executable
 except ImportError:
-    print("Tuttle needs setuptools and cx_freeze modules in order to build and package. Install it using"
+    print("You need to install setuptools to build tuttle. Install it using"
           " your package manager (usually python-setuptools) or via pip (pip"
-          " install setuptools cx_freeze).")
+          " install setuptools).")
     sys.exit(1)
 
-# cx_freeze option for a command line application
-base = None
 
-build_exe_options = {
-    "packages": ["os"],
-    "excludes": ["tkinter"],
-    "include_files": (
-        join("tuttle", "report"),
-    )
+tuttle_description = {
+    'name': 'tuttle',
+    'version': __version__,
+    'author': 'Lexman',
+    'author_email': 'tuttle@lexman.org',
+    'description': 'Make for data',
+    'long_description': 'Reliably create data from different sources. Work as a team in an industrial environment... '
+                   'A tool for continuous data processing',
+    'platforms': ['Linux', 'Windows'],
+    'url': 'http://tuttle.lexman.org/',
+    'license': 'MIT',
+    'install_requires': ['jinja2'],
+    'packages': ['tuttle', 'tuttle.report'],
+    'scripts': [
+        'bin/tuttle',
+    ],
 }
 
-setup(name='tuttle',
-      version=__version__,
-      author='Lexman',
-      author_email='tuttle@lexman.org',
-      description='Make for data',
-      long_description='Reliably create data from different sources. Work as a team in an industrial environment... '
-                       'A tool for continuous data processing',
-      platforms=['Linux', 'Windows'],
-      url='http://tuttle.lexman.org/',
-      license='MIT',
-      install_requires=['jinja2'],
-      packages=['tuttle', 'tuttle.report'],
-      scripts=[
-       'bin/tuttle',
-      ],
-      include_package_data = True,
-      package_data = {
-          'tuttle.report' :  ['*.html', 'html_report_assets/*'],
-      },
-      options = {"build_exe": build_exe_options},
-      executables = [Executable(join("bin", "tuttle"), base=base)],
-)
+
+if __name__ == '__main__':
+    # NB:  this script can ba imported by windows packager
+    setup(**tuttle_description)
