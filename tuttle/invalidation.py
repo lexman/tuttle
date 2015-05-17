@@ -43,10 +43,6 @@ class InvalidResourceCollector():
     def urls(self):
         return self._resources_urls
 
-    def resources(self):
-        for resource, _ in self._resources_and_reasons:
-            yield resource
-
     def collect_resource(self, resource, reason):
         if resource.url not in self._resources_urls:
             self._resources_and_reasons.append((resource, reason))
