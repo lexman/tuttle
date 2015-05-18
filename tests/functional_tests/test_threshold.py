@@ -167,7 +167,7 @@ file://C <- file://B
 
         dir = dirname(__file__)
         tuttle_cmd = abspath(join(dir, '..', '..', 'bin', 'tuttle'))
-        proc = Popen(['python', tuttle_cmd, 'invalidate', '-t', '1', 'file://A'], stdout=PIPE)
+        proc = Popen(['python', tuttle_cmd, 'invalidate', '-t', '1', 'file://B'], stdout=PIPE)
         output = proc.stdout.read()
         rcode = proc.wait()
         assert rcode == 2, output
