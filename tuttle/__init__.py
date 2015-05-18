@@ -33,8 +33,13 @@ def run(workflow):
         raise TuttleError(error_msg)
     failing_process = workflow.pick_a_failing_process()
     if failing_process:
-        raise TuttleError("Workflow already failed on process '{}'. Fix the process and run tuttle again".
-                          format(failing_process.id))
+        msg = "Workflow already failed on process '{}'. Fix the process and run tuttle again.".format(failing_process.id)
+        an_output = failing_process.pick_an_output()
+        if an_output:
+              msg += "\n\nIf failure has been caused by an external factor like a connection breakdown, " \
+                     'use "tuttle invalidate {}" to reset execution then "tuttle run" ' \
+                     'again'.format(an_output.url)
+        raise TuttleError(msg)
     nb_process_run = workflow.run()
     return nb_process_run
 
