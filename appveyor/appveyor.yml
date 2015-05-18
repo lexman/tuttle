@@ -42,7 +42,7 @@ after_test:
   # If tests are successful, create an installable package for the project.
   - "%CMD_IN_ENV% python package4win.py bdist_msi"
   - ps: "ls build"
-  - ps: msiexec /i dist\tuttle-0.1-win32.msi /qn /norestart /log C:/projects/install_tuttle.log
+  - msiexec /i dist\tuttle-0.1-win32.msi /qn /norestart /log C:\projects\install_tuttle.log
   - cmd: dir
   #- cmd: more C:\projects\install_tuttle.log
   - ps: "ls C:/projects"
