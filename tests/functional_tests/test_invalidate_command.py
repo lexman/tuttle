@@ -275,3 +275,25 @@ file://C <- file://B
 #         rcode, output = self.tuttle_invalide(project=project)
 #         assert rcode == 0, output
 #         assert output.find("file://B") >= 0, output
+
+
+    @isolate(['A'])
+    def test_workflow_must_be_run_after_resource_invalidation(self):
+        """ After invalidation of a resource, tuttle run should re-produce this resource """
+        project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+
+file://C <- file://B
+            echo B produces C
+            echo B produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+
+        rcode, output = self.tuttle_invalide(urls=["file://C"])
+        assert rcode == 0, output
+        assert output.find("file://C") >= 0, output
+        rcode, output = run_tuttle_file(project)
+        assert output.find("Nothing to do") == -1, output
+        assert output.find("B produces C") >= 0, output
