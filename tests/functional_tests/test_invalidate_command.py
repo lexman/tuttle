@@ -298,4 +298,16 @@ file://C <- file://B
         assert output.find("Nothing to do") == -1, output
         assert output.find("B produces C") >= 0, output
 
-# What  if invalidate primary resource ?
+    @isolate(['A'])
+    def test_workflow_must_be_run_after_resource_invalidation(self):
+        """ After invalidation of a resource, tuttle run should re-produce this resource """
+        project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+
+        rcode, output = self.tuttle_invalide(urls=["file://A"])
+        assert rcode == 0, output
+        assert output.find("Ignoring file://A") >= 0, output

@@ -111,6 +111,9 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
         elif not resource.exists():
             msg = "Ignoring {} : this resource has not been produced yet.".format(url)
             print(msg)
+        elif resource.is_primary():
+            msg = "Ignoring {} : primary resources can't be invalidated.".format(url)
+            print(msg)
         else:
             to_invalidate.append(resource)
     inv_collector.collect_resources(to_invalidate, USER_REQUEST)
