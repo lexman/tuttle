@@ -116,13 +116,14 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
     inv_collector.collect_resources(to_invalidate, USER_REQUEST)
     inv_collector.collect_dependencies_only(to_invalidate, workflow)
     if inv_collector.urls():
-        workflow.dump()
-        workflow.create_reports()
         try:
             inv_collector.warn_and_remove(threshold)
         except TuttleError as e:
             print(e)
             return 2
+        workflow.reset_process_exec_info(inv_collector.urls())
+        workflow.dump()
+        workflow.create_reports()
     else:
         print("Nothing to do")
     return 0

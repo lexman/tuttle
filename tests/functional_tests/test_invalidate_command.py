@@ -297,3 +297,5 @@ file://C <- file://B
         rcode, output = run_tuttle_file(project)
         assert output.find("Nothing to do") == -1, output
         assert output.find("B produces C") >= 0, output
+
+# What  if invalidate primary resource ?
