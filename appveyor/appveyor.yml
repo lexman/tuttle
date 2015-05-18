@@ -44,7 +44,7 @@ after_test:
   - ps: "ls build"
   - ps: msiexec /i dist\tuttle-0.1-win32.msi /qn /norestart /log C:/projects/install_tuttle.log
   - cmd: dir
-  - cmd: more C:\projects\install_tuttle.log
+  #- cmd: more C:\projects\install_tuttle.log
   - ps: "ls C:/projects"
   - cmd: cd C:\projects\tuttle\samples\demo
   - cmd: dir
