@@ -45,7 +45,7 @@ test_script:
   # ... And check that tuttle works
   - cmd: cd C:\projects\tuttle\samples\demo
   - cmd: dir
-  - "C:\Program Files\tuttle\tuttle.exe" run
+  - cmd:"C:\Program Files\tuttle\tuttle.exe" run
   - cmd: copy penetration_rate.html workflow_execution_success.html
 
 after_test:
