@@ -46,7 +46,7 @@ test_script:
 after_test:
   - cmd: cd C:\projects\tuttle\samples\demo
   - cmd: dir
-  - tuttle run
+  - cmd /C tuttle run
   - cmd: copy penetration_rate.html workflow_execution_success.html
 
 artifacts:
