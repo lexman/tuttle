@@ -1,0 +1,14 @@
+Source: tuttle
+Section: python
+Priority: extra
+Maintainer: Lexman <tuttle@lexman.org>
+Build-Depends: debhelper (>= 9), python, dh-virtualenv (>= 0.8)
+Standards-Version: 3.9.5
+
+Package: tuttle
+Architecture: any
+Pre-Depends: dpkg (>= 1.16.1), python2.7, ${misc:Pre-Depends}
+Depends: ${python:Depends}, ${misc:Depends}
+Description: Make for data
+ Reliably create data from different sources. Work as a team in an industrial environment...
+ A tool for continuous data processing

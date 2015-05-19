@@ -1,0 +1,6 @@
+tuttle (0.1-1) unstable; urgency=low
+
+  * Initial release
+  * Demonstration of development flow with tuttle commands
+
+ -- Lexman <tuttle@lexman.org>  Fri, 22 May 2015 17:00:00 +0200
