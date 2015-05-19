@@ -31,11 +31,6 @@ install:
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
   - "%CMD_IN_ENV% pip install -r requirements.txt"
-  # If tests are successful, create an installable package for the project.
-  - "%CMD_IN_ENV% python package4win.py bdist_msi"
-  - ps: "ls build"
-  - msiexec /i dist\tuttle-0.1-win32.msi /qn /norestart /log C:\projects\install_tuttle.log
-  - cmd: more C:\projects\install_tuttle.log
 
 build: false  # Not a C# project, build stuff at the test step instead.
 
@@ -43,15 +38,21 @@ test_script:
   # Build the compiled extension and run the project tests
   - "%CMD_IN_ENV% python setup.py nosetests"
 
-after_test:
+  # If tests are successful, create an installable package for the project.
+  - "%CMD_IN_ENV% python package4win.py bdist_msi"
+  - msiexec /i dist\tuttle-0.1-win32.msi /qn /norestart /log C:\projects\install_tuttle.log
+  - cmd: more C:\projects\install_tuttle.log
+  # ... And check that tuttle works
   - cmd: cd C:\projects\tuttle\samples\demo
   - cmd: dir
-  - cmd /C tuttle run
+  - "C:\Program Files\tuttle\tuttle.exe" run
   - cmd: copy penetration_rate.html workflow_execution_success.html
+
+after_test:
 
 artifacts:
   # Archive the generated package in the ci.appveyor.com build report.
   - path: dist\*
 
 #on_success:
-#  - TODO: upload the content of dist/*.exe to github releases
+#  - TODO: upload the content of dist/*.msi to github releases
