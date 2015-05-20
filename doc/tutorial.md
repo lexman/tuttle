@@ -1,7 +1,7 @@
 # Tutorial
 
 ## A real life example
-For this tutorial, you work for this company that sells `hipstoys`` : ``Hipstoys`` are the new internet thing... They are wonderfull, everybody
+For this tutorial, you work for this company that sells ``hipstoys``... ``Hipstoys`` are the new internet thing : they are wonderful, everybody
 should have one ! Your company asked you to compute how well sells perform, in order publish a report to the intranet.
 
 William, the accountant, has already mailed you a spreadsheet with the number of sells per country. You found the population
@@ -52,16 +52,38 @@ Tuttle has created the expected file ``it.net.user.p2_Indicator_en_csv_v2.csv``.
 available. Therefore, if something wrong happens when unziping the file, you wouldn't have to download it again.
 
 You also noticed Tuttle has logged everything that happened in the terminal. You'll be able to use the logs latter for
-they are archived with in the report : tuttle has created a nice ``tuttle_report.html`` file in your workspace.
+they are archived with in the report : tuttle has created a nice ``tuttle_report.html`` at the root of your workspace.
     ## screenshot here
 
 In the report you can also find the duration of the processes, whether they have failed and their dependencies.
 
 
-After such a great effort, don't forget to commit your work in your versioning system, eg ``git``. Notice that the url
+After such a tremendous effort, don't forget to commit your work in your versioning system, eg ``git``. Notice that the url
 of the CSV file is explicitly written in our project. It means we won't have to spend two hours on the web to find it
 again, when our boss will inevitably need updated figures next year.
 
 
+## Insert the data into sqlite
+
+A pleasant way join the data from the different sources is using SQL, which is an easy language to process structured
+ data. Therefore we will insert all the data into an SQLite database, starting by the number of sells received by mail.
+After converting the spreadsheet to a proper tabular file, we save it in our workspace. Then we can add this line to our
+``tuttlefile`` :
+
+    sqlite://stats.sqlite/tables/sales <- file://sales.tsv #! csv2sqlite
+
+
+csv2sqlite is a specific **processor** that understands it has to transfer the data from a tabular file (comma delimited
+ or tabular) into an sqlite table. Column names are extracted from the first line of the file.
+
+
+Let's ``tuttle run`` again :
+
+
+A the former part of our workflow has already been executed, tuttle only runs this last line.
+
+Let's do this for the csv file we have downloaded earlier :
+
+        sqlite://stats.sqlite/tables/wb_internet_users <- file://wb_internet_users_2013.tsv #! csv2sqlite
 
 
