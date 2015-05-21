@@ -1,0 +1,17 @@
+FROM debian:wheezy
+
+LABEL Description="This image is used to build a debian package of tuttle" Version="0.1"
+
+RUN apt-get update && apt-get install -y python python-pip python-virtualenv dh-virtualenv
+
+ADD tuttle .
+
+ADD debian .
+
+ADD setup.py requirements.txt .
+
+RUN virtualenv env_tuttle && source my_py_env/bin/activate && pip install -r requirements.txt
+
+RUN dpkg-buildpackage -us -uc
+
+RUN ls
