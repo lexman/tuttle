@@ -51,8 +51,26 @@ Let's run this workflow :
 
 Tuttle checks what is missing and runs the according ``processes``, and logs the execution :
 
-```shell
-Code will go here
+```console
+lexman@lexman-pc:~/tuttle_tutorial$
+============================================================
+tuttlefile_1
+============================================================
+--- stdout : -----------------------------------------------
+Downloading http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv
+..
+done
+
+============================================================
+tuttlefile_3
+============================================================
+--- stdout : -----------------------------------------------
+Archive:  internet_users.zip
+  inflating: it.net.user.p2_Indicator_en_csv_v2.csv
+
+--- stderr : -----------------------------------------------
++ unzip internet_users.zip it.net.user.p2_Indicator_en_csv_v2.csv
+
 ````
 
 Tuttle has created the expected file ``it.net.user.p2_Indicator_en_csv_v2.csv``. Also the file internet_users.zip is still
