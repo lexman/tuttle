@@ -38,8 +38,11 @@ In an empty project directory, create a file called ``tuttlefile`` and paste thi
          unzip internet_users.zip it.net.user.p2_Indicator_en_csv_v2.csv
 
 
-The first line tells tuttle to "download" the file from the world bank into internet_users.zip. The csv file we want to
+The first line tells tuttle to ``download`` the file from the world bank into internet_users.zip. The csv file we want to
 use is called it.net.user.p2_Indicator_en_csv_v2.csv inside the zip, so next step is to unzip it (line 3 and 4).
+
+#TODO explain more
+
 
 Let's run this workflow :
 
@@ -47,6 +50,10 @@ Let's run this workflow :
     tuttle run
 
 Tuttle checks what is missing and runs the according ``processes``, and logs the execution :
+
+```shell
+Code will go here
+````
 
 Tuttle has created the expected file ``it.net.user.p2_Indicator_en_csv_v2.csv``. Also the file internet_users.zip is still
 available. Therefore, if something wrong happens when unziping the file, you wouldn't have to download it again.
@@ -73,17 +80,75 @@ After converting the spreadsheet to a proper tabular file, we save it in our wor
     sqlite://stats.sqlite/tables/sales <- file://sales.tsv #! csv2sqlite
 
 
-csv2sqlite is a specific **processor** that understands it has to transfer the data from a tabular file (comma delimited
- or tabular) into an sqlite table. Column names are extracted from the first line of the file.
+csv2sqlite is a specific *processor* that understands it has to transfer the data from a tabular file (comma delimited
+ or tabular) in input (sales.csv) into an sqlite table (table `sales` in database `stats.sqlite`). Column names are
+ extracted from the first line of the file.
 
 
 Let's ``tuttle run`` again :
 
+```console
+Code will go here
+````
 
 A the former part of our workflow has already been executed, tuttle only runs this last line.
 
-Let's do this for the csv file we have downloaded earlier :
+Let's also do this for the csv file we have downloaded earlier :
 
-        sqlite://stats.sqlite/tables/wb_internet_users <- file://wb_internet_users_2013.tsv #! csv2sqlite
+        sqlite://stats.sqlite/tables/wb_internet_users <- file://it.net.user.p2_Indicator_en_csv_v2.csv #! csv2sqlite
 
+And `tuttle run` :
+
+```console
+Code will go here
+````
+
+Ouch ! Something went wrong. Let's have a look at the csv files ``head it.net.user.p2_Indicator_en_csv_v2.csv`` :
+
+```console
+Code will go here
+````
+
+The files contains two extra lines before the headers. We'll have to remove them before loading the data into SQLite, so we
+**replace** the former line by these ones :
+
+    file://wb_internet_users_2013.tsv <- file://it.net.user.p2_Indicator_en_csv_v2.csv
+        tail -n +3 it.net.user.p2_Indicator_en_csv_v2.csv > wb_internet_users_2013.tsv
+
+    sqlite://stats.sqlite/tables/wb_internet_users <- file://wb_internet_users_2013.tsv #! csv2sqlite
+
+This means file `wb_internet_users_2013.tsv` is produced from file `it.net.user.p2_Indicator_en_csv_v2.csv` by running
+the shell command `tail` which extracts everything from it.net.user.p2_Indicator_en_csv_v2.csv, starting on line 3.
+
+Let's `tuttle run`:
+
+```console
+Code will go here
+````
+
+The newer workflow worked this time. Notice that tuttle has only produced the needed part. It has even automatically
+cleaned up what is no longer needed from the former workflow !
+
+
+
+Don't worry for the duplication of data between files `wb_internet_users_2013.tsv` and `it.net.user.p2_Indicator_en_csv_v2.csv` :
+nowadays disk space is cheap and your time as data expert has much more value than a few bits.
+
+Once again, we'll commit our work : `tuttlefile` and `sales.tsv`. We achieved to move the value of our work not in the final
+data any more but in the description of how to produce it : anyone who wants the final data can easily checkout the repository
+and run tuttle to get it in a few cpu cycles.
+
+
+## Join tables to compute the number of internet users
+
+It's time to get to the fun part : now that we have all our data in SQLite
+    sqlite://stats.sqlite/tables/nb_internet_users <- sqlite://stats.sqlite/tables/wb_internet_users, sqlite://stats.sqlite/tables/world_population #! sqlite
+        CREATE TABLE nb_internet_users AS
+        SELECT
+            wb_internet_users.`Country Name` AS country_name,
+            wb_internet_users.`Country Code` AS country_code,
+            wb_internet_users.`2013` as pct_internauts,
+            world_population.`2013` as population,
+            CAST(wb_internet_users.`2013` * world_population.`2013` / 100 AS INT) as nb_internauts
+        FROM wb_internet_users LEFT JOIN world_population ON wb_internet_users.`Country Code` = world_population.`Country Code`
 
