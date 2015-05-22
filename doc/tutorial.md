@@ -76,8 +76,12 @@ Archive:  internet_users.zip
 Tuttle has created the expected file ``it.net.user.p2_Indicator_en_csv_v2.csv``. Also the file internet_users.zip is still
 available. Therefore, if something wrong happens when unziping the file, you wouldn't have to download it again.
 
-You also noticed Tuttle has logged everything that happened in the terminal. You'll be able to use the logs latter for
-they are archived with in the report : tuttle has created a nice ``tuttle_report.html`` at the root of your workspace.
+We can se execution of process `tuttlefile_3` (process defined at line 3 of file tuttlefile)
+
+You also noticed Tuttle has logged everything that happened in the terminal : for example, process `tuttlefile_3` (process
+defined at line 3 of file `tuttlefile`), displays the details of what the zip command traces to stdout and stderr.
+
+You'll also be able to use the logs latter for they are archived with in the report : tuttle has created a nice ``tuttle_report.html`` at the root of your workspace.
     ## screenshot here
 
 In the report you can also find the duration of the processes, whether they have failed and their dependencies.
@@ -93,7 +97,7 @@ again, when our boss will inevitably need updated figures next year.
 A pleasant way join the data from the different sources is using SQL, which is an easy language to process structured
  data. Therefore we will insert all the data into an SQLite database, starting by the number of sells received by mail.
 After converting the spreadsheet to a proper tabular file, we save it in our workspace. Then we can add this line to our
-``tuttlefile`` :
+`tuttlefile` :
 
     sqlite://stats.sqlite/tables/sales <- file://sales.tsv #! csv2sqlite
 
@@ -152,6 +156,7 @@ cleaned up what is no longer needed from the former workflow !
 Don't worry for the duplication of data between files `wb_internet_users_2013.tsv` and `it.net.user.p2_Indicator_en_csv_v2.csv` :
 nowadays disk space is cheap and your time as data expert has much more value than a few bits.
 
+
 Once again, we'll commit our work : `tuttlefile` and `sales.tsv`. We achieved to move the value of our work not in the final
 data any more but in the description of how to produce it : anyone who wants the final data can easily checkout the repository
 and run tuttle to get it in a few cpu cycles.
@@ -159,7 +164,12 @@ and run tuttle to get it in a few cpu cycles.
 
 ## Join tables to compute the number of internet users
 
-It's time to get to the fun part : now that we have all our data in SQLite
+It's time to get to the fun part : now that we have all our data in SQLite, let's do a few queries to build our data. First,
+we are going to create a table with the number of internet users per country, from both the population and percentage of internet users.
+
+
+This table will be called nb_internet_users :
+
     sqlite://stats.sqlite/tables/nb_internet_users <- sqlite://stats.sqlite/tables/wb_internet_users, sqlite://stats.sqlite/tables/world_population #! sqlite
         CREATE TABLE nb_internet_users AS
         SELECT
