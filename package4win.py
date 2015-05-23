@@ -41,7 +41,8 @@ cx_freeze_opts = {
         'tuttle.report':  ['*.html', 'html_report_assets/*'],
     },
     'options':  {
-        'bdist_msi': build_msi_options
+        'bdist_msi': build_msi_options,
+        'build_exe': build_exe_options
     },
     'executables':  [Executable(join("bin", "tuttle"), base=base)]
 }
