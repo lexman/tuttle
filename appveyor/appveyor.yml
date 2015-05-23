@@ -44,7 +44,9 @@ test_script:
   # ... And check that tuttle works
   - dir
   - dir dist
-  - copy dist\tuttle-*.msi tuttle-installer.msi
+  # Ensure we know exactly the name of the installer, on every platform (amd64 and x86)
+  # http://stackoverflow.com/questions/14704333/using-wildard-with-dos-copy-command-corrupts-destination-file
+  - echo f | xcopy dist\tuttle-*.msi tuttle-installer.msi
   - dir
   - msiexec /i tuttle-installer.msi /qn /norestart /log C:\projects\install_tuttle.log
   - cmd: more C:\projects\install_tuttle.log
