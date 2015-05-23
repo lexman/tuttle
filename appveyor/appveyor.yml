@@ -40,11 +40,12 @@ test_script:
 
   # If tests are successful, create an installable package for the project.
   - "%CMD_IN_ENV% python package4win.py bdist_msi"
-  - msiexec /i dist\tuttle-0.1-win32.msi /qn /norestart /log C:\projects\install_tuttle.log
-  - cmd: more C:\projects\install_tuttle.log
+
   # ... And check that tuttle works
+  - copy dist\tuttle-*.msi tuttle-installer.msi
+  - msiexec /i tuttle-installer.msi /qn /norestart /log C:\projects\install_tuttle.log
+  - cmd: more C:\projects\install_tuttle.log
   - cmd: cd C:\projects\tuttle\samples\demo
-  - dir
   - "\"C:\\Program Files (x86)\\tuttle\\tuttle.exe\" run"
   - cmd: copy penetration_rate.html workflow_execution_success.html
 
