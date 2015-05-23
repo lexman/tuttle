@@ -4,7 +4,7 @@ python:
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y docker.ioS
+  - sudo apt-get install -y docker.io
   - uname -a
 
 # command to install dependencies
