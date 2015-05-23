@@ -3,7 +3,7 @@ python:
   - "2.7"
 
 before_install:
-  - uname -a
+  - pwd
   - sudo add-apt-repository ppa:dh-virtualenv/stable -y
   - sudo apt-get update -qq
   - sudo apt-get install -y python python-pip python-virtualenv dh-virtualenv debhelper
@@ -17,3 +17,8 @@ script:
     - nosetests
     # Creates the debian package
     - dpkg-buildpackage -us -uc
+    - pwd
+    - dpkg -i ../tuttle_0.1-1_amd64.deb
+    - cd samples/demo_linux
+    - tuttle run
+    - cp penetration_rate.html workflow_execution_success.html
