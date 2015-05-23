@@ -9,7 +9,6 @@ before_install:
 # command to install dependencies
 install:
     - "pip install -r requirements.txt"
-    - apt-get install -y docker
 
 # command to run tests
 script:
