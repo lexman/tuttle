@@ -45,7 +45,7 @@ class TestSQLiteResource():
 
     def test_sqlite_processor_should_be_availlable(self):
         """A project with an SQLite processor should be Ok"""
-        project = "sqlite://db.sqlite/tables/my_table <- sqlite://db.sqlite/tables/my_table #! sqlite"
+        project = "sqlite://db.sqlite/tables/my_table <- sqlite://db.sqlite/tables/my_table ! sqlite"
         pp = ProjectParser()
         pp.set_project(project)
         pp.read_line()
@@ -54,7 +54,7 @@ class TestSQLiteResource():
 
     def test_static_check_should_fail_if_across_several_sqlite_files(self):
         """Static check should fail for SQLite processor if it is supposed to work with several SQLite files"""
-        project = "sqlite://db1.sqlite/tables/my_table <- sqlite://db2.sqlite/tables/my_table #! sqlite"
+        project = "sqlite://db1.sqlite/tables/my_table <- sqlite://db2.sqlite/tables/my_table ! sqlite"
         pp = ProjectParser()
         pp.set_project(project)
         pp.read_line()
@@ -68,7 +68,7 @@ class TestSQLiteResource():
 
     def test_sqlite_static_check_ok_with_no_outputs(self):
         """static check should work even if there are no outputs"""
-        project = " <- sqlite://db.sqlite/tables/my_table #! sqlite"
+        project = " <- sqlite://db.sqlite/tables/my_table ! sqlite"
         pp = ProjectParser()
         pp.set_project(project)
         pp.read_line()
@@ -78,7 +78,7 @@ class TestSQLiteResource():
 
     def test_sqlite_static_check_ok_with_no_inputs(self):
         """Static check should work even if there are no inputs"""
-        project = "sqlite://db.sqlite/tables/my_table <- #! sqlite"
+        project = "sqlite://db.sqlite/tables/my_table <- ! sqlite"
         pp = ProjectParser()
         pp.set_project(project)
         pp.read_line()
@@ -88,7 +88,7 @@ class TestSQLiteResource():
 
     def test_sqlite_static_check_should_fail_without_sqlite_resources(self):
         """Static check should fail if no SQLiteResources are specified either in inputs or outputs"""
-        project = "<- #! sqlite"
+        project = "<- ! sqlite"
         pp = ProjectParser()
         pp.set_project(project)
         pp.read_line()
@@ -103,7 +103,7 @@ class TestSQLiteResource():
     @isolate(['tests.sqlite'])
     def test_sqlite_processor(self):
         """A project with an SQLite processor should run the sql statements"""
-        project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table #! sqlite
+        project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table ! sqlite
         CREATE TABLE new_table AS SELECT * FROM test_table;
         """
         rcode, output = run_tuttle_file(project)
@@ -114,7 +114,7 @@ class TestSQLiteResource():
     @isolate(['tests.sqlite'])
     def test_sqlite_processor_with_several_instuctions(self):
         """ An SQLiteProcess can have several SQL instructions"""
-        project = """sqlite://tests.sqlite/tables/new_table, sqlite://tests.sqlite/tables/another_table  <- sqlite://tests.sqlite/tables/test_table #! sqlite
+        project = """sqlite://tests.sqlite/tables/new_table, sqlite://tests.sqlite/tables/another_table  <- sqlite://tests.sqlite/tables/test_table ! sqlite
         CREATE TABLE new_table AS SELECT * FROM test_table;
 
         CREATE TABLE another_table (id int, col1 string);
@@ -125,7 +125,7 @@ class TestSQLiteResource():
     @isolate(['tests.sqlite'])
     def test_sql_error_in_sqlite_processor(self):
         """ If an error occurs, tuttle should fail and output logs should trace the error"""
-        project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table #! sqlite
+        project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table ! sqlite
         CREATE TABLE new_table AS SELECT * FROM test_table;
 
         NOT an SQL statement;
@@ -138,7 +138,7 @@ class TestSQLiteResource():
     @isolate(['tests.sqlite'])
     def test_comments_in_process(self):
         """ If an error occurs, tuttle should fail and output logs should trace the error"""
-        project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table #! sqlite
+        project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table ! sqlite
         CREATE TABLE new_table AS SELECT * FROM test_table;
         -- This is a comment
         /* last comment style*/
@@ -162,7 +162,7 @@ class TestSQLiteResource():
     @isolate(['tests.sqlite'])
     def test_sqlite_file_should_not_be_deleted_if_not_empty_after_remove(self):
         """ When an SQLiteResource is removed, then sqlite file should be not delete if it is not empty """
-        project = """sqlite://tests.sqlite/tables/to_be_removed <- #! sqlite
+        project = """sqlite://tests.sqlite/tables/to_be_removed <- ! sqlite
         CREATE TABLE to_be_removed AS SELECT * FROM test_table;
         """
         rcode, output = run_tuttle_file(project)

@@ -55,7 +55,7 @@ class TestDownloadProcessor():
     @isolate
     def test_standard_download(self):
         """Should download a simple url"""
-        project = " file://google.html <- http://www.google.com/ #! download"
+        project = " file://google.html <- http://www.google.com/ ! download"
         pp = ProjectParser()
         pp.set_project(project)
         workflow = pp.parse_and_check_project()
@@ -71,7 +71,7 @@ class TestDownloadProcessor():
     @isolate
     def test_long_download(self):
         """ Progress dots should appear in the logs in a long download"""
-        project = " file://jquery.js <- http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js #! download"
+        project = " file://jquery.js <- http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js ! download"
         pp = ProjectParser()
         pp.set_project(project)
         workflow = pp.parse_and_check_project()
@@ -84,7 +84,7 @@ class TestDownloadProcessor():
     @isolate
     def test_pre_check(self):
         """Should fail if not http:// <- file:// """
-        project = " http://www.google.com/ <-  #! download"
+        project = " http://www.google.com/ <-  ! download"
         pp = ProjectParser()
         pp.set_project(project)
         workflow = pp.parse_and_check_project()
@@ -98,7 +98,7 @@ class TestDownloadProcessor():
     # @isolate
     # def test_download_fails(self):
     #     """Should raise an exception if download fails"""
-    #     project = " file://tuttle.html <- http://www.example.com/tuttle #! download"
+    #     project = " file://tuttle.html <- http://www.example.com/tuttle ! download"
     #     pp = ProjectParser()
     #     pp.set_project(project)
     #     # Don't check project or execution of the workflow will not be allowed because input resource is missing
@@ -114,7 +114,7 @@ class TestDownloadProcessor():
         """ Pre check should happen for each process before run the whole workflow """
         project = """file://A <-
         obvious failure
-file://google.html <- file://A #! download
+file://google.html <- file://A ! download
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 2
@@ -130,7 +130,7 @@ file://google.html <- file://A #! download
         assert isfile('A')
         project2 = """file://A <-
         echo different > A
-file://google.html <- file://A #! download
+file://google.html <- file://A ! download
         """
         rcode, output = run_tuttle_file(project2)
         assert rcode == 2

@@ -46,7 +46,7 @@ class TestSQLiteResource():
     #
     # def test_sqlite_processor_should_be_availlable(self):
     #     """A project with an SQLite processor should be Ok"""
-    #     project = "sqlite://db.sqlite/tables/my_table <- sqlite://db.sqlite/tables/my_table #! sqlite"
+    #     project = "sqlite://db.sqlite/tables/my_table <- sqlite://db.sqlite/tables/my_table ! sqlite"
     #     pp = ProjectParser()
     #     pp.set_project(project)
     #     pp.read_line()
@@ -55,7 +55,7 @@ class TestSQLiteResource():
     #
     # def test_sqlite_pre_check_ok_with_no_outputs(self):
     #     """Pre-check should work even if there are no outputs"""
-    #     project = " <- sqlite://db.sqlite/tables/my_table #! sqlite"
+    #     project = " <- sqlite://db.sqlite/tables/my_table ! sqlite"
     #     pp = ProjectParser()
     #     pp.set_project(project)
     #     pp.read_line()
@@ -65,7 +65,7 @@ class TestSQLiteResource():
     #
     # def test_sqlite_pre_check_ok_with_no_inputs(self):
     #     """Pre-check should work even if there are no inputs"""
-    #     project = "sqlite://db.sqlite/tables/my_table <- #! sqlite"
+    #     project = "sqlite://db.sqlite/tables/my_table <- ! sqlite"
     #     pp = ProjectParser()
     #     pp.set_project(project)
     #     pp.read_line()
@@ -75,7 +75,7 @@ class TestSQLiteResource():
     #
     # def test_sqlite_pre_check_should_fail_without_sqlite_resources(self):
     #     """Pre-check should fail if no SQLiteResources are specified either in inputs or outputs"""
-    #     project = "<- #! sqlite"
+    #     project = "<- ! sqlite"
     #     pp = ProjectParser()
     #     pp.set_project(project)
     #     pp.read_line()
@@ -90,7 +90,7 @@ class TestSQLiteResource():
     @isolate(['test.csv'])
     def test_sqlite_processor(self):
         """A project with an SQLite processor should run the sql statements"""
-        project = """sqlite://db.sqlite/tables/pop <- file://test.csv #! csv2sqlite
+        project = """sqlite://db.sqlite/tables/pop <- file://test.csv ! csv2sqlite
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
@@ -117,7 +117,7 @@ United Arab Emirates,ARE,9346129""".split("\n")
     @isolate(['bad_csv.csv'])
     def test_bad_csv__should_fail_with_csv_2sqlite(self):
         """ A csv without the good number of columns in one raw should make the process fail"""
-        project = """sqlite://db.sqlite/tables/pop <- file://bad_csv.csv #! csv2sqlite
+        project = """sqlite://db.sqlite/tables/pop <- file://bad_csv.csv ! csv2sqlite
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 2, output
@@ -129,7 +129,7 @@ United Arab Emirates,ARE,9346129""".split("\n")
     @isolate(['test_csv.py'])
     def test_text_file_should_fail_with_csv_2sqlite(self):
         """ A source file that is not a csv should make the process fail"""
-        project = """sqlite://db.sqlite/tables/pop <- file://test_csv.py #! csv2sqlite
+        project = """sqlite://db.sqlite/tables/pop <- file://test_csv.py ! csv2sqlite
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 2, output
@@ -140,7 +140,7 @@ United Arab Emirates,ARE,9346129""".split("\n")
     @isolate(['tests.sqlite'])
     def test_binary_file_should_fail_with_csv_2sqlite(self):
         """ A binary file that is not a csv should make the process fail"""
-        project = """sqlite://db.sqlite/tables/pop <- file://tests.sqlite #! csv2sqlite
+        project = """sqlite://db.sqlite/tables/pop <- file://tests.sqlite ! csv2sqlite
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 2, output
@@ -149,7 +149,7 @@ United Arab Emirates,ARE,9346129""".split("\n")
     # @isolate(['tests.sqlite'])
     # def test_sql_error_in_sqlite_processor(self):
     #     """ If an error occurs, tuttle should fail and output logs should trace the error"""
-    #     project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table #! sqlite
+    #     project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table ! sqlite
     #     CREATE TABLE new_table AS SELECT * FROM test_table;
     #
     #     NOT an SQL statement;

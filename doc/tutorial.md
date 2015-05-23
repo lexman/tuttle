@@ -32,7 +32,7 @@ easily join this information with the population.
 
 In an empty project directory, create a file called ``tuttlefile`` and paste this code :
 
-    file://internet_users.zip <- http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv #! download
+    file://internet_users.zip <- http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv ! download
 
     file://it.net.user.p2_Indicator_en_csv_v2.csv <- file://internet_users.zip
          unzip internet_users.zip it.net.user.p2_Indicator_en_csv_v2.csv
@@ -99,7 +99,7 @@ A pleasant way join the data from the different sources is using SQL, which is a
 After converting the spreadsheet to a proper tabular file, we save it in our workspace. Then we can add this line to our
 `tuttlefile` :
 
-    sqlite://stats.sqlite/tables/sales <- file://sales.tsv #! csv2sqlite
+    sqlite://stats.sqlite/tables/sales <- file://sales.tsv ! csv2sqlite
 
 
 csv2sqlite is a specific *processor* that understands it has to transfer the data from a tabular file (comma delimited
@@ -117,7 +117,7 @@ A the former part of our workflow has already been executed, tuttle only runs th
 
 Let's also do this for the csv file we have downloaded earlier :
 
-        sqlite://stats.sqlite/tables/wb_internet_users <- file://it.net.user.p2_Indicator_en_csv_v2.csv #! csv2sqlite
+        sqlite://stats.sqlite/tables/wb_internet_users <- file://it.net.user.p2_Indicator_en_csv_v2.csv ! csv2sqlite
 
 And `tuttle run` :
 
@@ -137,7 +137,7 @@ The files contains two extra lines before the headers. We'll have to remove them
     file://wb_internet_users_2013.tsv <- file://it.net.user.p2_Indicator_en_csv_v2.csv
         tail -n +3 it.net.user.p2_Indicator_en_csv_v2.csv > wb_internet_users_2013.tsv
 
-    sqlite://stats.sqlite/tables/wb_internet_users <- file://wb_internet_users_2013.tsv #! csv2sqlite
+    sqlite://stats.sqlite/tables/wb_internet_users <- file://wb_internet_users_2013.tsv ! csv2sqlite
 
 This means file `wb_internet_users_2013.tsv` is produced from file `it.net.user.p2_Indicator_en_csv_v2.csv` by running
 the shell command `tail` which extracts everything from it.net.user.p2_Indicator_en_csv_v2.csv, starting on line 3.
@@ -170,7 +170,7 @@ we are going to create a table with the number of internet users per country, fr
 
 This table will be called nb_internet_users :
 
-    sqlite://stats.sqlite/tables/nb_internet_users <- sqlite://stats.sqlite/tables/wb_internet_users, sqlite://stats.sqlite/tables/world_population #! sqlite
+    sqlite://stats.sqlite/tables/nb_internet_users <- sqlite://stats.sqlite/tables/wb_internet_users, sqlite://stats.sqlite/tables/world_population ! sqlite
         CREATE TABLE nb_internet_users AS
         SELECT
             wb_internet_users.`Country Name` AS country_name,
