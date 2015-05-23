@@ -3,9 +3,9 @@ python:
   - "2.7"
 
 before_install:
+  - uname -a
   - sudo apt-get update -qq
   - sudo apt-get install -y lxc-docker
-  - uname -a
 
 # command to install dependencies
 install:
