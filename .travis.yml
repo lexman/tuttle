@@ -19,6 +19,6 @@ script:
     - dpkg-buildpackage -us -uc
     - pwd
     - sudo dpkg -i ../tuttle_0.1-1_amd64.deb
-    - cd samples/demo_linux
-    - tuttle run
-    - cp penetration_rate.html workflow_execution_success.html
+    #- cd samples/demo_linux
+    #- tuttle run
+    #- cp penetration_rate.html workflow_execution_success.html
