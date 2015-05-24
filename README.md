@@ -39,7 +39,7 @@ a csv file you can import in our favorite spreadsheet software :
 		plot "characters_count.dat" using 1: xtic(2) with histogram
 		$script$
 
-This project is full of errors. Coming soon a tuttorial showing how to fix errors.
+This project does not produce the rigth answer on purpose. Coming soon : a tuttorial showing how to fix errors.
 
 # Demo
 
