@@ -44,7 +44,6 @@ spreadsheet software :
         plot "characters_count.dat" using 2: xtic(1) with histogram
         $script$
 
-This project does not produce the rigth answer on purpose. Coming soon : a tuttorial showing how to fix errors.
 
 When you run this project, you get a [report](http://abonnasseau.github.io/tuttle/docs/demo/tuttle_report.html) of every
 thing that has been run, when, whether it succeeded, an access to the logs, and... A nice dependency graph !
