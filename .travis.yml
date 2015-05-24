@@ -23,3 +23,5 @@ deploy:
   file: tuttle_0.1-1_amd64.deb
   on:
     repo: abonnasseau/tuttle
+    tags: true
+  skip_cleanup: true
