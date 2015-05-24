@@ -1,3 +1,6 @@
+file://Les_trois_mousquetaires.txt <- file://Les_trois_mousquetaires.zip
+    unzip Les_trois_mousquetaires.zip Les_trois_mousquetaires.txt
+
 file://characters_count.dat <- file://Les_trois_mousquetaires.txt ! python
     # -*- coding: utf8 -*-
     names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
