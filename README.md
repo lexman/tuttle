@@ -19,7 +19,7 @@ a csv file you can import in our favorite spreadsheet software :
 
 	file://characters.txt <- file://words.txt
 		# Keep only the lines with the names of the musketeers
-		grep -e Athos -e Portos -e Aramis -e "d'Artagnan" words.txt > characters.txt
+		grep -e Athos -e Porthos -e Aramis -e "d'Artagnan" words.txt > characters.txt
 		
 	file://characters_count.dat <- file://characters.txt
 		# Creates a .dat file for ploting with gnuplot

@@ -5,6 +5,7 @@ from processors import *
 from process import Process
 from tuttle.extensions.ext_csv import CSV2SQLiteProcessor
 from tuttle.extensions.net import DownloadProcessor, HTTPResource
+from tuttle.extensions.python import PythonProcessor
 from tuttle.extensions.sqlite import SQLiteProcessor, SQLiteResource
 import os
 
@@ -22,6 +23,7 @@ class WorkflowBuilder():
         self._resources_definition['sqlite'] = SQLiteResource
         self._processors['shell'] = ShellProcessor()
         self._processors['bat'] = BatProcessor()
+        self._processors['python'] = PythonProcessor()
         self._processors['download'] = DownloadProcessor()
         self._processors['sqlite'] = SQLiteProcessor()
         self._processors['csv2sqlite'] = CSV2SQLiteProcessor()

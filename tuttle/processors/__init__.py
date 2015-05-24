@@ -10,10 +10,10 @@ class ProcessExecutionError(TuttleError):
     pass
 
 
-def run_and_log(prog, log_stdout, log_stderr):
+def run_and_log(args, log_stdout, log_stderr):
     fout = open(log_stdout, 'w')
     ferr = open(log_stderr, 'w')
-    osprocess = Popen([prog], stdout=fout.fileno(), stderr=ferr.fileno(), stdin=PIPE)
+    osprocess = Popen(args, stdout=fout.fileno(), stderr=ferr.fileno(), stdin=PIPE)
     osprocess.stdin.close()
     fout.close()
     ferr.close()
@@ -42,7 +42,7 @@ class ShellProcessor:
 
     def run(self, process, reserved_path, log_stdout, log_stderr):
         self.generate_executable(process, reserved_path)
-        run_and_log(reserved_path, log_stdout, log_stderr)
+        run_and_log([reserved_path], log_stdout, log_stderr)
 
     def static_check(self, process):
         pass
@@ -73,7 +73,7 @@ class BatProcessor:
 
     def run(self, process, reserved_path, log_stdout, log_stderr):
         prog = self.generate_executable(process, reserved_path)
-        run_and_log(prog, log_stdout, log_stderr)
+        run_and_log([prog], log_stdout, log_stderr)
 
     def static_check(self, process):
         pass
