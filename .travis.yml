@@ -14,7 +14,8 @@ script:
 - pwd
 - ls
 - mkdir dist
-- cp ../tuttle_0.1-1_amd64.deb dist/tuttle_0.1-1_amd64.deb
+- cp ../tuttle_* dist/
+- touch dist/tuttle_test
 - sudo dpkg -i ../tuttle_0.1-1_amd64.deb
 env:
   matrix:
@@ -23,7 +24,7 @@ deploy:
   provider: releases
   api_key:
     secure: ZXFuh7l4dw2vHitMSk3XG4/k+30NoaPjlMj/VUmlXU37B60LRtOtPeyeuo0CptJ1j4Cll4cGsgGhYVahNMuIlJmtNWOZ5lOXtBE4fS9B8+Sa4Np8sc9nMJ3TWIeXBmgkKVREJKMTVhc7DeMTUgLQIIj6+KQlv3Au6LjDmqtXdcQ=
-  file: dist/tuttle_0.1-1_amd64.deb
+  file: dist/tuttle_*
   on:
     repo: abonnasseau/tuttle
     tags: true
