@@ -1,9 +1,31 @@
 file://words.txt <- file://Les_trois_mousquetaires.txt
-	# Exctract all the words from the book "The Three Mousqueteers"
+	# Exctract all the words from the book "The Three Mousketeers", each one on a line
 	awk '{for(i=1;i<=NF;i++) {print $i}}' Les_trois_mousquetaires.txt > words.txt
 
-file://characters.txt <- file://words
-	grep -i -e '{Athos|Portos|Aramis|d'Artagnan}' words.txt > characters.txt
+file://characters.txt <- file://words.txt
+	# Retreive only the lines with the names of the mousketeers
+	grep -i -e Athos -e Porthos -e Aramis -e "Artagnan" words.txt > characters.txt
+
+file://characters_cleaned.txt <- file://characters.txt
+	cat characters.txt | tr '[:upper:]' '[:lower:]' | sed "s/^[^a-z]*//g" | sed "s/[^a-z]*$//g"  > characters_cleaned.txt
 	
-file://characters_count.txt <- file://characters.txt
-	sort -c characters.txt > characters_count.txt
+file://characters_count.dat <- file://characters_cleaned.txt
+	# Creates a data file for ploting with gnuplot
+	sort characters_cleaned.txt | uniq -c > characters_count.dat
+
+file://characters_count.csv <- file://characters_count.dat
+	# Creates a file readable by a spreasheet software : 
+	# * add quotes around the name of the character
+	# * add Windows style new lines
+	awk '{print "\""$2"\","$1"\r"}' characters_count.dat > characters_count.csv
+	
+file://characters_proportion.png <- file://characters_count.dat
+	# Plot the data
+	gnuplot <<$script$
+	set terminal png
+	set output "characters_proportion.png"
+	plot "characters_count.dat" using 1: xtic(2) with histogram
+	$script$
+	
+ <- file://characters_cleaned.txt
+	head characters_cleaned.txt
