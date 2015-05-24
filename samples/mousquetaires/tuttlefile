@@ -1,0 +1,9 @@
+file://words.txt <- file://Les_trois_mousquetaires.txt
+	# Exctract all the words from the book "The Three Mousqueteers"
+	awk '{for(i=1;i<=NF;i++) {print $i}}' Les_trois_mousquetaires.txt > words.txt
+
+file://characters.txt <- file://words
+	grep -i -e '{Athos|Portos|Aramis|d'Artagnan}' words.txt > characters.txt
+	
+file://characters_count.txt <- file://characters.txt
+	sort -c characters.txt > characters_count.txt
