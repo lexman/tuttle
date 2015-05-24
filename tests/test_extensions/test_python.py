@@ -18,41 +18,36 @@ class TestPythonProcessor():
         assert process._processor.name == "python"
 
 
-    # @isolate(['tests.sqlite'])
-    # def test_python_processor(self):
-    #     """A project with an SQLite processor should run the sql statements"""
-    #     project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table ! sqlite
-    #     CREATE TABLE new_table AS SELECT * FROM test_table;
-    #     """
-    #     rcode, output = run_tuttle_file(project)
-    #     assert rcode == 0, output
-    #     assert output.find("CREATE TABLE new_table AS SELECT * FROM test_table"), \
-    #         "SQLiteProcessor should log the SQL statements"
-    #
-    # @isolate(['tests.sqlite'])
-    # def test_python_processor_with_several_instuctions(self):
-    #     """ An SQLiteProcess can have several SQL instructions"""
-    #     project = """sqlite://tests.sqlite/tables/new_table, sqlite://tests.sqlite/tables/another_table  <- sqlite://tests.sqlite/tables/test_table ! sqlite
-    #     CREATE TABLE new_table AS SELECT * FROM test_table;
-    #
-    #     CREATE TABLE another_table (id int, col1 string);
-    #     """
-    #     rcode, output = run_tuttle_file(project)
-    #     assert rcode == 0, output
-    #
-    # @isolate(['tests.sqlite'])
-    # def test_error_in_python_processor(self):
-    #     """ If an error occurs, tuttle should fail and output logs should trace the error"""
-    #     project = """sqlite://tests.sqlite/tables/new_table <- sqlite://tests.sqlite/tables/test_table ! sqlite
-    #     CREATE TABLE new_table AS SELECT * FROM test_table;
-    #
-    #     NOT an SQL statement;
-    #     """
-    #     rcode, output = run_tuttle_file(project)
-    #     assert rcode == 2
-    #     error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err')).read()
-    #     assert error_log.find('near "NOT": syntax error') >= 0, error_log
-    #
+    @isolate(['A'])
+    def test_python_processor(self):
+        """A project with an SQLite processor should run the sql statements"""
+        project = """file://B <- file://A ! python
+        # -*- coding: utf8 -*-
+
+        from time import time
+        print("A python process at {}".format(time()))
+        open('B', 'w').write('A produces B')
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert output.find("A python process") >= 0
+
+
+    @isolate(['A'])
+    def test_error_in_python_processor(self):
+        """ If an error occurs, tuttle should fail and output logs should trace the error"""
+        project = """file://B <- file://A ! python
+        # -*- coding: utf8 -*-
+
+        open('B', 'w').write('A produces B')
+        a = 0
+        print("should raise an error : {}".format(0 / a))
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2
+        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err')).read()
+        assert error_log.find('ZeroDivisionError:') >= 0, error_log
+
     # @isolate(['tests.sqlite'])
     # def test_comments_in_process(self):
     #     """ If an error occurs, tuttle should fail and output logs should trace the error"""
