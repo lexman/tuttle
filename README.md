@@ -7,6 +7,40 @@ Whether you change the scripts, merge your work with teammate's, checkout anothe
 Most of all, Tuttle GUARANTIES the result you expect from your source files, every time you run it, onn every plateform.
 
 
+# Syntax
+
+Here's an example of the syntax of tuttle : this projects aims a findind the importance of
+each musketeer in the novel *The Three Musketeers*. It should produce a png bar graph and 
+a csv file you can import in our favorite spreadsheet software :
+
+	file://words.txt <- file://Les_trois_mousquetaires.txt
+		# Exctract all the words from the book "The Three Musketeers", each word on a line
+		awk '{for(i=1;i<=NF;i++) {print $i}}' Les_trois_mousquetaires.txt > words.txt
+
+	file://characters.txt <- file://words.txt
+		# Keep only the lines with the names of the musketeers
+		grep -e Athos -e Portos -e Aramis -e "d'Artagnan" words.txt > characters.txt
+		
+	file://characters_count.dat <- file://characters.txt
+		# Creates a .dat file for ploting with gnuplot
+		sort characters.txt | uniq -c > characters_count.dat
+
+	file://characters_count.csv <- file://characters_count.dat
+		# Creates a file readable by a spreasheet software : 
+		# * add quotes around the name of the character
+		# * add Windows style new lines
+		awk '{print "\""$2"\","$1"\r"}' characters_count.dat > characters_count.csv
+		
+	file://characters_proportion.png <- file://characters_count.dat
+		# Plot the data
+		gnuplot <<$script$
+		set terminal png
+		set output "characters_proportion.png"
+		plot "characters_count.dat" using 1: xtic(2) with histogram
+		$script$
+
+This project is full of errors. Coming soon a tuttorial showing how to fix errors.
+
 # Demo
 
 A demo Tuttle project is available [under Windows](https://github.com/abonnasseau/tuttle/tree/master/samples/demo) and
