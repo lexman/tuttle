@@ -36,10 +36,6 @@ build_msi_options = {
 }
 
 cx_freeze_opts = {
-    'include_package_data':  True,
-    'package_data':  {
-        'tuttle.report':  ['*.html', 'html_report_assets/*'],
-    },
     'options':  {
         'bdist_msi': build_msi_options,
         'build_exe': build_exe_options

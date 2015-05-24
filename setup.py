@@ -36,6 +36,10 @@ tuttle_description = {
     'scripts': [
         'bin/tuttle',
     ],
+    'include_package_data':  True,
+    'package_data':  {
+        'tuttle.report':  ['*.html', 'html_report_assets/*'],
+    },
 }
 
 
