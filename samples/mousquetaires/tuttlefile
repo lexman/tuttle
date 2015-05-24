@@ -1,7 +1,10 @@
 file://Les_trois_mousquetaires.txt <- file://Les_trois_mousquetaires.zip
+# extracts the text of the novel from the archive
     unzip Les_trois_mousquetaires.zip Les_trois_mousquetaires.txt
 
 file://characters_count.dat <- file://Les_trois_mousquetaires.txt ! python
+# reads the text and counts the occurrences of each musketeer (comparaisons
+# are made in lower case to avoid surprises !)
     # -*- coding: utf8 -*-
     names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
     with open('characters_count.dat', 'w') as f_out:
@@ -12,13 +15,13 @@ file://characters_count.dat <- file://Les_trois_mousquetaires.txt ! python
             f_out.write("{}\t{}\n".format(name, content_low.count(name_low)))
 
 file://characters_count.csv <- file://characters_count.dat
-    # Creates a file readable by a spreadsheet software :
-    # * add quotes around the name of the character
-    # * add Windows style new lines
+# Creates a file readable by a spreadsheet software :
+# * add quotes around the name of the character
+# * add Windows style new lines
     awk '{print "\""$2"\","$1"\r"}' characters_count.dat > characters_count.csv
-	
+
 file://characters_count.png <- file://characters_count.dat
-    # Plot the data
+# Plot the data with gnuplot. You need to have gnuplot installed
     gnuplot <<$script$
     set terminal png
     set output "characters_count.png"
