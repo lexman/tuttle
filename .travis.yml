@@ -16,3 +16,10 @@ script:
 env:
   matrix:
     secure: TilOO9Vy4fP2w5OzW2IjNoO82hmBzRxdyJ/ygWgiz4UaLrCWxPxcboZnn7VIumgepO2MrhU2i7PLWxyhW7Ch8AK2JRfcs0xYcoH8rn0C7dezu1QHTVf2AjuUVLRblsTbemI6gaAxuiQa8cTcOyb31UA/zn0ztGhthdP2OyKnTzw=
+deploy:
+  provider: releases
+  api_key:
+    secure: ZXFuh7l4dw2vHitMSk3XG4/k+30NoaPjlMj/VUmlXU37B60LRtOtPeyeuo0CptJ1j4Cll4cGsgGhYVahNMuIlJmtNWOZ5lOXtBE4fS9B8+Sa4Np8sc9nMJ3TWIeXBmgkKVREJKMTVhc7DeMTUgLQIIj6+KQlv3Au6LjDmqtXdcQ=
+  file: tuttle_0.1-1_amd64.deb
+  on:
+    repo: abonnasseau/tuttle
