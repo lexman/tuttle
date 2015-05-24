@@ -26,7 +26,13 @@ tuttle_description = {
     'url': 'http://tuttle.lexman.org/',
     'license': 'MIT',
     'install_requires': ['jinja2'],
-    'packages': ['tuttle', 'tuttle.report'],
+    'packages': [
+        'tuttle', 
+        'tuttle.report', 
+        'tuttle.resources',
+        'tuttle.processors',
+        'tuttle.extensions',
+        ],
     'scripts': [
         'bin/tuttle',
     ],
