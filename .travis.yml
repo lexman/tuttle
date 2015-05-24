@@ -12,6 +12,8 @@ script:
 - nosetests
 - dpkg-buildpackage -us -uc
 - pwd
+- ls
+- mkdir dist
 - cp ../tuttle_0.1-1_amd64.deb dist/tuttle_0.1-1_amd64.deb
 - sudo dpkg -i ../tuttle_0.1-1_amd64.deb
 env:
