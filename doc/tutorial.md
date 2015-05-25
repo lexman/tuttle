@@ -1,182 +1,134 @@
 # Tutorial
 
-## A real life example
-For this tutorial, you work for this company that sells ``hipstoys``... ``Hipstoys`` are the new internet thing : they are wonderful, everybody
-should have one ! Your company asked you to compute how well sells perform, in order publish a report to the intranet.
 
-William, the accountant, has already mailed you a spreadsheet with the number of sells per country. You found the population
-of the countries somewhere in the internet, and you have written a few formulas to compute the penetration rate of
-``hipstoys`` per country (``number of sales / inhabitants * 100``) and which country differ from the mean penetration
-rate (more than twice the variance away from the average).
+The purpose of this tutorial is to explain, line by line, the demo project for finding the importance of
+each musketeer in the novel *The Three Musketeers*, given the text in a zip archive. You will produce a
+[png bar graph](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.png) and
+a [csv file](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.csv) you can
+import in our favorite spreadsheet software.
 
+You need to have `tuttle` [installed](https://github.com/abonnasseau/tuttle/releases) on Linux, with
+[gnu plot](http://www.gnuplot.info/) to run the tutorial. A  makes use of little python, gnu plot and shell code.
 
-    ## screenshot here
-But when you delivered the spreadsheet, your boss realised the penetration rate is wrong because it is based on the
-population of the country... Not on the the number of internet users : your real target. And the sales spreadsheet
-will be updated next week because Maurice from the Western Europe Department mixed the figures between Belgium and France.
+# Unzip the novel
 
-Of course he thinks that because computing is all automatic, as soon has mailed the updated spreadsheet report will be
-ready with the right figures for France and Belgium.
+In an empty directory, download the [zip](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip).
+Then create a file called ``tuttlefile`` and paste this code :
 
-The purpose of this tutorial is to prove he's right : Tuttle helps you work efficiently in an real life environment where
-formulas, scripts, data change all the time.
+    file://Les_trois_mousquetaires.txt <- file://Les_trois_mousquetaires.zip
+        unzip Les_trois_mousquetaires.zip Les_trois_mousquetaires.txt
 
-"" You can test every bit of your work with the guaranty it will all work perfectly together ""
-
-
-## Retrieve the source data from the internet
-
-First, you need to find the number of internet users per country. After ## you notice you can't find this figure
-directly but the world bank has a csv file with the percentage of people with access to Internet per country. You can
-easily join this information with the population.
-
-In an empty project directory, create a file called ``tuttlefile`` and paste this code :
-
-    file://internet_users.zip <- http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv ! download
-
-    file://it.net.user.p2_Indicator_en_csv_v2.csv <- file://internet_users.zip
-         unzip internet_users.zip it.net.user.p2_Indicator_en_csv_v2.csv
-
-
-The first line tells tuttle to ``download`` the file from the world bank into internet_users.zip. The csv file we want to
-use is called it.net.user.p2_Indicator_en_csv_v2.csv inside the zip, so next step is to unzip it (line 3 and 4).
-
-#TODO explain more
-
+On line 1, we tell tuttle that we intend to produce Les_trois_mousquetaires.txt from the file Les_trois_mousquetaires.zip.
+How to do that ? With the shell code provided on line 2 : calling online zip utility. Notice the indentation
+ that delimits the code.
 
 Let's run this workflow :
 
     cd demo_project
     tuttle run
 
-Tuttle checks what is missing and runs the according ``processes``, and logs the execution :
+Tuttle checks what is missing and runs the according *processes*, and logs the execution :
 
 ```console
-lexman@lexman-pc:~/tuttle_tutorial$
+lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
 ============================================================
 tuttlefile_1
 ============================================================
 --- stdout : -----------------------------------------------
-Downloading http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv
-..
-done
-
-============================================================
-tuttlefile_3
-============================================================
---- stdout : -----------------------------------------------
-Archive:  internet_users.zip
-  inflating: it.net.user.p2_Indicator_en_csv_v2.csv
+Archive:  Les_trois_mousquetaires.zip
+  inflating: Les_trois_mousquetaires.txt
 
 --- stderr : -----------------------------------------------
-+ unzip internet_users.zip it.net.user.p2_Indicator_en_csv_v2.csv
++ unzip Les_trois_mousquetaires.txt
 
-````
+```
 
-Tuttle has created the expected file ``it.net.user.p2_Indicator_en_csv_v2.csv``. Also the file internet_users.zip is still
-available. Therefore, if something wrong happens when unziping the file, you wouldn't have to download it again.
+`tuttlefile_1` is the identifier of the *process* in the *workflow* : it has been declared one line 1 of file `tuttlefile`. The
+execution displays all the outputs of the process.
 
-We can se execution of process `tuttlefile_3` (process defined at line 3 of file tuttlefile)
+We have ran our first *workflow*. We can take a look at our workspace :
+```console
+lexman@lexman-pc:~/tuttle_tutorial$ ls -la
 
-You also noticed Tuttle has logged everything that happened in the terminal : for example, process `tuttlefile_3` (process
-defined at line 3 of file `tuttlefile`), displays the details of what the zip command traces to stdout and stderr.
+TODO COMPLETE HERE
 
-You'll also be able to use the logs latter for they are archived with in the report : tuttle has created a nice ``tuttle_report.html`` at the root of your workspace.
-    ## screenshot here
+lexman@lexman-pc:~/tuttle_tutorial$ head Les_trois_mousquetaires.txt
 
-In the report you can also find the duration of the processes, whether they have failed and their dependencies.
+TODO COMPLETE HERE
 
+```
 
-After such a tremendous effort, don't forget to commit your work in your versioning system, eg ``git``. Notice that the url
-of the CSV file is explicitly written in our project. It means we won't have to spend two hours on the web to find it
-again, when our boss will inevitably need updated figures next year.
+Before we go on, take time to commit your work in your versioning system, eg ``git``.
 
+# Count the number of time each musketeer appears in the text
 
-## Insert the data into sqlite
+Shell won't be enough find the words in the text. We'll use a few lines of python to parse the text and count :
 
-A pleasant way join the data from the different sources is using SQL, which is an easy language to process structured
- data. Therefore we will insert all the data into an SQLite database, starting by the number of sells received by mail.
-After converting the spreadsheet to a proper tabular file, we save it in our workspace. Then we can add this line to our
-`tuttlefile` :
+    file://characters_count.dat <- file://Les_trois_mousquetaires.txt ! python
+        # -*- coding: utf8 -*-
+        names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
+        with open('characters_count.dat', 'w') as f_out:
+            with open('Les_trois_mousquetaires.txt') as f_in:
+                content_low = f_in.read().lower()
+            for name in names:
+                name_low = name.lower()
+                f_out.write("{}\t{}\n".format(name, content_low.count(name_low)))
 
-    sqlite://stats.sqlite/tables/sales <- file://sales.tsv ! csv2sqlite
+At the end of line 1, `! python` tells tuttle to use the python *processor* to run the code of the process.
 
+In a few words, the python code loads all the text from The Three Musketeers in memory, and converts it to lower case
+to ease comparison of text. Then for each name of musketeer, it converts it in lower case it counts the occurrences in
+the text, in order to write a line in file characters_count.dat.
 
-csv2sqlite is a specific *processor* that understands it has to transfer the data from a tabular file (comma delimited
- or tabular) in input (sales.csv) into an sqlite table (table `sales` in database `stats.sqlite`). Column names are
- extracted from the first line of the file.
-
-
-Let's ``tuttle run`` again :
+Let's run it :
 
 ```console
-Code will go here
-````
+lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
 
-A the former part of our workflow has already been executed, tuttle only runs this last line.
+TODO
 
-Let's also do this for the csv file we have downloaded earlier :
+```
 
-        sqlite://stats.sqlite/tables/wb_internet_users <- file://it.net.user.p2_Indicator_en_csv_v2.csv ! csv2sqlite
+You will notice tuttle only runs the necessary code. The first process `tuttlefile_1` has already run, so only the
+new process `tuttlefile_3` is run.
 
-And `tuttle run` :
-
-```console
-Code will go here
-````
-
-Ouch ! Something went wrong. Let's have a look at the csv files ``head it.net.user.p2_Indicator_en_csv_v2.csv`` :
+Let's have a look at the result :
 
 ```console
-Code will go here
-````
+lexman@lexman-pc:~/tuttle_tutorial$ cat characters_count.dat
 
-The files contains two extra lines before the headers. We'll have to remove them before loading the data into SQLite, so we
-**replace** the former line by these ones :
+TODO
 
-    file://wb_internet_users_2013.tsv <- file://it.net.user.p2_Indicator_en_csv_v2.csv
-        tail -n +3 it.net.user.p2_Indicator_en_csv_v2.csv > wb_internet_users_2013.tsv
+```
 
-    sqlite://stats.sqlite/tables/wb_internet_users <- file://wb_internet_users_2013.tsv ! csv2sqlite
-
-This means file `wb_internet_users_2013.tsv` is produced from file `it.net.user.p2_Indicator_en_csv_v2.csv` by running
-the shell command `tail` which extracts everything from it.net.user.p2_Indicator_en_csv_v2.csv, starting on line 3.
-
-Let's `tuttle run`:
-
-```console
-Code will go here
-````
-
-The newer workflow worked this time. Notice that tuttle has only produced the needed part. It has even automatically
-cleaned up what is no longer needed from the former workflow !
+Frankly, I don't have any idea if this is correct. But *d'Artagnan* is above the others, which seems appropriate.
 
 
-
-Don't worry for the duplication of data between files `wb_internet_users_2013.tsv` and `it.net.user.p2_Indicator_en_csv_v2.csv` :
-nowadays disk space is cheap and your time as data expert has much more value than a few bits.
-
-
-Once again, we'll commit our work : `tuttlefile` and `sales.tsv`. We achieved to move the value of our work not in the final
-data any more but in the description of how to produce it : anyone who wants the final data can easily checkout the repository
-and run tuttle to get it in a few cpu cycles.
+It's time to take a look at the report. Open the file `tuttle_report.html` at the root of the workspace : you can see
+everything that has happen in our workflow : duration of the processes, whether they have failed, a graph of their
+dependencies. You can even download all the logs.
 
 
-## Join tables to compute the number of internet users
+TODO screenshot
 
-It's time to get to the fun part : now that we have all our data in SQLite, let's do a few queries to build our data. First,
-we are going to create a table with the number of internet users per country, from both the population and percentage of internet users.
+# Make the bar graph
 
+Now we have data in a form that gnuplot understands. To make a graph from our data, gnuplot need this kind of program
+on the standard input :
 
-This table will be called nb_internet_users :
+    set terminal png
+    set output "characters_count.png"
+    plot "characters_count.dat" using 2: xtic(1) with histogram
 
-    sqlite://stats.sqlite/tables/nb_internet_users <- sqlite://stats.sqlite/tables/wb_internet_users, sqlite://stats.sqlite/tables/world_population ! sqlite
-        CREATE TABLE nb_internet_users AS
-        SELECT
-            wb_internet_users.`Country Name` AS country_name,
-            wb_internet_users.`Country Code` AS country_code,
-            wb_internet_users.`2013` as pct_internauts,
-            world_population.`2013` as population,
-            CAST(wb_internet_users.`2013` * world_population.`2013` / 100 AS INT) as nb_internauts
-        FROM wb_internet_users LEFT JOIN world_population ON wb_internet_users.`Country Code` = world_population.`Country Code`
+Tuttle does not have a gnuplot processor (... yet ! PR are welcome :), so we'll use the
+[here doc](http://en.wikipedia.org/wiki/Here_document#Unix_shells) syntax to insert it in a shell process :
+
+    file://characters_count.png <- file://characters_count.dat
+    # Plot the data with gnuplot. You need to have gnuplot installed
+        gnuplot <<$script$
+        set terminal png
+        set output "characters_count.png"
+        plot "characters_count.dat" using 2: xtic(1) with histogram
+        $script$
+
 
