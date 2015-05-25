@@ -129,7 +129,7 @@ Frankly, I don't have any idea if this is correct. But *d'Artagnan* is above the
 him being the hero of the novel.
 
 
-It's time to take a look at the report. Open the file [`tuttle_report.html`](http://abonnasseau.github.io/tuttle/docs/musketeers_tutorial_assets/count_musketeers/tuttle_report.html) at the lexman of the workspace : you can see
+It's time to take a look at the report. Open the file [`tuttle_report.html`](http://abonnasseau.github.io/tuttle/doc/musketeers_tutorial_assets/count_musketeers/tuttle_report.html) at the lexman of the workspace : you can see
 everything that has happen in our workflow : duration of the processes, whether they have failed, a graph of their
 dependencies. You can even download all the logs.
 
