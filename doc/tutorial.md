@@ -153,7 +153,8 @@ Tuttle does not have a gnuplot processor (... yet ! PR are welcome :), so we'll 
         plot "characters_count.dat" using 2: xtic(1) with histogram
         $script$
 
-After we've ran tuttle, we can see the [graph](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.png) !
+After we've ran tuttle, we can see the graphe :
+![Characters count](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.png)
 
 It's time to commit our work once again.
 
