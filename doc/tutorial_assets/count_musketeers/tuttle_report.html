@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Workflow : process detail</title>
+    <link rel="stylesheet" href="tuttle/html_report_assets/bootstrap.min.css">
+    <style>
+        h1 {
+          text-align: center;
+          padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Detail of processes</h1>
+        <div class="text-center" id="dependency_graph"></div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_1" name="tuttlefile_1">
+             <span class="label label-success">Success</span>
+            
+            tuttlefile_1
+            </h2>
+            <div class="row">
+                <div class="col-sm-4">
+                    <ul> 
+                            <li>
+                             <span title="sha1:bcb47f4f2b104bc8a1bee9e4a274f47fa3bf8c81"> 
+                            file://Les_trois_mousquetaires.txt
+                             </span> 
+                            </li>
+                        
+                    </ul>
+                </div>
+                <div class="col-sm-1">
+                    <big><strong>&larr;</strong></big>
+                </div>
+                <div class="col-sm-4">
+                    <ul> 
+                            <li>
+                             <span title="sha1:f01049d489c01d071498d5bd2468fcab88cf3ff8"> 
+                            file://Les_trois_mousquetaires.zip
+                             </span> 
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+            <div>
+            Processor : <strong>shell</strong>
+            
+            <pre><code>unzip Les_trois_mousquetaires.zip Les_trois_mousquetaires.txt
+</code></pre>
+            
+            <br/>
+            </div>
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Mon, 25 May 2015 23:35:34</td>
+                        <td>Mon, 25 May 2015 23:35:34</td>
+                        <td>0.143</td>
+                        <td><a href="tuttle/processes/logs/tuttlefile_1_stdout"> view </a> (81 B)</td>
+                        <td><a href="tuttle/processes/logs/tuttlefile_1_err"> view </a> (64 B)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_4" name="tuttlefile_4">
+             <span class="label label-success">Success</span>
+            
+            tuttlefile_4
+            </h2>
+            <div class="row">
+                <div class="col-sm-4">
+                    <ul> 
+                            <li>
+                             <span title="sha1:75b6ca99c53b6c151e9cd79ec4a6d4eeb7c66ab6"> 
+                            file://characters_count.dat
+                             </span> 
+                            </li>
+                        
+                    </ul>
+                </div>
+                <div class="col-sm-1">
+                    <big><strong>&larr;</strong></big>
+                </div>
+                <div class="col-sm-4">
+                    <ul> 
+                            <li>
+                             <span title="sha1:bcb47f4f2b104bc8a1bee9e4a274f47fa3bf8c81"> 
+                            file://Les_trois_mousquetaires.txt
+                             </span> 
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+            <div>
+            Processor : <strong>python</strong>
+            
+            <pre><code># -*- coding: utf8 -*-
+names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
+with open('characters_count.dat', 'w') as f_out:
+    with open('Les_trois_mousquetaires.txt') as f_in:
+        content_low = f_in.read().lower()
+    print("{} chars in the novel".format(len(content_low)))
+    for name in names:
+        name_low = name.lower()
+        f_out.write("{}\t{}\n".format(name, content_low.count(name_low)))
+        print("{} - done".format(name))
+</code></pre>
+            
+            <br/>
+            </div>
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Mon, 25 May 2015 23:35:34</td>
+                        <td>Mon, 25 May 2015 23:35:34</td>
+                        <td>0.107</td>
+                        <td><a href="tuttle/processes/logs/tuttlefile_4_stdout"> view </a> (87 B)</td>
+                        <td><a href="tuttle/processes/logs/tuttlefile_4_err"> view </a> (empty)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) & Boostrap -->
+    <script src="tuttle/html_report_assets/jquery.min.js"></script>
+    <script src="tuttle/html_report_assets/bootstrap.min.js"></script>
+    <!-- For viewing dependency graph in the dot language -->
+    <script src="tuttle/html_report_assets/viz.js"></script>
+    <script type="text/vnd.graphviz" id="dependency_graph_source">
+        digraph workflow {
+    Node [style="rounded,filled", shape=box, fillcolor=none]
+    p_tuttlefile_1 [shape="none", label="tuttlefile_1", URL="#tuttlefile_1", width=0, height=0] ;
+    "Les_trois_mousquetaires.zip" -> p_tuttlefile_1 [arrowhead="none"] 
+    "Les_trois_mousquetaires.zip" [fillcolor=beige] ;
+    p_tuttlefile_1 -> "Les_trois_mousquetaires.txt" 
+    "Les_trois_mousquetaires.txt" [fillcolor=green] ;
+    p_tuttlefile_4 [shape="none", label="tuttlefile_4", URL="#tuttlefile_4", width=0, height=0] ;
+    "Les_trois_mousquetaires.txt" -> p_tuttlefile_4 [arrowhead="none"] 
+    p_tuttlefile_4 -> "characters_count.dat" 
+    "characters_count.dat" [fillcolor=green] ;
+}
+    </script>
+    <script>
+        function insert_graph() {
+            dot_src = $("#dependency_graph_source").html();
+            svg = Viz(dot_src, "svg");
+            $("#dependency_graph").html(svg)
+        }
+        insert_graph();
+    </script>
+</body>
+</html>
