@@ -1,0 +1,1 @@
++ awk {print "\""$2"\","$1"\r"} characters_count.dat
