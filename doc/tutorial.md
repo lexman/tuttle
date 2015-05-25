@@ -1,14 +1,15 @@
 # Tutorial
 
 
-The purpose of this tutorial is to explain, line by line, the demo project for finding the importance of
-each musketeer in the novel *The Three Musketeers*, given the text in a zip archive. You will produce a
+The purpose of this tutorial is to explain, line by line, the [demo project](examples/musketeers) which
+scans the the novel *The Three Musketeers*, to measure the importance of each musketeer. From a zip archive,
+you will extract the text to produce a
 [png bar graph](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.png) and
 a [csv file](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.csv) you can
 import in our favorite spreadsheet software.
 
 You need to have `tuttle` [installed](https://github.com/abonnasseau/tuttle/releases) on Linux, with
-[gnu plot](http://www.gnuplot.info/) to run the tutorial. A  makes use of little python, gnu plot and shell code.
+[gnuplot](http://www.gnuplot.info/) to run the tutorial. We'll use little python, gnuplot and shell code.
 
 # Unzip the novel
 
