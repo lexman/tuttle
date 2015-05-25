@@ -48,7 +48,7 @@ spreadsheet software :
 When you run this project, you get a [report](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/tuttle_report.html) of every
 thing that has been run, when, whether it succeeded, an access to the logs, and... A nice dependency graph !
 
-You'll find details on this workflow on the dedicated [tutorial](doc/tutorial).
+You'll find details on this workflow on the dedicated [tutorial](doc/tutorial.md).
 
 Please note that Tuttle is at a very early stage of development and must be considered as alpha, therefore syntax as
 well as command line options are likely to change.
