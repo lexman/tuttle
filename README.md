@@ -11,7 +11,7 @@ Most of all, Tuttle GUARANTIES the result you expect from your source files, eve
 
 Here's an example of the syntax of tuttle : this projects aims a finding the importance of
 each musketeer in the novel *The Three Musketeers*. The text has to be extracted from a zip file,
-and the whole workflow shloud produce a png bar graph and a csv file you can import in our favorite
+and the whole workflow should produce a png bar graph and a csv file you can import in our favorite
 spreadsheet software :
 
     file://Les_trois_mousquetaires.txt <- file://Les_trois_mousquetaires.zip
@@ -45,7 +45,7 @@ spreadsheet software :
         $script$
 
 
-When you run this project, you get a [report](http://abonnasseau.github.io/tuttle/docs/demo/tuttle_report.html) of every
+When you run this project, you get a [report](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/tuttle_report.html) of every
 thing that has been run, when, whether it succeeded, an access to the logs, and... A nice dependency graph !
 
 Please note that Tuttle is at a very early stage of development and must be considered as alpha, therefore syntax as
