@@ -69,6 +69,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
             if nb_process_run == 0:
                 print("Nothing to do")
             else:
+                print("====")
                 print("Done")
 
         except TuttleError as e:
