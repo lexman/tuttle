@@ -18,7 +18,7 @@ file://characters_count.csv <- file://characters_count.dat
 # Creates a file readable by a spreadsheet software :
 # * add quotes around the name of the character
 # * add Windows style new lines
-    awk '{print "\""$2"\","$1"\r"}' characters_count.dat > characters_count.csv
+    awk '{print "\""$1"\","$2"\r"}' characters_count.dat > characters_count.csv
 
 file://characters_count.png <- file://characters_count.dat
 # Plot the data with gnuplot. You need to have gnuplot installed
