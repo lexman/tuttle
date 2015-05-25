@@ -19,7 +19,7 @@ spreadsheet software :
         unzip Les_trois_mousquetaires.zip Les_trois_mousquetaires.txt
 
     file://characters_count.dat <- file://Les_trois_mousquetaires.txt ! python
-    # reads the text and counts the occurrences of each musketeer (comparaisons
+    # reads the text and counts the occurrences of each musketeer (comparisons
     # are made in lower case to avoid surprises !)
         # -*- coding: utf8 -*-
         names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
@@ -34,7 +34,7 @@ spreadsheet software :
     # Creates a file readable by a spreadsheet software :
     # * add quotes around the name of the character
     # * add Windows style new lines
-        awk '{print "\""$2"\","$1"\r"}' characters_count.dat > characters_count.csv
+        awk '{print "\""$1"\","$2"\r"}' characters_count.dat > characters_count.csv
 
     file://characters_count.png <- file://characters_count.dat
     # Plot the data with gnuplot. You need to have gnuplot installed
@@ -47,6 +47,8 @@ spreadsheet software :
 
 When you run this project, you get a [report](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/tuttle_report.html) of every
 thing that has been run, when, whether it succeeded, an access to the logs, and... A nice dependency graph !
+
+You'll find details on this workflow on the dedicated [tutorial](doc/tutorial).
 
 Please note that Tuttle is at a very early stage of development and must be considered as alpha, therefore syntax as
 well as command line options are likely to change.
