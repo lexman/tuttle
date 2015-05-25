@@ -105,7 +105,7 @@ TODO
 Frankly, I don't have any idea if this is correct. But *d'Artagnan* is above the others, which seems appropriate.
 
 
-It's time to take a look at the report. Open the file `tuttle_report.html` at the root of the workspace : you can see
+It's time to take a look at the report. Open the file [`tuttle_report.html`](TODO link) at the root of the workspace : you can see
 everything that has happen in our workflow : duration of the processes, whether they have failed, a graph of their
 dependencies. You can even download all the logs.
 
@@ -122,7 +122,7 @@ on the standard input :
     plot "characters_count.dat" using 2: xtic(1) with histogram
 
 Tuttle does not have a gnuplot processor (... yet ! PR are welcome :), so we'll use the
-[here doc](http://en.wikipedia.org/wiki/Here_document#Unix_shells) syntax to insert it in a shell process :
+[here doc](http://en.wikipedia.org/wiki/Here_document#Unix_shells) syntax to insert it in a standard shell *process* :
 
     file://characters_count.png <- file://characters_count.dat
     # Plot the data with gnuplot. You need to have gnuplot installed
@@ -132,4 +132,30 @@ Tuttle does not have a gnuplot processor (... yet ! PR are welcome :), so we'll 
         plot "characters_count.dat" using 2: xtic(1) with histogram
         $script$
 
+After we've ran tuttle, we can see the [graph](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.png) !
+
+It's time to commit our work once again.
+
+# Export to spreadsheet
+
+When you work on data, there is always someone who's interested about what you're doing. He wants the raw figures to
+make his own presentation.
+
+In our case, this means we have to translate our .dat file into a csv compatible with his
+spreadsheet software : we have to quote the text, and values must be separated by a coma instead of a tabulation...
+And Windows style newlines !
+
+A simple line of awk do the trick :
+
+    file://characters_count.csv <- file://characters_count.dat
+        awk '{print "\""$1"\","$2"\r"}' characters_count.dat > characters_count.csv
+
+And we get exactly what we expected :
+
+    971,"Athos"
+    590,"Porthos"
+    526,"Aramis"
+    1864,"d'Artagnan"
+
+Now if change anything in our workflow, the csv file will be updated with the rest. So we can send the update right away !
 
