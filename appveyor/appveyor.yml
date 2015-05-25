@@ -51,7 +51,7 @@ test_script:
   - msiexec /i tuttle-installer.msi /qn /norestart /log C:\projects\install_tuttle.log
   - "PATH=%PATH%;\"C:\\Program Files (x86)\\tuttle\";\"C:\\Program Files\\tuttle\""
   - cmd: more C:\projects\install_tuttle.log
-  - cmd: cd C:\projects\tuttle\samples\demo
+  - cmd: cd C:\projects\tuttle\doc\examples\sales_windows
   - tuttle run
   - cmd: copy penetration_rate.html workflow_execution_success.html
 
