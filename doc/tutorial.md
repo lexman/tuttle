@@ -155,6 +155,7 @@ Tuttle does not have a gnuplot processor (... yet ! PR are welcome :), so we'll 
 
 After we've ran tuttle, we can see the graphe :
 ![Characters count](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.png)
+![Alternative test](characters_count.png?raw=true)
 
 It's time to commit our work once again.
 
