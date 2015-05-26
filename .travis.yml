@@ -1,13 +1,17 @@
 language: python
+
 python:
 - '2.7'
+
 before_install:
 - pwd
 - sudo add-apt-repository ppa:dh-virtualenv/stable -y
 - sudo apt-get update -qq
-- sudo apt-get install -y python python-pip python-virtualenv dh-virtualenv debhelper
+- sudo apt-get install -y --force-yes python python-pip python-virtualenv dh-virtualenv debhelper
+
 install:
 - pip install -r requirements.txt
+
 script:
 - nosetests
 - dpkg-buildpackage -us -uc
@@ -17,9 +21,11 @@ script:
 - cp ../tuttle_* dist/
 - touch dist/tuttle_test
 - sudo dpkg -i ../tuttle_0.1-1_amd64.deb
+
 env:
   matrix:
     secure: TilOO9Vy4fP2w5OzW2IjNoO82hmBzRxdyJ/ygWgiz4UaLrCWxPxcboZnn7VIumgepO2MrhU2i7PLWxyhW7Ch8AK2JRfcs0xYcoH8rn0C7dezu1QHTVf2AjuUVLRblsTbemI6gaAxuiQa8cTcOyb31UA/zn0ztGhthdP2OyKnTzw=
+
 deploy:
   provider: releases
   api_key:
