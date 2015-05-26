@@ -9,8 +9,8 @@ from tuttle.workflow_builder import WorkflowBuilder
 from workflow import Workflow
 
 
-version = '0.1rc1'
-__version__ = '0.1rc1'
+version = '0.1rc7'
+__version__ = '0.1rc7'
 
 
 NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
