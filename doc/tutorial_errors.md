@@ -152,7 +152,7 @@ Tuttle does not have a gnuplot processor (... yet ! PR are welcome :), so we'll 
         plot "characters_count.dat" using 2: xtic(1) with histogram
         $script$
 
-After we've ran tuttle, we can see the graphe :
+After we've ran tuttle, we can see the graph :
 ![Characters count](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.png)
 
 It's time to commit our work once again.
@@ -213,8 +213,8 @@ lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
 Tuttle has noticed the change. Before running the necessary *processes*, it cleans the workspace by deleting all the
-*resources* that no longer fit with the workflow. Hence, tuttle explain exactly what is going to be deleted, and even
-how much time of former processing will be lost, as you can se in the first four lines of the log.
+*resources* that no longer fit with the current workflow. Of course tuttle explains exactly what is going to be deleted,
+and even how much time of former processing will be lost!
 
 
 # Export to spreadsheet
