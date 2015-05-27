@@ -126,6 +126,34 @@ lexman@lexman-pc:~/tuttle_tutorial$
 
 So we have the figures in a tabular file that gnuplot can understand.
 
+# Export to spreadsheet
+
+We all have this coworker interested in the data we're processing. *So I've heard you're counting the characters
+ in The Three Musketeers... Would you mind sending me the files so that I could make my own graph in my spreadsheet ?*
+
+Well, it requires no work to mail him the characters_count.dat file. But in fact his favorite spreadsheet software can't
+open it : strings should be quoted, and columns needs to be separated by a comma instead of a tabulation... And you must
+not omit windows new lines !
+
+A simple line of awk does the trick :
+
+    file://characters_count.csv <- file://characters_count.dat
+        awk '{print "\""$1"\","$2"\r"}' characters_count.dat > characters_count.csv
+
+After we've run the workflow, we get exactly what we expected :
+
+    968,"Athos"^M
+    587,"Porthos"^M
+    523,"Aramis"^M
+    367,"D'Artagnan"^M
+
+Now we can commit our work and mail him the new file !
+
+Adding the generation of this file in our *workflow* (and committing) will prove very usefull for updates, as you will
+see later.
+
+
+
 # TODO : generate report again
 
 It's time to take a look at the report. Open the file [`tuttle_report.html`](http://abonnasseau.github.io/tuttle/doc/tutorial_assets/count_musketeers/tuttle_report.html) at the lexman of the workspace : you can see
@@ -156,32 +184,6 @@ After we've ran tuttle, we can see the graph :
 ![Characters count](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.png)
 
 It's time to commit our work once again.
-
-# Export to spreadsheet
-
-We all have this coworker interested in the data we're processing. *So I've heard you're counting the characters
- in The Three Musketeers... Would you mind sending me the files so that I could make my own graph in my spreadsheet ?*
-
-Well, it requires no work to mail him the characters_count.dat file. But in fact his favorite spreadsheet software can't
-open it : strings should be quoted, and columns needs to be separated by a comma instead of a tabulation... And I must
-not omit windows new lines !
-
-A simple line of awk do the trick :
-
-    file://characters_count.csv <- file://characters_count.dat
-        awk '{print "\""$1"\","$2"\r"}' characters_count.dat > characters_count.csv
-
-After we've run the workflow, we get exactly what we expected :
-
-    971,"Athos"
-    590,"Porthos"
-    526,"Aramis"
-    1864,"d'Artagnan"
-
-And we can mail him the new file.
-
-Adding the generation of this file in our *workflow* (and committing) will prove very usefull for updates, as you will
-see in the next chapter.
 
 
 # Fix the maths
@@ -242,7 +244,6 @@ lexman@lexman-pc:~/tuttle_tutorial$
 Tuttle has noticed the change. Before running the necessary *processes*, it cleans the workspace by deleting all the
 *resources* that no longer fit with the current workflow. Of course tuttle explains exactly what is going to be deleted,
 and even how much time of former processing will be lost!
-
 
 
 # Conclusion
