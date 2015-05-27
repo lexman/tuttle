@@ -157,6 +157,33 @@ After we've ran tuttle, we can see the graph :
 
 It's time to commit our work once again.
 
+# Export to spreadsheet
+
+We all have this coworker interested in the data we're processing. *So I've heard you're counting the characters
+ in The Three Musketeers... Would you mind sending me the files so that I could make my own graph in my spreadsheet ?*
+
+Well, it requires no work to mail him the characters_count.dat file. But in fact his favorite spreadsheet software can't
+open it : strings should be quoted, and columns needs to be separated by a comma instead of a tabulation... And I must
+not omit windows new lines !
+
+A simple line of awk do the trick :
+
+    file://characters_count.csv <- file://characters_count.dat
+        awk '{print "\""$1"\","$2"\r"}' characters_count.dat > characters_count.csv
+
+After we've run the workflow, we get exactly what we expected :
+
+    971,"Athos"
+    590,"Porthos"
+    526,"Aramis"
+    1864,"d'Artagnan"
+
+And we can mail him the new file.
+
+Adding the generation of this file in our *workflow* (and committing) will prove very usefull for updates, as you will
+see in the next chapter.
+
+
 # Fix the maths
 
 But wait ? Have you seen this graph ? Do you truly believe the main character, D'Artagnan is mentioned two or three
@@ -217,29 +244,6 @@ Tuttle has noticed the change. Before running the necessary *processes*, it clea
 and even how much time of former processing will be lost!
 
 
-# Export to spreadsheet
-
-When you work on data, there is always someone who's interested about what you're doing. He wants the raw figures to
-make his own presentation.
-
-In our case, this means we have to translate our .dat file into a csv compatible with his
-spreadsheet software : we have to quote the text, and values must be separated by a coma instead of a tabulation...
-And Windows style newlines !
-
-A simple line of awk do the trick :
-
-    file://characters_count.csv <- file://characters_count.dat
-        awk '{print "\""$1"\","$2"\r"}' characters_count.dat > characters_count.csv
-
-After we've run the workflow, we get exactly what we expected :
-
-    971,"Athos"
-    590,"Porthos"
-    526,"Aramis"
-    1864,"d'Artagnan"
-
-Now if change anything in our workflow, the csv file will be updated along with the rest. So we can send the update
-right away !
 
 # Conclusion
 We've seen how to run a process with tuttle. In the incoming tutorial, you will learn how to deal with errors while you
