@@ -23,7 +23,7 @@ script:
 - sudo dpkg -i ../tuttle_0.1-1_amd64.deb
 - cd doc/examples/sales_linux
 - tuttle run
-- cp characters_count.png workflow_execution_success
+- cp penetration_rate.html workflow_execution_success
 
 env:
   matrix:
