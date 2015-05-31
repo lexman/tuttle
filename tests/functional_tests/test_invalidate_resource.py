@@ -240,3 +240,21 @@ file://C <- file://B
         assert output.find("file://C") >= 0, output
         assert output.find("A produces another B") >= 0, output
         assert output.find("B produces C") >= 0, output
+
+    @isolate(['A'])
+    def test_invalidation_should_resist_remove_errors(self):
+        """ If removing a resource raises an error, tuttle should display a warning"""
+        project = """http://www.google.com <- file://A
+            echo As if I could publish to google's main page...
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+
+        project = """http://www.google.com <- file://A
+            echo process changed
+    """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert output.find("http://www.google.com") >= 0, output
+        assert output.find("Warning") >= 0, output
+        assert output.find("should not be considered valid") >= 0, output
