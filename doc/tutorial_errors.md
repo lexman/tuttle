@@ -56,7 +56,6 @@ drwxrwx--- 1 lexman lexman    4096 mai   25 22:51 ..
 -rwxrwx--- 1 lexman lexman  495538 mai   24 20:36 Les_trois_mousquetaires.zip
 drwxrwx--- 1 lexman lexman       0 mai   25 22:57 .tuttle
 -rwxrwx--- 1 lexman lexman     785 mai   25 23:00 tuttlefile
--rwxrwx--- 1 lexman lexman    3837 mai   25 22:59 tuttle_report.html
 
 lexman@lexman-pc:~/tuttle_tutorial$ head Les_trois_mousquetaires.txt
 PRÉFACE
@@ -131,7 +130,7 @@ So we have the figures in a tabular file that gnuplot can understand.
 
 # TODO : generate report again
 
-It's time to take a look at the report. Open the file [`tuttle_report.html`](http://abonnasseau.github.io/tuttle/doc/tutorial_assets/count_musketeers/tuttle_report.html) at the lexman of the workspace : you can see
+It's time to take a look at the report. Open the file [`.tuttle/report.html`](http://abonnasseau.github.io/tuttle/doc/tutorial_assets/count_musketeers/tuttle_report.html) at the lexman of the workspace : you can see
 everything that has happen in our workflow : duration of the processes, whether they have failed, a graph of their
 dependencies. You can even download all the logs.
 
@@ -244,8 +243,8 @@ lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
 Tuttle has noticed the change. Before running the necessary *processes*, it cleans the workspace by deleting all the
-*resources* that no longer fit with the current workflow. Of course tuttle explains exactly what is going to be deleted,
-and even how much time of former processing will be lost!
+*resources* that no longer fit with the current workflow. Notice the tuttle explains exactly what is going to be deleted,
+and even how long it took to produce everything that will be deleted !
 
 
 # Conclusion
