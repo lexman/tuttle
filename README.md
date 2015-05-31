@@ -63,7 +63,8 @@ You can find [download tuttle](https://github.com/abonnasseau/tuttle/releases) a
 ```
     git clone https://github.com/abonnasseau/tuttle
     cd tuttle
-    python setup.py install```
+    python setup.py install
+```
 
 
 
