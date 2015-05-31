@@ -55,8 +55,16 @@ well as command line options are likely to change.
 
 
 # Install
-You can find install instruction for Windows and Linux on the release page :
-https://github.com/abonnasseau/tuttle/releases
+You can find [download tuttle](https://github.com/abonnasseau/tuttle/releases) and install it on you system :
+
+* on Windows, download the .msi installer
+* on debian and ubuntu a .deb is provided
+* on other systems, you need to install [python 2.7](https://www.python.org/downloads/release) and compile tuttle from the sources :
+
+    git clone https://github.com/abonnasseau/tuttle
+    cd tuttle
+    python setup.py install
+
 
 
 # Hacking
@@ -68,6 +76,7 @@ Tuttle is a python project you can download and install :
     git clone https://github.com/abonnasseau/tuttle
     cd tuttle
     python setup.py install
+
 
 
 Contributions are very welcome through pull request. You can contribute to :
