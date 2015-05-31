@@ -251,8 +251,8 @@ file://C <- file://B
         assert rcode == 0, output
 
         project = """http://www.google.com <- file://A
-            echo process changed
-    """
+            echo changed
+"""
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
         assert output.find("http://www.google.com") >= 0, output
