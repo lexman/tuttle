@@ -245,13 +245,13 @@ file://C <- file://B
     def test_invalidation_should_resist_remove_errors(self):
         """ If removing a resource raises an error, tuttle should display a warning"""
         project = """http://www.google.com <- file://A
-            echo As if I could publish to google's main page...
+            echo As if I could publish to the main page of google...
 """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
 
         project = """http://www.google.com <- file://A
-            echo changed
+            echo process changed
 """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
