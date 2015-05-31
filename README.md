@@ -60,8 +60,8 @@ https://github.com/abonnasseau/tuttle/releases
 
 
 # Hacking
-![AppVeyor Windows build status](https://ci.appveyor.com/api/projects/status/github/abonnasseau/tuttle)
-![Travis Linux build status](https://travis-ci.org/abonnasseau/tuttle.png)
+[![AppVeyor Windows build status](https://ci.appveyor.com/api/projects/status/github/abonnasseau/tuttle)](https://ci.appveyor.com/project/abonnasseau/tuttle)
+[![Travis Linux build status](https://travis-ci.org/abonnasseau/tuttle.png)](https://travis-ci.org/abonnasseau/tuttle)
 
 Tuttle is a python project you can download and install :
 
@@ -75,4 +75,4 @@ Contributions are very welcome through pull request. You can contribute to :
 * code : improve tuttle kernel, add new extensions : spreadshits, mongodb, hdfs, etc.
 * tests : use Tuttle for your projects and report bugs
 * syntax : help define the perfect way to describe workflows
-* design : please help us improve the look of the [report](http://abonnasseau.github.io/tuttle/docs/demo/tuttle_report.html) to ease readability !
+* design : please help improve the look of the [report](http://abonnasseau.github.io/tuttle/docs/demo/tuttle_report.html) to ease readability !
