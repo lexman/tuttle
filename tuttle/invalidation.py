@@ -81,7 +81,7 @@ class InvalidResourceCollector():
                     resource.remove()
                 except Exception as e:
                     msg = 'Warning : Removing resource {} has failed. Even if the resource is still available, ' \
-                          'it should not be considered valid.'
+                          'it should not be considered valid.'.format(resource.url)
                     print(msg)
 
     def warn_and_remove(self, threshold):
