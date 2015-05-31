@@ -31,14 +31,15 @@ def dot(workflow):
     # * Show missing resources in a different another
     result = DOT_HEADER
     for process in workflow.iter_processes():
+        color = color_from_process(process)
         p_node = "p_{}".format(process.id)
-        result += '    {} [shape="none", label="{}", URL="#{}", width=0, height=0] ;\n'.format(p_node, process.id, process.id)
+        result += '    {} [shape="none", label="{}", URL="#{}", fillcolor={}, width=0, height=0] ' \
+                  ';\n'.format(p_node, process.id, process.id, color)
         for res_input in process.iter_inputs():
             nick = nick_from_url(res_input.url)
             result += '    "{}" -> {} [arrowhead="none"] \n'.format(nick, p_node)
             if res_input.is_primary():
                 result += '    "{}" [fillcolor=beige] ;\n'.format(nick)
-        color = color_from_process(process)
         for res_output in process.iter_outputs():
             nick = nick_from_url(res_output.url)
             result += '    {} -> "{}" \n'.format(p_node, nick)
