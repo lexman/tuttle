@@ -299,8 +299,8 @@ file://C <- file://B
         assert output.find("B produces C") >= 0, output
 
     @isolate(['A'])
-    def test_workflow_must_be_run_after_resource_invalidation(self):
-        """ After invalidation of a resource, tuttle run should re-produce this resource """
+    def test_workflow_must_be_run_after_resource_invalidation_in_cascade(self):
+        """ After invalidation of a resource, tuttle run should re-produce this resource and the dependencies"""
         project = """file://B <- file://A
             echo A produces B
             echo A produces B > B
@@ -311,3 +311,21 @@ file://C <- file://B
         rcode, output = self.tuttle_invalide(urls=["file://A"])
         assert rcode == 0, output
         assert output.find("Ignoring file://A") >= 0, output
+
+    @isolate(['A'])
+    def test_process_in_error_should_be_invalidated(self):
+        """ If a process failed, its dependencies should be invalidated """
+        project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+            an error
+"""
+        rcode, output = run_tuttle_file(project)
+        print output
+        assert rcode == 2, output
+        assert isfile('B')
+
+        rcode, output = self.tuttle_invalide(project=project)
+        assert rcode == 0, output
+        assert output.find("file://B") >= 0, output
+        assert not isfile('B'), output

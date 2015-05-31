@@ -203,6 +203,17 @@ class Workflow:
                     result.append(resource)
         return result
 
+    def failed_resources(self):
+        """
+        Returns the list of resources that would have been produced by processes that have failed
+        :return:
+        """
+        result = []
+        for process in self._processes:
+            if process.success == False:
+                result.extend(process.iter_outputs())
+        return result
+
     def compute_dependencies(self):
         """ Feeds the dependant_processes field in every resource
         :return: Nothing

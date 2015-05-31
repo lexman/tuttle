@@ -13,9 +13,9 @@ version = '0.1rc7'
 __version__ = '0.1rc7'
 
 
-NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
+NOT_PRODUCED_BY_TUTTLE = "The existing resource has not been produced by tuttle"
 USER_REQUEST = "User request"
-
+PROCESS_HAS_FAILED = "The resource has been produced by a failing process"
 
 def parse_project(tuttlefile):
     pp = ProjectParser()
@@ -37,8 +37,7 @@ def run(workflow):
         an_output = failing_process.pick_an_output()
         if an_output:
               msg += "\n\nIf failure has been caused by an external factor like a connection breakdown, " \
-                     'use "tuttle invalidate {}" to reset execution then "tuttle run" ' \
-                     'again'.format(an_output.url)
+                     'use "tuttle invalidate" to reset execution then "tuttle run" again.'
         raise TuttleError(msg)
     nb_process_run = workflow.run()
     return nb_process_run
@@ -59,7 +58,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
             modified_primary_resources = workflow.update_primary_resource_signatures()
             inv_collector.collect_dependencies_only(modified_primary_resources, workflow)
             not_created = workflow.resources_not_created_by_tuttle()
-            inv_collector.collect_resources(not_created, NOT_CREATED_BY_TUTTLE)
+            inv_collector.collect_resources(not_created, NOT_PRODUCED_BY_TUTTLE)
 
             workflow.reset_process_exec_info(inv_collector.urls())
             inv_collector.warn_and_remove(threshold)
@@ -88,6 +87,7 @@ def get_resources(urls):
         result.append(resource)
     return result
 
+
 def invalidate_resources(tuttlefile, urls, threshold=-1):
     resources = get_resources(urls)
     if resources is False:
@@ -109,6 +109,8 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
     workflow.retrieve_signatures(previous_workflow)
     different_res = previous_workflow.resources_not_created_the_same_way(workflow)
     inv_collector.collect_with_dependencies(different_res, previous_workflow)
+    failed_res = workflow.failed_resources()
+    inv_collector.collect_resources(failed_res, PROCESS_HAS_FAILED)
     url_not_invalidated = inv_collector.not_invalidated(urls)
     to_invalidate = []
     for url in url_not_invalidated:
