@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
+from shutil import rmtree
 
-from os.path import abspath, exists
+from os.path import abspath, exists, isfile
 from os import remove
 from hashlib import sha1
 from tuttle.error import TuttleError
@@ -70,4 +71,9 @@ class FileResource(ResourceMixIn, object):
         return "sha1:{}".format(sha1)
 
     def remove(self):
-        remove(self._path)
+        if isfile(self._path):
+            remove(self._path)
+        else:
+            #directory
+            rmtree(self._path)
+        # TODO what about links ?
