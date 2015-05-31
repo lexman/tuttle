@@ -18,8 +18,7 @@ script:
 - pwd
 - ls
 - mkdir dist
-- cp ../tuttle_* dist/
-- touch dist/tuttle_test
+- cp -v ../tuttle_* dist/
 - sudo dpkg -i ../tuttle_0.1-1_amd64.deb
 - cd doc/examples/sales_linux
 - tuttle run
