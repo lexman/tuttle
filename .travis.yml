@@ -16,10 +16,9 @@ script:
 - nosetests
 - dpkg-buildpackage -us -uc
 - pwd
+- mv -v ../tuttle_* .
 - ls
-- mkdir dist
-- cp -v ../tuttle_* dist/
-- sudo dpkg -i dist/tuttle_0.1-1_amd64.deb
+- sudo dpkg -i tuttle_0.1-1_amd64.deb
 - cd doc/examples/sales_linux
 - tuttle run
 - cp penetration_rate.html workflow_execution_success
@@ -33,7 +32,7 @@ deploy:
   provider: releases
   api_key:
     secure: ZXFuh7l4dw2vHitMSk3XG4/k+30NoaPjlMj/VUmlXU37B60LRtOtPeyeuo0CptJ1j4Cll4cGsgGhYVahNMuIlJmtNWOZ5lOXtBE4fS9B8+Sa4Np8sc9nMJ3TWIeXBmgkKVREJKMTVhc7DeMTUgLQIIj6+KQlv3Au6LjDmqtXdcQ=
-  file: dist/tuttle_0.1-1_amd64.deb
+  file: tuttle_0.1-1_amd64.deb
   on:
     repo: abonnasseau/tuttle
     tags: true
