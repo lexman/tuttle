@@ -60,10 +60,10 @@ You can find [download tuttle](https://github.com/abonnasseau/tuttle/releases) a
 * on Windows, download the .msi installer
 * on debian and ubuntu a .deb is provided
 * on other systems, you need to install [python 2.7](https://www.python.org/downloads/release) and compile tuttle from the sources :
-
+```
     git clone https://github.com/abonnasseau/tuttle
     cd tuttle
-    python setup.py install
+    python setup.py install```
 
 
 
