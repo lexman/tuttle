@@ -27,7 +27,7 @@ class TestStandardBehaviour:
 
 """
         rcode, output = run_tuttle_file(first)
-        assert path.exists('tuttle_report.html')
+        assert path.exists(path.join('.tuttle', 'report.html'))
 
     @isolate(['A'])
     def test_report_execution(self):
@@ -47,7 +47,7 @@ file://D <- file://C
 """
         rcode, output = run_tuttle_file(first)
         assert rcode == 2
-        assert isfile('tuttle_report.html')
+        assert isfile(path.join(".tuttle", 'report.html'))
         assert path.isfile(path.join(".tuttle", "last_workflow.pickle"))
         second = """file://B <- file://A
     echo A produces B
@@ -65,7 +65,7 @@ file://D <- file://C
 """
         rcode, output = run_tuttle_file(second)
         assert rcode == 2
-        report = file('tuttle_report.html').read()
+        report = file(path.join('.tuttle', 'report.html')).read()
         [_, sec1, sec2, sec3] = report.split('<h2')
         assert sec1.find("<th>Start</th>") >= 0, sec1
         assert sec2.find("<th>Start</th>") >= 0, sec2

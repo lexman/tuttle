@@ -22,8 +22,7 @@ file://C <- file://B
 """
         rcode, output = run_tuttle_file(first)
         assert rcode == 0, output
-        assert isfile('tuttle_report.html')
-        assert path.isfile(path.join(".tuttle", "last_workflow.pickle"))
+        assert isfile('C')
         second = """file://B <- file://A
     echo B has changed
     echo B has changed > B
@@ -50,8 +49,7 @@ file://C <- file://B
 """
         rcode, output = run_tuttle_file(first)
         assert rcode == 0, output
-        assert isfile('tuttle_report.html')
-        assert path.isfile(path.join(".tuttle", "last_workflow.pickle"))
+        assert isfile('C')
         second = """file://B <- file://A
     echo B has changed
     echo B has changed > B

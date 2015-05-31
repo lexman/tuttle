@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 from report.html_repport import create_html_report
 from pickle import dump, load
-from tuttle.invalidation import dependency_map
 from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
     prepare_paths
 
@@ -136,7 +135,7 @@ class Workflow:
         """ Write to disk files describing the workflow, with color for states
         :return: None
         """
-        create_html_report(self, "tuttle_report.html")
+        create_html_report(self, tuttle_dir("report.html"))
 
     def dump(self):
         """ Pickles the workflow and writes it to last_workflow.pickle

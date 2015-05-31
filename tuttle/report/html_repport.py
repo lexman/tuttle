@@ -83,12 +83,9 @@ def format_process(process, workflow):
 
 
 def ensure_assets(dest_dir):
-    tuttle_dir = join(dest_dir, '.tuttle')
-    if not isdir(tuttle_dir):
-        mkdir(tuttle_dir)
-    assets_dir = path.join(dest_dir, '.tuttle', 'html_report_assets')
+    assets_dir = path.join(dest_dir, 'html_report_assets')
     if not path.isdir(assets_dir):
-        copytree(data_path('html_report_assets', ''), assets_dir,)
+        copytree(data_path('html_report_assets', ''), assets_dir)
 
 
 def create_html_report(workflow, filename):
