@@ -5,7 +5,7 @@ from os import path
 from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.invalidation import InvalidResourceCollector
 from tuttle.project_parser import ProjectParser
-from tuttle.workflow import PROCESS_CHANGED
+from tuttle.workflow import PROCESS_HAS_CHANGED
 
 
 class TestInvalidateResource():
@@ -203,7 +203,7 @@ file://file3 <- file://file2""")
         assert len(different_res) == 1, [(res.url, reason) for (res, reason,) in invalid]
         (resource, invalidation_reason) = different_res[0]
         assert resource.url == "file://file2"
-        assert invalidation_reason == PROCESS_CHANGED
+        assert invalidation_reason == PROCESS_HAS_CHANGED
 
         inv_collector.collect_with_dependencies(different_res, workflow1)
         assert len(inv_collector._resources_and_reasons) == 2, inv_collector._resources_and_reasons

@@ -230,51 +230,79 @@ file://C <- file://B
         assert rcode == 0, output
         assert output.find("Nothing to do") >= 0, output
 
-#     @isolate(['A'])
-#     def test_modified_new_primary_resources_should_invalidate_dependencies(self):
-#         """ If a primary resource that was produced with previous workflow shouldn't invalidate dependencies
-#         if it hasn't changed"""
-#         project = """file://B <- file://A
-#             echo A produces B
-#             echo A produces B > B
-#
-# file://C <- file://B
-#             echo B produces C
-#             echo B produces C > C
-# """
-#         rcode, output = run_tuttle_file(project)
-#         print output
-#         assert rcode == 0, output
-#
-#         with open('B', "w") as f:
-#             f.write("Another  B")
-#
-#         project = """
-# file://C <- file://B
-#             echo B produces C
-#             echo B produces C > C
-# """
-#         rcode, output = self.tuttle_invalide(project=project)
-#         assert rcode == 0, output
-#         assert output.find("file://C") >= 0, output
-#
-#     @isolate(['A'])
-#     def test_modified_primary_resources_should_invalidate_dependencies(self):
-#         """ If a primary resource changes, all dependencies should be invalidated """
-#         project = """file://B <- file://A
-#             echo A produces B
-#             echo A produces B > B
-# """
-#         rcode, output = run_tuttle_file(project)
-#         print output
-#         assert rcode == 0, output
-#
-#         with open('A', "w") as f:
-#             f.write("Another  A")
-#
-#         rcode, output = self.tuttle_invalide(project=project)
-#         assert rcode == 0, output
-#         assert output.find("file://B") >= 0, output
+    @isolate(['A'])
+    def test_modified_new_primary_resources_should_invalidate_dependencies(self):
+        """ If a resource has become a primary resource, but signature has not changed
+        that was produced with previous workflow shouldn't invalidate dependencies
+        if it hasn't changed"""
+        project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+
+file://C <- file://B
+            echo B produces C
+            echo B produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        print output
+        assert rcode == 0, output
+
+        with open('B', "w") as f:
+            f.write("Another  B")
+
+        project = """
+file://C <- file://B
+            echo B produces C
+            echo B produces C > C
+"""
+        rcode, output = self.tuttle_invalide(project=project)
+        assert rcode == 0, output
+        assert output.find("file://C") >= 0, output
+
+    @isolate(['A'])
+    def test_not_modified_new_primary_resources_should_not_invalidate_dependencies(self):
+        """ If a resource has become a primary resource, but signature has not changed
+        that was produced with previous workflow shouldn't invalidate dependencies
+        if it hasn't changed"""
+        project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+
+file://C <- file://B
+            echo B produces C
+            echo B produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        print output
+        assert rcode == 0, output
+
+        project = """
+file://C <- file://B
+            echo B produces C
+            echo B produces C > C
+"""
+        rcode, output = self.tuttle_invalide(project=project)
+        assert rcode == 0, output
+        assert output.find("Nothing to do") >= 0, output
+
+
+    @isolate(['A'])
+    def test_modified_primary_resources_should_invalidate_dependencies(self):
+        """ If a primary resource has changed, all its dependencies should be invalidated """
+        project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+"""
+        rcode, output = run_tuttle_file(project)
+        print output
+        assert rcode == 0, output
+
+        with open('A', "w") as f:
+            f.write("Another  A")
+
+        rcode, output = self.tuttle_invalide(project=project)
+        assert rcode == 0, output
+        assert output.find("file://B") >= 0, output
 
 
     @isolate(['A'])

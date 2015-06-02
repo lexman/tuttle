@@ -111,6 +111,8 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
     inv_collector.collect_with_dependencies(different_res, previous_workflow)
     failed_res = workflow.failed_resources()
     inv_collector.collect_resources(failed_res, PROCESS_HAS_FAILED)
+    modified_primary_resources = workflow.modified_primary_resources()
+    inv_collector.collect_with_dependencies(modified_primary_resources, workflow)
     url_not_invalidated = inv_collector.not_invalidated(urls)
     to_invalidate = []
     for url in url_not_invalidated:

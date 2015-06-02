@@ -7,11 +7,11 @@ from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs,
 
 NO_LONGER_CREATED = "Resource no longer created by the newer process"
 NOT_SAME_INPUTS = "Resource was created with different inputs"
-PROCESS_CHANGED = "Process code changed"
+PROCESS_HAS_CHANGED = "Process code changed"
 MUST_CREATE_RESOURCE = "The former primary resource has to be created by tuttle"
 RESOURCE_NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
 DEPENDENCY_CHANGED = "Resource depends on {} that have changed"
-
+RESOURCE_HAS_CHANGED = "Primary resource has changed"
 
 class Workflow:
     """ A workflow is a dependency tree of processes
@@ -190,7 +190,7 @@ class Workflow:
                 elif not resource.created_by_same_inputs(newer_resource):
                     changing_resources.append((resource, NOT_SAME_INPUTS))
                 elif resource.creator_process._code != newer_resource.creator_process._code:
-                    changing_resources.append((resource, PROCESS_CHANGED))
+                    changing_resources.append((resource, PROCESS_HAS_CHANGED))
             # Primary resources must not be invalidated
         return changing_resources
 
@@ -259,6 +259,19 @@ class Workflow:
                     self._resources_signatures[resource.url] = signature
                     result.append(resource)
         return result
+
+    def modified_primary_resources(self):
+        """ returns the list of resources that have changed, according to the signatures
+        :return:
+        """
+        result = []
+        for resource in self._resources.itervalues():
+            if resource.is_primary():
+                signature = resource.signature()
+                if resource.url in self._resources_signatures and self._resources_signatures[resource.url] != signature:
+                    result.append((resource, RESOURCE_HAS_CHANGED))
+        return result
+
 
     def pick_a_failing_process(self):
         for process in self.iter_processes():
