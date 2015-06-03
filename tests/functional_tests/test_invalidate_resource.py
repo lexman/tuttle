@@ -94,6 +94,26 @@ file://C <- file://B
         assert rcode == 0
         assert output.find("* file://B") >= 0, output
 
+    @isolate(['A', 'B'])
+    def test_resource_becomes_primary(self):
+        """ If a resource used to be primary but is now created by tuttle, it should be invalidated """
+        first = """file://C <- file://B
+    echo B produces C
+    echo C > C
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0
+        second = """file://B <- file://A
+    echo A produces B
+    echo B > B
+
+file://C <- file://B
+    echo B produces C
+    echo C > C"""
+        rcode, output = run_tuttle_file(second)
+        assert rcode == 0
+        assert output.find("* file://B") >= 0, output
+
     @isolate(['A'])
     def test_modified_primary_resource_should_invalidate_dependencies(self):
         """ If a primary resource is modified, it should invalidate dependencies"""
