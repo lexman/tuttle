@@ -13,7 +13,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>Detail of processes</h1>
+        <h1> Workflow :
+            {% if status == "SUCCESS" %} <span class="label label-success">Success</span>
+            {% elif status == "NOT_FINISHED" %} <span class="label label-info">Not complete (yet)</span>
+            {% elif status == "FAILURE" %} <span class="label label-danger">Failure</span>
+            {% endif %}
+            </h1>
         <div class="text-center" id="dependency_graph"></div>
         {% for process in processes %}
         <div class="process">

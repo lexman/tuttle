@@ -55,6 +55,16 @@ def format_resource(resource, workflow):
     }
 
 
+def workflow_status(workflow):
+    for process in workflow.iter_processes():
+        print "id : {}, start {}, end {}".format(process.id, process.start, process.end)
+        if process.success is False:
+            return "FAILURE"
+        if not process.start:
+            return "NOT_FINISHED"
+    return "SUCCESS"
+
+
 def format_process(process, workflow):
     duration = ""
     start = ""
@@ -101,4 +111,4 @@ def create_html_report(workflow, filename):
         t = Template(ftpl.read())
     processes = [format_process(p, workflow) for p in workflow.iter_processes()]
     with open(filename, "w") as fout:
-        fout.write(t.render(processes=processes, dot_src=dot(workflow)))
+        fout.write(t.render(processes=processes, dot_src=dot(workflow), status=workflow_status(workflow)))
