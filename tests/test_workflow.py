@@ -47,7 +47,7 @@ class TestWorkflow():
         assert len(invalid) == 1, [(res.url, reason._reason) for (res, reason,) in invalid]
         (resource, invalidation_reason) = invalid[0]
         assert resource.url == "file://result"
-        assert invalidation_reason == PROCESS_CHANGED, invalidation_reason
+        assert invalidation_reason == PROCESS_HAS_CHANGED, invalidation_reason
 
     def test_invalidate_removed_resource(self):
         """ Should invalidate a resource if it is not created anymore
