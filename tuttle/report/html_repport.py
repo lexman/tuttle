@@ -57,7 +57,6 @@ def format_resource(resource, workflow):
 
 def workflow_status(workflow):
     for process in workflow.iter_processes():
-        print "id : {}, start {}, end {}".format(process.id, process.start, process.end)
         if process.success is False:
             return "FAILURE"
         if not process.start:
