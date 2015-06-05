@@ -66,3 +66,20 @@ file://C <- file://B
         assert title_match, report
         title_2_match = search(r'<h2.*Failure.*</h2>', report, DOTALL)
         assert title_2_match, report
+
+
+    @isolate(['A'])
+    def test_a_failure_in_a_process_without_output_should_be_marked_in_the_repoort(self):
+        """ If process without outputs fails, the report should display failure in the main title"""
+        project = """<- file://A
+    failure on purpose
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2
+        report_path = join('.tuttle', 'report.html')
+        assert isfile(report_path)
+        report = open(report_path).read()
+        title_match = search(r'<h1>.*Failure.*</h1>', report, DOTALL)
+        assert title_match, report
+        title_2_match = search(r'<h2.*Failure.*</h2>', report, DOTALL)
+        assert title_2_match, report
