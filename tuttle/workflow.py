@@ -7,7 +7,8 @@ from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs,
 
 NO_LONGER_CREATED = "Resource no longer created by the newer process"
 NOT_SAME_INPUTS = "Resource was created with different inputs"
-PROCESS_HAS_CHANGED = "Process code changed"
+PROCESS_HAS_CHANGED = "Process code has changed"
+PROCESSOR_HAS_CHANGED = "Processor has changed"
 MUST_CREATE_RESOURCE = "The former primary resource has to be created by tuttle"
 RESOURCE_NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
 DEPENDENCY_CHANGED = "Resource depends on {} that have changed"
@@ -189,8 +190,10 @@ class Workflow:
                     changing_resources.append((resource, MUST_CREATE_RESOURCE))
                 elif not resource.created_by_same_inputs(newer_resource):
                     changing_resources.append((resource, NOT_SAME_INPUTS))
-                elif resource.creator_process._code != newer_resource.creator_process._code:
+                elif resource.creator_process.code != newer_resource.creator_process.code:
                     changing_resources.append((resource, PROCESS_HAS_CHANGED))
+                elif resource.creator_process.processor.name != newer_resource.creator_process.processor.name:
+                    changing_resources.append((resource, PROCESSOR_HAS_CHANGED))
             # Primary resources must not be invalidated
         return changing_resources
 

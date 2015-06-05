@@ -278,3 +278,22 @@ file://C <- file://B
         assert output.find("http://www.google.com") >= 0, output
         assert output.find("Warning") >= 0, output
         assert output.find("should not be considered valid") >= 0, output
+
+    @isolate(['A'])
+    def test_processor_has_been_fixed(self):
+        """ Changing the processor of a process should invalidate dependencies """
+        first = """file://B <- file://A
+            print("some python code")
+            open('A', 'w').write('A')
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 2, output
+
+        second = """file://B <- file://A ! python
+            print("some python code")
+            open('B', 'w').write('A produces B')
+"""
+        rcode, output = run_tuttle_file(second)
+        assert rcode == 0, output
+        assert output.find("file://B") >= 0, output
+        assert isfile('B')

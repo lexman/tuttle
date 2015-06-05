@@ -42,6 +42,10 @@ class Process:
     def set_code(self, code):
         self._code = code
 
+    @property
+    def processor(self):
+        return self._processor
+
     def add_input(self, input_res):
         self._inputs.append(input_res)
 
