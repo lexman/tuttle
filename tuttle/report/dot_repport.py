@@ -33,7 +33,7 @@ def dot(workflow):
     for process in workflow.iter_processes():
         color = color_from_process(process)
         p_node = "p_{}".format(process.id)
-        result += '    {} [shape="none", label="{}", URL="#{}", fillcolor={}, width=0, height=0] ' \
+        result += '    {} [label="{}", URL="#{}", color={}, width=0, height=0] ' \
                   ';\n'.format(p_node, process.id, process.id, color)
         for res_input in process.iter_inputs():
             nick = nick_from_url(res_input.url)
