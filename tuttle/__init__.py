@@ -34,10 +34,8 @@ def run(workflow):
     failing_process = workflow.pick_a_failing_process()
     if failing_process:
         msg = "Workflow already failed on process '{}'. Fix the process and run tuttle again.".format(failing_process.id)
-        an_output = failing_process.pick_an_output()
-        if an_output:
-              msg += "\n\nIf failure has been caused by an external factor like a connection breakdown, " \
-                     'use "tuttle invalidate" to reset execution then "tuttle run" again.'
+        msg += "\n\nIf failure has been caused by an external factor like a connection breakdown, " \
+               'use "tuttle invalidate" to reset execution then "tuttle run" again.'
         raise TuttleError(msg)
     nb_process_run = workflow.run()
     return nb_process_run
@@ -130,7 +128,7 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
             to_invalidate.append(resource)
     inv_collector.collect_resources(to_invalidate, USER_REQUEST)
     inv_collector.collect_dependencies_only(to_invalidate, workflow)
-    if inv_collector.urls():
+    if inv_collector.urls() or previous_workflow.pick_a_failing_process():
         try:
             inv_collector.warn_and_remove(threshold)
         except TuttleError as e:

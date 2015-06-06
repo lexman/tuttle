@@ -3,6 +3,7 @@
 import sys
 from subprocess import Popen, PIPE
 from os.path import abspath, join, dirname, isfile
+from re import search, DOTALL
 from tests.functional_tests import isolate, run_tuttle_file
 from cStringIO import StringIO
 from tuttle import invalidate_resources
@@ -357,3 +358,33 @@ file://C <- file://B
         assert rcode == 0, output
         assert output.find("file://B") >= 0, output
         assert not isfile('B'), output
+
+
+    @isolate(['A'])
+    def test_a_failing_process_without_output_should_be_invalidated(self):
+        """  When a process fail, Tuttle should exit with status code 2, even if the process has no outputs"""
+        project = """file://B <- file://A
+    echo A produces B
+    echo B > B
+
+<- file://B
+    error
+    echo This should not be written
+    echo C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2
+        assert isfile('B')
+        assert not isfile('C')
+
+        report_path = join('.tuttle', 'report.html')
+        assert isfile(report_path)
+        report = open(report_path).read()
+        title_match_failure = search(r'<h1>.*Failure.*</h1>', report, DOTALL)
+        assert title_match_failure, report
+
+        rcode, output = self.tuttle_invalide()
+        assert rcode == 0
+        report = open(report_path).read()
+        title_match_failure = search(r'<h1>.*Failure.*</h1>', report, DOTALL)
+        assert not title_match_failure, title_match_failure.group()
