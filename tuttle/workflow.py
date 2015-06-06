@@ -228,7 +228,7 @@ class Workflow:
                 resource.dependant_processes.append(process)
 
     def retrieve_signatures(self, previous):
-        """Retrieve the signatures from the former workflow. Usefull to detect what has changed."""
+        """Retrieve the signatures from the former workflow. Useful to detect what has changed."""
         for url, signature in previous._resources_signatures.iteritems():
             if url in self._resources:
                 self._resources_signatures[url] = signature
