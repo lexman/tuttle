@@ -228,10 +228,16 @@ class Workflow:
                 resource.dependant_processes.append(process)
 
     def retrieve_signatures(self, previous):
-        """Retrieve the signatures from the former workflow. Useful to detect what has changed."""
+        """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
+            Returns True if some resources where in previous and no longer exist in self
+        """
+        removed_resources = False
         for url, signature in previous._resources_signatures.iteritems():
             if url in self._resources:
                 self._resources_signatures[url] = signature
+            else:
+                removed_resources = True
+        return removed_resources
 
     def retrieve_execution_info(self, previous):
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,

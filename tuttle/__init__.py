@@ -43,13 +43,14 @@ def run(workflow):
 
 def parse_invalidate_and_run(tuttlefile, threshold=-1):
         try:
+            inv_collector = InvalidResourceCollector()
             workflow = parse_project(tuttlefile)
             previous_workflow = Workflow.load()
 
-            inv_collector = InvalidResourceCollector()
+            shrunk = False
             if previous_workflow:
                 workflow.retrieve_execution_info(previous_workflow)
-                workflow.retrieve_signatures(previous_workflow)
+                shrunk = workflow.retrieve_signatures(previous_workflow)
                 different_res = previous_workflow.resources_not_created_the_same_way(workflow)
                 inv_collector.collect_with_dependencies(different_res, previous_workflow)
 
@@ -61,13 +62,14 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
             workflow.reset_process_exec_info(inv_collector.urls())
             inv_collector.warn_and_remove(threshold)
             workflow.create_reports()
+            workflow.dump()
 
             nb_process_run = run(workflow)
-            if nb_process_run == 0:
-                print("Nothing to do")
-            else:
+            if nb_process_run > 0 or shrunk:
                 print("====")
                 print("Done")
+            else:
+                print("Nothing to do")
 
         except TuttleError as e:
             print(e)

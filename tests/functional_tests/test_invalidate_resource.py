@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from os.path import isfile
+from os.path import isfile, join
 
 from os import path
 from tests.functional_tests import isolate, run_tuttle_file
@@ -297,3 +297,30 @@ file://C <- file://B
         assert rcode == 0, output
         assert output.find("file://B") >= 0, output
         assert isfile('B')
+
+    @isolate(['A'])
+    def test_remove_primary(self):
+        """ Remove the first process and transform a resource in a primary resource should be
+        considered as processing """
+        first = """file://B <- file://A
+            echo A produces another B
+            echo A produces B > B
+
+file://C <- file://B
+            echo B produces C
+            echo B produces C > C
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+
+        second = """file://C <- file://B
+            echo B produces C
+            echo B produces C > C
+"""
+        rcode, output = run_tuttle_file(second)
+        assert rcode == 0, output
+        assert output.find("Done") >= 0, output
+        report = open(join('.tuttle', 'report.html')).read()
+        assert report.find('file://A') == -1, report
+        dump = open(join('.tuttle', 'last_workflow.pickle')).read()
+        assert report.find('file://A') == -1, report
