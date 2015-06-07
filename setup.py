@@ -4,7 +4,7 @@
 """ Tuttle installation and packaging script """
 
 import sys
-from tuttle import __version__
+from tuttle.version import version
 try:
     from setuptools import setup, find_packages
 except ImportError:
@@ -16,7 +16,7 @@ except ImportError:
 
 tuttle_description = {
     'name': 'tuttle',
-    'version': __version__,
+    'version': version,
     'author': 'Lexman',
     'author_email': 'tuttle@lexman.org',
     'description': 'Make for data',

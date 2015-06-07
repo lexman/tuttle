@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
 
+from hashlib import sha1
 from urllib2 import Request, urlopen, URLError, HTTPError
 from tuttle.error import TuttleError
 from tuttle.resources import ResourceMixIn
-from hashlib import sha1
+from tuttle.version import version
 
-version = "0.1"
 
 USER_AGENT = "tuttle/{}".format(version)
 

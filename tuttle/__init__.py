@@ -9,10 +9,6 @@ from tuttle.workflow_builder import WorkflowBuilder
 from workflow import Workflow
 
 
-version = '0.1rc7'
-__version__ = '0.1rc7'
-
-
 NOT_PRODUCED_BY_TUTTLE = "The existing resource has not been produced by tuttle"
 USER_REQUEST = "User request"
 PROCESS_HAS_FAILED = "The resource has been produced by a failing process"
