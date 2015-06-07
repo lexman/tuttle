@@ -19,6 +19,7 @@ script:
 - cd doc/examples/sales_linux
 - tuttle run
 - cp penetration_rate.html workflow_execution_success
+- cd ../../..
 deploy:
   skip_cleanup: true
   provider: releases
