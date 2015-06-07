@@ -57,11 +57,11 @@ HTTP (DONE) or FTP resource
 
 Remove #! from modules and packages - DONE
 
-Check if some primary resources changed - DONE !
+Check if some primary resources have changed - DONE !
 
 NOT FOR 0.1 - Check if some resource changed (and invalid them ?)
 
-Packaging - partially done
+DONE - Packaging - partially done
 
 Travis for tests on *nix. Is it possible to test on Windows => AppVeyor ? - DONE
 Upload the artifacts as a release on github ?
@@ -100,11 +100,11 @@ DONE - Refactor short names (Partialy DONE)
 
 dump process status and start time just before running and just after, in case somebody would need this info at any time
 
-Create immutable processes from constructor : no more add_input()
+WON'T DO - Create immutable processes from constructor : no more add_input()
 
 DONE - Refactor id
 
-Improve tests on csv2sqlite
+WON'T DO - Improve tests on csv2sqlite - Is it useful ? Maybe this extension won't last
 
 DONE - Remove csv resource
 
@@ -121,6 +121,6 @@ Add logs to download processor - DONE
 Report the size of the logs - DONE
     Add a test... - DONE
 
-Remove logs and all files when reseting a process ?
+LATER - Remove logs and all files when reseting a process ?
 
-Invalidate : should tuttle fail if nothing has been run yet .
+DONE - Invalidate : should tuttle fail if nothing has been run yet . yes
