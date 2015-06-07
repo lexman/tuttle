@@ -247,6 +247,16 @@ Tuttle has noticed the change. Before running the necessary *processes*, it clea
 and even how long it took to produce everything that will be deleted !
 
 
+# Next :
+* show what happens when an error occurs... And fiw that error
+* show how to follow code changes even if the language is not implemented
+* show how to merge your work with you team mate's
+Bonus :
+* show the download processor... And how you can change (a bit) the workflow without loosing your work
+* explain the --threshold parameter to prevent from losing your work if a remote provider changes
+
+
 # Conclusion
 We've seen how to run a process with tuttle. In the incoming tutorial, you will learn how to deal with errors while you
+
 work.
