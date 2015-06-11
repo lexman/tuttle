@@ -440,7 +440,7 @@ But how can we benefit from reprocessing when the code change, with this languag
 
 With this method, you can ensure re-processing of the png file when `myplot.gnuplot` changes.
 
-# Bonus : plug to the source file on the web
+# Plug to the source file on the web
 
 The first thing we have done at the beginning of this tuttorial was to download the zip file. The good news, is that
 `tuttle` recognises http resources. You can even download it in one line :
@@ -464,39 +464,48 @@ processes again.
 # Prevent for reprocessing too much
 
 The drawback of the using remote resources, is that we don't always control them. What will happen it the resource
-changes while we are working on the gnuplot part ? All the workflow could be invalidated, and maybe reprocessing would
-be long.
+changes while we are working on the gnuplot part ? All the workflow could be invalidated !
+
+
+It could be a problem if you have a long workflow... With processes like this :
+
+    file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
+        # -*- coding: utf8 -*-
+        import time
+        time.sleep(4)
+        names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
+        with open('characters_count.dat', 'w') as f_out:
+            with open('Les_trois_mousquetaires.txt') as f_in:
+                content_low = f_in.read().lower()
+            print("{} chars in the novel".format(len(content_low)))
+            for name in names:
+                name_low = name.lower()
+                f_out.write("{}\t{}\n".format(name, content_low.count(name_low)))
+                print("{} - done".format(name))
+
 
 To prevent from unexpected reprocessing, there is a `--threshold` parameter (in short `-t`) in the command line :
 ```console
-lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
-The following resources are not valid any more and will be removed :
-* file://characters_count.png - Process code changed
-0 seconds of processing will be lost
-============================================================
-tuttlefile_23
-============================================================
---- stderr : -----------------------------------------------
-
-TODO !
-
-+ gnuplot
-
+lexman@lexman-pc:~/tuttle_tutorial$ tuttle run -t 2
+TODO
 Done
 lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
+Here, we have defined that we don't want invalidation if it has to remove more than 2 seconds of processing. That's why
+tuttle has stopped.
+
+# Bonus : unplug from the web
 
 
 
-*
 # Next :
 DONE * show what happens when an error occurs... And fiw that error
-* show how to follow code changes even if the language is not implemented
+DONE * show how to follow code changes even if the language is not implemented
 DONE * show how to merge your work with you team mate's
 Bonus :
 * show the download processor... And how you can change (a bit) the workflow without loosing your work
-* explain the --threshold parameter to prevent from losing your work if a remote provider changes
+DONE * explain the --threshold parameter to prevent from losing your work if a remote provider changes
 
 
 # Conclusion
