@@ -124,3 +124,5 @@ Report the size of the logs - DONE
 LATER - Remove logs and all files when reseting a process ?
 
 DONE - Invalidate : should tuttle fail if nothing has been run yet . yes
+
+Fix the bug of accents in a tuttlefile !
