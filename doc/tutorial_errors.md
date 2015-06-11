@@ -285,7 +285,7 @@ the doc, it seem we only have to add a line in the end :
         set terminal png
         set output "characters_count.png"
         plot "characters_count.dat" using 2: xtic(1) with histeps
-        lineclor "green"
+        linecolor "green"
         $script$
 
 When we run the `tuttlefile`, we have this output :
@@ -320,15 +320,178 @@ In fact, as soon an error occurs, `tuttle` stops and leaves everything as is so 
 Notice that if you list the files ont the directory, you'll find one called `characters_count.png`. This means that
 gnuplot have produced it ! So what happened ? gnuplot has crashed after the png has been produced.
 
+If you want to revert to a clean state, you can execute `tuttle invalidate` :
+
+```console
+lexman@lexman-pc:~/tuttle_tutorial$ tuttle invalidate
+The following resources are not valid any more and will be removed :
+* file://characters_count.png - Process code changed
+0 seconds of processing will be lost
+Done
+lexman@lexman-pc:~/tuttle_tutorial$
+```
+
+`tuttle has removed all the files that where not valid, as we can see in the report :
+
+
+But let's go on : we still want our green graph. Maybe color should be declared before drawing :
+
+    file://characters_count.png <- file://characters_count.dat
+        gnuplot <<$script$
+        set terminal png
+        set output "characters_count.png"
+        linecolor "green"
+        plot "characters_count.dat" using 2: xtic(1) with histeps
+        $script$
+
+Let's `tuttle run` :
+
+```console
+lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
+The following resources are not valid any more and will be removed :
+* file://characters_count.png - Process code changed
+0 seconds of processing will be lost
+============================================================
+tuttlefile_23
+============================================================
+--- stderr : -----------------------------------------------
+
+TODO !
+
++ gnuplot
+
+Done
+lexman@lexman-pc:~/tuttle_tutorial$
+```
+
+Tuttle tryed to get back from the updated process but an error occurred once again. Well, if rebooting windows solves
+  issues, why not `tuttle run` again ?
+
+```console
+lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
+tuttle has already failed
+
+TODO
+
+lexman@lexman-pc:~/tuttle_tutorial$
+```
+
+So ``tuttle` refused to run... Well, we haven't changed anything in the code, so why would the issue be fixed ?
+
+The good way is to have a proper fix in the tuttlefile. Actually, the doc says the coor must be set on the same line
+that the plot :
+
+    file://characters_count.png <- file://characters_count.dat
+        gnuplot <<$script$
+        set terminal png
+        set output "characters_count.png"
+        plot "characters_count.dat" using 2: xtic(1) with histeps linecolor "green"
+        $script$
+
+`tuttlle run` :
+
+```console
+lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
+The following resources are not valid any more and will be removed :
+* file://characters_count.png - Process code changed
+0 seconds of processing will be lost
+============================================================
+tuttlefile_23
+============================================================
+--- stderr : -----------------------------------------------
+
+TODO !
+
++ gnuplot
+
+Done
+lexman@lexman-pc:~/tuttle_tutorial$
+```
+
+There it is ! `tuttle` has seen the change in the code, it has removed invalid files, and have run the necessary
+process... And we can see our graph has the good color :
+
+TODO
+
+You've seen in this paragraph that `tuttle` allows you to investigate errors and fix them, with few efforts.
+
+
+# Describe the plot in a separate file
+
+Actually, the lines we have written are a kind of program, run by the gnuplot interpreter. This is very similar
+ to python code.
+
+You would usely create a separate file called `myplot.gnuplot`, with this content :
+
+        set terminal png
+        set output "characters_count.png"
+        plot "characters_count.dat" using 2: xtic(1) with histeps linecolor "green"
+
+and you would only have to run
+
+        gnuplot myplot.gnuplot
+
+But how can we benefit from reprocessing when the code change, with this language that have not been implemented in
+`tuttle` ? We only have to add the code as a dependency :
+
+    file://characters_count.png <- file://characters_count.dat, file://myplot.gnuplot
+        gnuplot myplot.gnuplot
+
+
+With this method, you can ensure re-processing of the png file when `myplot.gnuplot` changes.
+
+# Bonus : plug to the source file on the web
+
+The first thing we have done at the beginning of this tuttorial was to download the zip file. The good news, is that
+`tuttle` recognises http resources. You can even download it in one line :
+
+    file://Les_trois_mousquetaires.zip <- http://abonnasseau.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip ! download
+
+That's all ! The `download` processor is smart enough to understand it has to download the http input resource into
+the destination.
+
+When we `tuttle run`, what will happen ? `tuttle` can't know for sure if the file `Les_trois_mousquetaires.zip` in
+the workspace is the same as the remote one. Well not before it downloads it. Therefore, `tuttle` will invalidate the
+file `Les_trois_mousquetaires.zip` and all its dependencies before downloading and running all the processes again...
+
+Therefore, we can be absolutely sure the result of the workflow's execution is the correct.
+
+Now, if the source changes on the internet, for example because the text is still being reviewed by volunteers who
+compares the text to the scanned pages, it is easy to update !
+`tuttle run` will notice the change in the source, will invalidate every thing that depends on it and run the necessary
+processes again.
+
+# Prevent for reprocessing too much
+
+The drawback of the using remote resources, is that we don't always control them. What will happen it the resource
+changes while we are working on the gnuplot part ? All the workflow could be invalidated, and maybe reprocessing would
+be long.
+
+To prevent from unexpected reprocessing, there is a `--threshold` parameter (in short `-t`) in the command line :
+```console
+lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
+The following resources are not valid any more and will be removed :
+* file://characters_count.png - Process code changed
+0 seconds of processing will be lost
+============================================================
+tuttlefile_23
+============================================================
+--- stderr : -----------------------------------------------
+
+TODO !
+
++ gnuplot
+
+Done
+lexman@lexman-pc:~/tuttle_tutorial$
+```
 
 
 
 
-
-
-
+*
 # Next :
-* show what happens when an error occurs... And fiw that error
+DONE * show what happens when an error occurs... And fiw that error
 * show how to follow code changes even if the language is not implemented
 DONE * show how to merge your work with you team mate's
 Bonus :
