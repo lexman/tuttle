@@ -243,14 +243,94 @@ lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
 Tuttle has noticed the change. Before running the necessary *processes*, it cleans the workspace by deleting all the
-*resources* that no longer fit with the current workflow. Notice the tuttle explains exactly what is going to be deleted,
-and even how long it took to produce everything that will be deleted !
+*resources* that no longer fit with the current workflow.
+
+So in our case, `characters_count.dat` is not valid any more because we have just changed the process that
+produces it. And `characters_count.png` and `characters_count.csv` will be re-processed because they depend on the
+former. Eventually, all the resources are up to date and coherent with your code.
+
+By the way, do you remember this colleague who wanted a spreadsheet. It cost us no effort to mail him the update !
+
+
+# Improve the graph
+
+Your teammate thinks your graph is ugly... And we have to agree.
+
+So he checks out the code from the repository on his own computer and begins working on the colors of the graph.
+After a few tries, where he only had to launch `tuttle run` to see the result, he writes this :
+
+    file://characters_count.png <- file://characters_count.dat
+        gnuplot <<$script$
+        set terminal png
+        set output "characters_count.png"
+        plot "characters_count.dat" using 2: xtic(1) with histeps
+        $script$
+
+Now the only thing you have to do to benefit from he work, is retrieve the modifications from the versioning system,
+for example `git pull --rebase` if you work with git.
+
+Now you can use `tuttle run`, and your teammate's work will be incorporated into your. And it will only
+re-process what have changed.
+
+With this feature from tuttle you can work on data as you work on code : use branches, merge with your team,
+even have a continuous integration server (eg Jenkins) !
+
+# Improve the graph
+
+Let's say another improvement to this graph, would be to change the color of the line (to green). After reviewing
+the doc, it seem we only have to add a line in the end :
+
+    file://characters_count.png <- file://characters_count.dat
+        gnuplot <<$script$
+        set terminal png
+        set output "characters_count.png"
+        plot "characters_count.dat" using 2: xtic(1) with histeps
+        lineclor "green"
+        $script$
+
+When we run the `tuttlefile`, we have this output :
+
+```console
+lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
+The following resources are not valid any more and will be removed :
+* file://characters_count.png - Process code changed
+0 seconds of processing will be lost
+============================================================
+tuttlefile_23
+============================================================
+--- stderr : -----------------------------------------------
+
+TODO !
+
++ gnuplot
+
+Done
+lexman@lexman-pc:~/tuttle_tutorial$
+```
+
+Something went wrong !
+
+Apparently, `gnuplot` didn't like our last raw. Let's have a look to the report :
+you can't miss the workflow has failed, and which process is in error. You also notice that `characters_count.png` is
+in red. It means that according to what have been run during the execution of the workflow, you can't rely on
+the file `characters_count.png`.
+
+In fact, as soon an error occurs, `tuttle` stops and leaves everything as is so that you can debug.
+
+Notice that if you list the files ont the directory, you'll find one called `characters_count.png`. This means that
+gnuplot have produced it ! So what happened ? gnuplot has crashed after the png has been produced.
+
+
+
+
+
+
 
 
 # Next :
 * show what happens when an error occurs... And fiw that error
 * show how to follow code changes even if the language is not implemented
-* show how to merge your work with you team mate's
+DONE * show how to merge your work with you team mate's
 Bonus :
 * show the download processor... And how you can change (a bit) the workflow without loosing your work
 * explain the --threshold parameter to prevent from losing your work if a remote provider changes
