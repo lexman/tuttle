@@ -500,7 +500,27 @@ This feature can prove very usefull when you merge moficiations from your teamma
 
 # Bonus : unplug from the web
 
+Now let's see if you have understood how tuttle works. Suppose you want to work on our workflow in the
+countryside where you don't hacve acces to Internet. If we run our workflow, `tuttle`will try to connect
+to check if the Les_trois_mousquetaires.zip has changed remotely. Without connexion, the resource will
+be considered as an error, so everything in the workflow would be invalidated. To prevent loosing our work
+we want to disconnect from the remote resource by removing this line from the `tuttlefile` :
 
+    file://Les_trois_mousquetaires.zip <- http://abonnasseau.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip ! download
+
+Now, ask yourself what will happen when we execute `tuttle run` ?
+
+```console
+lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
+The following resources are not valid any more and will be removed :
+Nothing to do
+lexman@lexman-pc:~/tuttle_tutorial$
+```
+
+What has happen ?
+
+`Les_trois_mousquetaires.zip`is now a *primary resource*. When running, tuttle checks wheter the file
+has changed since we last ran the workflow... And because it is the same, everything is still valid !
 
 # Next :
 DONE * show what happens when an error occurs... And fiw that error
