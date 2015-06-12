@@ -467,7 +467,8 @@ The drawback of the using remote resources, is that we don't always control them
 changes while we are working on the gnuplot part ? All the workflow could be invalidated !
 
 
-It could be a problem if you have a long workflow... With processes like this :
+That could be a problem if you have a long workflow... Imagine that our python process would begin 
+by a heavy processing phase, like this `sleep(4)` instruction :
 
     file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
         # -*- coding: utf8 -*-
@@ -494,6 +495,8 @@ lexman@lexman-pc:~/tuttle_tutorial$
 
 Here, we have defined that we don't want invalidation if it has to remove more than 2 seconds of processing. That's why
 tuttle has stopped.
+
+This feature can prove very usefull when you merge moficiations from your teammates.
 
 # Bonus : unplug from the web
 
