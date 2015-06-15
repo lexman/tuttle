@@ -1,11 +1,11 @@
 # -*- coding: utf8 -*-
 
 from jinja2 import Template
-from os import path, mkdir, error
+from os import path, error, sep
 from shutil import copytree
 from time import strftime, localtime
 from dot_repport import dot
-from os.path import dirname, join, isdir
+from os.path import dirname, join, relpath, abspath, split
 import sys
 
 
@@ -64,7 +64,15 @@ def workflow_status(workflow):
     return "SUCCESS"
 
 
-def format_process(process, workflow):
+def path2url(path, ref_path):
+    if path is None:
+        return
+    abs_path = abspath(path)
+    rel_path = relpath(abs_path, ref_path)
+    parts = split(rel_path)
+    return '/'.join(parts)
+
+def format_process(process, workflow, report_dir):
     duration = ""
     start = ""
     end = ""
@@ -80,9 +88,9 @@ def format_process(process, workflow):
         'start': start,
         'end': end,
         'duration': duration,
-        'log_stdout': process.log_stdout,
+        'log_stdout': path2url(process.log_stdout, report_dir),
         'log_stdout_size': nice_file_size(process.log_stdout),
-        'log_stderr': process.log_stderr,
+        'log_stderr': path2url(process.log_stderr, report_dir),
         'log_stderr_size': nice_file_size(process.log_stderr),
         'outputs': (format_resource(resource, workflow) for resource in process.iter_outputs()),
         'inputs': (format_resource(resource, workflow) for resource in process.iter_inputs()),
@@ -108,6 +116,6 @@ def create_html_report(workflow, filename):
     tpl_filename = data_path("report_template.html")
     with open(tpl_filename, "r") as ftpl:
         t = Template(ftpl.read())
-    processes = [format_process(p, workflow) for p in workflow.iter_processes()]
+    processes = [format_process(p, workflow, abspath(file_dir)) for p in workflow.iter_processes()]
     with open(filename, "w") as fout:
         fout.write(t.render(processes=processes, dot_src=dot(workflow), status=workflow_status(workflow)))

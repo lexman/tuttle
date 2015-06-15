@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from os.path import isfile, join
-from re import match, search, DOTALL
+from re import search, DOTALL, findall
 
 from tuttle.report.html_repport import nice_size
 from tests.functional_tests import isolate, run_tuttle_file
@@ -83,3 +83,21 @@ file://C <- file://B
         assert title_match, report
         title_2_match = search(r'<h2.*Failure.*</h2>', report, DOTALL)
         assert title_2_match, report
+
+    @isolate(['A'])
+    def test_all_relative_links_must_exists(self):
+        """ If process without outputs fails, the report should display failure in the main title"""
+        project = """file://B <- file://A
+    echo A produces B > B
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0
+        report_path = join('.tuttle', 'report.html')
+        assert isfile(report_path)
+        report = open(report_path).read()
+        links = findall(r'<a href=\"([^"]*)>', report)
+        for link in links:
+            rel_path = link[1].split('/')
+            path = join('.tuttle', *rel_path)
+            assert isfile(path), path
+

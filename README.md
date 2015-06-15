@@ -63,12 +63,12 @@ You can find [download tuttle](https://github.com/abonnasseau/tuttle/releases) a
 ```
     git clone https://github.com/abonnasseau/tuttle
     cd tuttle
-    python setup.py install
 ```
-
-
-
 # Hacking
+    python setup.py install
+
+
+
 [![AppVeyor Windows build status](https://ci.appveyor.com/api/projects/status/github/abonnasseau/tuttle)](https://ci.appveyor.com/project/abonnasseau/tuttle)
 [![Travis Linux build status](https://travis-ci.org/abonnasseau/tuttle.png)](https://travis-ci.org/abonnasseau/tuttle)
 
