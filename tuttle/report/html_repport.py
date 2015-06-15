@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 
 from jinja2 import Template
-from os import path, error, sep
+from os import path, error
 from shutil import copytree
 from time import strftime, localtime
 from dot_repport import dot
