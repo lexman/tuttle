@@ -101,3 +101,19 @@ file://C <- file://B
             path = join('.tuttle', *rel_path)
             assert isfile(path), path
 
+    @isolate(['A'])
+    def test_all_imports_must_exists(self):
+        """ If process without outputs fails, the report should display failure in the main title"""
+        project = """file://B <- file://A
+    echo A produces B > B
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0
+        report_path = join('.tuttle', 'report.html')
+        assert isfile(report_path)
+        report = open(report_path).read()
+        links = findall(r'src=\"([^"]*)>', report)
+        for link in links:
+            rel_path = link[1].split('/')
+            path = join('.tuttle', *rel_path)
+            assert isfile(path), path
