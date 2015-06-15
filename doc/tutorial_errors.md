@@ -501,7 +501,7 @@ This feature can prove very usefull when you merge moficiations from your teamma
 # Bonus : unplug from the web
 
 Now let's see if you have understood how tuttle works. Suppose you want to work on our workflow in the
-countryside where you don't hacve acces to Internet. If we run our workflow, `tuttle`will try to connect
+countryside where you don't have acces to Internet. If we run our workflow, `tuttle`will try to connect
 to check if the Les_trois_mousquetaires.zip has changed remotely. Without connexion, the resource will
 be considered as an error, so everything in the workflow would be invalidated. To prevent loosing our work
 we want to disconnect from the remote resource by removing this line from the `tuttlefile` :
