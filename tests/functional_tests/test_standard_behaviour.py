@@ -99,3 +99,12 @@ file://C <- file://B
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
         assert output.find("Nothing to do") >= 0, output
+
+    @isolate(['A', 'tuttlefile'])
+    def test_tuttlefile_should_be_in_utf8(self):
+        """ If nothing has to run, the user should be informed every thing is ok
+        """
+        rcode, output = run_tuttle_file()
+        assert rcode == 0, output
+        result = file('B').read().decode('utf8')
+        assert result.find(u"du texte accentué") >= 0, result

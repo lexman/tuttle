@@ -27,14 +27,14 @@ class ShellProcessor:
     """ A processor to run *nix shell code
     """
     name = 'shell'
-    header = "#!/usr/bin/env sh\nset -e\nset -x\n"
+    header = u"#!/usr/bin/env sh\nset -e\nset -x\n"
 
     def generate_executable(self, process, script_path):
         """ Create an executable file
         :param directory: string
         :return: the path to the file
         """
-        with open(script_path, "w+") as f:
+        with open(script_path, "wb+") as f:
             f.write(self.header)
             f.write(process._code)
         mode = stat(script_path).st_mode
@@ -52,8 +52,8 @@ class BatProcessor:
     """ A processor for Windows command line
     """
     name = 'bat'
-    header = "@echo off\n"
-    exit_if_fail = 'if %ERRORLEVEL% neq 0 exit /b 1\n'
+    header = u"@echo off\n"
+    exit_if_fail = u'if %ERRORLEVEL% neq 0 exit /b 1\n'
 
     def generate_executable(self, process, reserved_path):
         """ Create an executable file
@@ -62,12 +62,12 @@ class BatProcessor:
         """
         mkdir(reserved_path)
         script_name = path.abspath(path.join(reserved_path, "{}.bat".format(process.id)))
-        with open(script_name, "w+") as f:
+        with open(script_name, "wb+") as f:
             f.write(self.header)
             lines = process._code.split("\n")
             for line in lines:
-                f.write(line)
-                f.write("\n")
+                f.write(line.encode('utf8'))
+                f.write(u"\n")
                 f.write(self.exit_if_fail)
         return script_name
 

@@ -44,8 +44,8 @@ class ProjectParser():
 
     def parse_and_check_file(self, filename):
         self._filename = basename(filename)
-        with open(filename) as f:
-            self.set_project(f.read())
+        with open(filename, 'rb') as f:
+            self.set_project(f.read().decode('utf8'))
         return self.parse_and_check_project()
 
     def parse_and_check_project(self):

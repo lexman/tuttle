@@ -114,8 +114,9 @@ def create_html_report(workflow, filename):
     file_dir = path.dirname(filename)
     ensure_assets(file_dir)
     tpl_filename = data_path("report_template.html")
-    with open(tpl_filename, "r") as ftpl:
-        t = Template(ftpl.read())
+    with open(tpl_filename, 'rb') as ftpl:
+        t = Template(ftpl.read().decode('utf8'))
     processes = [format_process(p, workflow, abspath(file_dir)) for p in workflow.iter_processes()]
-    with open(filename, "w") as fout:
-        fout.write(t.render(processes=processes, dot_src=dot(workflow), status=workflow_status(workflow)))
+    with open(filename, 'wb') as fout:
+        content = t.render(processes=processes, dot_src=dot(workflow), status=workflow_status(workflow))
+        fout.write(content.encode('utf8)'))
