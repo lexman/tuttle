@@ -24,11 +24,20 @@ def nick_from_url(url):
     parts = url.split("/")
     return parts.pop()
 
+def dot_id(url):
+    import urllib
+    return urllib.quote(url)
+
+
+def dot_id(url):
+    import urllib
+    return urllib.quote(url)
+
 
 def dot(workflow):
     # TODO :
     # * Add a legend
-    # * Show missing resources in a different another
+    # * Show missing resources in a different color
     result = DOT_HEADER
     for process in workflow.iter_processes():
         color = color_from_process(process)
@@ -41,12 +50,14 @@ def dot(workflow):
                   ';\n'.format(p_node, process.id, process.id, color, fontcolor)
         for res_input in process.iter_inputs():
             nick = nick_from_url(res_input.url)
-            result += '    "{}" -> {} [arrowhead="none"] \n'.format(nick, p_node)
+            resource_id = dot_id(res_input.url)
+            result += '    "{}" -> {} [arrowhead="none"] \n'.format(resource_id,  p_node)
             if res_input.is_primary():
-                result += '    "{}" [fillcolor=beige] ;\n'.format(nick)
+                result += '    "{}" [fillcolor=beige, label="{}"] ;\n'.format(resource_id, nick)
         for res_output in process.iter_outputs():
             nick = nick_from_url(res_output.url)
-            result += '    {} -> "{}" \n'.format(p_node, nick)
-            result += '    "{}" [fillcolor={}] ;\n'.format(nick, color)
+            resource_id = dot_id(res_output.url)
+            result += '    {} -> "{}" \n'.format(p_node, resource_id)
+            result += '    "{}" [fillcolor={}, label="{}"] ;\n'.format(resource_id, color, nick)
     result += '}'
     return result
