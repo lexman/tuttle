@@ -21,7 +21,7 @@ class PythonProcessor:
         mkdir(reserved_path)
         script_name = path.abspath(path.join(reserved_path, "{}.py".format(process.id)))
         with open(script_name, "w+") as f:
-            f.write(process._code)
+            f.write(process._code.encode('utf8'))
         return script_name
 
     def run(self, process, reserved_path, log_stdout, log_stderr):

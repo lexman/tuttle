@@ -20,12 +20,13 @@ class TestPythonProcessor():
 
     @isolate(['A'])
     def test_python_processor(self):
-        """A project with an SQLite processor should run the sql statements"""
-        project = """file://B <- file://A ! python
+        """A python process should run"""
+        project = u"""file://B <- file://A ! python
         # -*- coding: utf8 -*-
 
         from time import time
         print("A python process at {}".format(time()))
+        print("texte accentué")
         open('B', 'w').write('A produces B')
         """
         rcode, output = run_tuttle_file(project)
