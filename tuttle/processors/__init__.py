@@ -36,7 +36,7 @@ class ShellProcessor:
         """
         with open(script_path, "wb+") as f:
             f.write(self.header)
-            f.write(process._code)
+            f.write(process._code.encode('utf8'))
         mode = stat(script_path).st_mode
         chmod(script_path, mode | S_IXUSR | S_IXGRP | S_IXOTH)
 
