@@ -87,7 +87,7 @@ class ProjectParser():
     def parse_dependencies_and_processor(self):
         arrow_pos = self._line.find('<-')
         if arrow_pos == -1:
-            raise ParsingError("Definition of dependency expected", self._num_line)
+            raise ParsingError("Definition of dependency expected. Or maybe you just got confused with indentation :)", self._num_line)
         shebang_pos = self._line.find('!')
         if shebang_pos == -1:
             shebang_pos = len(self._line)
