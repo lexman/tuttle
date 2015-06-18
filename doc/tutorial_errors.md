@@ -254,26 +254,36 @@ By the way, do you remember this colleague who wanted a spreadsheet. It cost us 
 
 # Improve the graph
 
-Your teammate thinks your graph is ugly... And we have to agree.
+After a discussion with your teammates, you should count bad guys too, to have a reference. Michel is going to work on
+that.
 
-So he checks out the code from the repository on his own computer and begins working on the colors of the graph.
-After a few tries, where he only had to launch `tuttle run` to see the result, he writes this :
+So he checks out the code from the repository on his own computer and changes the list of people to count :
 
-    file://characters_count.png <- file://characters_count.dat
-        gnuplot <<$script$
-        set terminal png
-        set output "characters_count.png"
-        plot "characters_count.dat" using 2: xtic(1) with histeps
-        $script$
+    file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
+        # -*- coding: utf8 -*-
+        names = ["Athos", "Porthos", "Aramis", "d'Artagnan", "Richelieu"]
+        with open('characters_count.dat', 'w') as f_out:
+            with open('Les_trois_mousquetaires.txt') as f_in:
+                content_low = f_in.read().lower()
+            print("{} chars in the novel".format(len(content_low)))
+            for name in names:
+                name_low = name.lower()
+                f_out.write("{}\t{}\n".format(name, content_low.count(name_low)))
+                print("{} - done".format(name))
 
-Now the only thing you have to do to benefit from he work, is retrieve the modifications from the versioning system,
-for example `git pull --rebase` if you work with git.
+When he executes `tuttle run` he can see the result, even make a few experiments, and when is work is over, he commits
+and shares it to the central code repository.
 
-Now you can use `tuttle run`, and your teammate's work will be incorporated into your. And it will only
-re-process what have changed.
+
+Without `tuttle he would have to tell you that the python code he has changed. So you can delete `characters_count.dat`,
+ but also `characters_count.png` and `characters_count.csv`, and recompute them.
+
+Now, whih `tuttle`, the only thing you have to do to benefit from he work, is retrieve the modifications from the
+versioning system (eg `git pull --rebase` if you work with git), and `tuttle run` : your teammate's work will be
+incorporated into your, and it will only re-process what have changed.
 
 With this feature from tuttle you can work on data as you work on code : use branches, merge with your team,
-even have a continuous integration server (eg Jenkins) !
+even use a continuous integration server like Jenkins that will always keep your data up-to-date !
 
 # Improve the graph
 
