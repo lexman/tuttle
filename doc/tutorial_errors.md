@@ -287,14 +287,16 @@ even use a continuous integration server like Jenkins that will always keep your
 
 # Improve the graph
 
-Let's say another improvement to this graph, would be to change the color of the line (to green). After reviewing
-the doc, it seem we only have to add a line in the end :
+After all this work, the project does what you want. But we can all agree this graph is really ugly...
+
+It would be a lot nicer if it was drawn is green instead of red ! After reviewing the doc, it seem we only have to add
+a line in the end :
 
     file://characters_count.png <- file://characters_count.dat
         gnuplot <<$script$
         set terminal png
         set output "characters_count.png"
-        plot "characters_count.dat" using 2: xtic(1) with histeps
+        plot "characters_count.dat" using 2: xtic(1) with histogram
         linecolor "green"
         $script$
 
@@ -320,15 +322,16 @@ lexman@lexman-pc:~/tuttle_tutorial$
 
 Something went wrong !
 
-Apparently, `gnuplot` didn't like our last raw. Let's have a look to the report :
-you can't miss the workflow has failed, and which process is in error. You also notice that `characters_count.png` is
-in red. It means that according to what have been run during the execution of the workflow, you can't rely on
-the file `characters_count.png`.
+Apparently, `gnuplot` didn't like our last raw. Let's have a look to the report in `.tuttle\report.html` :
 
-In fact, as soon an error occurs, `tuttle` stops and leaves everything as is so that you can debug.
+First, you can't miss the workflow has failed, and which process is in error. You also notice that
+`characters_count.png` is in red. It means that, according to the execution of the workflow,
+you can't rely on the file `characters_count.png`.
 
-Notice that if you list the files ont the directory, you'll find one called `characters_count.png`. This means that
-gnuplot have produced it ! So what happened ? gnuplot has crashed after the png has been produced.
+Actually, as soon an error occurs, `tuttle` stops and leaves everything 'as is' so you can debug.
+
+So let's have a look at files on the directory : we can see one called `characters_count.png`. This means that
+gnuplot have produced it ! So what happened ? gnuplot has crashed **after** the png has been produced.
 
 If you want to revert to a clean state, you can execute `tuttle invalidate` :
 
@@ -344,6 +347,9 @@ lexman@lexman-pc:~/tuttle_tutorial$
 `tuttle has removed all the files that where not valid, as we can see in the report :
 
 
+In this state, we can rely on all the files we have.
+
+
 But let's go on : we still want our green graph. Maybe color should be declared before drawing :
 
     file://characters_count.png <- file://characters_count.dat
@@ -351,7 +357,7 @@ But let's go on : we still want our green graph. Maybe color should be declared 
         set terminal png
         set output "characters_count.png"
         linecolor "green"
-        plot "characters_count.dat" using 2: xtic(1) with histeps
+        plot "characters_count.dat" using 2: xtic(1) with histogram
         $script$
 
 Let's `tuttle run` :
@@ -374,8 +380,8 @@ Done
 lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
-Tuttle tryed to get back from the updated process but an error occurred once again. Well, if rebooting windows solves
-  issues, why not `tuttle run` again ?
+Tuttle tried to get back from the updated process but an error occurred once again. Is it still our fault ? Well, if
+rebooting windows solves many issues, why not `tuttle run` again ?
 
 ```console
 lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
@@ -388,14 +394,14 @@ lexman@lexman-pc:~/tuttle_tutorial$
 
 So ``tuttle` refused to run... Well, we haven't changed anything in the code, so why would the issue be fixed ?
 
-The good way is to have a proper fix in the tuttlefile. Actually, the doc says the coor must be set on the same line
-that the plot :
+The good way is to have a proper fix in to investigate, find the error change the tuttlefile accordingly. Actually,
+the plot`doc says the color must be set on the same lin that the plot :
 
     file://characters_count.png <- file://characters_count.dat
         gnuplot <<$script$
         set terminal png
         set output "characters_count.png"
-        plot "characters_count.dat" using 2: xtic(1) with histeps linecolor "green"
+        plot "characters_count.dat" using 2: xtic(1) with histogram linecolor "green"
         $script$
 
 `tuttlle run` :
@@ -419,11 +425,12 @@ lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
 There it is ! `tuttle` has seen the change in the code, it has removed invalid files, and have run the necessary
-process... And we can see our graph has the good color :
+process... Now we can see our graph has the good color :
 
 TODO
 
-You've seen in this paragraph that `tuttle` allows you to investigate errors and fix them, with few efforts.
+In this paragraph, we have seen how `tuttle` let you to investigate errors and fix them with few efforts because
+you don't have to worrying about removing your previous work.
 
 
 # Describe the plot in a separate file
