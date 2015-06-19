@@ -201,28 +201,27 @@ Now once again we can commit our work...
 
 ## Fix the maths
 
-But wait ? Di you have a close look at this graph ? Do you truly believe the main character, D'Artagnan is mentioned two or three
+But wait ? Have you looked closely at this graph ? Do you truly believe the main character, *D'Artagnan* is mentioned two or three
 times less thant his fellow companions ? There must have been an issue somewhere.
 
 After a few verifications, you'll find that the main character's name can be `D'Artagnan` as well as `d'Artagnan`. In
 fact `d'Artagnan` seems to be the correct way to spell it, and `D'Artagnan` is used only at the beginning of a sentence.
 
-The right way to fix this is to change the python code to make it robust to case. You might have already noticed that we
-usually don't find bugs as soon as we make them, but afterwards when we use some data previously computed. And
-frequently our final users find tiny mistakes.
+Maybe you might have already noticed that we usually don't find bugs as soon as we make them, but afterwards... When we
+use the data previously computed. And frequently it's our final users who find the last tiny mistakes...
 
-For this bug, we'll replace the former python process with this one, where all strings are converted to lower case
-for comparison :
+We'll have to fix python code by making it robust to case. All strings are converted to lower case
+for comparisons :
 
     file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
         # -*- coding: utf8 -*-
         names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
         with open('characters_count.dat', 'w') as f_out:
             with open('Les_trois_mousquetaires.txt') as f_in:
-                content_low = f_in.read().lower()
+                content_low = f_in.read()**.lower()**
             print("{} chars in the novel".format(len(content_low)))
             for name in names:
-                name_low = name.lower()
+                name_low = name**.lower()**
                 f_out.write("{}\t{}\n".format(name, content_low.count(name_low)))
                 print("{} - done".format(name))
 
