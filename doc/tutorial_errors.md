@@ -2,7 +2,7 @@
 
 
 The purpose of this tutorial is to explain, line by line, the [demo project](examples/musketeers) which
-scans the the novel *The Three Musketeers*, to measure the importance of each musketeer. From a zip archive,
+parses the the novel *The Three Musketeers*, to count how many times each characters are mentioned. From a zip archive,
 you will extract the text to produce this graph graph :
 
 #SCREENSHOT
