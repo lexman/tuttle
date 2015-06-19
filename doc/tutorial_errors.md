@@ -254,25 +254,26 @@ lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
 Tuttle has noticed the change. Before running the necessary *processes*, it cleans the workspace by deleting all the
-*resources* that no longer fit with the current workflow.
+*resources* that no longer fit with the current workflow : `characters_count.dat` is not valid any more because we have
+changed the process that produces it. And `characters_count.png` and `characters_count.csv` will be re-processed
+because they depend on the former.
 
-So in our case, `characters_count.dat` is not valid any more because we have just changed the process that
-produces it. And `characters_count.png` and `characters_count.csv` will be re-processed because they depend on the
-former. Eventually, all the resources are up to date and coherent with your code.
+Eventually, all the resources are up to date and coherent with your code.
 
-By the way, do you remember this colleague who wanted a spreadsheet. It cost us no effort to mail him the update !
+By the way, do you remember this colleague who wanted a spreadsheet. Without any effort, we are ready to mail him the
+update !
 
 
 ## Include bad guys
 
-After a discussion with your teammates, you should count bad guys too, to have a reference. Michel is going to work on
-that.
+After a discussion with your teammates, you agreed you should count bad guys too, to have a reference. You
+colleague Michel will be in charge of that task.
 
 So he checks out the code from the repository on his own computer and changes the list of people to count :
 
     file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
         # -*- coding: utf8 -*-
-        names = ["Athos", "Porthos", "Aramis", "d'Artagnan", "Richelieu"]
+        names = ["Athos", "Porthos", "Aramis", "d'Artagnan", "Richelieu", "Rochefort"]
         with open('characters_count.dat', 'w') as f_out:
             with open('Les_trois_mousquetaires.txt') as f_in:
                 content_low = f_in.read().lower()
@@ -286,14 +287,15 @@ When he executes `tuttle run` he can see the result, even make a few experiments
 and shares it to the central code repository.
 
 
-Without `tuttle he would have to tell you that the python code he has changed. So you can delete `characters_count.dat`,
- but also `characters_count.png` and `characters_count.csv`, and recompute them.
+Without `tuttle` he would have to tell you that the python code he has changed, so you can delete
+`characters_count.dat`, and also `characters_count.png` and `characters_count.csv`. Then you
+could recompute those files.
 
-Now, whih `tuttle`, the only thing you have to do to benefit from he work, is retrieve the modifications from the
+Now, whih `tuttle`, the only thing you have to do to benefit from his work, is retrieve the modifications from the
 versioning system (eg `git pull --rebase` if you work with git), and `tuttle run` : your teammate's work will be
-incorporated into your, and it will only re-process what have changed.
+incorporated into yours, and only the file that have changed will be re-processed.
 
-With this feature from tuttle you can work on data as you work on code : use branches, merge with your team,
+With this feature, `tuttle` let you can work on data as you work on code : use branches, merge with your team,
 even use a continuous integration server like Jenkins that will always keep your data up-to-date !
 
 ## Improve the graph
