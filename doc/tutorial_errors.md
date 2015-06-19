@@ -210,18 +210,18 @@ fact `d'Artagnan` seems to be the correct way to spell it, and `D'Artagnan` is u
 Maybe you might have already noticed that we usually don't find bugs as soon as we make them, but afterwards... When we
 use the data previously computed. And frequently it's our final users who find the last tiny mistakes...
 
-We'll have to fix python code by making it robust to case. All strings are converted to lower case
-for comparisons :
+We'll have to fix python code by making it robust to case. In the new code, all strings are converted to lower case
+with the `lower()` function before comparisons :
 
     file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
         # -*- coding: utf8 -*-
         names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
         with open('characters_count.dat', 'w') as f_out:
             with open('Les_trois_mousquetaires.txt') as f_in:
-                content_low = f_in.read()**.lower()**
+                content_low = f_in.read().lower()
             print("{} chars in the novel".format(len(content_low)))
             for name in names:
-                name_low = name**.lower()**
+                name_low = name.lower()
                 f_out.write("{}\t{}\n".format(name, content_low.count(name_low)))
                 print("{} - done".format(name))
 
