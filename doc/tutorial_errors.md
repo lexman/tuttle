@@ -450,16 +450,16 @@ you don't have to worry about cleaning your previous work.
 
 ## Describe the plot in a separate file
 
-Actually, the lines we have written are a kind of program, run by the gnuplot interpreter. This is very similar
+Actually, the lines we have written are a kind of program, run by the `gnuplot` interpreter. This is very similar
  to python code.
 
-You would usely create a separate file called `myplot.gnuplot`, with this content :
+A  normal command line user would create a separate file called `myplot.gnuplot`, with this content :
 
         set terminal png
         set output "characters_count.png"
-        plot "characters_count.dat" using 2: xtic(1) with histeps linecolor "green"
+        plot "characters_count.dat" using 2: xtic(1) with histogram linecolor "green"
 
-and you would only have to run
+and he would only have to run
 
         gnuplot myplot.gnuplot
 
@@ -472,10 +472,10 @@ But how can we benefit from reprocessing when the code change, with this languag
 
 With this method, you can ensure re-processing of the png file when `myplot.gnuplot` changes.
 
-## Follow the source file on the web
+## Follow the source from the web
 
 The first thing we have done at the beginning of this tuttorial was to download the zip file. The good news, is that
-`tuttle` recognises http resources. You can even download it in one line :
+`tuttle` recognises http resources. You can even download it in one line with the *download* processor :
 
     file://Les_trois_mousquetaires.zip <- http://abonnasseau.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip ! download
 
@@ -483,15 +483,18 @@ That's all ! The `download` processor is smart enough to understand it has to do
 the destination.
 
 When we `tuttle run`, what will happen ? `tuttle` can't know for sure if the file `Les_trois_mousquetaires.zip` in
-the workspace is the same as the remote one. Well not before it downloads it. Therefore, `tuttle` will invalidate the
-file `Les_trois_mousquetaires.zip` and all its dependencies before downloading and running all the processes again...
+the workspace is the same as the remote one. Not before it downloads it. Therefore, `tuttle` will invalidate the
+file `Les_trois_mousquetaires.zip` and all the *resources* that used to depend on it before downloading the file and
+ running all the processes again...
 
-Therefore, we can be absolutely sure the result of the workflow's execution is the correct.
+Therefore, we have absolute guarantee that the result of the workflow's execution is the correct, and coherent with our
+`tuttlefile`.
 
-Now, if the source changes on the internet, for example because the text is still being reviewed by volunteers who
-compares the text to the scanned pages, it is easy to update !
-`tuttle run` will notice the change in the source, will invalidate every thing that depends on it and run the necessary
-processes again.
+Now, if the source changes on the internet, for example because
+(the text is still being reviewed by volunteers)[https://fr.wikisource.org/wiki/Livre:Dumas_-_Les_Trois_Mousquetaires_-_1849.djvu]
+who compares the text to the scanned pages, it is easy to update !
+If the zip file changes on line, `tuttle run` will notice the change in the *primary resource*, will invalidate every
+thing that depends on it and run the necessary processes again.
 
 ## Prevent for reprocessing too much
 
