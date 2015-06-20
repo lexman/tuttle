@@ -22,7 +22,6 @@ class TestPythonProcessor():
     def test_python_processor(self):
         """A python process should run"""
         project = u"""file://B <- file://A ! python
-        # -*- coding: utf8 -*-
 
         from time import time
         print("A python process at {}".format(time()))
@@ -38,7 +37,6 @@ class TestPythonProcessor():
     def test_error_in_python_processor(self):
         """ If an error occurs, tuttle should fail and output logs should trace the error"""
         project = """file://B <- file://A ! python
-        # -*- coding: utf8 -*-
 
         open('B', 'w').write('A produces B')
         a = 0
@@ -61,3 +59,15 @@ class TestPythonProcessor():
     #     error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err')).read()
     #     assert rcode == 0, error_log
     #     assert output.find("comment") >= 0
+
+    @isolate(['A', 'a_lib.py'])
+    def test_import_library(self):
+        """ If an error occurs, tuttle should fail and output logs should trace the error"""
+        project = """file://B <- file://A ! python
+        import a_lib
+        open('B', 'w').write(a_lib.a_function())
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        B_contents = open('B').read()
+        assert(B_contents == '42')
