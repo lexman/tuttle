@@ -83,7 +83,6 @@ For the next step, shell scripting won't be enough count the words in the text. 
 parsing :
 
     file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
-        # -*- coding: utf8 -*-
         names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
         with open('characters_count.dat', 'w') as f_out:
             with open('Les_trois_mousquetaires.txt') as f_in:
@@ -214,7 +213,6 @@ We'll have to fix python code by making it robust to case. In the new code, all 
 with the `lower()` function before comparisons :
 
     file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
-        # -*- coding: utf8 -*-
         names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
         with open('characters_count.dat', 'w') as f_out:
             with open('Les_trois_mousquetaires.txt') as f_in:
@@ -272,7 +270,6 @@ colleague Michel will be in charge of that task.
 So he checks out the code from the repository on his own computer and changes the list of people to count :
 
     file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
-        # -*- coding: utf8 -*-
         names = ["Athos", "Porthos", "Aramis", "d'Artagnan", "Richelieu", "Rochefort"]
         with open('characters_count.dat', 'w') as f_out:
             with open('Les_trois_mousquetaires.txt') as f_in:
@@ -501,7 +498,6 @@ That could be a problem if you have a long workflow... Imagine that our python p
 by a heavy processing phase, like this `sleep(4)` instruction :
 
     file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
-        # -*- coding: utf8 -*-
         import time
         time.sleep(4)
         names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
