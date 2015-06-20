@@ -53,7 +53,7 @@ class ProjectParser():
         unreachable = workflow.circular_references()
         if unreachable:
             error_msg = "The following resources references one another as inputs in a circular way that don't allow " \
-                        "to choose which one to run first"
+                        "to choose which one to run first :\n"
             for process in unreachable:
                 error_msg += "* {}\n".format(process.id)
             raise WorkflowError(error_msg, self._nb_lines)
