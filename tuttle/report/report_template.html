@@ -78,8 +78,18 @@
                         <td>{{ process.start }}</td>
                         <td>{{ process.end }}</td>
                         <td>{{ process.duration|round(3) }}</td>
-                        <td><a href="{{ process.log_stdout }}"> view </a> ({{ process.log_stdout_size }})</td>
-                        <td><a href="{{ process.log_stderr }}"> view </a> ({{ process.log_stderr_size }})</td>
+                        <td>{% if process.log_stdout_size == "empty" %}
+                            (empty)
+                            {% else %}
+                            <a href="{{ process.log_stdout }}" type="text/plain"> view </a> <a href="{{ process.log_stdout }}" download> download </a> ({{ process.log_stdout_size }})
+                            {% endif %}
+                        </td>
+                        <td>{% if process.log_stderr_size == "empty" %}
+                            (empty)
+                            {% else %}
+                            <a href="{{ process.log_stderr }}" type="text/plain"> view </a> <a href="{{ process.log_stderr }}" download> download </a> ({{ process.log_stderr_size }})
+                            {% endif %}
+                        </td>
                     </tr>
                 </tbody>
             </table>

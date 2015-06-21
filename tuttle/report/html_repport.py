@@ -39,10 +39,9 @@ def nice_file_size(filename):
         file_size = path.getsize(filename)
         if file_size == 0:
             return "empty"
-        else:
-            return nice_size(file_size)
+        return nice_size(file_size)
     except error:
-        return "empty"
+        return ""
 
 
 def format_resource(resource, workflow):
