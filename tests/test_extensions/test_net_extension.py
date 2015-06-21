@@ -64,9 +64,9 @@ class TestDownloadProcessor():
         assert isfile("google.html")
         content = open("google.html").read()
         assert content.find("<title>Google</title>") >= 0
-        logs = open(join(".tuttle", "processes", "logs", "__1_stdout"), "r").read()
+        logs = open(join(".tuttle", "processes", "logs", "__1_stdout.txt"), "r").read()
         assert logs.find("\n.\n") >= 0
-        assert isfile(join(".tuttle", "processes", "logs", "__1_err"))
+        assert isfile(join(".tuttle", "processes", "logs", "__1_err.txt"))
 
     @isolate
     def test_long_download(self):
@@ -78,7 +78,7 @@ class TestDownloadProcessor():
         workflow.static_check_processes()
         workflow.run()
         assert isfile("jquery.js")
-        logs = open(join(".tuttle", "processes", "logs", "__1_stdout"), "r").read()
+        logs = open(join(".tuttle", "processes", "logs", "__1_stdout.txt"), "r").read()
         assert logs.find("...") >= 0
 
     @isolate

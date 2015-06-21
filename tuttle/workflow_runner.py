@@ -24,8 +24,8 @@ _logs_dir = tuttle_dir("processes", 'logs')
 
 
 def prepare_paths(process):
-    log_stdout = join(_logs_dir, "{}_stdout".format(process.id))
-    log_stderr = join(_logs_dir, "{}_err".format(process.id))
+    log_stdout = join(_logs_dir, "{}_stdout.txt".format(process.id))
+    log_stderr = join(_logs_dir, "{}_err.txt".format(process.id))
     reserved_path = join(_processes_dir, process.id)
     if isdir(reserved_path):
         rmtree(reserved_path)

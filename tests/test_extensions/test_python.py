@@ -44,7 +44,7 @@ class TestPythonProcessor():
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 2
-        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err')).read()
+        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err.txt')).read()
         assert error_log.find('ZeroDivisionError:') >= 0, error_log
 
     # @isolate(['tests.sqlite'])
