@@ -24,7 +24,7 @@ Then create a file called `tuttlefile` and paste this code :
         unzip Les_trois_mousquetaires.zip Les_trois_mousquetaires.txt
 
 On line 1, we tell tuttle that we intend to produce Les_trois_mousquetaires.txt from the file Les_trois_mousquetaires.zip.
-How do we acheive that ? With the shell code provided on line 2 : by calling online zip utility. Notice the indentation
+How do we achieve that ? With the shell code provided on line 2 : by calling online zip utility. Notice the indentation
  that delimits the code.
 
 Let's run this workflow :
@@ -474,40 +474,41 @@ With this method, you can ensure re-processing of the png file when `myplot.gnup
 
 ## Follow the source from the web
 
-The first thing we have done at the beginning of this tuttorial was to download the zip file. The good news, is that
-`tuttle` recognises http resources. You can even download it in one line with the *download* processor :
+The first thing we have done at the beginning of this tutorial was to download the zip file. The good news is that
+`tuttle` recognises http resources. You can even download a resource in one line with the *download* processor :
 
     file://Les_trois_mousquetaires.zip <- http://abonnasseau.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip ! download
 
 That's all ! The `download` processor is smart enough to understand it has to download the http input resource into
 the destination.
 
-When we `tuttle run`, what will happen ? `tuttle` can't know for sure if the file `Les_trois_mousquetaires.zip` in
+When we `tuttle run`, what will happen ? `tuttle` can't know for sure whether the file `Les_trois_mousquetaires.zip` in
 the workspace is the same as the remote one. Not before it downloads it. Therefore, `tuttle` will invalidate the
-file `Les_trois_mousquetaires.zip` and all the *resources* that used to depend on it before downloading the file and
- running all the processes again...
+file `Les_trois_mousquetaires.zip` and all the *resources* that used to depend on it. Then it will download the file and
+ run all the processes again...
 
 Therefore, we have absolute guarantee that the result of the workflow's execution is the correct, and coherent with our
 `tuttlefile`.
 
 Now, if the source changes on the internet, for example because
-(the text is still being reviewed by volunteers)[https://fr.wikisource.org/wiki/Livre:Dumas_-_Les_Trois_Mousquetaires_-_1849.djvu]
-who compares the text to the scanned pages, it is easy to update !
-If the zip file changes on line, `tuttle run` will notice the change in the *primary resource*, will invalidate every
+(the digitalized text is still being reviewed by volunteers)[https://fr.wikisource.org/wiki/Livre:Dumas_-_Les_Trois_Mousquetaires_-_1849.djvu]
+, updates will be easy!
+
+If the zip file changes online, `tuttle run` will notice the change in the *primary resource*, will invalidate every
 thing that depends on it and run the necessary processes again.
 
 ## Prevent for reprocessing too much
 
 The drawback of the using remote resources, is that we don't always control them. What will happen it the resource
-changes while we are working on the gnuplot part ? All the workflow could be invalidated !
+changes while we are working on the gnuplot part ? The whole the workflow could be invalidated !
 
 
 That could be a problem if you have a long workflow... Imagine that our python process would begin 
-by a heavy processing phase, like this `sleep(4)` instruction :
+by a heavy processing phase, like this `sleep(10)` instruction :
 
     file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
         import time
-        time.sleep(4)
+        time.sleep(10)
         names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
         with open('characters_count.dat', 'w') as f_out:
             with open('Les_trois_mousquetaires.txt') as f_in:
@@ -521,21 +522,21 @@ by a heavy processing phase, like this `sleep(4)` instruction :
 
 To prevent from unexpected reprocessing, there is a `--threshold` parameter (in short `-t`) in the command line :
 ```console
-lexman@lexman-pc:~/tuttle_tutorial$ tuttle run -t 2
+lexman@lexman-pc:~/tuttle_tutorial$ tuttle run -t 5
 TODO
 Done
 lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
-Here, we have defined that we don't want invalidation if it has to remove more than 2 seconds of processing. That's why
+Here, we have defined that we don't want invalidation if it has to remove more than 5 seconds of processing. That's why
 tuttle has stopped.
 
-This feature can prove very usefull when you merge moficiations from your teammates.
+This feature can prove very useful when you merge modifications from your teammates.
 
 ## Bonus : detach from the web
 
-Now let's see if you have understood how tuttle works. Suppose you want to work on our workflow in the
-countryside where you don't have acces to Internet. If we run our workflow, `tuttle`will try to connect
+Now let's see if you have understood how tuttle works... Suppose you want to work on our workflow in the
+countryside where you don't have access to Internet. If we run our workflow offline, `tuttle` will try to connect
 to check if the Les_trois_mousquetaires.zip has changed remotely. Without connexion, the resource will
 be considered as an error, so everything in the workflow would be invalidated. To prevent loosing our work
 we want to disconnect from the remote resource by removing this line from the `tuttlefile` :
@@ -543,6 +544,7 @@ we want to disconnect from the remote resource by removing this line from the `t
     file://Les_trois_mousquetaires.zip <- http://abonnasseau.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip ! download
 
 Now, ask yourself what will happen when we execute `tuttle run` ?
+
 
 ```console
 lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
@@ -553,10 +555,13 @@ lexman@lexman-pc:~/tuttle_tutorial$
 
 What has happen ?
 
-`Les_trois_mousquetaires.zip`is now a *primary resource*. When running, tuttle checks wheter the file
+`Les_trois_mousquetaires.zip`is now a *primary resource*. When running, tuttle checks whether the file
 has changed since we last ran the workflow... And because it is the same, everything is still valid !
 
 ## Next :
+
+
+
 DONE * show what happens when an error occurs... And fiw that error
 DONE * show how to follow code changes even if the language is not implemented
 DONE * show how to merge your work with you team mate's
@@ -569,3 +574,13 @@ DONE * explain the --threshold parameter to prevent from losing your work if a r
 We've seen how to run a process with tuttle. In the incoming tutorial, you will learn how to deal with errors while you
 
 work.
+
+In this tutorial about the command line `tuttle run`, we have seen :
+* how you can chain *processes* from various languages (shell, python) through explicit declaration
+of input and output *resources*
+* that this processes will be run only if necessary
+* that if you change a line of code, everything that depends on it will be reprocessed
+* that you can prevent a too big reprocessing
+* that tuttle plays well with source control : you can merge, rebase, fork your project, you will always have data up-to-date with your source, with the minimum of processing
+* that a change in primary resource impacts the whole *workflow*
+* that debuging is easy thanks to the html report, the logs and
