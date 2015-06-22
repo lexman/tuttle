@@ -304,7 +304,7 @@ even use a **continuous integration** server like Jenkins that will always keep 
 After all this work, the project does basically what you want. But we all have to agree this graph is really ugly... It
 would be a lot nicer in green !
 
-After reading the `cnuplot` doc, it seem we only have to add a line in the end :
+After reading the `gnuplot` doc, it seem we only have to add a line in the end :
 
     file://characters_count.png <- file://characters_count.dat
         gnuplot <<$script$
