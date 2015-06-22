@@ -1,0 +1,22 @@
+file://Les_trois_mousquetaires.txt <- file://Les_trois_mousquetaires.zip
+    unzip Les_trois_mousquetaires.zip Les_trois_mousquetaires.txt
+
+file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
+    names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
+    with open('characters_count.dat', 'w') as f_out:
+        with open('Les_trois_mousquetaires.txt') as f_in:
+            content = f_in.read()
+        print("{} chars in the novel".format(len(content)))
+        for name in names:
+            f_out.write("{}\t{}\n".format(name, content.count(name)))
+            print("{} - done".format(name))
+
+file://characters_count.csv <- file://characters_count.dat
+    awk '{print "\""$1"\","$2"\r"}' characters_count.dat > characters_count.csv
+            
+file://characters_count.png <- file://characters_count.dat
+    gnuplot <<$script$
+    set terminal png
+    set output "characters_count.png"
+    plot "characters_count.dat" using 2: xtic(1) with histogram
+    $script$
