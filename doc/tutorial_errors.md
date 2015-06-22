@@ -259,6 +259,8 @@ because they depend on the former.
 
 Eventually, all the resources are guaranteed to be up to date and coherent with your code.
 
+As you see, it is **easy** to change code and **experiment** with tuttle
+
 By the way, do you remember this colleague who wanted a spreadsheet. Without any effort, we are ready to mail him the
 update !
 
@@ -558,29 +560,17 @@ What has happen ?
 `Les_trois_mousquetaires.zip`is now a *primary resource*. When running, tuttle checks whether the file
 has changed since we last ran the workflow... And because it is the same, everything is still valid !
 
-## Next :
-
-
-
-DONE * show what happens when an error occurs... And fiw that error
-DONE * show how to follow code changes even if the language is not implemented
-DONE * show how to merge your work with you team mate's
-Bonus :
-* show the download processor... And how you can change (a bit) the workflow without loosing your work
-DONE * explain the --threshold parameter to prevent from losing your work if a remote provider changes
-
 
 ## Conclusion
-We've seen how to run a process with tuttle. In the incoming tutorial, you will learn how to deal with errors while you
 
-work.
-
-In this tutorial about the command line `tuttle run`, we have seen :
+In this tutorial about the command `tuttle run`, we have seen :
 * how you can chain *processes* from various languages (shell, python) through explicit declaration
 of input and output *resources*
-* that this processes will be run only if necessary
-* that if you change a line of code, everything that depends on it will be reprocessed
-* that you can prevent a too big reprocessing
+* that processes will be run only if necessary
+* that if you change a line of code, everything that depends on it will be reprocessed. Idem for *primary resources*
 * that tuttle plays well with source control : you can merge, rebase, fork your project, you will always have data up-to-date with your source, with the minimum of processing
-* that a change in primary resource impacts the whole *workflow*
-* that debuging is easy thanks to the html report, the logs and
+* that recovery from error consist only in changing the buggy code : tuttle will clean up previous execution for you
+* that debuging is easy thanks to the html report, the logs and cheap experimentation
+
+
+Happy processing !
