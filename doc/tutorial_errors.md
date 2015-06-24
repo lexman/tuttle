@@ -499,7 +499,7 @@ Now, if the source changes on the internet, for example because
 If the zip file changes online, `tuttle run` will notice the change in the *primary resource*, will invalidate every
 thing that depends on it and run the necessary processes again.
 
-## Prevent for reprocessing too much
+## Prevent from reprocessing too much
 
 The drawback of the using remote resources, is that we don't always control them. What will happen it the resource
 changes while we are working on the gnuplot part ? The whole the workflow could be invalidated !
