@@ -47,8 +47,8 @@ Done
 ```
 
 The output displays `tuttlefile_1` which the identifier of the *process* in the *workflow*. The identifier is made from
-the filename `tuttlefile` and the line number of the process. After the identifier, we can see all the outputs
-of the process.
+the filename `tuttlefile` and the line number of the process. After the identifier, we can see the outputs
+of the process... In our case, it is the output of the unzip command. 
 
 We have ran our first *workflow*. We can take a look at our workspace :
 
