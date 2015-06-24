@@ -45,7 +45,7 @@ spreadsheet software :
         $script$
 
 
-When you run this project, you get a [report](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/tuttle_report.html) of every
+When you run this project, you get a [report](http://lexman.github.io/tuttle/docs/musketeers_assets/tuttle_report.html) of every
 thing that has been run, when, whether it succeeded, an access to the logs, and... A nice dependency graph !
 
 You'll find details on this workflow on the dedicated [tutorial](doc/tutorial.md).
@@ -55,13 +55,13 @@ well as command line options are likely to change.
 
 
 # Install
-You can find [download tuttle](https://github.com/abonnasseau/tuttle/releases) and install it on you system :
+You can find [download tuttle](https://github.com/lexman/tuttle/releases) and install it on you system :
 
 * on Windows, download the .msi installer
 * on debian and ubuntu a .deb is provided
 * on other systems, you need to install [python 2.7](https://www.python.org/downloads/release) and compile tuttle from the sources :
 ```
-    git clone https://github.com/abonnasseau/tuttle
+    git clone https://github.com/lexman/tuttle
     cd tuttle
 ```
 # Hacking
@@ -69,12 +69,12 @@ You can find [download tuttle](https://github.com/abonnasseau/tuttle/releases) a
 
 
 
-[![AppVeyor Windows build status](https://ci.appveyor.com/api/projects/status/github/abonnasseau/tuttle)](https://ci.appveyor.com/project/abonnasseau/tuttle)
-[![Travis Linux build status](https://travis-ci.org/abonnasseau/tuttle.png)](https://travis-ci.org/abonnasseau/tuttle)
+[![AppVeyor Windows build status](https://ci.appveyor.com/api/projects/status/github/lexman/tuttle)](https://ci.appveyor.com/project/lexman/tuttle)
+[![Travis Linux build status](https://travis-ci.org/lexman/tuttle.png)](https://travis-ci.org/lexman/tuttle)
 
 Tuttle is a python project you can download and install :
 
-    git clone https://github.com/abonnasseau/tuttle
+    git clone https://github.com/lexman/tuttle
     cd tuttle
     python setup.py install
 
@@ -85,4 +85,4 @@ Contributions are very welcome through pull request. You can contribute to :
 * code : improve tuttle kernel, add new extensions : spreadshits, mongodb, hdfs, etc.
 * tests : use Tuttle for your projects and report bugs
 * syntax : help define the perfect way to describe workflows
-* design : please help improve the look of the [report](http://abonnasseau.github.io/tuttle/docs/sales_assets/tuttle_report.html) to ease readability !
+* design : please help improve the look of the [report](http://lexman.github.io/tuttle/docs/sales_assets/tuttle_report.html) to ease readability !
