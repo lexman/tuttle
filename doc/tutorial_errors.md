@@ -7,17 +7,17 @@ you will extract the text to produce this graph graph :
 
 #SCREENSHOT
 
-[png bar graph](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.png) and
-a [csv file](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.csv) you can
+[png bar graph](http://lexman.github.io/tuttle/docs/musketeers_assets/characters_count.png) and
+a [csv file](http://lexman.github.io/tuttle/docs/musketeers_assets/characters_count.csv) you can
 import in our favorite spreadsheet software.
 
-This tutorial works on Linux, and you'll need to install [`tuttle`](https://github.com/abonnasseau/tuttle/releases) as
+This tutorial works on Linux, and you'll need to install [`tuttle`](https://github.com/lexman/tuttle/releases) as
 well as [gnuplot](http://www.gnuplot.info/) . We'll use little python, gnuplot and shell code, but don't worry if
 you don't know some of these languages : we'll focus on the method.
 
 ## Unzip the novel
 
-In an empty directory, download the [zip](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip).
+In an empty directory, download the [zip](http://lexman.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip).
 Then create a file called `tuttlefile` and paste this code :
 
     file://Les_trois_mousquetaires.txt <- file://Les_trois_mousquetaires.zip
@@ -136,7 +136,7 @@ Now have the figures in a tabular file that `gnuplot` will understand.
 # TODO : generate report again
 
 Before we go on, let's take a look at the report : open the file
-[`.tuttle/report.html`](http://abonnasseau.github.io/tuttle/doc/tutorial_assets/count_musketeers/tuttle_report.html)
+[`.tuttle/report.html`](http://lexman.github.io/tuttle/doc/tutorial_assets/count_musketeers/tuttle_report.html)
 inside the workspace.
 
 ## SCREENSHOT goes here
@@ -194,7 +194,7 @@ Tuttle does not have a gnuplot processor (... yet ! *pull requests are welcome*)
         $script$
 
 After we've ran tuttle, we can see the graph :
-![Characters count](http://abonnasseau.github.io/tuttle/docs/musketeers_assets/characters_count.png)
+![Characters count](http://lexman.github.io/tuttle/docs/musketeers_assets/characters_count.png)
 
 Now once again we can commit our work...
 
@@ -479,7 +479,7 @@ With this method, you can ensure re-processing of the png file when `myplot.gnup
 The first thing we have done at the beginning of this tutorial was to download the zip file. The good news is that
 `tuttle` recognises http resources. You can even download a resource in one line with the *download* processor :
 
-    file://Les_trois_mousquetaires.zip <- http://abonnasseau.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip ! download
+    file://Les_trois_mousquetaires.zip <- http://lexman.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip ! download
 
 That's all ! The `download` processor is smart enough to understand it has to download the http input resource into
 the destination.
@@ -543,7 +543,7 @@ to check if the Les_trois_mousquetaires.zip has changed remotely. Without connex
 be considered as an error, so everything in the workflow would be invalidated. To prevent loosing our work
 we want to disconnect from the remote resource by removing this line from the `tuttlefile` :
 
-    file://Les_trois_mousquetaires.zip <- http://abonnasseau.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip ! download
+    file://Les_trois_mousquetaires.zip <- http://lexman.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip ! download
 
 Now, ask yourself what will happen when we execute `tuttle run` ?
 
