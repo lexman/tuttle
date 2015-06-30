@@ -86,7 +86,7 @@ class DownloadProcessor:
         # TODO how do we handle errors ?
         inputs = [res for res in process.iter_inputs()]
         outputs = [res for res in process.iter_outputs()]
-        file_name = outputs[0]._path
+        file_name = outputs[0]._get_path()
         url = inputs[0].url
         headers = {"User-Agent": USER_AGENT}
         req = Request(url, headers=headers)
