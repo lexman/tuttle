@@ -1,9 +1,23 @@
 # -*- coding: utf8 -*-
+from tempfile import mkdtemp
+from shutil import rmtree, copytree, copy
+from os.path import isdir, join, isfile
+from tests.functional_tests import isolate, run_tuttle_file
+from tuttle import invalidate_resources
 
 from tuttle.resources import FileResource
-
 import tuttle.resources
-from os import path
+from os import path, listdir
+
+
+def copycontent(src, dst):
+    for elmt in listdir(src):
+        src_elmt = join(src, elmt)
+        dst_elmt = join(dst, elmt)
+        if isdir(elmt):
+            copytree(src_elmt, dst_elmt)
+        else:
+            copy(src_elmt, dst_elmt)
 
 class TestHttpResource():
 
@@ -17,3 +31,20 @@ class TestHttpResource():
         """A real resource should exist"""
         res = FileResource("fictive_file")
         assert not res.exists()
+
+    @isolate(['A'])
+    def test_relative_resource_is_attached_to_tuttlefile(self):
+        """If you move a whole project, it must still work"""
+        project = """file://B <- file://A
+        echo A produces B >B
+        echo A produces B
+        """""
+        run_tuttle_file(project)
+        assert isfile('B')
+        tmp_dir = mkdtemp()
+        copycontent('.', tmp_dir)
+        assert isfile(join(tmp_dir, 'B'))
+        invalidate_resources(join(tmp_dir, 'tuttlefile'), ['file://B'])
+        assert not isfile(join(tmp_dir, 'B')), "File B in the copied project should have been removed"
+        assert isfile('B'), "File B in the origin project should still exist"
+
