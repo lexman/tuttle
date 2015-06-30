@@ -79,7 +79,7 @@ class CSV2SQLiteProcessor:
         # static_check ensured we know what are inputs and outputs
         input_res = process.iter_inputs().next()
         assert isinstance(input_res, FileResource)
-        csv_filename = input_res._path
+        csv_filename = input_res._get_path()
 
         output_res = process.iter_outputs().next()
         assert isinstance(output_res, SQLiteResource)
@@ -96,7 +96,7 @@ class CSV2SQLiteProcessor:
                 # Any well defined error it re-emitted as-is
                 raise
             except Exception as e:
-                lerr.write("Unexpected error while importing {} in SQLite database :".format(input_res._path))
+                lerr.write("Unexpected error while importing {} in SQLite database :".format(input_res._get_path()))
                 lerr.write(e.message)
                 lerr.write("\n")
                 import traceback

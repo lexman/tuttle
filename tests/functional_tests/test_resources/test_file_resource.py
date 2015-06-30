@@ -8,6 +8,7 @@ from tuttle import invalidate_resources
 from tuttle.resources import FileResource
 import tuttle.resources
 from os import path, listdir
+from tuttle.utils import CurrentDir
 
 
 def copycontent(src, dst):
@@ -44,7 +45,8 @@ class TestHttpResource():
         tmp_dir = mkdtemp()
         copycontent('.', tmp_dir)
         assert isfile(join(tmp_dir, 'B'))
-        invalidate_resources(join(tmp_dir, 'tuttlefile'), ['file://B'])
-        assert not isfile(join(tmp_dir, 'B')), "File B in the copied project should have been removed"
+        with CurrentDir(tmp_dir):
+            invalidate_resources(join(tmp_dir, 'tuttlefile'), ['file://B'])
         assert isfile('B'), "File B in the origin project should still exist"
+        assert not isfile(join(tmp_dir, 'B')), "File B in the copied project should have been removed"
 

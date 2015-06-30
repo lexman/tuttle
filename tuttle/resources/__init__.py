@@ -53,27 +53,27 @@ class FileResource(ResourceMixIn, object):
 
     def __init__(self, url):
         super(FileResource, self).__init__(url)
-        self._path = self._get_path()
 
     def _get_path(self):
         return abspath(self.url[len("file://"):])
 
     def exists(self):
-        return exists(self._path)
+        return exists(self._get_path())
 
     def signature(self):
         sha1 = None
         try:
-            with open(self._path) as f:
+            with open(self._get_path()) as f:
                 sha1 = hash_file(f)
         except IOError:
             pass
         return "sha1:{}".format(sha1)
 
     def remove(self):
-        if isfile(self._path):
-            remove(self._path)
+        path = self._get_path()
+        if isfile(path):
+            remove(path)
         else:
             #directory
-            rmtree(self._path)
+            rmtree(path)
         # TODO what about links ?
