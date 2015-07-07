@@ -5,10 +5,8 @@ The purpose of this tutorial is to explain, line by line, the [demo project](exa
 parses the the novel *The Three Musketeers*, to count how many times each characters are mentioned. From a zip archive,
 you will extract the text to produce this graph graph :
 
-#SCREENSHOT
-
-[png bar graph](http://lexman.github.io/tuttle/docs/musketeers_assets/characters_count.png) and
-a [csv file](http://lexman.github.io/tuttle/docs/musketeers_assets/characters_count.csv) you can
+[png bar graph](characters_count.png) and
+a [csv file](characters_count.csv) you can
 import in our favorite spreadsheet software.
 
 This tutorial works on Linux, and you'll need to install [`tuttle`](https://github.com/lexman/tuttle/releases) as
@@ -17,7 +15,7 @@ you don't know some of these languages : we'll focus on the method.
 
 ## Unzip the novel
 
-In an empty directory, download the [zip](http://lexman.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip).
+In an empty directory, download the [zip](Les_trois_mousquetaires.zip).
 Then create a file called `tuttlefile` and paste this code :
 
     file://Les_trois_mousquetaires.txt <- file://Les_trois_mousquetaires.zip
@@ -39,8 +37,8 @@ tuttlefile_1
 Archive:  Les_trois_mousquetaires.zip
   inflating: Les_trois_mousquetaires.txt
 
---- stderr : -----------------------------------------------
-+ unzip Les_trois_mousquetaires.txt
+====
+Done
 lexman@lexman-pc:~/tuttle_tutorial$
 ====
 Done
