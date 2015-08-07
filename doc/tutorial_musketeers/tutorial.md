@@ -70,9 +70,7 @@ lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
 Well, the text is in french, but it does look like a novel, as we expected. We have produced our first *resource* :
-the file Les_trois_mousquetaires.txt.
-
-TODO : too early to speak about primary resource ?
+the file `Les_trois_mousquetaires.txt`.
 
 
 ## Count musketeers
@@ -110,6 +108,7 @@ Athos - done
 Porthos - done
 Aramis - done
 d'Artagnan - done
+
 ====
 Done
 lexman@lexman-pc:~/tuttle_tutorial$
@@ -131,13 +130,11 @@ lexman@lexman-pc:~/tuttle_tutorial$
 
 Now have the figures in a tabular file that `gnuplot` will understand.
 
-# TODO : generate report again
-
 Before we go on, let's take a look at the report : open the file
-[`.tuttle/report.html`](http://lexman.github.io/tuttle/doc/tutorial_assets/count_musketeers/tuttle_report.html)
+[`.tuttle/report.html`](step2/.tuttle/tuttle_report.html)
 inside the workspace.
 
-## SCREENSHOT goes here
+![screenshot_report_step2](screenshot_report_step2.png)
 
 You can see everything that has happen in our workflow : duration of the processes,
 whether they have failed, a graph of their dependencies. You can even download all the logs.
@@ -315,28 +312,27 @@ After reading the `gnuplot` doc, it seem we only have to add a line in the end :
 But when we run the `tuttlefile`, we have this output :
 
 ```console
-lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
 The following resources are not valid any more and will be removed :
-* file://characters_count.png - Process code changed
+* file://characters_count.png - Process code has changed
 0 seconds of processing will be lost
 ============================================================
-tuttlefile_23
+tuttlefile_18
 ============================================================
 --- stderr : -----------------------------------------------
 
-TODO !
+gnuplot> linecolor "green"
+         ^
+         line 0: invalid command
 
-+ gnuplot
 
-Done
-lexman@lexman-pc:~/tuttle_tutorial$
+Process ended with error code 1
 ```
 
 Something went wrong !
 
 Apparently, `gnuplot` didn't like the last raw. Let's have a look at the report in `.tuttle\report.html` :
 
-# TODO SCCREENSHOT
+![screenshot report for step 7](screenshot_report_step7.png)
 
 First, you can't miss the workflow has failed, and which process is in error. You also notice that
 `characters_count.png` is in red. It means that according to the execution of the workflow
@@ -352,20 +348,19 @@ If you want to revert to a clean state, you can execute `tuttle invalidate` :
 ```console
 lexman@lexman-pc:~/tuttle_tutorial$ tuttle invalidate
 The following resources are not valid any more and will be removed :
-* file://characters_count.png - Process code changed
+* file://characters_count.png - The resource has been produced by a failing process
 0 seconds of processing will be lost
-Done
 lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
 `tuttle` has removed all the files that where not valid, as we can see in the report :
 
-## TODO Screenshot
+![screenshot report for step 7.5](screenshot_report_step7.5.png)
 
 In this state where everything is green, we can rely on all the files available.
 
 
-But let's go on : we still want our green graph. Maybe color should be declared **before** the `plot` instuction :
+But let's go on : we still want our green graph. Maybe color should be declared **before** the `plot` instruction :
 
     file://characters_count.png <- file://characters_count.dat
         gnuplot <<$script$
@@ -380,19 +375,19 @@ Let's `tuttle run` :
 ```console
 lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
 The following resources are not valid any more and will be removed :
-* file://characters_count.png - Process code changed
+* file://characters_count.png - Process code has changed
 0 seconds of processing will be lost
 ============================================================
-tuttlefile_23
+tuttlefile_18
 ============================================================
 --- stderr : -----------------------------------------------
 
-TODO !
+gnuplot> linecolor "green"
+         ^
+         line 0: invalid command
 
-+ gnuplot
 
-Done
-lexman@lexman-pc:~/tuttle_tutorial$
+Process ended with error code 1
 ```
 
 Tuttle could start execution but an error occurred once again. Is this error really our fault ? Well, if
@@ -400,17 +395,16 @@ rebooting windows solves many issues, why not `tuttle run` again ?
 
 ```console
 lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
-tuttle has already failed
+Workflow already failed on process 'tuttlefile_18'. Fix the process and run tuttle again.
 
-TODO
-
+If failure has been caused by an external factor like a connection breakdown, use "tuttle invalidate" to reset execution then "tuttle run" again.
 lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
-So `tuttle` refused to run... Well, we haven't changed anything in the code, so why would the issue be fixed ?
+So `tuttle` refuses to run... Well, we haven't changed anything in the code, so why would the issue be fixed ?
 
 The good way is to investigate in order to write a proper fix in the tuttlefile. In our situation,
-the `gnuplot` doc says the color must be set on the same lin that the plot :
+the `gnuplot` doc says the color must be set on the same line as the `plot` intruction :
 
     file://characters_count.png <- file://characters_count.dat
         gnuplot <<$script$
@@ -424,25 +418,20 @@ the `gnuplot` doc says the color must be set on the same lin that the plot :
 ```console
 lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
 The following resources are not valid any more and will be removed :
-* file://characters_count.png - Process code changed
+* file://characters_count.png - Process code has changed
 0 seconds of processing will be lost
 ============================================================
-tuttlefile_23
+tuttlefile_18
 ============================================================
---- stderr : -----------------------------------------------
-
-TODO !
-
-+ gnuplot
-
+====
 Done
 lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
 There it is ! `tuttle` has seen the change in the code, it has removed invalid files, and have run the necessary
-process... Now we can see our graph has the good color :
+process... Now we can see our graph has the expected color :
 
-TODO
+![Characters count green](step9/characters_count.png)
 
 In this paragraph, we have seen how `tuttle` let you to investigate errors and fix them with few efforts because
 you don't have to worry about cleaning your previous work.
@@ -528,7 +517,7 @@ Done
 lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
-Here, we have defined that we don't want invalidation if it has to remove more than 5 seconds of processing. That's why
+Here, we have specifically stated we don't want invalidation if it has to remove more than 5 seconds of processing. That's why
 tuttle has stopped.
 
 This feature can prove very useful when you merge modifications from your teammates.
@@ -553,7 +542,7 @@ Nothing to do
 lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
-What has happen ?
+What has happened ?
 
 `Les_trois_mousquetaires.zip`is now a *primary resource*. When running, tuttle checks whether the file
 has changed since we last ran the workflow... And because it is the same, everything is still valid !
@@ -565,8 +554,9 @@ In this tutorial about the command `tuttle run`, we have seen :
 * how you can chain *processes* from various languages (shell, python) through explicit declaration
 of input and output *resources*
 * that processes will be run only if necessary
-* that if you change a line of code, everything that depends on it will be reprocessed. Idem for *primary resources*
-* that tuttle plays well with source control : you can merge, rebase, fork your project, you will always have data up-to-date with your source, with the minimum of processing
+* that if you change a line of code, everything that depends on it will be reprocessed
+* that if you change a *primary resources*, everything that depends on it will be reprocessed
+* that tuttle plays well with source control : you can merge, rebase, fork your project, your data will always be up-to-date with your source, with the minimum of processing
 * that recovery from error consist only in changing the buggy code : tuttle will clean up previous execution for you
 * that debuging is easy thanks to the html report, the logs and cheap experimentation
 
