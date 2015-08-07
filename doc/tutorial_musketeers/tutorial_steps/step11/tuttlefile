@@ -1,4 +1,4 @@
-file://Les_trois_mousquetaires.zip <- http://abonnasseau.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip ! download
+file://Les_trois_mousquetaires.zip <- http://lexman.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip ! download
 
 file://Les_trois_mousquetaires.txt <- file://Les_trois_mousquetaires.zip
     unzip Les_trois_mousquetaires.zip Les_trois_mousquetaires.txt
