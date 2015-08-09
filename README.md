@@ -48,7 +48,7 @@ spreadsheet software :
 When you run this project, you get a [report](http://lexman.github.io/tuttle/docs/musketeers_assets/tuttle_report.html) of every
 thing that has been run, when, whether it succeeded, an access to the logs, and... A nice dependency graph !
 
-![Dependency graph](docscreenshot_report.png)
+![Dependency graph](doc/screenshot_report.png)
 
 You'll find details on this workflow on the dedicated [tutorial](doc/tutorial_musketeers/tutorial.md).
 
