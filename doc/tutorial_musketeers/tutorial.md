@@ -3,11 +3,11 @@
 
 The purpose of this tutorial is to explain, line by line, the [demo project](tutorial_steps/step10) which
 parses the the novel *The Three Musketeers*, to count how many times each characters are mentioned. From a zip archive,
-you will extract the text to produce this graph graph :
+you will extract the text to produce this graph :
 
-![png bar graph](characters_count.png)
+![png bar graph](tutorial_steps/step9/characters_count.png)
 
-and a [csv file](characters_count.csv) you can import in a spreadsheet software.
+and a [csv file](tutorial_steps/step9/characters_count.csv) you can import in a spreadsheet software.
 
 This tutorial works on Linux, and you'll need to install [`tuttle`](https://github.com/lexman/tuttle/releases) as
 well as [gnuplot](http://www.gnuplot.info/) . We'll use little python, gnuplot and shell code, but don't worry if
@@ -554,8 +554,9 @@ of input and output *resources*
 * that if you change a line of code, everything that depends on it will be reprocessed
 * that if you change a *primary resources*, everything that depends on it will be reprocessed
 * that tuttle plays well with source control : you can merge, rebase, fork your project, your data will always be up-to-date with your source, with the minimum of processing
-* that tuttle let integrate continuously your data in a reference server
+* that you can integrate continuously your data in a reference server
 * that recovery from error consist only in changing the buggy code : tuttle will clean up previous execution for you
+* that you can use any language in tuttle, even the one that have not been natively implemented yet
 * that debuging is easy thanks to the html report, the logs and cheap experimentation
 
 
