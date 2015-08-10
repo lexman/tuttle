@@ -2,7 +2,7 @@ file://Les_trois_mousquetaires.txt <- file://Les_trois_mousquetaires.zip
     unzip Les_trois_mousquetaires.zip Les_trois_mousquetaires.txt
 
 file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
-    names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
+    names = ["Athos", "Porthos", "Aramis", "D'Artagnan"]
     with open('characters_count.dat', 'w') as f_out:
         with open('Les_trois_mousquetaires.txt') as f_in:
             content = f_in.read()

@@ -77,7 +77,7 @@ For the next step, shell scripting won't be enough count the words in the text. 
 parsing :
 
     file://characters_count.dat <- file://Les_trois_mousquetaires.txt ! python
-        names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
+        names = ["Athos", "Porthos", "Aramis", "D'Artagnan"]
         with open('characters_count.dat', 'w') as f_out:
             with open('Les_trois_mousquetaires.txt') as f_in:
                 content = f_in.read()
@@ -105,7 +105,7 @@ tuttlefile_4
 Athos - done
 Porthos - done
 Aramis - done
-d'Artagnan - done
+D'Artagnan - done
 
 ====
 Done
@@ -224,9 +224,10 @@ Let's see what happens when we run this new process :
 ```console
 lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
 The following resources are not valid any more and will be removed :
-* file://characters_count.dat - Process code changed
+* file://characters_count.dat - Process code has changed
+* file://characters_count.csv - Resource depends on file://characters_count.dat that have changed
 * file://characters_count.png - Resource depends on file://characters_count.dat that have changed
-0 seconds of processing will be lost
+1 seconds of processing will be lost
 ============================================================
 tuttlefile_4
 ============================================================
@@ -238,11 +239,12 @@ Aramis - done
 d'Artagnan - done
 
 ============================================================
-tuttlefile_16
+tuttlefile_15
 ============================================================
---- stderr : -----------------------------------------------
-+ gnuplot
-
+============================================================
+tuttlefile_18
+============================================================
+====
 Done
 lexman@lexman-pc:~/tuttle_tutorial$
 ```
