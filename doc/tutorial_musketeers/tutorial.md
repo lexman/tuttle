@@ -584,7 +584,7 @@ we want to disconnect from the remote resource by removing this line from the `t
 
 Now, ask yourself : what will happen when we execute `tuttle run` ?
 
-[!["Finger face with a question" by Flickr user Tsahi Levent-Levi](question_mark.jpg)](https://www.flickr.com/photos/86979666@N00/7623744452/in/gallery-alexandraeh-72157644697955569/)
+[![Finger face with a question](question_mark.jpg "'Finger face with a question' by Flickr user Tsahi Levent-Levi")](https://www.flickr.com/photos/86979666@N00/7623744452/in/gallery-alexandraeh-72157644697955569/)
 
 
 ```console
