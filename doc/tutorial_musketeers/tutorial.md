@@ -479,6 +479,53 @@ file `Les_trois_mousquetaires.zip` and all the *resources* that used to depend o
  run all the processes again... In order to guarantee that the result of the workflow's execution is the correct, and coherent with our
 `tuttlefile`.
 
+```console
+lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
+The following resources are not valid any more and will be removed :
+* file://Les_trois_mousquetaires.zip - The former primary resource has to be created by tuttle
+* file://Les_trois_mousquetaires.txt - Resource depends on file://Les_trois_mousquetaires.zip that have changed
+* file://characters_count.dat - Resource depends on file://Les_trois_mousquetaires.txt that have changed
+* file://characters_count.csv - Resource depends on file://characters_count.dat that have changed
+* file://characters_count.png - Resource depends on file://characters_count.dat that have changed
+0 seconds of processing will be lost
+============================================================
+tuttlefile_1
+============================================================
+--- stdout : -----------------------------------------------
+Downloading http://lexman.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip
+................
+done
+
+============================================================
+tuttlefile_3
+============================================================
+--- stdout : -----------------------------------------------
+Archive:  Les_trois_mousquetaires.zip
+  inflating: Les_trois_mousquetaires.txt
+
+============================================================
+tuttlefile_6
+============================================================
+--- stdout : -----------------------------------------------
+1389543 chars in the novel
+Athos - done
+Porthos - done
+Aramis - done
+d'Artagnan - done
+Richelieu - done
+Rochefort - done
+
+============================================================
+tuttlefile_17
+============================================================
+============================================================
+tuttlefile_20
+============================================================
+====
+Done
+lexman@lexman-pc:~/tuttle_tutorial$
+```
+
 Now, if the source changes on the internet, for example because
 [the digitalized text is still being reviewed by volunteers](https://fr.wikisource.org/wiki/Livre:Dumas_-_Les_Trois_Mousquetaires_-_1849.djvu)
 , updates will be easy!
@@ -511,8 +558,12 @@ by a heavy processing phase, like this `sleep(10)` instruction :
 To prevent from unexpected reprocessing, there is a `--threshold` parameter (in short `-t`) in the command line :
 ```console
 lexman@lexman-pc:~/tuttle_tutorial$ tuttle run -t 5
-TODO
-Done
+The following resources are not valid any more and will be removed :
+* file://characters_count.dat - Process code has changed
+* file://characters_count.csv - Resource depends on file://characters_count.dat that have changed
+* file://characters_count.png - Resource depends on file://characters_count.dat that have changed
+You were about to loose 10 seconds of processing time (which exceeds the 5 seconds threshold).
+Aborting...
 lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
@@ -531,13 +582,13 @@ we want to disconnect from the remote resource by removing this line from the `t
 
     file://Les_trois_mousquetaires.zip <- http://lexman.github.io/tuttle/docs/musketeers_assets/Les_trois_mousquetaires.zip ! download
 
-Now, ask yourself what will happen when we execute `tuttle run` ?
+Now, ask yourself : what will happen when we execute `tuttle run` ?
 
 
 ```console
 lexman@lexman-pc:~/tuttle_tutorial$ tuttle run
-The following resources are not valid any more and will be removed :
-Nothing to do
+====
+Done
 lexman@lexman-pc:~/tuttle_tutorial$
 ```
 
