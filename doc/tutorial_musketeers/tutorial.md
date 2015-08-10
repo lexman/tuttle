@@ -308,7 +308,7 @@ After reading the `gnuplot` doc, it seem we only have to add a line in the end :
         set terminal png
         set output "characters_count.png"
         plot "characters_count.dat" using 2: xtic(1) with histogram
-        linecolor "green"
+        linecolor rgb "green"
         $script$
 
 But when we run the `tuttlefile`, we have this output :
@@ -322,7 +322,7 @@ tuttlefile_18
 ============================================================
 --- stderr : -----------------------------------------------
 
-gnuplot> linecolor "green"
+gnuplot> linecolor rgb "green"
          ^
          line 0: invalid command
 
@@ -368,7 +368,7 @@ But let's go on : we still want our green graph. Maybe color should be declared 
         gnuplot <<$script$
         set terminal png
         set output "characters_count.png"
-        linecolor "green"
+        linecolor rgb "green"
         plot "characters_count.dat" using 2: xtic(1) with histogram
         $script$
 
@@ -384,7 +384,7 @@ tuttlefile_18
 ============================================================
 --- stderr : -----------------------------------------------
 
-gnuplot> linecolor "green"
+gnuplot> linecolor rgb "green"
          ^
          line 0: invalid command
 
@@ -412,7 +412,7 @@ the `gnuplot` doc says the color must be set on the same line as the `plot` intr
         gnuplot <<$script$
         set terminal png
         set output "characters_count.png"
-        plot "characters_count.dat" using 2: xtic(1) with histogram linecolor "green"
+        plot "characters_count.dat" using 2: xtic(1) with histogram linecolor rgb "green"
         $script$
 
 `tuttlle run` :
