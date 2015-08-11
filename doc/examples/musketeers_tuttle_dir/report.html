@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Workflow : process detail</title>
+    <link rel="stylesheet" href="html_report_assets/bootstrap.min.css">
+    <style>
+        h1 {
+          text-align: center;
+          padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Workflow :
+             <span class="label label-success">Success</span>
+            
+            </h1>
+        <div class="text-center" id="dependency_graph"></div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_1" name="tuttlefile_1">
+             <span class="label label-success">Success</span>
+            
+            tuttlefile_1
+            </h2>
+            <div class="row">
+                <div class="col-sm-4">
+                    <ul> 
+                            <li>
+                             <span title="sha1:bcb47f4f2b104bc8a1bee9e4a274f47fa3bf8c81"> 
+                            file://Les_trois_mousquetaires.txt
+                             </span> 
+                            </li>
+                        
+                    </ul>
+                </div>
+                <div class="col-sm-1">
+                    <big><strong>&larr;</strong></big>
+                </div>
+                <div class="col-sm-4">
+                    <ul> 
+                            <li>
+                             <span title="sha1:f01049d489c01d071498d5bd2468fcab88cf3ff8"> 
+                            file://Les_trois_mousquetaires.zip
+                             </span> 
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+            <div>
+            Processor : <strong>shell</strong>
+            
+            <pre><code>unzip Les_trois_mousquetaires.zip Les_trois_mousquetaires.txt
+</code></pre>
+            
+            <br/>
+            </div>
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Tue, 11 Aug 2015 17:29:21</td>
+                        <td>Tue, 11 Aug 2015 17:29:22</td>
+                        <td>0.211</td>
+                        <td>
+                            <a href="processes/logs/tuttlefile_1_stdout.txt" type="text/plain"> view </a> <a href="processes/logs/tuttlefile_1_stdout.txt" download> download </a> (81 B)
+                            
+                        </td>
+                        <td>
+                            (empty)
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_5" name="tuttlefile_5">
+             <span class="label label-success">Success</span>
+            
+            tuttlefile_5
+            </h2>
+            <div class="row">
+                <div class="col-sm-4">
+                    <ul> 
+                            <li>
+                             <span title="sha1:75b6ca99c53b6c151e9cd79ec4a6d4eeb7c66ab6"> 
+                            file://characters_count.dat
+                             </span> 
+                            </li>
+                        
+                    </ul>
+                </div>
+                <div class="col-sm-1">
+                    <big><strong>&larr;</strong></big>
+                </div>
+                <div class="col-sm-4">
+                    <ul> 
+                            <li>
+                             <span title="sha1:bcb47f4f2b104bc8a1bee9e4a274f47fa3bf8c81"> 
+                            file://Les_trois_mousquetaires.txt
+                             </span> 
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+            <div>
+            Processor : <strong>python</strong>
+            
+            <pre><code>names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
+with open('characters_count.dat', 'w') as f_out:
+    with open('Les_trois_mousquetaires.txt') as f_in:
+        content_low = f_in.read().lower()
+    print("{} chars in the novel".format(len(content_low)))
+    for name in names:
+        name_low = name.lower()
+        f_out.write("{}\t{}\n".format(name, content_low.count(name_low)))
+        print("{} - done".format(name))
+</code></pre>
+            
+            <br/>
+            </div>
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Tue, 11 Aug 2015 17:29:22</td>
+                        <td>Tue, 11 Aug 2015 17:29:22</td>
+                        <td>0.405</td>
+                        <td>
+                            <a href="processes/logs/tuttlefile_5_stdout.txt" type="text/plain"> view </a> <a href="processes/logs/tuttlefile_5_stdout.txt" download> download </a> (87 B)
+                            
+                        </td>
+                        <td>
+                            (empty)
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_18" name="tuttlefile_18">
+             <span class="label label-success">Success</span>
+            
+            tuttlefile_18
+            </h2>
+            <div class="row">
+                <div class="col-sm-4">
+                    <ul> 
+                            <li>
+                             <span title="sha1:61d837e200557de8ea11c4d5a745c5aca4cf54a0"> 
+                            file://characters_count.csv
+                             </span> 
+                            </li>
+                        
+                    </ul>
+                </div>
+                <div class="col-sm-1">
+                    <big><strong>&larr;</strong></big>
+                </div>
+                <div class="col-sm-4">
+                    <ul> 
+                            <li>
+                             <span title="sha1:75b6ca99c53b6c151e9cd79ec4a6d4eeb7c66ab6"> 
+                            file://characters_count.dat
+                             </span> 
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+            <div>
+            Processor : <strong>shell</strong>
+            
+            <pre><code>awk '{print "\""$1"\","$2"\r"}' characters_count.dat > characters_count.csv
+</code></pre>
+            
+            <br/>
+            </div>
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Tue, 11 Aug 2015 17:29:22</td>
+                        <td>Tue, 11 Aug 2015 17:29:22</td>
+                        <td>0.063</td>
+                        <td>
+                            (empty)
+                            
+                        </td>
+                        <td>
+                            (empty)
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+        <div class="process">
+            <h2 id="tuttlefile_24" name="tuttlefile_24">
+             <span class="label label-success">Success</span>
+            
+            tuttlefile_24
+            </h2>
+            <div class="row">
+                <div class="col-sm-4">
+                    <ul> 
+                            <li>
+                             <span title="sha1:79bf3009505e207ce525b5a50cb41eca01c49a04"> 
+                            file://characters_count.png
+                             </span> 
+                            </li>
+                        
+                    </ul>
+                </div>
+                <div class="col-sm-1">
+                    <big><strong>&larr;</strong></big>
+                </div>
+                <div class="col-sm-4">
+                    <ul> 
+                            <li>
+                             <span title="sha1:75b6ca99c53b6c151e9cd79ec4a6d4eeb7c66ab6"> 
+                            file://characters_count.dat
+                             </span> 
+                            </li>
+                        
+                    </ul>
+                </div>
+            </div>
+            <div>
+            Processor : <strong>shell</strong>
+            
+            <pre><code>gnuplot <<$script$
+set terminal png
+set output "characters_count.png"
+plot "characters_count.dat" using 2: xtic(1) with histogram
+$script$
+</code></pre>
+            
+            <br/>
+            </div>
+            
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Tue, 11 Aug 2015 17:29:22</td>
+                        <td>Tue, 11 Aug 2015 17:29:23</td>
+                        <td>0.854</td>
+                        <td>
+                            (empty)
+                            
+                        </td>
+                        <td>
+                            (empty)
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        </div>
+        
+
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) & Boostrap -->
+    <script src="html_report_assets/jquery.min.js"></script>
+    <script src="html_report_assets/bootstrap.min.js"></script>
+    <!-- For viewing dependency graph in the dot language -->
+    <script src="html_report_assets/viz.js"></script>
+    <script type="text/vnd.graphviz" id="dependency_graph_source">
+        digraph workflow {
+    Node [style="rounded,filled", shape=box, fillcolor=none]
+    p_tuttlefile_1 [label="tuttlefile_1", URL="#tuttlefile_1", color=green, fontcolor=green, width=0, height=0] ;
+    "file%3A//Les_trois_mousquetaires.zip" -> p_tuttlefile_1 [arrowhead="none"] 
+    "file%3A//Les_trois_mousquetaires.zip" [fillcolor=beige, label="Les_trois_mousquetaires.zip"] ;
+    p_tuttlefile_1 -> "file%3A//Les_trois_mousquetaires.txt" 
+    "file%3A//Les_trois_mousquetaires.txt" [fillcolor=green, label="Les_trois_mousquetaires.txt"] ;
+    p_tuttlefile_5 [label="tuttlefile_5", URL="#tuttlefile_5", color=green, fontcolor=green, width=0, height=0] ;
+    "file%3A//Les_trois_mousquetaires.txt" -> p_tuttlefile_5 [arrowhead="none"] 
+    p_tuttlefile_5 -> "file%3A//characters_count.dat" 
+    "file%3A//characters_count.dat" [fillcolor=green, label="characters_count.dat"] ;
+    p_tuttlefile_18 [label="tuttlefile_18", URL="#tuttlefile_18", color=green, fontcolor=green, width=0, height=0] ;
+    "file%3A//characters_count.dat" -> p_tuttlefile_18 [arrowhead="none"] 
+    p_tuttlefile_18 -> "file%3A//characters_count.csv" 
+    "file%3A//characters_count.csv" [fillcolor=green, label="characters_count.csv"] ;
+    p_tuttlefile_24 [label="tuttlefile_24", URL="#tuttlefile_24", color=green, fontcolor=green, width=0, height=0] ;
+    "file%3A//characters_count.dat" -> p_tuttlefile_24 [arrowhead="none"] 
+    p_tuttlefile_24 -> "file%3A//characters_count.png" 
+    "file%3A//characters_count.png" [fillcolor=green, label="characters_count.png"] ;
+}
+    </script>
+    <script>
+        function insert_graph() {
+            dot_src = $("#dependency_graph_source").html();
+            svg = Viz(dot_src, "svg");
+            $("#dependency_graph").html(svg)
+        }
+        insert_graph();
+    </script>
+</body>
+</html>

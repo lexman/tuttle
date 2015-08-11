@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+set -e
+unzip Les_trois_mousquetaires.zip Les_trois_mousquetaires.txt

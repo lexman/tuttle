@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+set -e
+awk '{print "\""$1"\","$2"\r"}' characters_count.dat > characters_count.csv
