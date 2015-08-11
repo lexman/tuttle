@@ -17,9 +17,9 @@ script:
 - mv -v ../tuttle_* dist/debian/
 - ls
 - sudo dpkg -i dist/debian/tuttle_0.1-1_amd64.deb
-- cd doc/examples/sales_linux
+- cd doc/examples/musketeers
 - tuttle run
-- cp penetration_rate.html workflow_execution_success
+- cp characters_count.png workflow_execution_success
 - cd ../../..
 deploy:
   skip_cleanup: true
