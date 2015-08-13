@@ -9,10 +9,10 @@ file://sp.pop.totl_Indicator_en_csv_v2.csv <- file://world_population.zip
     unzip world_population.zip sp.pop.totl_Indicator_en_csv_v2.csv
 
 file://world_population_2013.tsv <- file://sp.pop.totl_Indicator_en_csv_v2.csv
-    tail -n +3 sp.pop.totl_Indicator_en_csv_v2.csv > world_population_2013.tsv
+    tail -n +5 sp.pop.totl_Indicator_en_csv_v2.csv > world_population_2013.tsv
 
 file://wb_internet_users_2013.tsv <- file://it.net.user.p2_Indicator_en_csv_v2.csv
-    tail -n +3 it.net.user.p2_Indicator_en_csv_v2.csv > wb_internet_users_2013.tsv
+    tail -n +5 it.net.user.p2_Indicator_en_csv_v2.csv > wb_internet_users_2013.tsv
 
 sqlite://stats.sqlite/tables/wb_internet_users <- file://wb_internet_users_2013.tsv ! csv2sqlite
 

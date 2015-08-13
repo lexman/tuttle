@@ -2,7 +2,7 @@
 
 """
 Utility methods for use in running workflows.
-This module is responsible for the inner structure of the .tuttle directory
+This module is responsible for the inner structure of the musketeers_tuttle_dir directory
 """
 
 from shutil import rmtree
@@ -16,7 +16,7 @@ class ResourceError(TuttleError):
 
 
 def tuttle_dir(*args):
-    return join(".tuttle", *args)
+    return join("musketeers_tuttle_dir", *args)
 
 
 _processes_dir = tuttle_dir("processes")
