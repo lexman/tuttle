@@ -181,7 +181,7 @@ class TestSQLiteResource():
         url = "sqlite://tests.sqlite/tables/test_table"
         res = SQLiteResource(url)
         sig = res.signature()
-        expected = "table|test_table|test_table|2|CREATE TABLE test_table (int id, col1 string, col2 string)|0"
+        expected = "d2281930bd11c54226395064b10cb3e5f6931ea3"
         assert sig == expected, sig
 
     # TODO test a table with space in name

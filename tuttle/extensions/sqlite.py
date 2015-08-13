@@ -8,6 +8,7 @@ from os.path import isfile
 from re import compile
 from tuttle.error import TuttleError
 from tuttle.resources import MalformedUrl, ResourceMixIn
+from hashlib import sha1
 
 
 class SQLiteTuttleError(TuttleError):
@@ -90,16 +91,19 @@ class SQLiteResource(ResourceMixIn, object):
         return True
 
     def table_signature(self, db, tablename):
+        """Generate a hash for the contents of a file."""
+        checksum = sha1()
         cur = db.cursor()
-        cur.execute("SELECT COUNT(*) AS nb FROM `{}`".format(tablename))
+        cur.execute("SELECT sql FROM sqlite_master WHERE name=?", (self.table, ))
         row = cur.fetchone()
-        nb = row[0]
-        cur.execute("SELECT * FROM sqlite_master WHERE name=?", (tablename, ))
-        sum_up = cur.fetchone()
-        return "|".join((sum_up[0], sum_up[1], sum_up[2], str(sum_up[3]), sum_up[4], str(nb), ))
+        checksum.update(row[0])
+#        db.execute("SELECT * FROM `{}`".format(tablename))
+#        for row in cur:
+#            for field in row:
+#                print checksum.hexdigest()
+#                checksum.update(field)
+        return checksum.hexdigest()
 
-    # TODO : should we make a checksum of all the  data ?
-    # or should we speedup the process by using the aproximate number of rows in sqlite_stat1 ?
     def signature(self):
         db = sqlite3.connect(self.db_file)
         try:
