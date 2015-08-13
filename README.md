@@ -57,7 +57,7 @@ well as command line options are likely to change.
 
 
 # Install
-You can find [download tuttle](https://github.com/lexman/tuttle/releases) and install it on you system :
+You can find [download tuttle](https://github.com/lexman/tuttle/releases) and install it on your system :
 
 * on Windows, download the .msi installer
 * on debian and ubuntu a .deb is provided
@@ -65,10 +65,10 @@ You can find [download tuttle](https://github.com/lexman/tuttle/releases) and in
 ```
     git clone https://github.com/lexman/tuttle
     cd tuttle
-```
-# Hacking
     python setup.py install
+```
 
+# Hacking
 
 
 [![AppVeyor Windows build status](https://ci.appveyor.com/api/projects/status/github/lexman/tuttle)](https://ci.appveyor.com/project/lexman/tuttle)
