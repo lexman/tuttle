@@ -81,9 +81,10 @@ class SQLiteResource(ResourceMixIn, object):
         db.row_factory = sqlite3.Row
         try:
             cur = db.cursor()
-            cur.execute("SELECT * FROM {} LIMIT 0".format(self.table))
-        except OperationalError:
-            return False
+            cur.execute("SELECT * FROM sqlite_master WHERE name=?", (self.table, ))
+            row = cur.fetchone()
+            if not row:
+                return False
         finally:
             db.close()
         return True
