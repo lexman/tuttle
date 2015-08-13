@@ -149,14 +149,20 @@ class TestSQLiteResource():
         assert output.find("comment") >= 0
 
     @isolate(['tests.sqlite'])
-    def test_sqlite_file_should_be_deleted_if_empty_after_remove(self):
+    def test_sqlite_file_should_be_deleted_if_empty_after_last_remove(self):
         """ When an SQLiteResource is removed, the sqlite file should be delete if it is empty """
-        url = "sqlite://tests.sqlite/tables/test_table"
-        res = SQLiteResource(url)
-        assert res.exists()
+        url1 = "sqlite://tests.sqlite/tables/test_table_not_empty"
+        res1 = SQLiteResource(url1)
+        assert res1.exists()
         assert isfile("tests.sqlite")
-        res.remove()
-        assert not res.exists()
+        res1.remove()
+        assert not res1.exists()
+        assert isfile("tests.sqlite")
+        url2 = "sqlite://tests.sqlite/tables/test_table"
+        res2 = SQLiteResource(url2)
+        assert res2.exists()
+        res2.remove()
+        assert not res2.exists()
         assert not isfile("tests.sqlite")
 
     @isolate(['tests.sqlite'])
@@ -176,12 +182,31 @@ class TestSQLiteResource():
         assert isfile("tests.sqlite")
 
     @isolate(['tests.sqlite'])
-    def test_sqlite_table_signature(self):
-        """signature() should return the number of lines and creation info"""
+    def test_sqlite_empty_table_signature(self):
+        """signature() should return a hash of the structure for an empty table"""
         url = "sqlite://tests.sqlite/tables/test_table"
         res = SQLiteResource(url)
         sig = res.signature()
         expected = "d2281930bd11c54226395064b10cb3e5f6931ea3"
         assert sig == expected, sig
 
+    @isolate(['tests.sqlite'])
+    def test_sqlite_empty_table_signature(self):
+        """signature() should return a hash of the structure and the data for a table"""
+        url = "sqlite://tests.sqlite/tables/test_table_not_empty"
+        res = SQLiteResource(url)
+        sig = res.signature()
+        expected = "3ee7b386c4daed31a7d57fbb0fd32c482c7be1d1"
+        assert sig == expected, sig
+
+    @isolate(['tests.sqlite'])
+    def test_sqlite_two_table_signature_should_differ(self):
+        """signature() should be different on different tables"""
+        url1 = "sqlite://tests.sqlite/tables/test_table"
+        res1 = SQLiteResource(url1)
+        sig1 = res1.signature()
+        url2 = "sqlite://tests.sqlite/tables/test_table_not_empty"
+        res2 = SQLiteResource(url2)
+        sig2 = res2.signature()
+        assert sig1 != sig2, "Twho different tables should have different signatures"
     # TODO test a table with space in name

@@ -97,11 +97,11 @@ class SQLiteResource(ResourceMixIn, object):
         cur.execute("SELECT sql FROM sqlite_master WHERE name=?", (self.table, ))
         row = cur.fetchone()
         checksum.update(row[0])
-#        db.execute("SELECT * FROM `{}`".format(tablename))
-#        for row in cur:
-#            for field in row:
-#                print checksum.hexdigest()
-#                checksum.update(field)
+        db.execute("SELECT * FROM `{}`".format(tablename))
+        for row in cur:
+            for field in row:
+                print checksum.hexdigest()
+                checksum.update(field)
         return checksum.hexdigest()
 
     def signature(self):
