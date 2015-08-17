@@ -163,6 +163,11 @@ class TestSQLiteResource():
         assert res2.exists()
         res2.remove()
         assert not res2.exists()
+        url3 = "sqlite://tests.sqlite/test_view"
+        res3 = SQLiteResource(url3)
+        assert res3.exists()
+        res3.remove()
+        assert not res3.exists()
         assert not isfile("tests.sqlite")
 
     @isolate(['tests.sqlite'])
@@ -208,7 +213,7 @@ class TestSQLiteResource():
 
     @isolate(['tests.sqlite'])
     def test_index_signature(self):
-        """exists() should return True when the index exists"""
+        """signature() should return the declaration of the index"""
         url = "sqlite://tests.sqlite/test_index"
         res = SQLiteResource(url)
         sig = res.signature()
@@ -216,8 +221,26 @@ class TestSQLiteResource():
 
     @isolate(['tests.sqlite'])
     def test_remove_index(self):
-        """exists() should return True when the index exists"""
+        """remove() should drop the index"""
         url = "sqlite://tests.sqlite/test_index"
+        res = SQLiteResource(url)
+        assert res.exists()
+        res.remove()
+        assert not res.exists()
+
+    @isolate(['tests.sqlite'])
+    def test_view_signature(self):
+        """signature() should return the declaration of the view"""
+        url = "sqlite://tests.sqlite/test_view"
+        res = SQLiteResource(url)
+        sig = res.signature()
+        assert sig == "CREATE VIEW test_view AS SELECT col1 FROM test_table", sig
+
+
+    @isolate(['tests.sqlite'])
+    def test_remove_view(self):
+        """remove() should drop the view"""
+        url = "sqlite://tests.sqlite/test_view"
         res = SQLiteResource(url)
         assert res.exists()
         res.remove()
