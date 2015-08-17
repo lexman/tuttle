@@ -14,13 +14,13 @@ file://world_population_2013.tsv <- file://sp.pop.totl_Indicator_en_csv_v2.csv
 file://wb_internet_users_2013.tsv <- file://it.net.user.p2_Indicator_en_csv_v2.csv
     more +4 it.net.user.p2_Indicator_en_csv_v2.csv > wb_internet_users_2013.tsv
 
-sqlite://stats.sqlite/tables/wb_internet_users <- file://wb_internet_users_2013.tsv ! csv2sqlite
+sqlite://stats.sqlite/wb_internet_users <- file://wb_internet_users_2013.tsv ! csv2sqlite
 
-sqlite://stats.sqlite/tables/world_population <- file://world_population_2013.tsv ! csv2sqlite
+sqlite://stats.sqlite/world_population <- file://world_population_2013.tsv ! csv2sqlite
 
-sqlite://stats.sqlite/tables/sales <- file://sales.tsv ! csv2sqlite
+sqlite://stats.sqlite/sales <- file://sales.tsv ! csv2sqlite
 
-sqlite://stats.sqlite/tables/nb_internet_users <- sqlite://stats.sqlite/tables/wb_internet_users, sqlite://stats.sqlite/tables/world_population ! sqlite
+sqlite://stats.sqlite/nb_internet_users <- sqlite://stats.sqlite/wb_internet_users, sqlite://stats.sqlite/world_population ! sqlite
     CREATE TABLE nb_internet_users AS
     SELECT
         wb_internet_users.`Country Name` AS country_name,
@@ -30,7 +30,7 @@ sqlite://stats.sqlite/tables/nb_internet_users <- sqlite://stats.sqlite/tables/w
         CAST(wb_internet_users.`2013` * world_population.`2013` / 100 AS INT) as nb_internauts
     FROM wb_internet_users LEFT JOIN world_population ON wb_internet_users.`Country Code` = world_population.`Country Code`
 
-sqlite://stats.sqlite/tables/market_penetration <- sqlite://stats.sqlite/tables/nb_internet_users, sqlite://stats.sqlite/tables/sales ! sqlite
+sqlite://stats.sqlite/market_penetration <- sqlite://stats.sqlite/nb_internet_users, sqlite://stats.sqlite/sales ! sqlite
     CREATE TABLE market_penetration AS
     SELECT
         nb_internet_users.country_name,
@@ -40,7 +40,7 @@ sqlite://stats.sqlite/tables/market_penetration <- sqlite://stats.sqlite/tables/
         (nb_sales * 100.0 / nb_internauts) AS penetration_rate
     FROM nb_internet_users JOIN sales ON nb_internet_users.country_name = sales.country_name
 
-sqlite://stats.sqlite/tables/penetration_performance, sqlite://stats.sqlite/tables/spread <- sqlite://stats.sqlite/tables/market_penetration ! sqlite
+sqlite://stats.sqlite/penetration_performance, sqlite://stats.sqlite/spread <- sqlite://stats.sqlite/market_penetration ! sqlite
     -- Compute variance (square of the standard deviation)
     CREATE TABLE spread AS 
     SELECT
@@ -58,5 +58,5 @@ sqlite://stats.sqlite/tables/penetration_performance, sqlite://stats.sqlite/tabl
         (penetration_rate - mean) * abs(penetration_rate - mean) / variance AS norm_spread 
     FROM market_penetration, spread WHERE penetration_rate IS NOT NULL;
 	
-file://penetration_rate.html <- sqlite://stats.sqlite/tables/market_penetration, sqlite://stats.sqlite/tables/penetration_performance, file://layout_stats.py, file://perf.tpl.html
+file://penetration_rate.html <- sqlite://stats.sqlite/market_penetration, sqlite://stats.sqlite/penetration_performance, file://layout_stats.py, file://perf.tpl.html
 	python layout_stats.py

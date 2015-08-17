@@ -62,10 +62,10 @@ class SQLiteProcessor:
 
 class SQLiteResource(ResourceMixIn, object):
     """A resource for a table in a SQLite database"""
-    """eg : sqlite://relative/path/to/sqlite_file/tables/mytable"""
+    """eg : sqlite://relative/path/to/sqlite_file/mytable"""
     scheme = 'sqlite'
 
-    ereg = compile("^sqlite://(.*)/tables/([^/]*)$")
+    ereg = compile("^sqlite://(.*)/([^/]*)$")
 
     def __init__(self, url):
         super(SQLiteResource, self).__init__(url)
