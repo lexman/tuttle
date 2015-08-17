@@ -200,18 +200,27 @@ class TestSQLiteResource():
         assert sig == expected, sig
 
     @isolate(['tests.sqlite'])
-    def test_sqlite_index_exists(self):
+    def test_index_exists(self):
         """exists() should return True when the index exists"""
         url = "sqlite://tests.sqlite/test_index"
         res = SQLiteResource(url)
         assert res.exists(), "{} should exist".format(url)
 
     @isolate(['tests.sqlite'])
-    def test_sqlite_index_signature(self):
+    def test_index_signature(self):
         """exists() should return True when the index exists"""
         url = "sqlite://tests.sqlite/test_index"
         res = SQLiteResource(url)
         sig = res.signature()
         assert sig == "CREATE INDEX test_index ON test_table (col1)", sig
+
+    @isolate(['tests.sqlite'])
+    def test_remove_index(self):
+        """exists() should return True when the index exists"""
+        url = "sqlite://tests.sqlite/test_index"
+        res = SQLiteResource(url)
+        assert res.exists()
+        res.remove()
+        assert not res.exists()
 
     # TODO test a table with space in name

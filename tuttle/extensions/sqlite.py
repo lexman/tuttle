@@ -75,6 +75,13 @@ class SQLiteResource(ResourceMixIn, object):
         self.db_file = m.group(1)
         self.objectname = m.group(2)
 
+    def sqlite_object_type(self, db, objectname):
+        """Generate a hash for the contents of a file."""
+        cur = db.cursor()
+        cur.execute("SELECT type FROM sqlite_master WHERE name=?", (objectname, ))
+        row = cur.fetchone()
+        return row[0]
+
     def exists(self):
         if not isfile(self.db_file):
             return False
@@ -111,14 +118,6 @@ class SQLiteResource(ResourceMixIn, object):
         row = cur.fetchone()
         return row[0]
 
-    def sqlite_object_type(self, db, objectname):
-        """Generate a hash for the contents of a file."""
-        cur = db.cursor()
-        cur.execute("SELECT type FROM sqlite_master WHERE name=?", (objectname, ))
-        row = cur.fetchone()
-        return row[0]
-
-
     def signature(self):
         db = sqlite3.connect(self.db_file)
         try:
@@ -148,7 +147,11 @@ class SQLiteResource(ResourceMixIn, object):
     def remove(self):
         db = sqlite3.connect(self.db_file)
         try:
-            self.remove_table(db, self.objectname)
+            obj_type = self.sqlite_object_type(db, self.objectname)
+            if obj_type == "table":
+                self.remove_table(db, self.objectname)
+            elif obj_type == "index":
+                self.remove_index(db, self.objectname)
             self.remove_file_if_empty(db)
         finally:
             db.close()
