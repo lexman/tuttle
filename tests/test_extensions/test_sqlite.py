@@ -236,7 +236,6 @@ class TestSQLiteResource():
         sig = res.signature()
         assert sig == "CREATE VIEW test_view AS SELECT col1 FROM test_table", sig
 
-
     @isolate(['tests.sqlite'])
     def test_remove_view(self):
         """remove() should drop the view"""
@@ -246,4 +245,20 @@ class TestSQLiteResource():
         res.remove()
         assert not res.exists()
 
+    @isolate(['tests.sqlite'])
+    def test_trigger_signature(self):
+        """signature() should return the declaration of the view"""
+        url = "sqlite://tests.sqlite/test_trigger"
+        res = SQLiteResource(url)
+        sig = res.signature()
+        assert sig == "CREATE TRIGGER test_trigger AFTER DELETE ON test_table BEGIN SELECT 1; END", sig
+
+    @isolate(['tests.sqlite'])
+    def test_remove_trigger(self):
+        """remove() should drop the view"""
+        url = "sqlite://tests.sqlite/test_trigger"
+        res = SQLiteResource(url)
+        assert res.exists()
+        res.remove()
+        assert not res.exists()
     # TODO test a table with space in name

@@ -124,7 +124,7 @@ class SQLiteResource(ResourceMixIn, object):
             obj_type = self.sqlite_object_type(db, self.objectname)
             if obj_type == "table":
                 result = self.table_signature(db, self.objectname)
-            elif obj_type == "index" or obj_type == "view":
+            elif obj_type == "index" or obj_type == "view" or obj_type == "trigger":
                 result = self.db_declaration(db, self.objectname)
         finally:
             db.close()
@@ -147,6 +147,9 @@ class SQLiteResource(ResourceMixIn, object):
     def remove_view(self, db, tablename):
         db.execute("DROP VIEW `{}`".format(tablename))
 
+    def remove_trigger(self, db, tablename):
+        db.execute("DROP TRIGGER `{}`".format(tablename))
+
     def remove(self):
         db = sqlite3.connect(self.db_file)
         try:
@@ -157,6 +160,8 @@ class SQLiteResource(ResourceMixIn, object):
                 self.remove_index(db, self.objectname)
             elif obj_type == "view":
                 self.remove_view(db, self.objectname)
+            elif obj_type == "trigger":
+                self.remove_trigger(db, self.objectname)
             self.remove_file_if_empty(db)
         finally:
             db.close()
