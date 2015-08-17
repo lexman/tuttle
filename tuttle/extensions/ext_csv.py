@@ -84,7 +84,7 @@ class CSV2SQLiteProcessor:
         output_res = process.iter_outputs().next()
         assert isinstance(output_res, SQLiteResource)
         sqlite_filename = output_res.db_file
-        table = output_res.table
+        table = output_res.objectname
 
         with open(log_stdout, "w") as lout, \
              open(log_stderr, "w") as lerr, \
