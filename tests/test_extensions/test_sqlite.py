@@ -12,7 +12,7 @@ class TestSQLiteResource():
         url = "sqlite://relative/path/to/sqlite_file/mytable"
         res = SQLiteResource(url)
         assert res.db_file == "relative/path/to/sqlite_file"
-        assert res.table == "mytable"
+        assert res.objectname == "mytable"
 
     def test_sqlite_file_does_not_exists(self):
         """Event the sqlite file does not exits"""
@@ -199,18 +199,19 @@ class TestSQLiteResource():
         expected = "3ee7b386c4daed31a7d57fbb0fd32c482c7be1d1"
         assert sig == expected, sig
 
-#    @isolate(['tests.sqlite'])
-#    def test_sqlite_index_exists(self):
-#        """exists() should return True when the index exists"""
-#        url = "sqlite://tests.sqlite/indexes/test_table"
-#        res = SQLiteResource(url)
-#        assert(res.exists(), "{} should exist".format(url))
+    @isolate(['tests.sqlite'])
+    def test_sqlite_index_exists(self):
+        """exists() should return True when the index exists"""
+        url = "sqlite://tests.sqlite/test_index"
+        res = SQLiteResource(url)
+        assert res.exists(), "{} should exist".format(url)
 
-#    @isolate(['tests.sqlite'])
-#    def test_sqlite_inexistant_index_do_not_exists(self):
-#        """exists() should return False when the index does not exists"""
-#        url = "sqlite://tests.sqlite/indexes/inexistant_index"
-#        res = SQLiteResource(url)
-#        assert(res.exists(), "{} should not exist".format(url))
+    @isolate(['tests.sqlite'])
+    def test_sqlite_index_signature(self):
+        """exists() should return True when the index exists"""
+        url = "sqlite://tests.sqlite/test_index"
+        res = SQLiteResource(url)
+        sig = res.signature()
+        assert sig == "CREATE INDEX test_index ON test_table (col1)", sig
 
     # TODO test a table with space in name

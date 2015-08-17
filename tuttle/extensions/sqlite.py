@@ -73,7 +73,7 @@ class SQLiteResource(ResourceMixIn, object):
         if m is None:
             raise MalformedUrl("Malformed Sqlite url : '{}'".format(url))
         self.db_file = m.group(1)
-        self.table = m.group(2)
+        self.objectname = m.group(2)
 
     def exists(self):
         if not isfile(self.db_file):
@@ -82,7 +82,7 @@ class SQLiteResource(ResourceMixIn, object):
         db.row_factory = sqlite3.Row
         try:
             cur = db.cursor()
-            cur.execute("SELECT * FROM sqlite_master WHERE name=?", (self.table, ))
+            cur.execute("SELECT * FROM sqlite_master WHERE name=?", (self.objectname, ))
             row = cur.fetchone()
             if not row:
                 return False
@@ -94,7 +94,7 @@ class SQLiteResource(ResourceMixIn, object):
         """Generate a hash for the contents of a file."""
         checksum = sha1()
         cur = db.cursor()
-        cur.execute("SELECT sql FROM sqlite_master WHERE name=?", (self.table, ))
+        cur.execute("SELECT sql FROM sqlite_master WHERE name=?", (self.objectname, ))
         row = cur.fetchone()
         checksum.update(row[0])
         db.execute("SELECT * FROM `{}`".format(tablename))
@@ -104,10 +104,29 @@ class SQLiteResource(ResourceMixIn, object):
                 checksum.update(field)
         return checksum.hexdigest()
 
+    def index_signature(self, db, index):
+        """Generate a hash for the contents of a file."""
+        cur = db.cursor()
+        cur.execute("SELECT sql FROM sqlite_master WHERE name=?", (self.objectname, ))
+        row = cur.fetchone()
+        return row[0]
+
+    def sqlite_object_type(self, db, objectname):
+        """Generate a hash for the contents of a file."""
+        cur = db.cursor()
+        cur.execute("SELECT type FROM sqlite_master WHERE name=?", (objectname, ))
+        row = cur.fetchone()
+        return row[0]
+
+
     def signature(self):
         db = sqlite3.connect(self.db_file)
         try:
-            result = self.table_signature(db, self.table)
+            obj_type = self.sqlite_object_type(db, self.objectname)
+            if obj_type == "table":
+                result = self.table_signature(db, self.objectname)
+            elif obj_type == "index":
+                result = self.index_signature(db, self.objectname)
         finally:
             db.close()
         return result
@@ -123,10 +142,13 @@ class SQLiteResource(ResourceMixIn, object):
     def remove_table(self, db, tablename):
         db.execute("DROP TABLE `{}`".format(tablename))
 
+    def remove_index(self, db, tablename):
+        db.execute("DROP INDEX `{}`".format(tablename))
+
     def remove(self):
         db = sqlite3.connect(self.db_file)
         try:
-            self.remove_table(db, self.table)
+            self.remove_table(db, self.objectname)
             self.remove_file_if_empty(db)
         finally:
             db.close()
