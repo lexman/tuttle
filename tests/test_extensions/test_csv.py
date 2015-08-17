@@ -90,7 +90,7 @@ class TestSQLiteResource():
     @isolate(['test.csv'])
     def test_sqlite_processor(self):
         """A project with an SQLite processor should run the sql statements"""
-        project = """sqlite://db.sqlite/tables/pop <- file://test.csv ! csv2sqlite
+        project = """sqlite://db.sqlite/pop <- file://test.csv ! csv2sqlite
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
@@ -117,7 +117,7 @@ United Arab Emirates,ARE,9346129""".split("\n")
     @isolate(['bad_csv.csv'])
     def test_bad_csv__should_fail_with_csv_2sqlite(self):
         """ A csv without the good number of columns in one raw should make the process fail"""
-        project = """sqlite://db.sqlite/tables/pop <- file://bad_csv.csv ! csv2sqlite
+        project = """sqlite://db.sqlite/pop <- file://bad_csv.csv ! csv2sqlite
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 2, output
@@ -129,7 +129,7 @@ United Arab Emirates,ARE,9346129""".split("\n")
     @isolate(['test_csv.py'])
     def test_text_file_should_fail_with_csv_2sqlite(self):
         """ A source file that is not a csv should make the process fail"""
-        project = """sqlite://db.sqlite/tables/pop <- file://test_csv.py ! csv2sqlite
+        project = """sqlite://db.sqlite/pop <- file://test_csv.py ! csv2sqlite
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 2, output
@@ -140,7 +140,7 @@ United Arab Emirates,ARE,9346129""".split("\n")
     @isolate(['tests.sqlite'])
     def test_binary_file_should_fail_with_csv_2sqlite(self):
         """ A binary file that is not a csv should make the process fail"""
-        project = """sqlite://db.sqlite/tables/pop <- file://tests.sqlite ! csv2sqlite
+        project = """sqlite://db.sqlite/pop <- file://tests.sqlite ! csv2sqlite
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 2, output
