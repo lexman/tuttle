@@ -1,6 +1,18 @@
+tuttle (0.2-1) UNRELEASED; urgency=medium
+
+  * File resources
+  * SQLite tables, views, triggers and index resources
+  * http resources
+  * Pyton Processor
+  * SQLite Processor
+  * Tutorial   
+
+ -- abonnasseau <abonnasseau@DSKLBS-03>  Wed, 19 Aug 2015 15:09:48 +0200
+
 tuttle (0.1-1) unstable; urgency=low
 
   * Initial release
   * Demonstration of development flow with tuttle commands
 
  -- Lexman <tuttle@lexman.org>  Fri, 22 May 2015 17:00:00 +0200
+
