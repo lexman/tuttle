@@ -31,3 +31,13 @@ class TestPostgresResource():
         assert res._database == "tuttle_test_database", res._database
         assert res._schema == "test_schema", res._schema
         assert res._objectname == "test_table", res._objectname
+
+    def test_schema_is_optional_in_pg_url(self):
+        """Schema can be omited in pg url"""
+        url = "pg://localhost:5432/tuttle_test_database/test_table"
+        res = PostgreSQLResource(url)
+        assert res._server == "localhost", res._server
+        assert res._port == "5432", res._port
+        assert res._database == "tuttle_test_database", res._database
+        assert res._schema is None, res._schema
+        assert res._objectname == "test_table", res._objectname

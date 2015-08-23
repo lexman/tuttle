@@ -24,6 +24,10 @@ class PostgreSQLResource(ResourceMixIn, object):
         else:
             self._port = None
         self._database = m.group(3)
-        self._schema = m.group(4)[:-1]
+        captured_schema = m.group(4)
+        if captured_schema:
+            self._schema = m.group(4)[:-1]
+        else:
+            self._schema = None
         self._objectname = m.group(5)
 
