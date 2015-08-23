@@ -18,7 +18,11 @@ class PostgreSQLResource(ResourceMixIn, object):
         if m is None:
             raise MalformedUrl("Malformed PostgreSQL url : '{}'".format(url))
         self._server = m.group(1)
-        self._port = m.group(2)[1:]
+        captured_port = m.group(2)
+        if captured_port:
+            self._port = captured_port[1:]
+        else:
+            self._port = None
         self._database = m.group(3)
         self._schema = m.group(4)[:-1]
         self._objectname = m.group(5)
