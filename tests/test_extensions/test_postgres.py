@@ -78,4 +78,12 @@ class TestPostgresResource():
         """the table should exist if it isn't in the proper schema"""
         url = "pg://localhost:5432/tuttle_test_db/test_schema/test_table"
         res = PostgreSQLResource(url)
-        assert not res.exists(), "{} should exist".format(url)
+        assert not res.exists(), "{} should not exist".format(url)
+
+    def test_remove_table(self):
+        """remove() should remove a table"""
+        url = "pg://localhost:5432/tuttle_test_db/test_table"
+        res = PostgreSQLResource(url)
+        assert res.exists(), "{} should exist".format(url)
+        res.remove()
+        assert not res.exists(), "{} should not exist".format(url)

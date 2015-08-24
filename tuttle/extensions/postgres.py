@@ -50,3 +50,16 @@ class PostgreSQLResource(ResourceMixIn, object):
             db.close()
         return True
 
+    def remove(self):
+        try:
+            conn_string = "host=\'{}\' dbname='{}' port={} user=tuttle password=tuttle".format(self._server, self._database,
+                                                                   self._port)
+            db = psycopg2.connect(conn_string)
+        except psycopg2.OperationalError:
+            return False
+        try:
+            cur = db.cursor()
+            cur.execute('DROP TABLE "{}"."{}"'.format(self._schema, self._objectname))
+            db.commit()
+        finally:
+            db.close()
