@@ -107,7 +107,6 @@ class SQLiteResource(ResourceMixIn, object):
         db.execute("SELECT * FROM `{}`".format(tablename))
         for row in cur:
             for field in row:
-                print checksum.hexdigest()
                 checksum.update(field)
         return checksum.hexdigest()
 
