@@ -20,6 +20,10 @@ class TestPostgresResource():
         cur = conn.cursor()
         cur.execute("DROP TABLE IF EXISTS test_table")
         cur.execute("CREATE TABLE test_table (col1 INT)")
+        cur.execute("DROP SCHEMA IF EXISTS test_schema CASCADE")
+        cur.execute("CREATE SCHEMA test_schema")
+        cur.execute("DROP TABLE IF EXISTS test_schema.test_table_in_schema")
+        cur.execute("CREATE TABLE test_schema.test_table_in_schema (col1 INT)")
         conn.commit()
 
     def test_parse_standard_url(self):
@@ -49,7 +53,7 @@ class TestPostgresResource():
         assert res._server == "localhost", res._server
         assert res._port == "5432", res._port
         assert res._database == "tuttle_test_db", res._database
-        assert res._schema is None, res._schema
+        assert res._schema =="public", res._schema
         assert res._objectname == "test_table", res._objectname
 
     def test_pg_table_exists(self):
@@ -57,3 +61,21 @@ class TestPostgresResource():
         url = "pg://localhost:5432/tuttle_test_db/test_table"
         res = PostgreSQLResource(url)
         assert res.exists(), "{} should exist".format(url)
+
+    def test_pg_table_not_exists(self):
+        """the table should not exist"""
+        url = "pg://localhost:5432/tuttle_test_db/no_table"
+        res = PostgreSQLResource(url)
+        assert not res.exists(), "{} should exist".format(url)
+
+    def test_pg_table_with_schema_exists(self):
+        """exists() the table should exist in the schema"""
+        url = "pg://localhost:5432/tuttle_test_db/test_schema/test_table_in_schema"
+        res = PostgreSQLResource(url)
+        assert res.exists(), "{} should exist".format(url)
+
+    def test_pg_table_outside_schema_does_not_exist(self):
+        """the table should exist if it isn't in the proper schema"""
+        url = "pg://localhost:5432/tuttle_test_db/test_schema/test_table"
+        res = PostgreSQLResource(url)
+        assert not res.exists(), "{} should exist".format(url)

@@ -27,7 +27,7 @@ class PostgreSQLResource(ResourceMixIn, object):
         if captured_schema:
             self._schema = m.group(4)[:-1]
         else:
-            self._schema = None
+            self._schema = "public"
         self._objectname = m.group(5)
 
     def exists(self):
@@ -39,7 +39,8 @@ class PostgreSQLResource(ResourceMixIn, object):
             return False
         try:
             cur = db.cursor()
-            cur.execute("SELECT * FROM pg_catalog.pg_tables WHERE tablename=%s", (self._objectname, ) )
+            query = "SELECT * FROM pg_catalog.pg_tables WHERE tablename=%s AND schemaname=%s"
+            cur.execute(query, (self._objectname, self._schema))
             row = cur.fetchone()
             if not row:
                 return False
