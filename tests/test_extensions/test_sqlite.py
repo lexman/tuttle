@@ -196,7 +196,7 @@ class TestSQLiteResource():
         assert sig == expected, sig
 
     @isolate(['tests.sqlite'])
-    def test_sqlite_empty_table_signature(self):
+    def test_sqlite_not_empty_table_signature(self):
         """signature() should return a hash of the structure and the data for a table"""
         url = "sqlite://tests.sqlite/test_table_not_empty"
         res = SQLiteResource(url)
