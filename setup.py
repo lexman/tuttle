@@ -25,7 +25,7 @@ tuttle_description = {
     'platforms': ['Linux', 'Windows'],
     'url': 'http://tuttle.lexman.org/',
     'license': 'MIT',
-    'install_requires': ['jinja2', 'MarkupSafe'],
+    'install_requires': ['jinja2', 'MarkupSafe', 'psycopg2'],
     'packages': [
         'tuttle', 
         'tuttle.report', 
