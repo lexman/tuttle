@@ -30,3 +30,22 @@ class PostgreSQLResource(ResourceMixIn, object):
             self._schema = None
         self._objectname = m.group(5)
 
+    def exists(self):
+        try:
+            conn_string = "host=\'{}\' dbname='{}' port={} user=tuttle password=tuttle".format(self._server, self._database,
+                                                                   self._port)
+            db = psycopg2.connect(conn_string)
+        except psycopg2.OperationalError:
+            return False
+        try:
+            cur = db.cursor()
+            cur.execute("SELECT * FROM pg_catalog.pg_tables WHERE tablename=%s", (self._objectname, ) )
+            row = cur.fetchone()
+            if not row:
+                return False
+        except psycopg2.OperationalError:
+            return False
+        finally:
+            db.close()
+        return True
+
