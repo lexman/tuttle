@@ -24,6 +24,7 @@ class TestPostgresResource():
         cur.execute("CREATE SCHEMA test_schema")
         cur.execute("DROP TABLE IF EXISTS test_schema.test_table_in_schema")
         cur.execute("CREATE TABLE test_schema.test_table_in_schema (col1 INT)")
+        cur.execute("INSERT INTO test_table (col1) VALUES (12)")
         conn.commit()
 
     def test_parse_standard_url(self):
@@ -87,3 +88,11 @@ class TestPostgresResource():
         assert res.exists(), "{} should exist".format(url)
         res.remove()
         assert not res.exists(), "{} should not exist".format(url)
+
+    def test_sqlite_table_signature(self):
+        """signature() should return a hash of the structure and the data for a table"""
+        url = "pg://localhost:5432/tuttle_test_db/test_table"
+        res = PostgreSQLResource(url)
+        sig = res.signature()
+        expected = "7b52009b64fd0a2a49e6d8a939753077792b0554"
+        assert sig == expected, sig

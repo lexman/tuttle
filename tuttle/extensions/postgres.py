@@ -2,6 +2,7 @@
 
 from re import compile
 from tuttle.resources import MalformedUrl, ResourceMixIn
+from hashlib import sha1
 import psycopg2
 
 class PostgreSQLResource(ResourceMixIn, object):
@@ -63,3 +64,34 @@ class PostgreSQLResource(ResourceMixIn, object):
             db.commit()
         finally:
             db.close()
+
+    def table_signature(self, db, schema, tablename):
+        """Generate a hash for the contents of a file."""
+        checksum = sha1()
+        cur = db.cursor()
+        query = """SELECT *
+FROM information_schema.columns
+WHERE table_name = '?' AND table_schema='?'
+ORDER BY column_name;"""
+        cur.execute(query, (tablename, schema))
+        for row in cur:
+            for field in row:
+                checksum.update(str(field))
+        cur.execute('SELECT * FROM "{}"'.format(tablename))
+        for row in cur:
+            for field in row:
+                checksum.update(str(field))
+        return checksum.hexdigest()
+
+    def signature(self):
+        try:
+            conn_string = "host=\'{}\' dbname='{}' port={} user=tuttle password=tuttle".format(self._server, self._database,
+                                                                   self._port)
+            db = psycopg2.connect(conn_string)
+        except psycopg2.OperationalError:
+            return False
+        try:
+            result = self.table_signature(db, self._schema, self._objectname)
+        finally:
+            db.close()
+        return result
