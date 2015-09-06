@@ -31,6 +31,19 @@ class PostgreSQLResource(ResourceMixIn, object):
             self._schema = "public"
         self._objectname = m.group(5)
 
+    def pg_object_type(self, db, schema, objectname):
+        """Generate a hash for the contents of a file."""
+        cur = db.cursor()
+        query = """SELECT c.relname, c.relkind, n.nspname AS schema
+                     FROM pg_class c
+                       LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
+                    WHERE relname=%s AND n.nspname=%s
+        """
+        cur.execute(query, (objectname, schema, ))
+        row = cur.fetchone()
+        if row:
+            return row[1]
+
     def exists(self):
         try:
             conn_string = "host=\'{}\' dbname='{}' port={} user=tuttle password=tuttle".format(self._server, self._database,
@@ -60,7 +73,7 @@ class PostgreSQLResource(ResourceMixIn, object):
             return False
         try:
             cur = db.cursor()
-            cur.execute('DROP TABLE "{}"."{}"'.format(self._schema, self._objectname))
+            cur.execute('DROP TABLE "{}"."{}" CASCADE'.format(self._schema, self._objectname))
             db.commit()
         finally:
             db.close()
@@ -70,9 +83,10 @@ class PostgreSQLResource(ResourceMixIn, object):
         checksum = sha1()
         cur = db.cursor()
         query = """SELECT *
-FROM information_schema.columns
-WHERE table_name = '?' AND table_schema='?'
-ORDER BY column_name;"""
+                    FROM information_schema.columns
+                    WHERE table_name = '?' AND table_schema='?'
+                    ORDER BY column_name;
+                """
         cur.execute(query, (tablename, schema))
         for row in cur:
             for field in row:
@@ -90,8 +104,10 @@ ORDER BY column_name;"""
             db = psycopg2.connect(conn_string)
         except psycopg2.OperationalError:
             return False
+        result = False
         try:
-            result = self.table_signature(db, self._schema, self._objectname)
+            if self.pg_object_type(db, self._schema, self._objectname) == 'r':
+                result = self.table_signature(db, self._schema, self._objectname)
         finally:
             db.close()
         return result
