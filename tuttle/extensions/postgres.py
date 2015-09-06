@@ -52,17 +52,12 @@ class PostgreSQLResource(ResourceMixIn, object):
         except psycopg2.OperationalError:
             return False
         try:
-            cur = db.cursor()
-            query = "SELECT * FROM pg_catalog.pg_tables WHERE tablename=%s AND schemaname=%s"
-            cur.execute(query, (self._objectname, self._schema))
-            row = cur.fetchone()
-            if not row:
-                return False
+            result = self.pg_object_type(db, self._schema, self._objectname) is not None
         except psycopg2.OperationalError:
             return False
         finally:
             db.close()
-        return True
+        return result
 
     def remove(self):
         try:

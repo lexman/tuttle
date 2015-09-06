@@ -18,8 +18,10 @@ class TestPostgresResource():
         except psycopg2.OperationalError:
             raise SkipTest("No postgreSQL database configured to run the tests")
         cur = conn.cursor()
-        cur.execute("DROP TABLE IF EXISTS test_table")
+        cur.execute("DROP TABLE IF EXISTS test_table CASCADE")
         cur.execute("CREATE TABLE test_table (col1 INT)")
+        cur.execute("DROP VIEW IF EXISTS test_view")
+        cur.execute("CREATE VIEW test_view AS SELECT * FROM test_table")
         cur.execute("DROP SCHEMA IF EXISTS test_schema CASCADE")
         cur.execute("CREATE SCHEMA test_schema")
         cur.execute("DROP TABLE IF EXISTS test_schema.test_table_in_schema")
@@ -96,3 +98,9 @@ class TestPostgresResource():
         sig = res.signature()
         expected = "7b52009b64fd0a2a49e6d8a939753077792b0554"
         assert sig == expected, sig
+
+    def test_view_exists(self):
+        """exists() should return True because the vie exists"""
+        url = "pg://localhost:5432/tuttle_test_db/test_view"
+        res = PostgreSQLResource(url)
+        assert res.exists(), "{} should exist".format(url)
