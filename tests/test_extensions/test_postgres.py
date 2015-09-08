@@ -100,7 +100,15 @@ class TestPostgresResource():
         assert sig == expected, sig
 
     def test_view_exists(self):
-        """exists() should return True because the vie exists"""
+        """exists() should return True because the view exists"""
         url = "pg://localhost:5432/tuttle_test_db/test_view"
         res = PostgreSQLResource(url)
         assert res.exists(), "{} should exist".format(url)
+
+    def test_remove_view(self):
+        """exists() should return True because the view exists"""
+        url = "pg://localhost:5432/tuttle_test_db/test_view"
+        res = PostgreSQLResource(url)
+        assert res.exists(), "{} should exist".format(url)
+        res.remove()
+        assert not res.exists(), "{} should not exist any more !".format(url)

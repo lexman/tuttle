@@ -59,6 +59,12 @@ class PostgreSQLResource(ResourceMixIn, object):
             db.close()
         return result
 
+    def remove_table(self, cur):
+        cur.execute('DROP TABLE "{}"."{}" CASCADE'.format(self._schema, self._objectname))
+
+    def remove_view(self, cur):
+        cur.execute('DROP VIEW "{}"."{}" CASCADE'.format(self._schema, self._objectname))
+
     def remove(self):
         try:
             conn_string = "host=\'{}\' dbname='{}' port={} user=tuttle password=tuttle".format(self._server, self._database,
@@ -68,7 +74,11 @@ class PostgreSQLResource(ResourceMixIn, object):
             return False
         try:
             cur = db.cursor()
-            cur.execute('DROP TABLE "{}"."{}" CASCADE'.format(self._schema, self._objectname))
+            obj_type = self.pg_object_type(db, self._schema, self._objectname)
+            if obj_type == 'r':
+                self.remove_table(cur)
+            elif obj_type == 'v':
+                self.remove_view(cur)
             db.commit()
         finally:
             db.close()
