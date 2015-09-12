@@ -32,7 +32,10 @@ class PostgreSQLResource(ResourceMixIn, object):
         self._objectname = m.group(5)
 
     def pg_object_type(self, db, schema, objectname):
-        """Generate a hash for the contents of a file."""
+        """Returns the type of object in the database
+         * 'r' for tables
+         * 'v' for views
+        """
         cur = db.cursor()
         query = """SELECT c.relname, c.relkind, n.nspname AS schema
                      FROM pg_class c
@@ -84,12 +87,12 @@ class PostgreSQLResource(ResourceMixIn, object):
             db.close()
 
     def table_signature(self, db, schema, tablename):
-        """Generate a hash for the contents of a file."""
+        """Generate a hash for the contents of a table."""
         checksum = sha1()
         cur = db.cursor()
         query = """SELECT *
                     FROM information_schema.columns
-                    WHERE table_name = '?' AND table_schema='?'
+                    WHERE table_name='?' AND table_schema='?'
                     ORDER BY column_name;
                 """
         cur.execute(query, (tablename, schema))
@@ -102,6 +105,17 @@ class PostgreSQLResource(ResourceMixIn, object):
                 checksum.update(str(field))
         return checksum.hexdigest()
 
+    def view_signature(self, db, schema, tablename):
+        """Returns the definition of the view"""
+        cur = db.cursor()
+        query = """SELECT view_definition
+                    FROM information_schema.views
+                    WHERE table_name=%s AND table_schema=%s
+                """
+        cur.execute(query, (tablename, schema))
+        row = cur.fetchone()
+        return row[0]
+
     def signature(self):
         try:
             conn_string = "host=\'{}\' dbname='{}' port={} user=tuttle password=tuttle".format(self._server, self._database,
@@ -111,8 +125,11 @@ class PostgreSQLResource(ResourceMixIn, object):
             return False
         result = False
         try:
-            if self.pg_object_type(db, self._schema, self._objectname) == 'r':
+            object_type = self.pg_object_type(db, self._schema, self._objectname)
+            if object_type == 'r':
                 result = self.table_signature(db, self._schema, self._objectname)
+            elif object_type == 'v':
+                result = self.view_signature(db, self._schema, self._objectname)
         finally:
             db.close()
         return result

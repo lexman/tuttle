@@ -91,7 +91,7 @@ class TestPostgresResource():
         res.remove()
         assert not res.exists(), "{} should not exist".format(url)
 
-    def test_sqlite_table_signature(self):
+    def test_table_signature(self):
         """signature() should return a hash of the structure and the data for a table"""
         url = "pg://localhost:5432/tuttle_test_db/test_table"
         res = PostgreSQLResource(url)
@@ -112,3 +112,13 @@ class TestPostgresResource():
         assert res.exists(), "{} should exist".format(url)
         res.remove()
         assert not res.exists(), "{} should not exist any more !".format(url)
+
+    def test_view_signature(self):
+        """the declaration of a view should be its signature"""
+        url = "pg://localhost:5432/tuttle_test_db/test_view"
+        res = PostgreSQLResource(url)
+        assert res.exists(), "{} should exist".format(url)
+        expected = """ SELECT test_table.col1
+   FROM test_table;"""
+        sig = res.signature()
+        assert sig == expected, sig
