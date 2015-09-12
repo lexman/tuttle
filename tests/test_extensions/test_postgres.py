@@ -96,7 +96,7 @@ class TestPostgresResource():
         url = "pg://localhost:5432/tuttle_test_db/test_table"
         res = PostgreSQLResource(url)
         sig = res.signature()
-        expected = "7b52009b64fd0a2a49e6d8a939753077792b0554"
+        expected = "a545767cf5742cb647ac7b507ac77960d737474a"
         assert sig == expected, sig
 
     def test_view_exists(self):

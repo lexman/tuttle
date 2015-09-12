@@ -92,7 +92,7 @@ class PostgreSQLResource(ResourceMixIn, object):
         cur = db.cursor()
         query = """SELECT *
                     FROM information_schema.columns
-                    WHERE table_name='?' AND table_schema='?'
+                    WHERE table_name=%s AND table_schema=%s
                     ORDER BY column_name;
                 """
         cur.execute(query, (tablename, schema))
