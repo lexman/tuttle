@@ -49,7 +49,7 @@ class PostgreSQLResource(ResourceMixIn, object):
 
     def exists(self):
         try:
-            conn_string = "host=\'{}\' dbname='{}' port={} user=tuttle password=tuttle".format(self._server, self._database,
+            conn_string = "host=\'{}\' dbname='{}' port={} ".format(self._server, self._database,
                                                                    self._port)
             db = psycopg2.connect(conn_string)
         except psycopg2.OperationalError:
@@ -70,7 +70,7 @@ class PostgreSQLResource(ResourceMixIn, object):
 
     def remove(self):
         try:
-            conn_string = "host=\'{}\' dbname='{}' port={} user=tuttle password=tuttle".format(self._server, self._database,
+            conn_string = "host=\'{}\' dbname='{}' port={}".format(self._server, self._database,
                                                                    self._port)
             db = psycopg2.connect(conn_string)
         except psycopg2.OperationalError:
@@ -118,7 +118,7 @@ class PostgreSQLResource(ResourceMixIn, object):
 
     def signature(self):
         try:
-            conn_string = "host=\'{}\' dbname='{}' port={} user=tuttle password=tuttle".format(self._server, self._database,
+            conn_string = "host=\'{}\' dbname='{}' port={}".format(self._server, self._database,
                                                                    self._port)
             db = psycopg2.connect(conn_string)
         except psycopg2.OperationalError:

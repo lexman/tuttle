@@ -13,7 +13,7 @@ class TestPostgresResource():
 
     def setUp(self):
         try:
-            conn_string = "host=\'{}\' dbname='{}' port={} user=tuttle password=tuttle".format(self.__test_db_host, self.__test_db_name,
+            conn_string = "host=\'{}\' dbname='{}' port={}".format(self.__test_db_host, self.__test_db_name,
                                                                    self.__test_db_port)
             conn = psycopg2.connect(conn_string)
         except psycopg2.OperationalError:
@@ -129,7 +129,7 @@ class TestPostgresResource():
         """A project with a postgres resource should be valid"""
         project = """pg://localhost:5432/tuttle_test_db/test_table_project <- ! python
             import psycopg2
-            conn_string = "host=localhost dbname=tuttle_test_db user=tuttle password=tuttle"
+            conn_string = "host=localhost dbname=tuttle_test_db"
             db = psycopg2.connect(conn_string)
             cur=db.cursor()
             cur.execute("CREATE TABLE test_table_project (col INT)")
