@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from tests.functional_tests import run_tuttle_file, isolate
 from tuttle.extensions.postgres import PostgreSQLResource
 from nose.plugins.skip import SkipTest
 import psycopg2
@@ -122,3 +123,18 @@ class TestPostgresResource():
    FROM test_table;"""
         sig = res.signature()
         assert sig == expected, sig
+
+    @isolate
+    def test_pg_resources_are_available_in_tuttle(self):
+        """A project with a postgres resource should be valid"""
+        project = """pg://localhost:5432/tuttle_test_db/test_table_project <- ! python
+            import psycopg2
+            conn_string = "host=localhost dbname=tuttle_test_db user=tuttle password=tuttle"
+            db = psycopg2.connect(conn_string)
+            cur=db.cursor()
+            cur.execute("CREATE TABLE test_table_project (col INT)")
+            db.commit()
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert output.find("Done") >= 0, output

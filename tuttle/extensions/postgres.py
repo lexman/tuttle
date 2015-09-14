@@ -8,7 +8,7 @@ import psycopg2
 class PostgreSQLResource(ResourceMixIn, object):
     """A resource for an object in a PostgreSQL database. Objects can be tables, view..."""
     """eg : pg://localhost:5432/tuttle_test_database/test_schema/test_table"""
-    scheme = 'postgres'
+    scheme = 'pg'
 
     __ereg = compile("^pg://([^/^:]*)(:[0-9]*)?/([^/]*)/([^/]*/)?([^/]*)$")
 
