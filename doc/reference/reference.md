@@ -62,6 +62,12 @@ be visible in your version control system (eg git). When running tuttle, your sy
 database. You can either use a ``.pgpass`` file in your user's home directory or set PGNAME and PGPASSWORD environnement
  variables. More info on [Postgresql authentication documentation](http://TODO)
 
+### Future plans
+The official list of requested urls schemas available as [github issues](http://github.com/TODO)
+
+Writing your own resources is easy if you know the python language. So consider contributing... Pull requests are
+welcome !
+
 
 ## processors
 
@@ -90,4 +96,8 @@ output. If the file is a valid CSV file, the processor will load it inside the o
 
 ### Future plans
 The official list of requested processors is available as [github issues](http://github.com/TODO)
+
 NB : A lot of other magic transfer processor, like download and csv2sqlite are planned for the future
+
+Writing your own processor is easy if you know the python language. So consider contributing... Pull requests are
+welcome !
