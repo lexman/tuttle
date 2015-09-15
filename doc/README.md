@@ -9,4 +9,4 @@ example exist for both [Linux](exemples/sales_linux) and [Windows](exemples/sale
 and `sqlite://` resources.
 
 Once your familiar with tuttle's workflow, you can find the details of processors and url schemes in the
-[tuttlefile reference](reference\tuttlefile_reference.md)
+[tuttlefile reference](reference/tuttlefile_reference.md)
