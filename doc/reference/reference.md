@@ -64,3 +64,30 @@ database. You can either use a ``.pgpass`` file in your user's home directory or
 
 
 ## processors
+
+### shell
+``shell`` is the default processor on *nix systems (eg Linux). The code is interpreted as a shell script which stops (ad fails ) at
+the first error.
+
+### bat
+``bat`` is the default processor on windows. The code is interpreted as a batch script which stops (ad fails) at the first error.
+
+### python
+The ``python`` processor runs the code as a python 2.7 script
+
+### SQLite
+The ``sqlite`` processor is valid only if all input and output resources are ``sqlite:\\`` resources. In that case,
+it runs the sql code in that database.
+
+### download
+The ``download`` processor is valid only if it has one ``http:\\`` resource as input and one ``file:\\``
+resource as output. In that case it understands it has to download the http resource and save it in the file.
+
+### csv2sqlite
+The ``csv2sqlite`` processor is valid only if it has one ``file:\\`` resource as input and ``sqlite:\\`` resource as
+output. If the file is a valid CSV file, the processor will load it inside the ouput table, using the first line of
+ the csv file as column names.
+
+### Future plans
+The official list of requested processors is available as [github issues](http://github.com/TODO)
+NB : A lot of other magic transfer processor, like download and csv2sqlite are planned for the future
