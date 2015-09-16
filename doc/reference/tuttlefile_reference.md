@@ -10,7 +10,7 @@ according to the ``processor`` chosen for the process.
 For example a process producing two outputs from three inputs according to my_processor can look like that
 
 ```
-scheme:\\output\resource\1, scheme:\\output\resource2 <- scheme:\\input\resource1, scheme:\\input\resource2, scheme:\\input\resource3 ! my_processor
+scheme://output/resource/1, scheme://output/resource/2 <- scheme://input/resource/1, scheme://input/resource/2, scheme://input/resource/3 ! my_processor
     first line of code
     second line of code
 ```
@@ -27,8 +27,8 @@ Input, outputs and processor must all be on the same line (for the moment).
 ## urls schemes
 
 ### file
-``file:\\`` urls reference either files relatives to the tuttle file ``file://relative/path/to/file`` or an absolute path to
-the file reachable from the local system ``file:\\\absolute\path\to\file``. Path can be either standard files or
+``file://`` urls reference either files relatives to the tuttle file ``file://relative/path/to/file`` or an absolute path to
+the file reachable from the local system ``file:///absolute/path/to/file``. Path can be either standard files or
 directories.
 
 ### http
@@ -83,15 +83,15 @@ the first error.
 The ``python`` processor runs the code as a python 2.7 script
 
 ### SQLite
-The ``sqlite`` processor is valid only if all input and output resources are ``sqlite:\\`` resources from the same
+The ``sqlite`` processor is valid only if all input and output resources are ``sqlite://`` resources from the same
 database file. The processor will run the sql code inside that database.
 
 ### download
-The ``download`` processor is valid only if it has one ``http:\\`` resource as input and one ``file:\\``
+The ``download`` processor is valid only if it has one ``http://`` resource as input and one ``file://``
 resource as output. The processor will download the http resource and save it in the file.
 
 ### csv2sqlite
-The ``csv2sqlite`` processor is valid only if it has one ``file:\\`` resource as input and ``sqlite:\\`` resource as
+The ``csv2sqlite`` processor is valid only if it has one ``file://`` resource as input and ``sqlite://`` resource as
 output. If the file is a valid CSV file, the processor will load it inside the ouput table, using the first line of
  the csv file as column names.
 
