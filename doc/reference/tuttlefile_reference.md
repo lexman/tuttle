@@ -32,7 +32,7 @@ the file reachable from the local system ``file:///absolute/path/to/file``. Path
 directories.
 
 ### http
-Any valid http url (https://en.wikipedia.org/wiki/Web_resource), like http://github.com . Note that http resources can't be removed by tuttle, therefore invalidation of an http
+Any (valid http url)[https://en.wikipedia.org/wiki/Web_resource], like http://github.com . Note that http resources can't be removed by tuttle, therefore invalidation of an http
 resource will issue a warning.
 
 https is not implemented (yet).
