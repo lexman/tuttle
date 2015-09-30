@@ -66,7 +66,7 @@ class TestDownloadProcessor():
         content = open("google.html").read()
         assert content.find("<title>Google</title>") >= 0
         logs = open(join(".tuttle", "processes", "logs", "__1_stdout.txt"), "r").read()
-        assert re.search("\n\.+\n") is not None
+        assert re.search("\n\.+\n", logs) is not None
         assert isfile(join(".tuttle", "processes", "logs", "__1_err.txt"))
 
     @isolate
