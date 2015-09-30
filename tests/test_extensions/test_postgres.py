@@ -115,7 +115,7 @@ class TestPostgresResource():
         assert not res.exists(), "{} should not exist any more !".format(url)
 
     def clean_view_sig(self, sig):
-        res = sig.trim()
+        res = sig.strip()
         res = res.replace("\n", "")
         while res.find("  "):
             res = res.replace("  ", " ")
