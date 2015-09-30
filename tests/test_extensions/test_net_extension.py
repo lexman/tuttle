@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
-from os.path import isfile, join
 
+import re
+from os.path import isfile, join
 from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.project_parser import ProjectParser
 from tuttle.extensions.net import HTTPResource
@@ -65,7 +66,7 @@ class TestDownloadProcessor():
         content = open("google.html").read()
         assert content.find("<title>Google</title>") >= 0
         logs = open(join(".tuttle", "processes", "logs", "__1_stdout.txt"), "r").read()
-        assert logs.find("\n.\n") >= 0
+        assert re.search("\n\.+\n") is not None
         assert isfile(join(".tuttle", "processes", "logs", "__1_err.txt"))
 
     @isolate
