@@ -48,7 +48,7 @@ class TestHttpResource():
         """ An HTTPResource signature should be a hash of the beginning of the file if we can't rely on headers """
         res = HTTPResource("http://www.4chan.org/legal")
         sig = res.signature()
-        assert sig == 'sha1-32K: 8ad55d3a90de60852133faa30693152616f8ffc9', sig
+        assert sig == 'sha1-32K: 0288f152496321adf47cb6533a0d07f8a8dd835c', sig
 
 
 class TestDownloadProcessor():
