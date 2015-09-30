@@ -1,3 +1,5 @@
+addons:
+  postgresql: "9.1"
 language: python
 python:
 - '2.7'
@@ -9,7 +11,11 @@ before_install:
   debhelper
 install:
 - pip install -r requirements.txt
+before_script:
+  - psql -c 'create database tuttle_test_db;' -U postgres
+  - psql -c "CREATE USER tuttle WITH PASSWORD 'tuttle';" -U postgres
 script:
+- export PGPASSFILE=`pwd`/appveyor/.pgpass
 - nosetests
 - dpkg-buildpackage -us -uc
 - pwd
