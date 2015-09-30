@@ -117,7 +117,8 @@ class TestPostgresResource():
     def clean_view_sig(self, sig):
         res = sig.strip()
         res = res.replace("\n", "")
-        while res.find("  "):
+        res = res.replace("\t", " ")
+        while res.find("  ") >= 0:
             res = res.replace("  ", " ")
         return res
 
