@@ -114,15 +114,21 @@ class TestPostgresResource():
         res.remove()
         assert not res.exists(), "{} should not exist any more !".format(url)
 
+    def clean_view_sig(self, sig):
+        res = sig.trim()
+        res = res.replace("\n", "")
+        while res.find("  "):
+            res = res.replace("  ", " ")
+        return res
+
     def test_view_signature(self):
         """the declaration of a view should be its signature"""
         url = "pg://localhost:5432/tuttle_test_db/test_view"
         res = PostgreSQLResource(url)
         assert res.exists(), "{} should exist".format(url)
-        expected = """ SELECT test_table.col1
-   FROM test_table;"""
+        expected = "SELECT test_table.col1 FROM test_table;"
         sig = res.signature()
-        assert sig == expected, sig
+        assert self.clean_view_sig(sig) == expected, sig
 
     @isolate
     def test_pg_resources_are_available_in_tuttle(self):
