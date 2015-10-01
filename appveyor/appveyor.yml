@@ -18,6 +18,7 @@ install:
   # target Python version and architecture
   - python -m pip install -r requirements-dev.txt"
   - python -m pip install -U setuptools
+  - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
   # Install windows version of psycopg2 from http://www.stickpeople.com/projects/python/win-psycopg/
   - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/$env:PSYCOPG2 -OutFile $env:PSYCOPG2"
   - easy_install $PSYCOPG2$
