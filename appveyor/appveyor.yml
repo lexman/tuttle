@@ -12,16 +12,16 @@ environment:
       PSYCOPG2: "psycopg2-2.6.1.win-amd64-py2.7-pg9.4.4-release.exe"
 
 install:
+
   # Install the build dependencies of the project. If some dependencies contain
   # compiled extensions and are not provided as pre-built wheel packages,
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
   - python -m pip install -r requirements-dev.txt"
-  - python -m pip install -U setuptools
-  - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
+
   # Install windows version of psycopg2 from http://www.stickpeople.com/projects/python/win-psycopg/
   - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/$env:PSYCOPG2 -OutFile $env:PSYCOPG2"
-  - easy_install %PSYCOPG2%
+  - %PYTHON%\Scripts\easy_install %PSYCOPG2%
 
 build: false  # Not a C# project, build stuff at the test step instead.
 
@@ -33,20 +33,15 @@ test_script:
   - python package4win.py bdist_msi"
 
   # ... And check that tuttle works
-  - dir
-  - dir dist
   # Ensure we know exactly the name of the installer, on every platform (amd64 and x86)
   # http://stackoverflow.com/questions/14704333/using-wildard-with-dos-copy-command-corrupts-destination-file
   - echo f | xcopy dist\tuttle-*.msi tuttle-installer.msi
-  - dir
   - msiexec /i tuttle-installer.msi /qn /norestart /log C:\projects\install_tuttle.log
   - "PATH=%PATH%;\"C:\\Program Files (x86)\\tuttle\";\"C:\\Program Files\\tuttle\""
   - cmd: more C:\projects\install_tuttle.log
   - cmd: cd C:\projects\tuttle\doc\examples\sales_windows
   - tuttle run
   - cmd: copy penetration_rate.html workflow_execution_success.html
-
-after_test:
 
 artifacts:
   # Archive the generated package in the ci.appveyor.com build report.
