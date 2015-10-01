@@ -4,10 +4,12 @@ environment:
     - PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7.9"
       PYTHON_ARCH: "32"
+      PSYCOPG2: "psycopg2-2.6.1.win32-py2.7-pg9.4.4-release.exe"
 
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.9"
       PYTHON_ARCH: "64"
+      PSYCOPG2: "psycopg2-2.6.1.win-amd64-py2.7-pg9.4.4-release.exe"
 
 install:
   - ECHO "Filesystem root:"
@@ -26,8 +28,8 @@ install:
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
-  - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/psycopg2-2.6.1.win32-py2.7-pg9.4.4-release.exe -OutFile psycopg2-2.6.1.win32-py2.7-pg9.4.4-release.exe"
-  - easy_install psycopg2-2.6.1.win32-py2.7-pg9.4.4-release.exe
+  - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/%PSYCOPG2% -OutFile %PSYCOPG2%"
+  - easy_install %PSYCOPG2%
   # Install the build dependencies of the project. If some dependencies contain
   # compiled extensions and are not provided as pre-built wheel packages,
   # pip will build them from source using the MSVC compiler matching the
