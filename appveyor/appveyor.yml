@@ -12,14 +12,15 @@ environment:
       PSYCOPG2: "psycopg2-2.6.1.win-amd64-py2.7-pg9.4.4-release.exe"
 
 install:
-  # Install windows version of psycopg2 from http://www.stickpeople.com/projects/python/win-psycopg/
-  - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/$env:PSYCOPG2 -OutFile $env:PSYCOPG2"
-  - ps: "$env:PSYCOPG2"
   # Install the build dependencies of the project. If some dependencies contain
   # compiled extensions and are not provided as pre-built wheel packages,
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
   - python -m pip install -r requirements-dev.txt"
+  - pip install -U setuptools
+  # Install windows version of psycopg2 from http://www.stickpeople.com/projects/python/win-psycopg/
+  - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/$env:PSYCOPG2 -OutFile $env:PSYCOPG2"
+  - ps: "$env:PSYCOPG2"
 
 build: false  # Not a C# project, build stuff at the test step instead.
 
