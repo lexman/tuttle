@@ -6,6 +6,15 @@ import psycopg2
 
 
 class TestPostgresResource():
+    """
+    Test tuttle with Postgresql resources
+    To ensure tests will be run, you must provide access to a local postgresql database called tuttle_test_db,
+    then you must run the tests with environment variables allowing access to this database.
+    Eg, if you have defined a user tuttle with password tuttle, you can run the tests like this on Linux :
+        export PGUSER=tuttle
+        export PGPASSWORD=tuttle
+        nosetests
+    """
 
     __test_db_host = "localhost"
     __test_db_name = "tuttle_test_db"
