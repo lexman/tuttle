@@ -12,24 +12,21 @@ env:
     - PGPASSWORD=tuttle
 
 before_install:
-- pwd
 - sudo add-apt-repository ppa:dh-virtualenv/stable -y
 - sudo apt-get update -qq
 - sudo apt-get install -y --force-yes python python-pip python-virtualenv dh-virtualenv
   debhelper
-- psql -c 'CREATE DATABASE tuttle_test_db;' -U postgres
-- psql -c "CREATE USER tuttle WITH PASSWORD 'tuttle';" -U postgres
 
 install:
 - pip install -r requirements.txt
+- psql -c 'CREATE DATABASE tuttle_test_db;' -U postgres
+- psql -c "CREATE USER tuttle WITH PASSWORD 'tuttle';" -U postgres
 
 script:
 - nosetests
 - dpkg-buildpackage -us -uc
-- pwd
 - mkdir -p dist/debian
 - mv -v ../tuttle_* dist/debian/
-- ls
 - sudo dpkg -i dist/debian/tuttle_0.2-1_amd64.deb
 - cd doc/examples/sales_linux
 - tuttle run
