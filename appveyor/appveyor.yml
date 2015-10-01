@@ -26,6 +26,8 @@ install:
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
+  - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/psycopg2-2.6.1.win32-py2.7-pg9.4.4-release.exe -OutFile psycopg2-2.6.1.win32-py2.7-pg9.4.4-release.exe"
+  - easy_install psycopg2-2.6.1.win32-py2.7-pg9.4.4-release.exe
   # Install the build dependencies of the project. If some dependencies contain
   # compiled extensions and are not provided as pre-built wheel packages,
   # pip will build them from source using the MSVC compiler matching the
