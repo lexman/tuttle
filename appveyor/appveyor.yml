@@ -12,22 +12,7 @@ environment:
       PSYCOPG2: "psycopg2-2.6.1.win-amd64-py2.7-pg9.4.4-release.exe"
 
 install:
-  - ECHO "Filesystem root:"
-  - ps: "ls \"C:/\""
-
-  # Install Python (from the official .msi of http://python.org) and pip when
-  # not already installed.
-  - "powershell ./appveyor/install.ps1"
-
-  # Prepend newly installed Python to the PATH of this build (this cannot be
-  # done from inside the powershell script as it would require to restart
-  # the parent CMD process).
-  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
-
-  # Check that we have the expected version and architecture for Python
-  - "python --version"
-  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
-
+  # Install windows version of psycopg2 from http://www.stickpeople.com/projects/python/win-psycopg/
   - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/%PSYCOPG2% -OutFile %PSYCOPG2%"
   - easy_install %PSYCOPG2%
   # Install the build dependencies of the project. If some dependencies contain
