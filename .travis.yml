@@ -1,8 +1,10 @@
 addons:
   postgresql: "9.1"
+
 language: python
 python:
 - '2.7'
+
 before_install:
 - pwd
 - sudo add-apt-repository ppa:dh-virtualenv/stable -y
@@ -12,8 +14,10 @@ before_install:
 - psql -c 'create database tuttle_test_db;' -U postgres
 - psql -c "CREATE USER tuttle WITH PASSWORD 'tuttle';" -U postgres
 - chmod 600 ./appveyor/.pgpass
+
 install:
 - pip install -r requirements.txt
+
 script:
 - export PGPASSFILE=`pwd`/appveyor/.pgpass
 - nosetests
@@ -27,6 +31,7 @@ script:
 - tuttle run
 - cp penetration_rate.html workflow_execution_success
 - cd ../../..
+
 deploy:
   skip_cleanup: true
   provider: releases
