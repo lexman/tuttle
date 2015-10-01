@@ -6,11 +6,6 @@ language: python
 python:
 - '2.7'
 
-env:
-  global:
-    - PGUSER=tuttle
-    - PGPASSWORD=tuttle
-
 before_install:
 - sudo add-apt-repository ppa:dh-virtualenv/stable -y
 - sudo apt-get update -qq
