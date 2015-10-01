@@ -20,7 +20,7 @@ install:
   - python -m pip install -U setuptools
   # Install windows version of psycopg2 from http://www.stickpeople.com/projects/python/win-psycopg/
   - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/$env:PSYCOPG2 -OutFile $env:PSYCOPG2"
-  - ps: "$env:PSYCOPG2"
+  - easy_install $PSYCOPG2$
 
 build: false  # Not a C# project, build stuff at the test step instead.
 
