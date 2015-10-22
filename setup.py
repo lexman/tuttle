@@ -4,7 +4,8 @@
 """ Tuttle installation and packaging script """
 
 import sys
-from tuttle.version import version
+#from tuttle.version import version
+import version
 try:
     from setuptools import setup, find_packages
 except ImportError:
@@ -14,9 +15,10 @@ except ImportError:
     sys.exit(1)
 
 
+
 tuttle_description = {
     'name': 'tuttle',
-    'version': version,
+    'version': version.version,
     'author': 'Lexman',
     'author_email': 'tuttle@lexman.org',
     'description': 'Make for data',
@@ -38,6 +40,7 @@ tuttle_description = {
     ],
     'include_package_data':  True,
     'package_data':  {
+        'tuttle':  ['VERSION'],
         'tuttle.report':  ['*.html', 'html_report_assets/*'],
     },
 }
@@ -45,4 +48,5 @@ tuttle_description = {
 
 if __name__ == '__main__':
     # NB:  this script can ba imported by windows packager
+    version.export_version('tuttle/VERSION')
     setup(**tuttle_description)
