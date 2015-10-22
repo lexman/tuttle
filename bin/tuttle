@@ -15,12 +15,13 @@ sys.path.insert(0,tuttle_module)
 from argparse import ArgumentParser
 from tuttle import parse_invalidate_and_run, invalidate_resources
 from tuttle.utils import CurrentDir
+from tuttle.version import version, commit_id
 
 
 
 def main():
     parser = ArgumentParser(
-        description="Runs a workflow"
+        description="Runs a workflow - version {} ({})".format(version, commit_id)
     )
     parent_parser = ArgumentParser(
         add_help=False
