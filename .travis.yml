@@ -17,6 +17,7 @@ install:
 - psql -c 'CREATE DATABASE tuttle_test_db;' -U postgres
 
 script:
+- pip install .
 - nosetests
 - dpkg-buildpackage -us -uc
 - mkdir -p dist/debian

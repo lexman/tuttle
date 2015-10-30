@@ -4,7 +4,6 @@
 """ Tuttle installation and packaging script """
 
 import sys
-#from tuttle.version import version
 import version
 try:
     from setuptools import setup, find_packages
