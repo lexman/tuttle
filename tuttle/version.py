@@ -13,11 +13,11 @@ def module_path():
         return dirname(__file__)
 
 
-def read_version_file():
+def get_version():
     version_path = join(module_path(), "VERSION")
     version_details = open(version_path).read(getsize(version_path))
-    return tuple(version_details.split("\n")[:3])
+    return version_details.split("\n")[0]
 
 
-version, commit_id, plateform = read_version_file()
+version = get_version()
 

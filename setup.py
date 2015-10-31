@@ -5,6 +5,8 @@
 
 import sys
 import version
+from os.path import dirname, getsize, join
+
 try:
     from setuptools import setup, find_packages
 except ImportError:
@@ -14,10 +16,17 @@ except ImportError:
     sys.exit(1)
 
 
+def get_version():
+    version_path = join(dirname(__file__), 'tuttle', 'VERSION')
+    version_details = open(version_path).read(getsize(version_path))
+    return version_details.split("\n")[0]
+
+
+version = get_version()
 
 tuttle_description = {
     'name': 'tuttle',
-    'version': version.version,
+    'version': version,
     'author': 'Lexman',
     'author_email': 'tuttle@lexman.org',
     'description': 'Make for data',
@@ -47,5 +56,4 @@ tuttle_description = {
 
 if __name__ == '__main__':
     # NB:  this script can ba imported by windows packager
-    version.export_version('tuttle/VERSION')
     setup(**tuttle_description)

@@ -6,7 +6,6 @@
 import sys
 import re
 from os.path import join
-import version
 
 try:
     import setuptools
@@ -47,6 +46,4 @@ cx_freeze_opts = {
 package_description = tuttle_description
 package_description.update(cx_freeze_opts)
 package_description['version'] = strip_rc(package_description['version'])
-
-version.export_version('tuttle/VERSION')
 setup(**package_description)
