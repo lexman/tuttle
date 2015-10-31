@@ -30,6 +30,7 @@ build_exe_options = {
     "excludes": ["tkinter"],
     "include_files": (
         join("tuttle", "report"),
+        join("tuttle"),
     )
 }
 build_msi_options = {
