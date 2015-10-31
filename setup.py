@@ -4,7 +4,6 @@
 """ Tuttle installation and packaging script """
 
 import sys
-import version
 from os.path import dirname, getsize, join
 
 try:
