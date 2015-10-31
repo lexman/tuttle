@@ -6,7 +6,7 @@ import sys
 def module_path():
     if getattr(sys, 'frozen', False):
         # The application is frozen
-        return join(dirname(sys.executable), "tuttle")
+        return dirname(sys.executable)
     else:
         # The application is not frozen
         # Change this bit to match where you store your data files:
