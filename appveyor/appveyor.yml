@@ -19,9 +19,6 @@ install:
   # target Python version and architecture
   - python -m pip install -r requirements-dev.txt"
 
-  - cmd: cd C:\projects\tuttle\doc\examples\sales_windows
-  - tuttle run
-
   # Install windows version of psycopg2 from http://www.stickpeople.com/projects/python/win-psycopg/
   - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/$env:PSYCOPG2 -OutFile $env:PSYCOPG2"
   - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
@@ -30,13 +27,15 @@ install:
 build: false  # Not a C# project, build stuff at the test step instead.
 
 test_script:
-  - python -m pip install -r requirements-dev.txt"
+  - python -m pip install -r requirements-dev.txt
 
   # Build the compiled extension and run the project tests
-  - nosetests"
+  - nosetests
 
   # If tests are successful, create an installable package for the project.
-  - python package4win.py bdist_msi"
+  - python package4win.py bdist_msi
+  - cmd: cd C:\projects\tuttle\doc\examples\sales_windows
+  - tuttle run
 
   # ... And check that tuttle works
   # Ensure we know exactly the name of the installer, on every platform (amd64 and x86)
