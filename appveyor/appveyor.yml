@@ -32,9 +32,6 @@ build: false  # Not a C# project, build stuff at the test step instead.
 test_script:
   - python -m pip install -r requirements-dev.txt"
 
-  - cmd: cd C:\projects\tuttle\doc\examples\sales_windows
-  - tuttle run
-
   # Build the compiled extension and run the project tests
   - nosetests"
 
