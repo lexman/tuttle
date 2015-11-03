@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from collections import deque
 
 from error import TuttleError
 from workflow_builder import WorkflowBuilder
@@ -25,6 +26,47 @@ class InvalidResourceError(ParsingError):
 
 class InvalidProcessorError(ParsingError):
     pass
+
+
+class LinesStreammer():
+    """Provides lines from one or several files
+    This class is a helper that provides lines for the parser. Thanks to tuttle file
+    format where sections do not need to be ordered, some files can be added on the fly
+     to the streamer
+    """
+
+    def __init__(self):
+        self._lines = []
+        self._num_line = 0
+        self._total_lines = 0  # Number of lines in all the files
+        self._eos = True  # End of stream
+        self._filename = "_"
+        self._file = None
+        #self._file_queue = []
+
+    def add_file(self, filename):
+        #self._file_queue.append(filename)
+        self._filename = basename(filename)
+        with open(filename, 'rb') as f:
+            file_contents = f.read().decode('utf8')
+            self._lines = deque(file_contents.splitlines())
+        self._total_lines = len(self._lines)
+        self._num_line = 0
+        self._eos = (self._total_lines == 0)
+
+    def read_line(self):
+        """ Reads a line from a file. A file must have been added before calling read_line()
+        :return: tuple : (line : string, line number : int, end of stream : boolean)
+        """
+        try:
+            self._line = self._lines.popleft()
+            self._num_line += 1
+            self._eos = False
+            return self._line, self._num_line, False
+        except IndexError:
+            self._eof = True
+            self._line = ""
+            return "", self._num_line, True
 
 
 class ProjectParser():

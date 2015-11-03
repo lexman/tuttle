@@ -7,7 +7,7 @@ tuttle (0.2-1) UNRELEASED; urgency=medium
   * SQLite Processor
   * Tutorial   
 
- -- abonnasseau <abonnasseau@DSKLBS-03>  Wed, 19 Aug 2015 15:09:48 +0200
+ -- abonnasseau <tuttle@lexman.org>  Wed, 19 Aug 2015 15:09:48 +0200
 
 tuttle (0.1-1) unstable; urgency=low
 

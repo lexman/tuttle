@@ -1,7 +1,44 @@
 # -*- coding: utf-8 -*-
 
 from nose.tools import *
+from tests.functional_tests import isolate
 from tuttle.project_parser import *
+
+
+class TestLineStreamer():
+
+    @isolate(['test_project_parser.py'])
+    def test_read_lines(self):
+        """FileStreamer should provide a lines from a file"""
+        streamer = LinesStreammer()
+        streamer.add_file('test_project_parser.py')
+        (line, num, eos) = streamer.read_line()
+        assert line == '# -*- coding: utf-8 -*-', line
+        assert num == 1, num
+        (line, num, eos) = streamer.read_line()
+        assert line == '', line
+        assert num == 2, num
+
+    @isolate(['utf8_file.txt'])
+    def test_read_utf8_lines(self):
+        """FileStreamer should provide a lines from a file"""
+        streamer = LinesStreammer()
+        streamer.add_file('utf8_file.txt')
+        (line, num, eos) = streamer.read_line()
+        assert line == u'une ligne accentuée', line
+        assert num == 1, num
+
+    @isolate(['utf8_file.txt'])
+    def test_end_of_stream(self):
+        """FileStreamer should return eos==True when there is nothing to read after"""
+        streamer = LinesStreammer()
+        streamer.add_file('utf8_file.txt')
+        (line, num, eos) = streamer.read_line()
+        assert num == 1, num
+        (line, num, eos) = streamer.read_line()
+        assert num == 2, num
+        (line, num, eos) = streamer.read_line()
+        assert eos, "Should have reached end of stream"
 
 
 class TestProjectParser():
