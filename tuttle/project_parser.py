@@ -36,37 +36,50 @@ class LinesStreammer():
     """
 
     def __init__(self):
-        self._lines = []
+        self._lines = deque()
         self._num_line = 0
-        self._total_lines = 0  # Number of lines in all the files
         self._eos = True  # End of stream
         self._filename = "_"
-        self._file = None
-        #self._file_queue = []
+        self._file_queue = deque()
+        self._eos = False
 
     def add_file(self, filename):
-        #self._file_queue.append(filename)
         self._filename = basename(filename)
         with open(filename, 'rb') as f:
             file_contents = f.read().decode('utf8')
-            self._lines = deque(file_contents.splitlines())
-        self._total_lines = len(self._lines)
+            file_lines = deque(file_contents.splitlines())
+        self._file_queue.append((filename, file_lines))
+
+    def next_file(self):
+        """ Move to the next file to be parsed.
+        The file list must bot be empty
+        """
+        filename, file_lines = self._file_queue.popleft()
+        self._filename = filename
+        self._lines = file_lines
         self._num_line = 0
-        self._eos = (self._total_lines == 0)
+
+    def files_left(self):
+        return len(self._file_queue) > 0
+
+    def lines_left(self):
+        return len(self._lines) > 0
 
     def read_line(self):
         """ Reads a line from a file. A file must have been added before calling read_line()
         :return: tuple : (line : string, line number : int, end of stream : boolean)
         """
-        try:
+        while not self.lines_left() and self.files_left():
+            self.next_file()
+        if not self.lines_left():
+            self._eof = True
+            self._line = ""
+            return "", self._num_line, True
+        else:
             self._line = self._lines.popleft()
             self._num_line += 1
             self._eos = False
             return self._line, self._num_line, False
-        except IndexError:
-            self._eof = True
-            self._line = ""
-            return "", self._num_line, True
 
 
 class ProjectParser():

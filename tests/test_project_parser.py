@@ -40,6 +40,23 @@ class TestLineStreamer():
         (line, num, eos) = streamer.read_line()
         assert eos, "Should have reached end of stream"
 
+    @isolate(['utf8_file.txt',])
+    def test_streamer_should_work_on_several_files(self):
+        """FileStreamer should stream lines from several files"""
+        streamer = LinesStreammer()
+        streamer.add_file('utf8_file.txt')
+        (line, num, eos) = streamer.read_line()
+        assert num == 1, num
+        streamer.add_file('utf8_file.txt')
+        (line, num, eos) = streamer.read_line()
+        assert num == 2, num
+        (line, num, eos) = streamer.read_line()
+        assert num == 1, num
+        (line, num, eos) = streamer.read_line()
+        assert num == 2, num
+        (line, num, eos) = streamer.read_line()
+        assert eos, "Should have reached end of stream"
+
 
 class TestProjectParser():
 
