@@ -57,6 +57,19 @@ class TestLineStreamer():
         (line, num, eos) = streamer.read_line()
         assert eos, "Should have reached end of stream"
 
+    def test_streamer_should_stream_lines_from_text(self):
+        """FileStreamer should stream lines from initial_text"""
+        streamer = LinesStreammer("""Line 1
+        Line 2""")
+        (line, num, eos) = streamer.read_line()
+        assert num == 1, num
+        assert not eos, eos
+        (line, num, eos) = streamer.read_line()
+        assert num == 2, num
+        assert not eos, eos
+        (line, num, eos) = streamer.read_line()
+        assert eos, eos
+
 
 class TestProjectParser():
 

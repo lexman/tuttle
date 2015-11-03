@@ -35,8 +35,8 @@ class LinesStreammer():
      to the streamer
     """
 
-    def __init__(self):
-        self._lines = deque()
+    def __init__(self, init_text = ""):
+        self._lines = deque(init_text.splitlines())
         self._num_line = 0
         self._eos = True  # End of stream
         self._filename = "_"
