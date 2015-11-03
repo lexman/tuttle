@@ -8,12 +8,13 @@ from os.path import basename
 
 
 class ParsingError(TuttleError):
-    def __init__(self, message, line):
+    def __init__(self, message, filename, line):
         self._message = message
         self._line = line
+        self._filename = filename
     
     def __str__(self):
-        return "Parsing error on line {} : '{}'".format(self._line, self._message)
+        return "Parsing error in file '{}' on line {} : '{}'".format(self._filename, self._line, self._message)
     
 
 class WorkflowError(ParsingError):
@@ -44,11 +45,11 @@ class LinesStreammer():
         self._eos = False
 
     def add_file(self, filename):
-        self._filename = basename(filename)
+        base_filename = basename(filename)
         with open(filename, 'rb') as f:
             file_contents = f.read().decode('utf8')
             file_lines = deque(file_contents.splitlines())
-        self._file_queue.append((filename, file_lines))
+        self._file_queue.append((base_filename, file_lines))
 
     def next_file(self):
         """ Move to the next file to be parsed.
@@ -74,12 +75,12 @@ class LinesStreammer():
         if not self.lines_left():
             self._eof = True
             self._line = ""
-            return "", self._num_line, True
+            return "", self._filename, self._num_line, True
         else:
             self._line = self._lines.popleft()
             self._num_line += 1
             self._eos = False
-            return self._line, self._num_line, False
+            return self._line, self._filename, self._num_line, False
 
 
 class ProjectParser():
@@ -110,7 +111,7 @@ class ProjectParser():
                         "to choose which one to run first :\n"
             for process in unreachable:
                 error_msg += "* {}\n".format(process.id)
-            raise WorkflowError(error_msg, self._streamer._num_line)
+            raise WorkflowError(error_msg, self._filename, self._streamer._num_line)
         return workflow
 
     def set_project(self, text):
@@ -119,7 +120,7 @@ class ProjectParser():
         self._eof = False
 
     def read_line(self):
-        self._line, self._num_line, self._eof =  self._streamer.read_line()
+        self._line, self._filename, self._num_line, self._eof =  self._streamer.read_line()
         return (self._line, self._num_line, self._eof )
 
     def is_blank(self, line):
@@ -133,7 +134,8 @@ class ProjectParser():
     def parse_dependencies_and_processor(self):
         arrow_pos = self._line.find('<-')
         if arrow_pos == -1:
-            raise ParsingError("Definition of dependency expected. Or maybe you just got confused with indentation :)", self._num_line)
+            raise ParsingError("Definition of dependency expected. Or maybe you just got confused with indentation :)",
+                               self._filename, self._num_line)
         shebang_pos = self._line.find('!')
         if shebang_pos == -1:
             shebang_pos = len(self._line)
@@ -142,23 +144,23 @@ class ProjectParser():
             processor_name = self._line[shebang_pos + 2:].strip()
         process = self.wb.build_process(processor_name, self._filename, self._num_line)
         if not process:
-            raise InvalidProcessorError("Invalid processor : '{}' ".format(processor_name), self._num_line)
+            raise InvalidProcessorError("Invalid processor : '{}' ".format(processor_name), self._filename, self._num_line)
         input_urls = self._line[arrow_pos + 2:shebang_pos].split(',')
         if len(input_urls) > 1 or input_urls[0].strip() != "":
             for input_url in input_urls:
                 in_res = self.wb.get_or_build_resource(input_url.strip(), self.resources)
                 if in_res is None:
-                    raise InvalidResourceError("Invalid resource url : '{}' in inputs".format(input_url.strip()), self._num_line)
+                    raise InvalidResourceError("Invalid resource url : '{}' in inputs".format(input_url.strip()), self._filename, self._num_line)
                 process.add_input(in_res)
         outputs_urls = self._line[:arrow_pos].split(',')
         if len(outputs_urls) > 1 or outputs_urls[0].strip() != "":
             for output_url in outputs_urls:
                 out_res = self.wb.get_or_build_resource(output_url.strip(), self.resources)
                 if out_res is None:
-                    raise InvalidResourceError("Invalid resource url : '{}' in outputs".format(output_url.strip()), self._num_line)
+                    raise InvalidResourceError("Invalid resource url : '{}' in outputs".format(output_url.strip()), self._filename, self._num_line)
                 if out_res.creator_process is not None:
                     raise WorkflowError("{} has been already defined in the workflow (by processor : {})".format(output_url,
-                                        process._processor.name), self._num_line)
+                                        process._processor.name), self._filename, self._num_line)
                 out_res.set_creator_process(process)
                 process.add_output(out_res)
         return process

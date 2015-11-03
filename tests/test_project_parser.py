@@ -12,10 +12,10 @@ class TestLineStreamer():
         """FileStreamer should provide a lines from a file"""
         streamer = LinesStreammer()
         streamer.add_file('test_project_parser.py')
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert line == '# -*- coding: utf-8 -*-', line
         assert num == 1, num
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert line == '', line
         assert num == 2, num
 
@@ -24,7 +24,7 @@ class TestLineStreamer():
         """FileStreamer should provide a lines from a file"""
         streamer = LinesStreammer()
         streamer.add_file('utf8_file.txt')
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert line == u'une ligne accentuée', line
         assert num == 1, num
 
@@ -33,11 +33,11 @@ class TestLineStreamer():
         """FileStreamer should return eos==True when there is nothing to read after"""
         streamer = LinesStreammer()
         streamer.add_file('utf8_file.txt')
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert num == 1, num
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert num == 2, num
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert eos, "Should have reached end of stream"
 
     @isolate(['utf8_file.txt',])
@@ -45,29 +45,29 @@ class TestLineStreamer():
         """FileStreamer should stream lines from several files"""
         streamer = LinesStreammer()
         streamer.add_file('utf8_file.txt')
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert num == 1, num
         streamer.add_file('utf8_file.txt')
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert num == 2, num
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert num == 1, num
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert num == 2, num
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert eos, "Should have reached end of stream"
 
     def test_streamer_should_stream_lines_from_text(self):
         """FileStreamer should stream lines from initial_text"""
         streamer = LinesStreammer("""Line 1
         Line 2""")
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert num == 1, num
         assert not eos, eos
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert num == 2, num
         assert not eos, eos
-        (line, num, eos) = streamer.read_line()
+        (line, file, num, eos) = streamer.read_line()
         assert eos, eos
 
 
