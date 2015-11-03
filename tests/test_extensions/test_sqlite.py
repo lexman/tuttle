@@ -132,7 +132,7 @@ class TestSQLiteResource():
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 2
-        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err.txt')).read()
+        error_log = open(join('.tuttle', 'processes', 'logs', '__1_err.txt')).read()
         assert error_log.find('near "NOT": syntax error') >= 0, error_log
 
     @isolate(['tests.sqlite'])
@@ -144,7 +144,7 @@ class TestSQLiteResource():
         /* last comment style*/
         """
         rcode, output = run_tuttle_file(project)
-        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err.txt')).read()
+        error_log = open(join('.tuttle', 'processes', 'logs', '__1_err.txt')).read()
         assert rcode == 0, error_log
         assert output.find("comment") >= 0
 

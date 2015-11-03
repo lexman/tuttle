@@ -90,17 +90,16 @@ class ProjectParser():
     def __init__(self):
         self.wb = WorkflowBuilder()
         self.resources = {}
-        self._lines = []
-        self._nb_lines = 0
         self._line = ""
         self._num_line = 0
         self._eof = True
         self._filename = "_"
 
+        self._streamer = LinesStreammer()
+
     def parse_and_check_file(self, filename):
-        self._filename = basename(filename)
-        with open(filename, 'rb') as f:
-            self.set_project(f.read().decode('utf8'))
+        self._streamer = LinesStreammer()
+        self._streamer.add_file(filename)
         return self.parse_and_check_project()
 
     def parse_and_check_project(self):
@@ -111,25 +110,17 @@ class ProjectParser():
                         "to choose which one to run first :\n"
             for process in unreachable:
                 error_msg += "* {}\n".format(process.id)
-            raise WorkflowError(error_msg, self._nb_lines)
+            raise WorkflowError(error_msg, self._streamer._num_line)
         return workflow
 
     def set_project(self, text):
-        self._lines = text.splitlines()
-        self._nb_lines = len(self._lines)
+        self._streamer = LinesStreammer(text)
         self._num_line = 0
-        self._eof = (self._nb_lines == 0)
-        
+        self._eof = False
+
     def read_line(self):
-        if self._num_line < self._nb_lines:
-            self._line = self._lines[self._num_line]
-            self._num_line += 1
-            self._eof = False
-            return self._line, self._num_line, False
-        else:
-            self._eof = True
-            self._line = ""
-            return "", self._nb_lines, True
+        self._line, self._num_line, self._eof =  self._streamer.read_line()
+        return (self._line, self._num_line, self._eof )
 
     def is_blank(self, line):
         """ Check whether the current line in a tuttlefile is blank
