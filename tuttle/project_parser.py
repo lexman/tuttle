@@ -222,6 +222,17 @@ class ProjectParser():
         process.set_code(process_code)
         return process
 
+    def is_inclusion(self, line):
+        """ Check whether the current line is an include statement
+        """
+        return line.startswith("include ")
+
+    def parse_inclusion(self):
+        """ Check whether the current line is an include statement
+        """
+        return self._line[len("include "):]
+
+
     def parse_project(self):
         """ Parse a full project describing a workflow
         """

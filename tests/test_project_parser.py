@@ -462,7 +462,7 @@ file://file3 <- file://file2
         assert process._processor.name == "shell"
 
     def test_unknown_processor(self):
-        """ Bla bla when a processor with a wrong name is providesd"""
+        """ Should raise an error when a processor with a wrong name is provided"""
         pp = ProjectParser()
         project = "file:///result1 <- file:///source1 ! unknown"
         pp.set_project(project)
@@ -472,3 +472,13 @@ file://file3 <- file://file2
             assert False
         except InvalidProcessorError:
             assert True
+
+    def test_inclusion(self):
+        """ A project should be able to include another file"""
+        pp = ProjectParser()
+        project = "include included_project.tuttle"
+        pp.set_project(project)
+        pp.read_line()
+        assert pp.is_inclusion(pp._line), "This line should be reconized as an include statement"
+        filename = pp.parse_inclusion()
+        assert filename == "included_project.tuttle", filename
