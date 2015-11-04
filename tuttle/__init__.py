@@ -4,7 +4,7 @@ from tuttle import workflow
 from tuttle.invalidation import InvalidResourceCollector
 from error import TuttleError
 from project_parser import ProjectParser
-from tuttle.project_parser import WorkflowError, ParsingError
+from tuttle.project_parser import WorkflowError
 from tuttle.workflow_builder import WorkflowBuilder
 from workflow import Workflow
 

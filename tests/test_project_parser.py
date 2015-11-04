@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from nose.tools import *
 from tests.functional_tests import isolate
 from tuttle.project_parser import *
 
@@ -10,7 +9,7 @@ class TestLineStreamer():
     @isolate(['test_project_parser.py'])
     def test_read_lines(self):
         """FileStreamer should provide a lines from a file"""
-        streamer = LinesStreammer()
+        streamer = LinesStreamer()
         streamer.add_file('test_project_parser.py')
         (line, file, num, eos) = streamer.read_line()
         assert line == '# -*- coding: utf-8 -*-', line
@@ -22,7 +21,7 @@ class TestLineStreamer():
     @isolate(['utf8_file.txt'])
     def test_read_utf8_lines(self):
         """FileStreamer should provide a lines from a file"""
-        streamer = LinesStreammer()
+        streamer = LinesStreamer()
         streamer.add_file('utf8_file.txt')
         (line, file, num, eos) = streamer.read_line()
         assert line == u'une ligne accentuée', line
@@ -31,7 +30,7 @@ class TestLineStreamer():
     @isolate(['utf8_file.txt'])
     def test_end_of_stream(self):
         """FileStreamer should return eos==True when there is nothing to read after"""
-        streamer = LinesStreammer()
+        streamer = LinesStreamer()
         streamer.add_file('utf8_file.txt')
         (line, file, num, eos) = streamer.read_line()
         assert num == 1, num
@@ -43,7 +42,7 @@ class TestLineStreamer():
     @isolate(['utf8_file.txt',])
     def test_streamer_should_work_on_several_files(self):
         """FileStreamer should stream lines from several files"""
-        streamer = LinesStreammer()
+        streamer = LinesStreamer()
         streamer.add_file('utf8_file.txt')
         (line, file, num, eos) = streamer.read_line()
         assert num == 1, num
@@ -59,7 +58,7 @@ class TestLineStreamer():
 
     def test_streamer_should_stream_lines_from_text(self):
         """FileStreamer should stream lines from initial_text"""
-        streamer = LinesStreammer("""Line 1
+        streamer = LinesStreamer("""Line 1
         Line 2""")
         (line, file, num, eos) = streamer.read_line()
         assert num == 1, num
@@ -161,7 +160,7 @@ class TestProjectParser():
         try:
             process = pp.parse_section()
             assert False
-        except ParsingError:
+        except ParseError:
             assert True
 
     def test_read_section_with_invalid_output(self):
@@ -175,7 +174,7 @@ class TestProjectParser():
         try:
             process = pp.parse_section()
             assert False
-        except ParsingError:
+        except ParseError:
             assert True
 
     def test_read_section_without_process_code(self):
@@ -291,7 +290,7 @@ file:///resource2 <- file:///resource3
         try:
             workflow = pp.parse_project()
             assert False
-        except ParsingError:
+        except ParseError:
             assert True
 
     def test_output_can_come_from_only_one_process(self):
@@ -336,7 +335,7 @@ file:///result1 <- file:///source1
         try:
             process = pp.parse_project()
             assert False
-        except ParsingError:
+        except ParseError:
             assert True
 
     def test_a_project_can_have_one_unfinished_line(self):
@@ -473,12 +472,46 @@ file://file3 <- file://file2
         except InvalidProcessorError:
             assert True
 
-    def test_inclusion(self):
-        """ A project should be able to include another file"""
+    def test_recognize_inclusion(self):
+        """ Parser should recognize an include statement"""
         pp = ProjectParser()
         project = "include included_project.tuttle"
         pp.set_project(project)
         pp.read_line()
-        assert pp.is_inclusion(pp._line), "This line should be reconized as an include statement"
+        assert pp.is_inclusion(pp._line), "This line should be recognized as an include statement"
         filename = pp.parse_inclusion()
         assert filename == "included_project.tuttle", filename
+
+    @isolate(['included_project.tuttle'])
+    def test_inclusion_statement(self):
+        """ A project should be a sequence of sections and inclusions
+        Including a file mean loading more processes
+        """
+        pp = ProjectParser()
+        project = """file:///resource1 <- file:///resource2
+        Some code
+
+include included_project.tuttle
+
+file:///resource2 <- file:///resource3
+        Some code        """
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow._processes) == 3
+
+    def test_inclusion_error(self):
+        """ A clean error message should be displayed if the file does not exist"""
+        pp = ProjectParser()
+        project = """file:///resource1 <- file:///resource2
+        Some code
+
+include unknown_file
+
+file:///resource2 <- file:///resource3
+        Some code        """
+        pp.set_project(project)
+        try:
+            workflow = pp.parse_project()
+            assert False, "An error should have been raised"
+        except WorkflowError:
+            assert True

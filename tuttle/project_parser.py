@@ -7,29 +7,29 @@ from workflow import Workflow
 from os.path import basename
 
 
-class ParsingError(TuttleError):
+class ParseError(TuttleError):
     def __init__(self, message, filename, line):
         self._message = message
         self._line = line
         self._filename = filename
     
     def __str__(self):
-        return "Parsing error in file '{}' on line {} : '{}'".format(self._filename, self._line, self._message)
+        return "Parse error in file '{}' on line {} : '{}'".format(self._filename, self._line, self._message)
     
 
-class WorkflowError(ParsingError):
+class WorkflowError(ParseError):
     pass
 
 
-class InvalidResourceError(ParsingError):
+class InvalidResourceError(ParseError):
     pass
 
 
-class InvalidProcessorError(ParsingError):
+class InvalidProcessorError(ParseError):
     pass
 
 
-class LinesStreammer():
+class LinesStreamer():
     """Provides lines from one or several files
     This class is a helper that provides lines for the parser. Thanks to tuttle file
     format where sections do not need to be ordered, some files can be added on the fly
@@ -96,10 +96,10 @@ class ProjectParser():
         self._eof = True
         self._filename = "_"
 
-        self._streamer = LinesStreammer()
+        self._streamer = LinesStreamer()
 
     def parse_and_check_file(self, filename):
-        self._streamer = LinesStreammer()
+        self._streamer = LinesStreamer()
         self._streamer.add_file(filename)
         return self.parse_and_check_project()
 
@@ -115,7 +115,7 @@ class ProjectParser():
         return workflow
 
     def set_project(self, text):
-        self._streamer = LinesStreammer(text)
+        self._streamer = LinesStreamer(text)
         self._num_line = 0
         self._eof = False
 
@@ -134,7 +134,7 @@ class ProjectParser():
     def parse_dependencies_and_processor(self):
         arrow_pos = self._line.find('<-')
         if arrow_pos == -1:
-            raise ParsingError("Definition of dependency expected. Or maybe you just got confused with indentation :)",
+            raise ParseError("Definition of dependency expected. Or maybe you just got confused with indentation :)",
                                self._filename, self._num_line)
         shebang_pos = self._line.find('!')
         if shebang_pos == -1:
@@ -228,23 +228,34 @@ class ProjectParser():
         return line.startswith("include ")
 
     def parse_inclusion(self):
-        """ Check whether the current line is an include statement
+        """ Returns the meaning part of the inclusion : the file name
+        par_inclusion must only be called if is_inclusion have been verified
         """
         return self._line[len("include "):]
 
+    def add_sub_project(self, filename):
+        try:
+            self._streamer.add_file(filename)
+        except IOError:
+            msg = "Can't find file '{}' for inclusion".format(filename)
+            raise WorkflowError(msg, self._filename, self._streamer._num_line)
 
     def parse_project(self):
         """ Parse a full project describing a workflow
         """
         workflow = Workflow(self.resources)
-        #workflow.resources = self.resources
         line, num_line, eof = self.read_line()
         while True:
             while self.is_blank(line):
                 line, num_line, eof = self.read_line()
                 if eof:
                     return workflow
-            process = self.parse_section()
-            workflow.add_process(process)
+            if self.is_inclusion(self._line):
+                filename = self.parse_inclusion()
+                self.add_sub_project(filename)
+                line, num_line, eof = self.read_line()
+            else:
+                process = self.parse_section()
+                workflow.add_process(process)
             if self._eof:
                 return workflow
