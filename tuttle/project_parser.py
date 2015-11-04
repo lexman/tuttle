@@ -136,16 +136,16 @@ class ProjectParser():
         if arrow_pos == -1:
             raise ParseError("Definition of dependency expected. Or maybe you just got confused with indentation :)",
                                self._filename, self._num_line)
-        shebang_pos = self._line.find('!')
-        if shebang_pos == -1:
-            shebang_pos = len(self._line)
+        mark_pos = self._line.find('!')
+        if mark_pos == -1:
+            mark_pos = len(self._line)
             processor_name = "default"
         else:
-            processor_name = self._line[shebang_pos + 2:].strip()
+            processor_name = self._line[mark_pos + 2:].strip()
         process = self.wb.build_process(processor_name, self._filename, self._num_line)
         if not process:
             raise InvalidProcessorError("Invalid processor : '{}' ".format(processor_name), self._filename, self._num_line)
-        input_urls = self._line[arrow_pos + 2:shebang_pos].split(',')
+        input_urls = self._line[arrow_pos + 2:mark_pos].split(',')
         if len(input_urls) > 1 or input_urls[0].strip() != "":
             for input_url in input_urls:
                 in_res = self.wb.get_or_build_resource(input_url.strip(), self.resources)

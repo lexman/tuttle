@@ -23,6 +23,11 @@ Then comes an optional exclamation mark ``!`` with the processor name. By defaul
 
 Input, outputs and processor must all be on the same line (for the moment).
 
+Also, tuttle projects can be split in several files with the ``include`` statement :
+
+```
+include load_from_databse.tuttle
+```
 
 ## urls schemes
 
