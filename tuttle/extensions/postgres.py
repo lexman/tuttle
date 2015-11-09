@@ -46,6 +46,15 @@ class PostgreSQLResource(ResourceMixIn, object):
         row = cur.fetchone()
         if row:
             return row[1]
+        query = """SELECT p.proname, n.nspname AS schema
+                     FROM pg_proc p
+                       LEFT JOIN pg_namespace n ON n.oid = p.pronamespace
+                    WHERE proname=%s AND n.nspname=%s
+        """
+        cur.execute(query, (objectname, schema, ))
+        row = cur.fetchone()
+        if row:
+            return 'f'
 
     def exists(self):
         try:

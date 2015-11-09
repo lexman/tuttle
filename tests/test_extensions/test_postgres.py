@@ -37,6 +37,14 @@ class TestPostgresResource():
         cur.execute("DROP TABLE IF EXISTS test_schema.test_table_in_schema")
         cur.execute("CREATE TABLE test_schema.test_table_in_schema (col1 INT)")
         cur.execute("INSERT INTO test_table (col1) VALUES (12)")
+        cur.execute("""CREATE OR REPLACE FUNCTION test_function() RETURNS integer AS
+$BODY$
+BEGIN
+    RETURN "42";
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+""")
         conn.commit()
 
     def test_parse_standard_url(self):
@@ -154,3 +162,23 @@ class TestPostgresResource():
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
         assert output.find("Done") >= 0, output
+
+    def test_stored_procedure_exists(self):
+        """exists() should return True because the store procedure exists"""
+        url = "pg://localhost:5432/tuttle_test_db/test_function"
+        res = PostgreSQLResource(url)
+        assert res.exists(), "{} should exist".format(url)
+
+    def test_pg(self):
+        """exists() should return True because the store procedure exists"""
+        url = "pg://localhost:5432/tuttle_test_db/test_function"
+        res = PostgreSQLResource(url)
+        import psycopg2
+        conn_string = "host=\'{}\' dbname='{}' port={} ".format(res._server, res._database,
+                                                       res._port)
+        db = psycopg2.connect(conn_string)
+        result = res.pg_object_type(db, 'public', 'test_function')
+        assert result == 12, result
+
+        # assert res.exists(), "{} should exist".format(url)
+
