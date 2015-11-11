@@ -45,6 +45,14 @@ END;
 $BODY$
   LANGUAGE plpgsql
 """)
+        cur.execute("""CREATE OR REPLACE FUNCTION test_function_args(integer, real) RETURNS integer AS
+$BODY$
+BEGIN
+    RETURN "69";
+END;
+$BODY$
+  LANGUAGE plpgsql
+""")
         conn.commit()
 
     def test_parse_standard_url(self):
@@ -172,6 +180,14 @@ $BODY$
     def test_remove_function(self):
         """after remove, a function should no longer exist"""
         url = "pg://localhost:5432/tuttle_test_db/test_function"
+        res = PostgreSQLResource(url)
+        assert res.exists(), "{} should exist".format(url)
+        res.remove()
+        assert not res.exists(), "{} should not exist anymore".format(url)
+
+    def test_remove_function_with_args(self):
+        """after remove, a function should no longer exist whatever its arguments"""
+        url = "pg://localhost:5432/tuttle_test_db/test_function_args"
         res = PostgreSQLResource(url)
         assert res.exists(), "{} should exist".format(url)
         res.remove()

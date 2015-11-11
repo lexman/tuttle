@@ -77,8 +77,42 @@ class PostgreSQLResource(ResourceMixIn, object):
     def remove_view(self, cur):
         cur.execute('DROP VIEW "{}"."{}" CASCADE'.format(self._schema, self._objectname))
 
+    def pg_type_names(self, cur, oids):
+        """
+        :param cur: a cursor on a postgresql database
+        :param oids: a string with postgresql oid separated by spaces
+        :return: an array of the fully qualified names of the postgres types
+        """
+        if len(oids) == 0:
+            return []
+        oids_seq = oids.replace(' ', ',')
+        query = """SELECT t.oid, t.typname, n.nspname AS schema
+                     FROM pg_type t
+                       LEFT JOIN pg_namespace n ON n.oid = t.typnamespace
+                    WHERE t.oid in ({})
+        """.format(oids_seq)
+        cur.execute(query, (self._objectname, self._schema, ))
+        match = {str(row[0]): '"{}"."{}"'.format(row[2], row[1]) for row in cur}
+        res = [match[oid] for oid in oids.split(' ')]
+        return res
+
     def remove_function(self, cur):
-        cur.execute('DROP FUNCTION "{}"."{}"() CASCADE'.format(self._schema, self._objectname))
+        """ Removes a function from the database.
+        The database should have only one function with this name (ie no overload with several signatures
+        with different arguments) because if will remove one and only one of them
+        :param cur: a postgresql cursor
+        """
+        query_get_args = """SELECT p.proname, n.nspname, p.proargtypes AS schema
+                     FROM pg_proc p
+                       LEFT JOIN pg_namespace n ON n.oid = p.pronamespace
+                    WHERE proname=%s AND n.nspname=%s
+        """
+        cur.execute(query_get_args, (self._objectname, self._schema, ))
+        row = cur.fetchone()
+        args_oids = row[2]
+        arg_types = ", ".join(self.pg_type_names(cur, args_oids))
+        query_drop = 'DROP FUNCTION "{}"."{}"({}) CASCADE'.format(self._schema, self._objectname, arg_types)
+        cur.execute(query_drop)
 
     def remove(self):
         try:
