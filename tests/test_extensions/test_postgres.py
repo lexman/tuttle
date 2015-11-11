@@ -201,3 +201,25 @@ $BODY$
         res = PostgreSQLResource(url)
         assert res.exists(), "{} should exist".format(url)
         assert res.signature() == "b92433deca9384c90d6313f496ea4b67d5531983", res.signature()
+
+    def test_schema_exists(self):
+        """exists() should return True because the schema exists"""
+        url = "pg://localhost:5432/tuttle_test_db/test_schema"
+        res = PostgreSQLResource(url)
+        assert res.exists(), "{} should exist".format(url)
+
+    def test_remove_schema(self):
+        """after remove, a schema should no longer exist"""
+        url = "pg://localhost:5432/tuttle_test_db/test_schema"
+        res = PostgreSQLResource(url)
+        assert res.exists(), "{} should exist".format(url)
+        res.remove()
+        assert not res.exists(), "{} should not exist anymore".format(url)
+
+    def test_schema_signature(self):
+        """the signature of the schema should be its owner"""
+        url = "pg://localhost:5432/tuttle_test_db/test_schema"
+        res = PostgreSQLResource(url)
+        assert res.exists(), "{} should exist".format(url)
+        assert res.signature() == "owner : tuttle", res.signature()
+

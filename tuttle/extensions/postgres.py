@@ -15,6 +15,7 @@ class PostgreSQLResource(ResourceMixIn, object):
     TYPE_TABLE = 'r'
     TYPE_VIEW = 'v'
     TYPE_FUNCTION = 'f'
+    TYPE_SCHEMA = 's'
 
     def __init__(self, url):
         super(PostgreSQLResource, self).__init__(url)
@@ -59,7 +60,16 @@ class PostgreSQLResource(ResourceMixIn, object):
         cur.execute(query, (objectname, schema, ))
         row = cur.fetchone()
         if row:
-            return 'f'
+            return self.TYPE_FUNCTION
+        query = """SELECT nspname AS schema
+                     FROM pg_namespace
+                    WHERE nspname=%s
+        """
+        # NB : objectname could be a schema name instead of an object name in the public schema
+        cur.execute(query, (objectname, ))
+        row = cur.fetchone()
+        if row:
+            return self.TYPE_SCHEMA
 
     def exists(self):
         try:
@@ -129,6 +139,9 @@ class PostgreSQLResource(ResourceMixIn, object):
         query_drop = 'DROP FUNCTION "{}"."{}"({}) CASCADE'.format(schema, name, args)
         cur.execute(query_drop)
 
+    def remove_schema(self, cur, name):
+        cur.execute('DROP SCHEMA "{}" CASCADE'.format(name))
+
     def remove(self):
         try:
             conn_string = "host=\'{}\' dbname='{}' port={}".format(self._server, self._database,
@@ -145,6 +158,8 @@ class PostgreSQLResource(ResourceMixIn, object):
                 self.remove_view(cur, self._schema, self._objectname)
             elif obj_type == self.TYPE_FUNCTION:
                 self.remove_function(cur, self._schema, self._objectname)
+            elif obj_type == self.TYPE_SCHEMA:
+                self.remove_schema(cur, self._objectname)
             db.commit()
         finally:
             db.close()
@@ -193,6 +208,17 @@ class PostgreSQLResource(ResourceMixIn, object):
         checksum.update(str(function_src))
         return checksum.hexdigest()
 
+    def schema_signature(self, db, name):
+        """Returns the owner of the schema."""
+        cur = db.cursor()
+        query = """SELECT n.nspname AS schema, r.rolname
+                     FROM pg_namespace n
+                       LEFT JOIN pg_roles r ON n.nspowner = r.oid
+                    WHERE n.nspname=%s
+        """
+        cur.execute(query, (name, ))
+        _, owner = cur.fetchone()
+        return "owner : {}".format(owner)
 
     def signature(self):
         try:
@@ -210,6 +236,8 @@ class PostgreSQLResource(ResourceMixIn, object):
                 result = self.view_signature(db, self._schema, self._objectname)
             elif object_type == self.TYPE_FUNCTION:
                 result = self.function_signature(db, self._schema, self._objectname)
+            elif object_type == self.TYPE_SCHEMA:
+                result = self.schema_signature(db, self._objectname)
         finally:
             db.close()
         return result
