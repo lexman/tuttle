@@ -77,6 +77,9 @@ class PostgreSQLResource(ResourceMixIn, object):
     def remove_view(self, cur):
         cur.execute('DROP VIEW "{}"."{}" CASCADE'.format(self._schema, self._objectname))
 
+    def remove_function(self, cur):
+        cur.execute('DROP FUNCTION "{}"."{}"() CASCADE'.format(self._schema, self._objectname))
+
     def remove(self):
         try:
             conn_string = "host=\'{}\' dbname='{}' port={}".format(self._server, self._database,
@@ -91,6 +94,8 @@ class PostgreSQLResource(ResourceMixIn, object):
                 self.remove_table(cur)
             elif obj_type == 'v':
                 self.remove_view(cur)
+            elif obj_type == 'f':
+                self.remove_function(cur)
             db.commit()
         finally:
             db.close()
