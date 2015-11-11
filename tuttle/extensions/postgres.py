@@ -103,12 +103,12 @@ class PostgreSQLResource(ResourceMixIn, object):
         :param name: function name
         :return: string : a coma separated list of arguments
         """
-        query_get_args = """SELECT p.proname, n.nspname, p.proargtypes AS schema
+        query = """SELECT p.proname, n.nspname, p.proargtypes AS schema
                      FROM pg_proc p
                        LEFT JOIN pg_namespace n ON n.oid = p.pronamespace
                     WHERE proname=%s AND n.nspname=%s
         """
-        cur.execute(query_get_args, (name, schema, ))
+        cur.execute(query, (name, schema, ))
         row = cur.fetchone()
         args_oids = row[2]
         arg_types = ", ".join(self.pg_type_names(cur, args_oids))
@@ -174,6 +174,21 @@ class PostgreSQLResource(ResourceMixIn, object):
         row = cur.fetchone()
         return row[0]
 
+    def function_signature(self, db, schema, name):
+        """Returns a hash of the function source."""
+        checksum = sha1()
+        cur = db.cursor()
+        query = """SELECT p.proname, n.nspname AS schema, p.prosrc
+                     FROM pg_proc p
+                       LEFT JOIN pg_namespace n ON n.oid = p.pronamespace
+                    WHERE proname=%s AND n.nspname=%s
+        """
+        cur.execute(query, (name, schema, ))
+        _, _, function_src = cur.fetchone()
+        checksum.update(str(function_src))
+        return checksum.hexdigest()
+
+
     def signature(self):
         try:
             conn_string = "host=\'{}\' dbname='{}' port={}".format(self._server, self._database,
@@ -188,6 +203,8 @@ class PostgreSQLResource(ResourceMixIn, object):
                 result = self.table_signature(db, self._schema, self._objectname)
             elif object_type == 'v':
                 result = self.view_signature(db, self._schema, self._objectname)
+            elif object_type == 'f':
+                result = self.function_signature(db, self._schema, self._objectname)
         finally:
             db.close()
         return result

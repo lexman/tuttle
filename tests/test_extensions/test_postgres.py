@@ -140,6 +140,8 @@ $BODY$
         assert not res.exists(), "{} should not exist any more !".format(url)
 
     def clean_view_sig(self, sig):
+        """ Removes extra spaces and new lines from an SQL query for assert comparison
+        """
         res = sig.strip()
         res = res.replace("\n", "")
         res = res.replace("\t", " ")
@@ -193,16 +195,9 @@ $BODY$
         res.remove()
         assert not res.exists(), "{} should not exist anymore".format(url)
 
-    def test_pg(self):
-        """exists() should return True because the store procedure exists"""
-        url = "pg://localhost:5432/tuttle_test_db/test_function"
+    def test_function_signature(self):
+        """the signature of a function should be a hash of its source code"""
+        url = "pg://localhost:5432/tuttle_test_db/test_function_args"
         res = PostgreSQLResource(url)
-        import psycopg2
-        conn_string = "host=\'{}\' dbname='{}' port={} ".format(res._server, res._database,
-                                                       res._port)
-        db = psycopg2.connect(conn_string)
-        result = res.pg_object_type(db, 'public', 'test_function')
-        #assert result == 12, result
-
-        # assert res.exists(), "{} should exist".format(url)
-
+        assert res.exists(), "{} should exist".format(url)
+        assert res.signature() == "b92433deca9384c90d6313f496ea4b67d5531983", res.signature()
