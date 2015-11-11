@@ -71,11 +71,11 @@ class PostgreSQLResource(ResourceMixIn, object):
             db.close()
         return result
 
-    def remove_table(self, cur):
-        cur.execute('DROP TABLE "{}"."{}" CASCADE'.format(self._schema, self._objectname))
+    def remove_table(self, cur, schema, name):
+        cur.execute('DROP TABLE "{}"."{}" CASCADE'.format(schema, name))
 
-    def remove_view(self, cur):
-        cur.execute('DROP VIEW "{}"."{}" CASCADE'.format(self._schema, self._objectname))
+    def remove_view(self, cur, schema, name):
+        cur.execute('DROP VIEW "{}"."{}" CASCADE'.format(schema, name))
 
     def pg_type_names(self, cur, oids):
         """
@@ -96,22 +96,32 @@ class PostgreSQLResource(ResourceMixIn, object):
         res = [match[oid] for oid in oids.split(' ')]
         return res
 
-    def remove_function(self, cur):
-        """ Removes a function from the database.
-        The database should have only one function with this name (ie no overload with several signatures
-        with different arguments) because if will remove one and only one of them
-        :param cur: a postgresql cursor
+    def function_arguments(self, cur, schema, name):
+        """ Returns the list of types of arguments of a postgresql function
+        :param cur: a cursor open on a postgresql database
+        :param schema: schema name of the function
+        :param name: function name
+        :return: string : a coma separated list of arguments
         """
         query_get_args = """SELECT p.proname, n.nspname, p.proargtypes AS schema
                      FROM pg_proc p
                        LEFT JOIN pg_namespace n ON n.oid = p.pronamespace
                     WHERE proname=%s AND n.nspname=%s
         """
-        cur.execute(query_get_args, (self._objectname, self._schema, ))
+        cur.execute(query_get_args, (name, schema, ))
         row = cur.fetchone()
         args_oids = row[2]
         arg_types = ", ".join(self.pg_type_names(cur, args_oids))
-        query_drop = 'DROP FUNCTION "{}"."{}"({}) CASCADE'.format(self._schema, self._objectname, arg_types)
+        return arg_types
+
+    def remove_function(self, cur, schema, name):
+        """ Removes a function from the database.
+        The database should have only one function with this name (ie no overload with several signatures
+        with different arguments) because if will remove one and only one of them
+        :param cur: a postgresql cursor
+        """
+        args = self.function_arguments(cur, schema, name)
+        query_drop = 'DROP FUNCTION "{}"."{}"({}) CASCADE'.format(schema, name, args)
         cur.execute(query_drop)
 
     def remove(self):
@@ -125,11 +135,11 @@ class PostgreSQLResource(ResourceMixIn, object):
             cur = db.cursor()
             obj_type = self.pg_object_type(db, self._schema, self._objectname)
             if obj_type == 'r':
-                self.remove_table(cur)
+                self.remove_table(cur, self._schema, self._objectname)
             elif obj_type == 'v':
-                self.remove_view(cur)
+                self.remove_view(cur, self._schema, self._objectname)
             elif obj_type == 'f':
-                self.remove_function(cur)
+                self.remove_function(cur, self._schema, self._objectname)
             db.commit()
         finally:
             db.close()
