@@ -76,14 +76,10 @@ class PostgreSQLResource(ResourceMixIn, object):
             conn_string = "host=\'{}\' dbname='{}' port={} ".format(self._server, self._database,
                                                                    self._port)
             db = psycopg2.connect(conn_string)
-        except psycopg2.OperationalError:
-            return False
-        try:
             result = self.pg_object_type(db, self._schema, self._objectname) is not None
+            db.close()
         except psycopg2.OperationalError:
             return False
-        finally:
-            db.close()
         return result
 
     def remove_table(self, cur, schema, name):
