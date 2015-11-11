@@ -12,6 +12,10 @@ class PostgreSQLResource(ResourceMixIn, object):
 
     __ereg = compile("^pg://([^/^:]*)(:[0-9]*)?/([^/]*)/([^/]*/)?([^/]*)$")
 
+    TYPE_TABLE = 'r'
+    TYPE_VIEW = 'v'
+    TYPE_FUNCTION = 'f'
+
     def __init__(self, url):
         super(PostgreSQLResource, self).__init__(url)
         m = self.__ereg.match(url)
@@ -32,9 +36,10 @@ class PostgreSQLResource(ResourceMixIn, object):
         self._objectname = m.group(5)
 
     def pg_object_type(self, db, schema, objectname):
-        """Returns the type of object in the database
-         * 'r' for tables
-         * 'v' for views
+        """Returns the type of object in the database, as a constant :
+         * TYPE_VIEW for tables
+         * TYPE_VIEW for views
+         * TYPE_FUNCTION for functions
         """
         cur = db.cursor()
         query = """SELECT c.relname, c.relkind, n.nspname AS schema
@@ -134,11 +139,11 @@ class PostgreSQLResource(ResourceMixIn, object):
         try:
             cur = db.cursor()
             obj_type = self.pg_object_type(db, self._schema, self._objectname)
-            if obj_type == 'r':
+            if obj_type == self.TYPE_TABLE:
                 self.remove_table(cur, self._schema, self._objectname)
-            elif obj_type == 'v':
+            elif obj_type == self.TYPE_VIEW:
                 self.remove_view(cur, self._schema, self._objectname)
-            elif obj_type == 'f':
+            elif obj_type == self.TYPE_FUNCTION:
                 self.remove_function(cur, self._schema, self._objectname)
             db.commit()
         finally:
@@ -199,11 +204,11 @@ class PostgreSQLResource(ResourceMixIn, object):
         result = False
         try:
             object_type = self.pg_object_type(db, self._schema, self._objectname)
-            if object_type == 'r':
+            if object_type == self.TYPE_TABLE:
                 result = self.table_signature(db, self._schema, self._objectname)
-            elif object_type == 'v':
+            elif object_type == self.TYPE_VIEW:
                 result = self.view_signature(db, self._schema, self._objectname)
-            elif object_type == 'f':
+            elif object_type == self.TYPE_FUNCTION:
                 result = self.function_signature(db, self._schema, self._objectname)
         finally:
             db.close()
