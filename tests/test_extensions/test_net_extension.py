@@ -42,13 +42,13 @@ class TestHttpResource():
         """ An HTTPResource with an Last-Modified should use it as signature in case it doesn't have Etag"""
         res = HTTPResource("http://www.wikipedia.org/")
         sig = res.signature()
-        assert sig == 'Last-Modified: Sun, 01 Nov 2015 19:53:52 GMT', sig
+        assert sig == 'Last-Modified: Tue, 10 Nov 2015 07:59:46 GMT', sig
 
     def test_ressource_signature_without_etag_nor_last_modified(self):
         """ An HTTPResource signature should be a hash of the beginning of the file if we can't rely on headers """
         res = HTTPResource("http://www.4chan.org/legal")
         sig = res.signature()
-        assert sig == 'sha1-32K: bb95520fc1e6fe532e87b307c48f26741761ffd3', sig
+        assert sig == 'sha1-32K: 55b8c3436d6dae6adf6e3a01a494d81e919a7df6', sig
 
 
 class TestDownloadProcessor():
