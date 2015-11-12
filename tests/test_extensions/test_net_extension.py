@@ -5,9 +5,63 @@ from os.path import isfile, join
 from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.project_parser import ProjectParser
 from tuttle.extensions.net import HTTPResource
+from BaseHTTPServer import BaseHTTPRequestHandler
+from SocketServer import TCPServer
+
+
+class MockHTTPHandler(BaseHTTPRequestHandler):
+    """ This class is used to mock some HTTP behaviours :
+    * Etag
+    * Last-Modified
+    * Neither
+    Useful both for running tests offline and for not depending on some external change
+    """
+
+    def do_GET(self):
+        if self.path == "/resource_with_etag":
+            self.send_response(200, "OK")
+            self.send_header('Etag', 'my_etag')
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write("This resource provides an Etag")
+        if self.path == "/resource_with_last_modified":
+            self.send_response(200, "OK")
+            self.send_header('Last-Modified', 'Tue, 30 Jun 1981 03:14:59 GMT')
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write("This resource provides a Last-Modified")
+        if self.path == "/resource_without_version":
+            self.send_response(200, "OK")
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write("This resource has no version information")
+
 
 
 class TestHttpResource():
+
+    httpd = None
+    p = None
+
+    @classmethod
+    def run_server(cls):
+        cls.httpd = TCPServer(("", 8042), MockHTTPHandler)
+        cls.httpd.serve_forever()
+
+    @classmethod
+    def setUpClass(cls):
+        """ Run a web server in background to mock some specific HTTP behaviours
+        """
+        from threading import Thread
+        cls.p = Thread(target=cls.run_server)
+        cls.p.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        """ Stop the http server in background
+        """
+        cls.httpd.shutdown()
+        cls.p.join()
 
     def test_real_resource_exists(self):
         """A real resource should exist"""
@@ -16,8 +70,8 @@ class TestHttpResource():
         res = HTTPResource("http://www.google.com/")
         assert res.exists()
 
-    def test_fictive_resource_exists(self):
-        """A real resource should exist"""
+    def test_fictive_resource_not_exists(self):
+        """A fictive resource should not exist"""
         res = HTTPResource("http://www.example.com/tuttle")
         assert not res.exists()
 
@@ -40,15 +94,16 @@ class TestHttpResource():
 
     def test_resource_last_modified_signature(self):
         """ An HTTPResource with an Last-Modified should use it as signature in case it doesn't have Etag"""
-        res = HTTPResource("http://www.wikipedia.org/")
+        #res = HTTPResource("http://www.wikipedia.org/")
+        res = HTTPResource("http://localhost:8042/resource_with_last_modified")
         sig = res.signature()
-        assert sig == 'Last-Modified: Tue, 10 Nov 2015 07:59:46 GMT', sig
+        assert sig == 'Last-Modified: Tue, 30 Jun 1981 03:14:59 GMT', sig
 
     def test_ressource_signature_without_etag_nor_last_modified(self):
         """ An HTTPResource signature should be a hash of the beginning of the file if we can't rely on headers """
-        res = HTTPResource("http://www.4chan.org/legal")
+        res = HTTPResource("http://localhost:8042/resource_without_version")
         sig = res.signature()
-        assert sig == 'sha1-32K: 55b8c3436d6dae6adf6e3a01a494d81e919a7df6', sig
+        assert sig == 'sha1-32K: 7ab4a6c6ca8bbcb3de82530797a0e455070e18fa', sig
 
 
 class TestDownloadProcessor():
