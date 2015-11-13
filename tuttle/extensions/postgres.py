@@ -35,6 +35,8 @@ class PostgreSQLResource(ResourceMixIn, object):
         else:
             self._schema = "public"
         self._objectname = m.group(5)
+        if len(self._objectname) == 0:
+            self._objectname = None
 
     def pg_object_type(self, db, schema, objectname):
         """Returns the type of object in the database, as a constant :
@@ -43,6 +45,16 @@ class PostgreSQLResource(ResourceMixIn, object):
          * TYPE_FUNCTION for functions
         """
         cur = db.cursor()
+        if objectname is None:
+            # schema
+            query = """SELECT nspname AS schema
+                         FROM pg_namespace
+                        WHERE nspname=%s
+            """
+            cur.execute(query, (schema, ))
+            row = cur.fetchone()
+            if row:
+                return self.TYPE_SCHEMA
         query = """SELECT c.relname, c.relkind, n.nspname AS schema
                      FROM pg_class c
                        LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
@@ -61,15 +73,6 @@ class PostgreSQLResource(ResourceMixIn, object):
         row = cur.fetchone()
         if row:
             return self.TYPE_FUNCTION
-        query = """SELECT nspname AS schema
-                     FROM pg_namespace
-                    WHERE nspname=%s
-        """
-        # NB : objectname could be a schema name instead of an object name in the public schema
-        cur.execute(query, (objectname, ))
-        row = cur.fetchone()
-        if row:
-            return self.TYPE_SCHEMA
 
     def exists(self):
         try:
@@ -155,7 +158,7 @@ class PostgreSQLResource(ResourceMixIn, object):
             elif obj_type == self.TYPE_FUNCTION:
                 self.remove_function(cur, self._schema, self._objectname)
             elif obj_type == self.TYPE_SCHEMA:
-                self.remove_schema(cur, self._objectname)
+                self.remove_schema(cur, self._schema)
             db.commit()
         finally:
             db.close()
@@ -233,7 +236,7 @@ class PostgreSQLResource(ResourceMixIn, object):
             elif object_type == self.TYPE_FUNCTION:
                 result = self.function_signature(db, self._schema, self._objectname)
             elif object_type == self.TYPE_SCHEMA:
-                result = self.schema_signature(db, self._objectname)
+                result = self.schema_signature(db, self._schema)
         finally:
             db.close()
         return result

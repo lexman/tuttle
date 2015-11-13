@@ -52,15 +52,23 @@ sqlite://relative/path/to/sqlite_file/mytable
 Note that when tuttle removes the last table, view, index or trigger in the database, it removes the SQLite file.
 
 ### postgresql - pg:
-A table or a view in a Postgresql database.
+A Postgresql resource can either be :
+* a table
+* a view
+* a function
 
 Url structure is :
 ```
 pg://hostname:port/database_name/schema_name/view_or_table_name
 ```
-where schema is optional. For example, this is a valid url from the functionnal tests :
+where schema is optional. For example, this is a valid url from the functional tests :
 ```
 pg://localhost:5432/tuttle_test_db/test_table
+```
+
+You can also target the schema itself :
+```
+pg://localhost:5432/tuttle_test_db/schema_name/
 ```
 
 You can't include authentication url on purpose so that your password will never

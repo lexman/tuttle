@@ -204,13 +204,15 @@ $BODY$
 
     def test_schema_exists(self):
         """exists() should return True because the schema exists"""
-        url = "pg://localhost:5432/tuttle_test_db/test_schema"
+        url = "pg://localhost:5432/tuttle_test_db/test_schema/"
         res = PostgreSQLResource(url)
+        msg = " server : {}\n port : {}\ndb : {} \nschema : {}\n object {}".format(res._server, res._port, res._database, res._schema, res._objectname)
+        assert res.exists(), msg
         assert res.exists(), "{} should exist".format(url)
 
     def test_remove_schema(self):
         """after remove, a schema should no longer exist"""
-        url = "pg://localhost:5432/tuttle_test_db/test_schema"
+        url = "pg://localhost:5432/tuttle_test_db/test_schema/"
         res = PostgreSQLResource(url)
         assert res.exists(), "{} should exist".format(url)
         res.remove()
@@ -218,8 +220,14 @@ $BODY$
 
     def test_schema_signature(self):
         """the signature of the schema should be its owner"""
-        url = "pg://localhost:5432/tuttle_test_db/test_schema"
+        url = "pg://localhost:5432/tuttle_test_db/test_schema/"
         res = PostgreSQLResource(url)
         assert res.exists(), "{} should exist".format(url)
         assert res.signature() == "owner : tuttle", res.signature()
 
+    def test_dont_mix_schema_and_object_signature(self):
+        """If we omit the / at the end of the resource, it should not be interpreted as a schema"""
+        url = "pg://localhost:5432/tuttle_test_db/test_schema"
+        res = PostgreSQLResource(url)
+        assert not res.exists(), "{} should not exist because no table, view nor any object with that name " \
+                                 "exists".format(url)
