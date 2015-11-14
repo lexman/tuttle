@@ -223,7 +223,7 @@ $BODY$
         url = "pg://localhost:5432/tuttle_test_db/test_schema/"
         res = PostgreSQLResource(url)
         assert res.exists(), "{} should exist".format(url)
-        assert res.signature() == "owner : tuttle", res.signature()
+        assert res.signature().startswith("owner : "), res.signature()
 
     def test_dont_mix_schema_and_object_signature(self):
         """If we omit the / at the end of the resource, it should not be interpreted as a schema"""
