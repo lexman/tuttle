@@ -36,9 +36,9 @@ include load_from_databse.tuttle
 the file reachable from the local system ``file:///absolute/path/to/file``. Path can be either standard files or
 directories.
 
-### http
+### http - https
 Any (valid http url)[https://en.wikipedia.org/wiki/Web_resource], like http://github.com . Note that http resources can't be removed by tuttle, therefore invalidation of an http
-resource will issue a warning.
+resource will issue a warning. https:// is also supported.
 
 https is not implemented (yet).
 
@@ -104,7 +104,7 @@ The ``postgresql`` processor is valid only if all input and output resources are
 database file. The processor will run the sql code inside that database.
 
 ### download
-The ``download`` processor is valid only if it has one ``http://`` resource as input and one ``file://``
+The ``download`` processor is valid only if it has one ``http://`` or ``https://`` resource as input and one ``file://``
 resource as output. The processor will download the http resource and save it in the file.
 
 ### csv2sqlite

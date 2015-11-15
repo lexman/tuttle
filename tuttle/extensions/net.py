@@ -13,7 +13,7 @@ USER_AGENT = "tuttle/{}".format(version)
 # TODO : should we follow resources in case of http redirection ?
 class HTTPResource(ResourceMixIn, object):
     """An HTTP resource"""
-    scheme = 'http'
+    scheme = 'http' # Also https...
 
     def __init__(self, url):
         super(HTTPResource, self).__init__(url)

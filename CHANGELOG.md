@@ -10,9 +10,7 @@ the reference lists all the resources and processors available
 ## New resources and processors :
   * PostgreSQL tables, views, functions and index resources
   * PostgreSQL Processor
-  * http resources
-  * download processor
-  * Pyton Processor
+  * https resources
 
 ## Better tests
 Part of tuttle's job is to connect to third party tools. Integration tests must cover this tools, like Postgresql, a web server...

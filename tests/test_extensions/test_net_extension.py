@@ -105,6 +105,28 @@ class TestHttpResource():
         sig = res.signature()
         assert sig == 'sha1-32K: 7ab4a6c6ca8bbcb3de82530797a0e455070e18fa', sig
 
+class TestHttpsResource():
+
+    def test_real_resource_exists(self):
+        """A real resource should exist"""
+        res = HTTPResource("https://www.google.com/")
+        assert res.exists()
+
+    def test_fictive_resource_not_exists(self):
+        """A fictive resource should not exist"""
+        res = HTTPResource("https://www.example.com/tuttle")
+        assert not res.exists()
+
+    def test_http_resource_in_workflow(self):
+        """An HTTPS resource should be allowed in a workflow"""
+        pp = ProjectParser()
+        project = "file://result <- https://www.google.com/"
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow._processes) == 1
+        inputs = [res for res in workflow._processes[0].iter_inputs()]
+        assert len(inputs) == 1
+
 
 class TestDownloadProcessor():
 
@@ -193,3 +215,15 @@ file://google.html <- file://A ! download
         assert output.find("* file://B") == -1
         assert output.find("Download processor") >= 0, output
 
+    @isolate
+    def test_download_https(self):
+        """https download should work"""
+        project = "file://google.html <- https://www.google.com/ ! download"
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert isfile("google.html")
+        content = open("google.html").read()
+        assert content.find("<title>Google</title>") >= 0
+        logs = open(join(".tuttle", "processes", "logs", "tuttlefile_1_stdout.txt"), "r").read()
+        assert re.search("\n\.+\n", logs) is not None
+        assert isfile(join(".tuttle", "processes", "logs", "tuttlefile_1_err.txt"))

@@ -21,6 +21,7 @@ class WorkflowBuilder():
     def init_resources_and_processors(self):
         self._resources_definition['file'] = FileResource
         self._resources_definition['http'] = HTTPResource
+        self._resources_definition['https'] = HTTPResource
         self._resources_definition['sqlite'] = SQLiteResource
         self._resources_definition['pg'] = PostgreSQLResource
         self._processors['shell'] = ShellProcessor()
