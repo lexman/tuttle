@@ -5,7 +5,7 @@ from processors import *
 from process import Process
 from tuttle.extensions.ext_csv import CSV2SQLiteProcessor
 from tuttle.extensions.net import DownloadProcessor, HTTPResource
-from tuttle.extensions.postgres import PostgreSQLResource
+from tuttle.extensions.postgres import PostgreSQLResource, PostgresqlProcessor
 from tuttle.extensions.python import PythonProcessor
 from tuttle.extensions.sqlite import SQLiteProcessor, SQLiteResource
 import os
@@ -28,6 +28,7 @@ class WorkflowBuilder():
         self._processors['python'] = PythonProcessor()
         self._processors['download'] = DownloadProcessor()
         self._processors['sqlite'] = SQLiteProcessor()
+        self._processors['postgresql'] = PostgresqlProcessor()
         self._processors['csv2sqlite'] = CSV2SQLiteProcessor()
         if os.name =="nt":
             self._processors['default'] = self._processors['bat']

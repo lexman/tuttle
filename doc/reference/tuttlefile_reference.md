@@ -99,6 +99,10 @@ The ``python`` processor runs the code as a python 2.7 script
 The ``sqlite`` processor is valid only if all input and output resources are ``sqlite://`` resources from the same
 database file. The processor will run the sql code inside that database.
 
+### PostgreSQL
+The ``postgresql`` processor is valid only if all input and output resources are ``pg://`` resources from the same
+database file. The processor will run the sql code inside that database.
+
 ### download
 The ``download`` processor is valid only if it has one ``http://`` resource as input and one ``file://``
 resource as output. The processor will download the http resource and save it in the file.

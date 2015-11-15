@@ -1,6 +1,8 @@
 # -*- coding: utf8 -*-
+from itertools import chain
 
 from re import compile
+from tuttle.error import TuttleError
 from tuttle.resources import MalformedUrl, ResourceMixIn
 from hashlib import sha1
 import psycopg2
@@ -240,3 +242,61 @@ class PostgreSQLResource(ResourceMixIn, object):
         finally:
             db.close()
         return result
+
+
+
+class PostgresqlTuttleError(TuttleError):
+    pass
+
+
+class PostgresqlProcessor:
+    """ A processor that runs sql directely in a postgres database
+    """
+    name = 'postgresql'
+
+    def _get_db_connection_string(self, process):
+        conn_string = None
+        for resource in chain(process.iter_inputs(), process.iter_outputs()):
+            if isinstance(resource, PostgreSQLResource):
+                resource_conn_string = "host=\'{}\' dbname='{}' port={}".format(resource._server, resource._database,
+                                                                   resource._port)
+                if conn_string is None:
+                    conn_string = resource_conn_string
+                elif conn_string != resource_conn_string:
+                    raise PostgresqlTuttleError(
+                        "Postgresql processor can't connect to several postgresql databases at the same time. "
+                        "Found connections string '{}' and '{}'.".format(conn_string , resource_conn_string))
+        return conn_string
+
+    def static_check(self, process):
+        # Will raise if there is an ambiguity on the database
+        for resource in chain(process.iter_inputs(), process.iter_outputs()):
+            if not isinstance(resource, PostgreSQLResource):
+                raise PostgreSQLResource("Sorry, PostgreSQL Processor can only handle PostgreSQL resources "
+                                        "as inputs or outputs. Found : '{}'".format(resource.url))
+        connection_string = self._get_db_connection_string(process)
+        if connection_string is None:
+            raise PostgresqlTuttleError(
+                "PostgreSQL processor needs at least a pg:// resource as input or output... Don't know which database to connect to !")
+
+    def run(self, process, reserved_path, log_stdout, log_stderr):
+        connection_string = self._get_db_connection_string(process)
+        try:
+            db = psycopg2.connect(connection_string)
+        except psycopg2.OperationalError:
+            return False
+        with open(log_stdout, "w") as lout, \
+             open(log_stderr, "w") as lerr,\
+            db.cursor() as cursor:
+            try:
+                lout.write(process._code)
+                cursor.execute(process._code)
+                db.commit()
+            except Exception as e:
+                lerr.write(e.message)
+                lerr.write("\n")
+                msg = "Error while running PostgreSQL process {} : '{}'".format(process.id, e.message)
+                raise PostgresqlTuttleError(msg)
+            finally:
+                db.close()
+
