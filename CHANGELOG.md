@@ -13,7 +13,7 @@ the reference lists all the resources and processors available
   * https resources
 
 ## Better tests
-Part of tuttle's job is to connect to third party tools. Integration tests must cover this tools, like Postgresql, a web server...
+Part of tuttle's job is to connect to third party tools. Integration tests must cover these tools, like Postgresql or a web server...
 
 ## A few bug fixes
   * bug on install that required jinja2 before installing dependencies
