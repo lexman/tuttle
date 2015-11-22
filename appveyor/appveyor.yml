@@ -25,6 +25,8 @@ install:
   - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/$env:PSYCOPG2 -OutFile $env:PSYCOPG2"
   - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
   - easy_install %PSYCOPG2%
+  - python -m pip freeze
+  - python -c "import six; print(six.__version__)"
 
 build: false  # Not a C# project, build stuff at the test step instead.
 
