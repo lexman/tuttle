@@ -1,3 +1,6 @@
+#s3://localhost/buck/truc <- http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv
+    
+
 file://internet_users.zip <- http://api.worldbank.org/v2/en/indicator/it.net.user.p2?downloadformat=csv ! download
 
 file://it.net.user.p2_Indicator_en_csv_v2.csv <- file://internet_users.zip

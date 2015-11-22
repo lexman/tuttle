@@ -6,6 +6,7 @@
 import sys
 import re
 from os.path import join
+import six
 
 try:
     import setuptools
@@ -26,9 +27,10 @@ def strip_rc(version):
 # cx_freeze option for a command line application
 base = None
 build_exe_options = {
-    "packages": ["os"],
-    "excludes": ["tkinter"],
+    "packages": ["os", "six"],
+    "excludes": ["tkinter", ],
     "include_files": (
+        six.__file__,
         join("tuttle", "report"),
         join("tuttle"),
     )
