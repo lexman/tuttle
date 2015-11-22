@@ -29,6 +29,7 @@ build: false  # Not a C# project, build stuff at the test step instead.
 test_script:
 
   # Install the dependencies for the project
+  - python -m pip install -r requirements-dev.txt"
   - python -m pip install .
   # Build the compiled extension and run the project tests
   - nosetests
