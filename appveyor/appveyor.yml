@@ -34,6 +34,8 @@ test_script:
 
   # Install the dependencies for the project
   - python -m pip install -r requirements-dev.txt"
+  - python -m pip install ."
+  - python -m pip freeze
   # Build the compiled extension and run the project tests
   - nosetests
 
