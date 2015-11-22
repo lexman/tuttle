@@ -26,6 +26,8 @@ install:
   - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
   - easy_install %PSYCOPG2%
   - python -m pip freeze
+  - python -m pip install -r requirements-dev.txt"
+  - python -m pip freeze
   - python -c "import six; print(six.__version__)"
   - python -c "import ConfigParser"
   - python -c "import six; from six.moves import configparser"
