@@ -18,6 +18,8 @@ install:
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
   - python -m pip install -r requirements-dev.txt"
+  - python --version
+  - python -m pip freeze
 
   # Install windows version of psycopg2 from http://www.stickpeople.com/projects/python/win-psycopg/
   - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/$env:PSYCOPG2 -OutFile $env:PSYCOPG2"
@@ -30,7 +32,6 @@ test_script:
 
   # Install the dependencies for the project
   - python -m pip install -r requirements-dev.txt"
-  - python -m pip install .
   # Build the compiled extension and run the project tests
   - nosetests
 
