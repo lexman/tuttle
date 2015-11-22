@@ -11,6 +11,7 @@ the reference lists all the resources and processors available
   * PostgreSQL tables, views, functions and index resources
   * PostgreSQL Processor
   * https resources
+  * AWS s3 resources (experimental)
 
 ## Better tests
 Part of tuttle's job is to connect to third party tools. Integration tests must cover these tools, like Postgresql or a web server...

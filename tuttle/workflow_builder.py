@@ -7,6 +7,7 @@ from tuttle.extensions.ext_csv import CSV2SQLiteProcessor
 from tuttle.extensions.net import DownloadProcessor, HTTPResource
 from tuttle.extensions.postgres import PostgreSQLResource, PostgresqlProcessor
 from tuttle.extensions.python import PythonProcessor
+from tuttle.extensions.s3 import S3Resource
 from tuttle.extensions.sqlite import SQLiteProcessor, SQLiteResource
 import os
 
@@ -24,6 +25,7 @@ class WorkflowBuilder():
         self._resources_definition['https'] = HTTPResource
         self._resources_definition['sqlite'] = SQLiteResource
         self._resources_definition['pg'] = PostgreSQLResource
+        self._resources_definition['s3'] = S3Resource
         self._processors['shell'] = ShellProcessor()
         self._processors['bat'] = BatProcessor()
         self._processors['python'] = PythonProcessor()
