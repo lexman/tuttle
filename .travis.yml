@@ -36,5 +36,5 @@ deploy:
   file: dist/debian/tuttle_0.3-1_amd64.deb
   skip_cleanup: true
   on:
-    repo: abonnasseau/tuttle
+    repo: lexman/tuttle
     tags: true
