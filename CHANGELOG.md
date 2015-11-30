@@ -14,7 +14,9 @@ the reference lists all the resources and processors available
   * AWS s3 resources (experimental)
 
 ## Better tests
-Part of tuttle's job is to connect to third party tools. Integration tests must cover these tools, like Postgresql or a web server...
+Part of tuttle's job is to connect to third party tools. Integration tests must cover these tools, like Postgresql or a web server... Two methods have been developed :
+  * mock the third party tool with some python code (web server, s3 server)
+  * use the third party tool if it is installed on the machine (postgresql)
 
 ## A few bug fixes
   * bug on install that required jinja2 before installing dependencies
