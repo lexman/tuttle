@@ -90,7 +90,8 @@ class TestHttpResource():
         """ An HTTPResource with an Etag should use it as signature """
         res = HTTPResource("http://www.example.com/")
         sig = res.signature()
-        assert sig == 'Etag: "359670651+gzip"', sig
+        assert sig.find('Etag:') >= 0, sig
+        assert sig.find('359670651') >= 0, sig
 
     def test_resource_last_modified_signature(self):
         """ An HTTPResource with an Last-Modified should use it as signature in case it doesn't have Etag"""
