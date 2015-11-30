@@ -37,7 +37,7 @@ the file reachable from the local system ``file:///absolute/path/to/file``. Path
 directories.
 
 ### http - https
-Any (valid http url)[https://en.wikipedia.org/wiki/Web_resource], like http://github.com . Note that http resources can't be removed by tuttle, therefore invalidation of an http
+Any [valid http url](https://en.wikipedia.org/wiki/Web_resource), like http://github.com . Note that http resources can't be removed by tuttle, therefore invalidation of an http
 resource will issue a warning. https:// is also supported.
 
 ### sqlite
@@ -71,23 +71,22 @@ pg://localhost:5432/tuttle_test_db/schema_name/
 
 You can't include authentication url on purpose so that your password will never
 be visible in your version control system (eg git). When running tuttle, your system user must have write access to the
-database. You can either (use a ``.pgpass`` file in your user's home directory)[http://www.postgresql.org/docs/9.4/static/libpq-pgpass.html]
-or (set PGNAME and PGPASSWORD environnement variables)[http://www.postgresql.org/docs/9.4/static/libpq-envars.html].
+database. You can either [use a ``.pgpass`` file in your user's home directory](http://www.postgresql.org/docs/9.4/static/libpq-pgpass.html)
+or [set PGNAME and PGPASSWORD environnement variables](http://www.postgresql.org/docs/9.4/static/libpq-envars.html).
 
 ### Amazon S3 and compatible (experimental)
-An (S3 object form AWS)[https://aws.amazon.com/s3/] or compatible service. Urls are in the form :
+An [S3 object form AWS](https://aws.amazon.com/s3/) or compatible service. Urls are in the form :
 ```
 s3://service_endpoint/bucket_name/key_name
 ```
 Where ``service_endpoint`` is the server address of the service provider. The standard address for AWS is ``s3.amazonaws.com`` but
-it can vary depending on (which datacenter your data is stored)[http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region]. For example,
+it can vary depending on [which datacenter your data is stored](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region). For example,
 if your data is stored in Frankfurt, ``service_endpoint`` should be ``s3-website.eu-central-1.amazonaws.com``.
 
 
 There are several ways to specify credentials to your account, including setting AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment
-variables or creating a ``~/.aws/credentials`` configuration file. You can see the (full credential documentation)[https://blogs.aws.amazon.com/security/post/Tx3D6U6WSFGOK2H/A-New-and-Standardized-Way-to-Manage-Credentials-in-the-AWS-SDKs]
+variables or creating a ``~/.aws/credentials`` configuration file. You can see the [full credential documentation](https://blogs.aws.amazon.com/security/post/Tx3D6U6WSFGOK2H/A-New-and-Standardized-Way-to-Manage-Credentials-in-the-AWS-SDKs)
 for further details. Remember, you should not commit credentials to your project version control system (eg git), but have a separate way to manage your configuration.
-
 
 This functionality should be considered experimental because it hasn't been properly tested on a real AWS account. Any feedback or improvement is welcome !
 
