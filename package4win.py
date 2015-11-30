@@ -27,8 +27,9 @@ def strip_rc(version):
 # cx_freeze option for a command line application
 base = None
 build_exe_options = {
-    "packages": ["os", "six"],
+    "packages": ["os", "six",],
     "excludes": ["tkinter", ],
+    "includes": ["ConfigParser", ],
     "include_files": (
         six.__file__,
         join("tuttle", "report"),
