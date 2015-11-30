@@ -3,7 +3,7 @@
 
 1. Make sure all the tests pass on both [Appveyor](https://ci.appveyor.com/project/lexman/tuttle) (windows) and [Travis](travis-ci.org/lexman/tuttle)
 1. Make sure the changelog (CHANGELOG.MD) is up to date
-1. Make sure the ```Build version format``` in (Appveyor)[https://ci.appveyor.com/project/lexman/tuttle/settings] is up to date with the intended release version, eg ```0.3-{build}```
+1. Make sure the ```Build version format``` in [Appveyor](https://ci.appveyor.com/project/lexman/tuttle/settings) is up to date with the intended release version, eg ```0.3-{build}```
 1. Change the version number in file ```tuttle/VERSION```, eg ```0.3-rc0```
 1. Update the debian version of the package :
   * Add the new version and the changelog in the file debian/changelog
