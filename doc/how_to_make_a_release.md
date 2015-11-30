@@ -1,7 +1,6 @@
 # How to make a release of tuttle
 
 
-1. Make sure all the tests pass on both [Appveyor](https://ci.appveyor.com/project/lexman/tuttle) (windows) and [Travis](travis-ci.org/lexman/tuttle)
 1. Make sure the changelog (CHANGELOG.MD) is up to date
 1. Make sure the ```Build version format``` in [Appveyor](https://ci.appveyor.com/project/lexman/tuttle/settings) is up to date with the intended release version, eg ```0.3-{build}```
 1. Change the version number in file ```tuttle/VERSION```, eg ```0.3-rc0```
@@ -10,6 +9,7 @@
   * Update travis.yml to follow the new version number in the package name. Package name is in
     - the name of the file to push to github release (line ```file: dist/debian/tuttle_0.3-1_amd64.deb```)
     - the command line to deploy the package to test (line ```- sudo dpkg -i dist/debian/tuttle_0.3-1_amd64.deb```)
+1. Make sure everything has been pushed and all the tests pass on both [Appveyor](https://ci.appveyor.com/project/lexman/tuttle) (windows) and [Travis](travis-ci.org/lexman/tuttle)
 1. Create a new RC tag for the intended version, eg ```v0.3-rc0```
 1. Push the tag :
   * Github will create a new release
