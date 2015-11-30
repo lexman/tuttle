@@ -29,7 +29,7 @@ base = None
 build_exe_options = {
     "packages": ["os", "six",],
     "excludes": ["tkinter", ],
-    "includes": ["ConfigParser", ],
+    "includes": ["ConfigParser", "HTMLParser", ],
     "include_files": (
         six.__file__,
         join("tuttle", "report"),
