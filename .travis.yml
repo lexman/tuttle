@@ -22,7 +22,7 @@ script:
 - dpkg-buildpackage -us -uc
 - mkdir -p dist/debian
 - mv -v ../tuttle_* dist/debian/
-- sudo dpkg -i dist/debian/tuttle_0.2-1_amd64.deb
+- sudo dpkg -i dist/debian/tuttle_0.3-1_amd64.deb
 - cd doc/examples/sales_linux
 - tuttle run
 - cp penetration_rate.html workflow_execution_success
@@ -33,7 +33,7 @@ deploy:
   provider: releases
   api_key:
     secure: CNw4FQYKEtQGl5rZH+N/p3d0w1PsVEvNEP46hLes4H5t12Vueh3D5zkz9HasTywZV1UVxa67sTLMuo063GJMJWBHs3hUo9QyHkbETz4PWsUEc1ayhlcP+I/IeNKyTXHoEj93hAYT1LDiApSEa5KKsUW1c188Z2L5G9Z2cFvpKfY=
-  file: dist/debian/tuttle_0.2-1_amd64.deb
+  file: dist/debian/tuttle_0.3-1_amd64.deb
   skip_cleanup: true
   on:
     repo: abonnasseau/tuttle

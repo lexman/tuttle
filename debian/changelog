@@ -1,3 +1,17 @@
+tuttle (0.3-1) UNRELEASED; urgency=medium
+
+  * New "include" statement in order to split a tuttle project in several files
+  * New PostgreSQL resource covering tables, views, functions and index
+  * New PostgreSQL Processor
+  * New https resources
+  * New AWS s3 resources (experimental)
+  * Better integration tests with external tool
+  * A complete documentation referencing all available processors and resources
+  * Fixed bug on install that required jinja2 even before running setup.py
+
+
+ -- Lexman <tuttle@lexman.org>  Mon, 30 Nov 2015 09:04:00 +0700
+
 tuttle (0.2-1) UNRELEASED; urgency=medium
 
   * File resources
@@ -7,7 +21,7 @@ tuttle (0.2-1) UNRELEASED; urgency=medium
   * SQLite Processor
   * Tutorial   
 
- -- abonnasseau <tuttle@lexman.org>  Wed, 19 Aug 2015 15:09:48 +0200
+ -- Lexman <tuttle@lexman.org>  Wed, 19 Aug 2015 15:09:48 +0200
 
 tuttle (0.1-1) unstable; urgency=low
 
