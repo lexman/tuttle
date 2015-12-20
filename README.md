@@ -1,3 +1,6 @@
+# News
+Dec 1st : version 0.3 is [out](https://github.com/lexman/tuttle/releases/tag/v0.3-rc1) !
+
 # Tuttle : Make for data
 
 
