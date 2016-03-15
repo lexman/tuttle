@@ -6,7 +6,7 @@ by Mike Bostock's in his blog [blog](https://bost.ocks.org/mike/make/).
 
 Let's take an example with crafting [geo-countries](http://github.com/datasets/geo-countries) datapackage. We need to download data 
 from NaturalEarth, extract the zip, convert it to json with ogr (the ''swiss-army-knife'' of maps), and rename a column. Following 
-Mike Bostok's advice, here's an appropriate ``Makefile`` :
+Mike Bostok's instructions, here's an appropriate ``Makefile`` (that should lie in folder ``scripts`` of the project):
 
     all: ../data/countries.geojson
     
@@ -42,7 +42,7 @@ it would notice that the unziped files like ``ne_10m_admin_0_countries.dbf`` and
 
 Even if this is a great improvement over *running all the commands manually and don't remember them* and *custom script that must start from scratch each time*, 
 it is not enough to have a fluid and reliable development experience. That's the purpose of ''tuttle''. Before we see in detail two major improvements, let's see 
-the same workflow written in a tuttlefile :
+the same workflow written in a tuttlefile (still in folder ``scripts``) :
 
 
     file://ne_10m_admin_0_countries.zip <- http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries.zip
@@ -65,7 +65,7 @@ the same workflow written in a tuttlefile :
 Looks familiar ?
 
 
-Well, there are a lot of urls... That's because ``tuttle`` aims at giving a url to every bit of data, in order link them together.
+Well, there are a lot of urls... That's because ``tuttle`git ` aims at giving a url to every bit of data, in order link them together.
 
 You can see the first section of the tuttlefile clearly states the dependency of file ``ne_10m_admin_0_countries.zip`` to url ``http://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries.zip``. 
 This means that when the online list of countries change, no unusual action is required. You just have to execute ``tuttle run`` as if you where
