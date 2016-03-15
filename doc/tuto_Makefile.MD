@@ -20,8 +20,7 @@ Mike Bostok's advice, here's an appropriate ``Makefile`` :
     	ogr2ogr -select admin,iso_a3  -f geojson ne_10m_admin_0_countries.geojson ne_10m_admin_0_countries.shp
         
     ../data:
-    	cd ..
-    	mkdir data
+    	mkdir ../data
 
     ../data/countries.geojson: ne_10m_admin_0_countries.geojson ../data
     # Change the name of the fields after conversion
@@ -29,7 +28,7 @@ Mike Bostok's advice, here's an appropriate ``Makefile`` :
 
 
 If you're not familiar with Makefiles, the last section reads : "When both files ``ne_10m_admin_0_countries.geojson`` and ``../data`` are available, you can run command ``cat ne_10m_admin_0_countries.geojson | sed 's/"admin": /"name": /g' | sed 's/"iso_a3": /"ISO3166-1-Alpha-3": /g'  > ../data/countries.geojson``
-and it will produce file ``../data/countries.geojson``". Make deduces the commands to be run, starting with the ones where everything is available, until it produces **target** ``all``.
+and it will produce file ``../data/countries.geojson``". Make deduces the commands to be run, starting with the ones where everything is available, until it produces *target* ``all``.
 
     
 We achieve two very important goals with this ``Makefile`` :
@@ -41,7 +40,7 @@ it would notice that the unziped files like ``ne_10m_admin_0_countries.dbf`` and
 ``ne_10m_admin_0_countries.geojson`` would not be up to date, until every depending file is updated.
 
 
-Even if this is a great improvement over **running all the commands manually and don't remember them** and **custom script that must start from scratch each time**, 
+Even if this is a great improvement over *running all the commands manually and don't remember them* and *custom script that must start from scratch each time*, 
 it is not enough to have a fluid and reliable development experience. That's the purpose of ''tuttle''. Before we see in detail two major improvements, let's see 
 the same workflow written in a tuttlefile :
 
