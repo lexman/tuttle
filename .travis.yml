@@ -23,10 +23,10 @@ script:
 - mkdir -p dist/debian
 - mv -v ../tuttle_* dist/debian/
 - sudo dpkg -i dist/debian/tuttle_0.3-1_amd64.deb
-- cd doc/examples/sales_linux
-#- tuttle run
-#- cp penetration_rate.html workflow_execution_success
-#- cd ../../..
+- cd ci
+- tuttle run
+- cp world-cities.csv workflow_execution_success
+- cd ..
 
 deploy:
   skip_cleanup: true
