@@ -25,12 +25,6 @@ install:
   - ps: "Invoke-WebRequest http://www.stickpeople.com/projects/python/win-psycopg/2.6.1/$env:PSYCOPG2 -OutFile $env:PSYCOPG2"
   - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
   - easy_install %PSYCOPG2%
-  - python -m pip freeze
-  - python -m pip install -r requirements-dev.txt"
-  - python -m pip freeze
-  - python -c "import six; print(six.__version__)"
-  - python -c "import ConfigParser"
-  - python -c "import six; from six.moves import configparser"
 
 build: false  # Not a C# project, build stuff at the test step instead.
 
@@ -46,6 +40,9 @@ test_script:
   # If tests are successful, create an installable package for the project.
   - python package4win.py bdist_msi
 
+  # cleanup
+  - python -m pip uninstall tuttle
+
   # ... And check that tuttle works
   # Ensure we know exactly the name of the installer, on every platform (amd64 and x86)
   # http://stackoverflow.com/questions/14704333/using-wildard-with-dos-copy-command-corrupts-destination-file
@@ -54,9 +51,9 @@ test_script:
   - msiexec /i tuttle-installer.msi /qn /norestart /log C:\projects\install_tuttle.log
   - "PATH=%PATH%;\"C:\\Program Files (x86)\\tuttle\";\"C:\\Program Files\\tuttle\""
   - cmd: more C:\projects\install_tuttle.log
-  # - cmd: cd C:\projects\tuttle\doc\examples\sales_windows
-  # - tuttle run
-  # - cmd: copy penetration_rate.html workflow_execution_success.html
+  - cmd: cd C:\projects\tuttle\appveyor
+  - tuttle run
+  - cmd: copy world-cities.csv workflow_execution_success.html
 
 artifacts:
   # Archive the generated package in the ci.appveyor.com build report.
