@@ -2,6 +2,7 @@ file://cities15000.zip <- http://download.geonames.org/export/dump/cities15000.z
 
     
 file://cities15000.txt <- file://cities15000.zip
+# works both on Linux and on appveyor (Windows)
     unzip cities15000.zip
     
     
