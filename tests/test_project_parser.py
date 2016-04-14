@@ -515,3 +515,34 @@ file:///resource2 <- file:///resource3
             assert False, "An error should have been raised"
         except WorkflowError:
             assert True
+
+    def test_recognize_preprocess(self):
+        """ Parser should recognize a preprocess"""
+        pp = ProjectParser()
+        project = """|<<
+        Some code
+        """
+        pp.set_project(project)
+        pp.read_line()
+        assert pp.is_preprocess(pp._line), "This line should be recognized as an include statement"
+        preprocess = pp.parse_preprocess()
+        code = preprocess.code
+        assert code == "Some code\n", code
+        processor = preprocess.processor
+        # depends weather we are running under windows or *nix
+        #assert processor.name == "bat", processor.name
+        #assert processor.name == "shell", processor.name
+
+    def test_recognize_preprocess_with_processor(self):
+        """ Parser should recognize a preprocess"""
+        pp = ProjectParser()
+        project = """|<< ! python
+        Some code
+        """
+        pp.set_project(project)
+        pp.read_line()
+        assert pp.is_preprocess(pp._line), "This line should be recognized as an include statement"
+        preprocess = pp.parse_preprocess()
+        processor = preprocess.processor
+        assert processor.name == "python", processor.name
+

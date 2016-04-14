@@ -195,18 +195,15 @@ class ProjectParser():
         else:
             return False, ""
     
-    def parse_section(self):
-        """ Parse a whole section : dependency definition + processor type + process code
-        All blank lines must have been skipped before
+    def parse_process_code(self):
+        """ Parse process code
         """
-        # Dependency definition
-        process = self.parse_dependencies_and_processor()
         line, num_line, eof = self.read_line()
         # Any number of blank lines
         while self.is_blank(line):
             line, num_line, eof = self.read_line()
             if eof:
-                return process
+                return ""
         # Several lines all beginning by white-spaces define a process
         process_code = ""
         is_process_line, wsp_prefix, process_line = self.is_first_process_line()
@@ -219,6 +216,15 @@ class ProjectParser():
         if process_line == "\n":
             # Remove carriage return
             process_code = process_code[:-1]
+        return process_code
+
+    def parse_section(self):
+        """ Parse a whole section : dependency definition + processor type + process code
+        All blank lines must have been skipped before
+        """
+        # Dependency definition
+        process = self.parse_dependencies_and_processor()
+        process_code = self.parse_process_code()
         process.set_code(process_code)
         return process
 
@@ -229,7 +235,7 @@ class ProjectParser():
 
     def parse_inclusion(self):
         """ Returns the meaning part of the inclusion : the file name
-        par_inclusion must only be called if is_inclusion have been verified
+        parse_inclusion must only be called if is_inclusion have been verified
         """
         return self._line[len("include "):]
 
@@ -239,6 +245,31 @@ class ProjectParser():
         except IOError:
             msg = "Can't find file '{}' for inclusion".format(filename)
             raise WorkflowError(msg, self._filename, self._streamer._num_line)
+
+    def is_preprocess(self, line):
+        """ Check whether the current line is starting a preprocess section
+        """
+        return line.startswith("|<<")
+
+    def parse_preprocess_declaration(self):
+        mark_pos = self._line.find('!')
+        if mark_pos == -1:
+            processor_name = "default"
+        else:
+            processor_name = self._line[mark_pos + 2:].strip()
+        process = self.wb.build_process(processor_name, self._filename, self._num_line)
+        if not process:
+            raise InvalidProcessorError("Invalid processor : '{}' ".format(processor_name), self._filename, self._num_line)
+        return process
+
+    def parse_preprocess(self):
+        """ Returns a preprocess according to the incoming section
+        parse_preprocess must only be called if is_preprocess have been verified
+        """
+        process = self.parse_preprocess_declaration()
+        process_code = self.parse_process_code()
+        process.set_code(process_code)
+        return process
 
     def parse_project(self):
         """ Parse a full project describing a workflow
