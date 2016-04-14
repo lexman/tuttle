@@ -20,7 +20,7 @@ class Process:
         self.log_stdout = None
         self.log_stderr = None
         self.success = None
-        self._id = "{}_{}".format( self._filename, self._line_num)
+        self._id = "{}_{}".format(self._filename, self._line_num)
 
     @property
     def start(self):
@@ -68,7 +68,6 @@ class Process:
             return None
         return self._outputs[0]
 
-
     def retrieve_execution_info(self, process):
         """ Copy the execution info (all the properties set by function run()) from another process
         :param process:
@@ -83,7 +82,6 @@ class Process:
     def reset_execution_info(self):
         """ Reset the execution info (all the properties set by function run()) because the resources produced
         by this process have been invalidated
-        :param process:
         :return:
         """
         self._start = None
@@ -94,15 +92,17 @@ class Process:
 
     def static_check(self):
         """
-        Runs a verification that the process won't obviously fail. This is used for static analysis before any process is run
+        Runs a verification that the process won't obviously fail. This is used for static analysis before any process
+         is run
         """
         self._processor.static_check(self)
 
     def run(self, reserved_path, log_stdout, log_stderr):
         """
         Runs the process and retreive all the metadata : logs, return code, duration...
-        :param directory: Directory where the processor can write files to execute
-        :param logs_dir: Directory where the logs lie
+        :param reserved_path: Path where the processor can write a file or a directory to store executable
+        :param log_stdout: File name where to write stdout
+        :param log_stderr: File name where to write stderr
         :return: The return code for the process
         """
         self.log_stdout = log_stdout
@@ -123,7 +123,6 @@ class Process:
         Called if post verification that every resource have been created failed
         """
         self.success = False
-
 
     def all_inputs_exists(self):
         """
