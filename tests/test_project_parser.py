@@ -546,3 +546,17 @@ file:///resource2 <- file:///resource3
         processor = preprocess.processor
         assert processor.name == "python", processor.name
 
+    def test_preprocess_unknown_processor(self):
+        """ Parser should raise an error if the procesor of the preprocess does not exist"""
+        pp = ProjectParser()
+        project = """|<< ! unknown
+        Some code
+        """
+        pp.set_project(project)
+        pp.read_line()
+        assert pp.is_preprocess(pp._line), "This line should be recognized as an include statement"
+        try:
+            preprocess = pp.parse_preprocess()
+            assert False
+        except InvalidProcessorError:
+            assert True
