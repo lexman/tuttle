@@ -95,6 +95,7 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
         return 2
     try:
         workflow = parse_project(tuttlefile)
+        # TODO : add preprocessors to invalidation
     except TuttleError as e:
         print("Invalidation has failed because tuttlefile is has errors (a valid project is needed for "
               "clean invalidation) :")
