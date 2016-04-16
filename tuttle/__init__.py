@@ -41,6 +41,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
         try:
             inv_collector = InvalidResourceCollector()
             workflow = parse_project(tuttlefile)
+            workflow.run_pre_processes()
             previous_workflow = Workflow.load()
 
             shrunk = False

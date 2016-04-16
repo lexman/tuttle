@@ -41,9 +41,19 @@ class Workflow:
         for process in self._processes:
             yield process
 
+    def iter_preprocesses(self):
+        for preprocess in self._preprocesses:
+            yield preprocess
+
     def iter_resources(self):
         for resource in self._resources.itervalues():
             yield resource
+
+    def has_preprocesses(self):
+        """ Has preprocesses ?
+        :return: True if the workflow has preprocesses
+        """
+        return len(self._preprocesses) > 0
 
     def missing_inputs(self):
         """ Check that all primary resources (external resources) that are necessary to run the workflow exist
@@ -119,12 +129,34 @@ class Workflow:
         for res in process.iter_outputs():
             self._resources_signatures[res.url] = res.signature()
 
+    def run_pre_processes(self):
+        """ Runs all the preprocesses
+
+        :return:
+        :raises ExecutionError if an error occurs
+        """
+        create_tuttle_dirs()
+        if not self.has_preprocesses():
+            return
+        for preprocess in self.iter_preprocesses():
+            print_header(preprocess)
+            try:
+                reserved_path, log_stdout, log_stderr = prepare_paths(preprocess)
+                preprocess.run(reserved_path, log_stdout, log_stderr)
+            finally:
+                # TODO : include preprocesses in report
+                #self.dump()
+                #self.create_reports()
+                print_logs(preprocess)
+
+
     def run(self):
         """ Runs a workflow by running every process in the right order
 
         :return:
         :raises ExecutionError if an error occurs
         """
+        # TODO create tuttle dirs only once
         create_tuttle_dirs()
         nb_process_run = 0
         process = self.pick_a_process_to_run()
