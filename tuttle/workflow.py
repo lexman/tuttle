@@ -19,6 +19,7 @@ class Workflow:
     """
     def __init__(self, resources):
         self._processes = []
+        self._preprocesses = []
         self._resources = resources
         self._resources_signatures = {}
 
@@ -28,6 +29,13 @@ class Workflow:
         :return:
         """
         self._processes.append(process)
+
+    def add_preprocess(self, preprocess):
+        """ Adds a preprocess
+        :param preprocess:
+        :return:
+        """
+        self._preprocesses.append(preprocess)
 
     def iter_processes(self):
         for process in self._processes:

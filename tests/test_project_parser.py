@@ -560,3 +560,14 @@ file:///resource2 <- file:///resource3
             assert False
         except InvalidProcessorError:
             assert True
+
+    def test_preprocess_statement(self):
+        """ Preprocessors should be available from the workflow
+        """
+        pp = ProjectParser()
+        project = """|<< ! python
+        Some code
+        """
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow._preprocesses) == 1

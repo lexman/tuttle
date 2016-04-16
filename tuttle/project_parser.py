@@ -285,6 +285,9 @@ class ProjectParser():
                 filename = self.parse_inclusion()
                 self.add_sub_project(filename)
                 line, num_line, eof = self.read_line()
+            elif self.is_preprocess(self._line):
+                preprocess = self.parse_preprocess()
+                workflow.add_preprocess(preprocess)
             else:
                 process = self.parse_section()
                 workflow.add_process(process)
