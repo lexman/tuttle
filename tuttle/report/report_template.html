@@ -96,6 +96,59 @@
             {% endif %}
         </div>
         {% endfor %}
+        <hr/>
+        <h1>Preprocesses</h1>
+        {% for preprocess in preprocesses %}
+        <div class="process">
+            <h2 id="{{ preprocess.id }}" name="{{ preprocess.id }}">
+            {% if not preprocess.start %}
+            {% elif not preprocess.end %} <span class="label label-info">Running</span>
+            {% elif preprocess.success %} <span class="label label-success">Success</span>
+            {% else %} <span class="label label-danger">Failure</span>
+            {% endif %}
+            {{ preprocess.id }}
+            </h2>
+            <div>
+            Processor : <strong>{{preprocess.processor}}</strong>
+            {% if preprocess.code %}
+            <pre><code>{{preprocess.code}}</code></pre>
+            {% endif %}
+            <br/>
+            </div>
+            {% if preprocess.start %}
+            <table class="table table-condensed">
+                <thread>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (s)</th>
+                        <th>Stdout</th>
+                        <th>Stderr</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>{{ preprocess.start }}</td>
+                        <td>{{ preprocess.end }}</td>
+                        <td>{{ preprocess.duration|round(3) }}</td>
+                        <td>{% if preprocess.log_stdout_size == "empty" %}
+                            (empty)
+                            {% else %}
+                            <a href="{{ preprocess.log_stdout }}" type="text/plain"> view </a> <a href="{{ preprocess.log_stdout }}" download> download </a> ({{ preprocess.log_stdout_size }})
+                            {% endif %}
+                        </td>
+                        <td>{% if preprocess.log_stderr_size == "empty" %}
+                            (empty)
+                            {% else %}
+                            <a href="{{ preprocess.log_stderr }}" type="text/plain"> view </a> <a href="{{ preprocess.log_stderr }}" download> download </a> ({{ preprocess.log_stderr_size }})
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+        {% endfor %}
 
     </div>
 

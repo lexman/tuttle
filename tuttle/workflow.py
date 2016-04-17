@@ -144,9 +144,8 @@ class Workflow:
                 reserved_path, log_stdout, log_stderr = prepare_paths(preprocess)
                 preprocess.run(reserved_path, log_stdout, log_stderr)
             finally:
-                # TODO : include preprocesses in report
-                #self.dump()
-                #self.create_reports()
+                self.dump()
+                self.create_reports()
                 print_logs(preprocess)
 
 

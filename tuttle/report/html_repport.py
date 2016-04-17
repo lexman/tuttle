@@ -116,6 +116,7 @@ def create_html_report(workflow, filename):
     with open(tpl_filename, 'rb') as ftpl:
         t = Template(ftpl.read().decode('utf8'))
     processes = [format_process(p, workflow, abspath(file_dir)) for p in workflow.iter_processes()]
+    preprocesses = [format_process(p, workflow, abspath(file_dir)) for p in workflow.iter_preprocesses()]
     with open(filename, 'wb') as fout:
-        content = t.render(processes=processes, dot_src=dot(workflow), status=workflow_status(workflow))
+        content = t.render(processes=processes, preprocesses=preprocesses, dot_src=dot(workflow), status=workflow_status(workflow))
         fout.write(content.encode('utf8)'))
