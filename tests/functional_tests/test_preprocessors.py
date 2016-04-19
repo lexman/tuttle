@@ -50,3 +50,18 @@ class TestPreprocessors:
         code_pos = report.find("reprocess") # skip the first letter in upper case
         assert code_pos == -1, code_pos
 
+    @isolate(['A'])
+    def test_preprocess_should_not_force_invalidation(self):
+        """ The existance of preprocesses should not invalidate all the resources (from bug)"""
+        project = """file://B <- file://A
+    echo A produces B > B
+
+|<<
+    echo Running preprocess
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        rcode, output = run_tuttle_file(project, threshold=0)
+        assert rcode == 0, output
+        pos = output.find("Nothing to do")
+        assert pos >= 0, output
