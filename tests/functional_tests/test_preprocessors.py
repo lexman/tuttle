@@ -2,7 +2,7 @@
 from subprocess import Popen, PIPE
 from os.path import isfile, dirname, abspath, join
 
-from os import path
+from os import path, environ
 from tests.functional_tests import isolate, run_tuttle_file
 
 
@@ -65,3 +65,30 @@ class TestPreprocessors:
         assert rcode == 0, output
         pos = output.find("Nothing to do")
         assert pos >= 0, output
+
+    def get_cmd_extend_workflow(self):
+        """
+        :return: A command line to call tuttle-extend-workflow even if tuttle has not been installed with pip
+        """
+        if environ.has_key('VIRTUAL_ENV'):
+            py_cli = join(environ['VIRTUAL_ENV'], 'Scripts', 'python')
+        else:
+            py_cli = 'python'
+        extend = abspath(join(py_cli, '..', '..', '..', 'bin', 'tuttle-extend-workflow'))
+        cmd_extend = "{} {}".format(py_cli, extend)
+        return cmd_extend
+
+    @isolate(['A'])
+    def test_call_extend(self):
+        """ A preprocess should be able to call the tuttle-extend-workflow command"""
+        cmd_extend = self.get_cmd_extend_workflow()
+        project = """file://B <- file://A
+    echo A produces B > B
+
+|<<
+    echo Expending workflow in preprocess
+    echo {cmd_extend} template"
+    {cmd_extend} template
+""".format(cmd_extend=cmd_extend)
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output

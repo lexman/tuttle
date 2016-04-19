@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+
+import sys
+from os.path import abspath, exists, dirname, join
+
+if getattr(sys, 'frozen', False):
+    # frozen
+    tuttle_module = join(dirname(abspath(sys.executable)), '..', '..', 'tuttle')
+else:
+    # unfrozen
+    tuttle_module = join(dirname(abspath(__file__)), '..', '..', 'tuttle')
+sys.path.insert(0,tuttle_module)
+
+from argparse import ArgumentParser
+from tuttle.utils import CurrentDir
+from tuttle.version import version
+
+
+
+def main():
+    parser = ArgumentParser(
+        description="Extends a workflow by adding a templated tuttle project - version {}".format(version)
+    )
+    parser.add_argument("template", help="template file")
+    parser.add_argument('variables', help='variables to insert into the template int the form my_var="my value"', nargs="*")
+    parser.add_argument('-w', '--workspace',
+                      default='.',
+                      dest='workspace',
+                      help='Directory where the workspace lies. Default is the current directory')
+    params = parser.parse_args()
+
+    with CurrentDir(params.workspace):
+        print("tuttle-extend-workflow")
+        print(params.variables)
+
+
+if __name__ == '__main__':
+    sys.exit(main())

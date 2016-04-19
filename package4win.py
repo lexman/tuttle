@@ -16,7 +16,7 @@ except ImportError:
           "You can install these packages with your package manager (usually python-setuptools) or via pip (pip"
           " install setuptools cx_freeze).")
     sys.exit(1)
-from setup import tuttle_description # Import description of the package from the standard setup
+from setup import tuttle_description  # Import description of the package from the standard setup
 
 
 def strip_rc(version):
@@ -27,7 +27,7 @@ def strip_rc(version):
 # cx_freeze option for a command line application
 base = None
 build_exe_options = {
-    "packages": ["os", "six",],
+    "packages": ["os", "six", ],
     "excludes": ["tkinter", ],
     "includes": ["ConfigParser", "HTMLParser", ],
     "include_files": (
@@ -45,7 +45,8 @@ cx_freeze_opts = {
         'bdist_msi': build_msi_options,
         'build_exe': build_exe_options
     },
-    'executables':  [Executable(join("bin", "tuttle"), base=base)]
+    'executables':  [Executable(join("bin", "tuttle"), base=base),
+                     Executable(join("bin", "tuttle-extend-workflow"), base=base)]
 }
 package_description = tuttle_description
 package_description.update(cx_freeze_opts)

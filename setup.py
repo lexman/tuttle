@@ -44,6 +44,7 @@ tuttle_description = {
         ],
     'scripts': [
         'bin/tuttle',
+        'bin/tuttle-extend-workflow',
     ],
     'include_package_data':  True,
     'package_data':  {
