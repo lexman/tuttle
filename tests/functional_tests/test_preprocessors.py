@@ -35,3 +35,18 @@ class TestPreprocessors:
         # the code should appear in the html report
         code_pos = report.find("echo Running preprocess")
         assert code_pos > -1, code_pos
+
+    @isolate(['A'])
+    def test_no_preprocess_in_report(self):
+        """ The report should not include a preprocess section if there are no preprocesses """
+        project = """file://B <- file://A
+    echo A produces B > B
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        report_path = join('.tuttle', 'report.html')
+        assert isfile(report_path)
+        report = open(report_path).read()
+        code_pos = report.find("reprocess") # skip the first letter in upper case
+        assert code_pos == -1, code_pos
+
