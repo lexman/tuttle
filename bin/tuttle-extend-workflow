@@ -16,7 +16,6 @@ from argparse import ArgumentParser
 from tuttle.utils import CurrentDir
 from tuttle.version import version
 from jinja2 import Template
-from glob import glob
 
 
 def get_a_name():
@@ -24,6 +23,19 @@ def get_a_name():
     #ext_dir = join('.tuttle', 'extensions', 'extension_*')
     #extensions = glob(ext_dir)
     #'.tuttle', 'extensions',
+
+
+def extract_variables(variables):
+    res = {}
+    for var in variables:
+        try:
+            name, value = var.split("=", 2)
+        except ValueError:
+            msg = 'Can\'t extract variable from parameter "{}"'.format(var)
+            print(msg)
+            exit(1)
+        res[name] = value
+    return res
 
 
 def main():
@@ -42,9 +54,15 @@ def main():
                       help='Name of the extended workflow')
     params = parser.parse_args()
 
+    with open(params.template, 'rb') as ftpl:
+        t = Template(ftpl.read().decode('utf8'))
+
+    vars_dic = extract_variables(params.variables)
+
     with CurrentDir(params.workspace):
         with open(get_a_name(), 'w') as ext_file:
-            pass
+            content = t.render(**vars_dic)
+            ext_file.write(content.encode('utf8)'))
         print("tuttle-extend-workflow")
         print(params.variables)
 
