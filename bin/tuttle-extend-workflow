@@ -15,7 +15,15 @@ sys.path.insert(0,tuttle_module)
 from argparse import ArgumentParser
 from tuttle.utils import CurrentDir
 from tuttle.version import version
+from jinja2 import Template
+from glob import glob
 
+
+def get_a_name():
+    return abspath(join('.tuttle', 'extensions', 'extension_1'))
+    #ext_dir = join('.tuttle', 'extensions', 'extension_*')
+    #extensions = glob(ext_dir)
+    #'.tuttle', 'extensions',
 
 
 def main():
@@ -28,9 +36,15 @@ def main():
                       default='.',
                       dest='workspace',
                       help='Directory where the workspace lies. Default is the current directory')
+    parser.add_argument('-n', '--name',
+                      default=None,
+                      dest='name',
+                      help='Name of the extended workflow')
     params = parser.parse_args()
 
     with CurrentDir(params.workspace):
+        with open(get_a_name(), 'w') as ext_file:
+            pass
         print("tuttle-extend-workflow")
         print(params.variables)
 

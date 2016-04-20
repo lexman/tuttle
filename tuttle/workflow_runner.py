@@ -16,11 +16,12 @@ class ResourceError(TuttleError):
 
 
 def tuttle_dir(*args):
-    return join(".tuttle", *args)
+    return join('.tuttle', *args)
 
 
-_processes_dir = tuttle_dir("processes")
-_logs_dir = tuttle_dir("processes", 'logs')
+_processes_dir = tuttle_dir('processes')
+_logs_dir = tuttle_dir('processes', 'logs')
+_extensions_dir = tuttle_dir('extensions')
 
 
 def prepare_paths(process):
@@ -39,6 +40,14 @@ def create_tuttle_dirs():
         makedirs(_processes_dir)
     if not isdir(_logs_dir):
         makedirs(_logs_dir)
+
+
+def empty_extension_dir():
+    if not isdir(_extensions_dir):
+        makedirs(_extensions_dir)
+    else:
+        rmtree(_extensions_dir)
+        makedirs(_extensions_dir)
 
 
 def print_header(process):
