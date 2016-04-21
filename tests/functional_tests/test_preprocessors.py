@@ -87,11 +87,11 @@ class TestPreprocessors:
 
 |<<
     echo Expending workflow in preprocess
-    echo {cmd_extend} b-produces-x.tuttle"
+    echo "{cmd_extend} b-produces-x.tuttle"
     {cmd_extend} b-produces-x.tuttle
 """.format(cmd_extend=cmd_extend)
         rcode, output = run_tuttle_file(project)
-        assert rcode == 0, output
+        assert rcode == 0, "{}\n{}".format(cmd_extend, output)
 
 #     @isolate(['A', 'b-produces-x.tuttle'])
 #     def test_extend_workflow(self):
