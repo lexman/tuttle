@@ -38,6 +38,17 @@ def extract_variables(variables):
     return res
 
 
+def load_template(template):
+    try:
+        with open(template, 'rb') as ftpl:
+            t = Template(ftpl.read().decode('utf8'))
+    except IOError:
+        msg = 'Can\'t find template file "{}"'.format(template)
+        print(msg)
+        exit(2)
+    return t
+
+
 def main():
     parser = ArgumentParser(
         description="Extends a workflow by adding a templated tuttle project - version {}".format(version)
@@ -54,14 +65,7 @@ def main():
                       help='Name of the extended workflow')
     params = parser.parse_args()
 
-    try:
-        with open(params.template, 'rb') as ftpl:
-            t = Template(ftpl.read().decode('utf8'))
-    except IOError:
-        msg = 'Can\'t find template file "{}"'.format(params.template)
-        print(msg)
-        exit(2)
-
+    t = load_template(params.template)
     vars_dic = extract_variables(params.variables)
 
     with CurrentDir(params.workspace):
