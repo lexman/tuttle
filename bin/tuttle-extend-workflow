@@ -3,7 +3,6 @@
 
 import sys
 from os.path import abspath, exists, dirname, join
-
 if getattr(sys, 'frozen', False):
     # frozen
     tuttle_module = join(dirname(abspath(sys.executable)), '..', '..', 'tuttle')
@@ -18,11 +17,14 @@ from tuttle.version import version
 from jinja2 import Template
 
 
-def get_a_name():
-    return abspath(join('.tuttle', 'extensions', 'extension_1'))
-    #ext_dir = join('.tuttle', 'extensions', 'extension_*')
-    #extensions = glob(ext_dir)
-    #'.tuttle', 'extensions',
+def get_a_name(prefix):
+    # TODO : not scalable if called a lot of times
+    i = 1
+    name = abspath(join('extensions', "{}{}".format(prefix, i)))
+    while exists(name):
+        name = abspath(join('extensions', "{}{}".format(prefix, i)))
+        i += 1
+    return name
 
 
 def extract_variables(variables):
@@ -55,12 +57,8 @@ def main():
     )
     parser.add_argument("template", help="template file")
     parser.add_argument('variables', help='variables to insert into the template int the form my_var="my value"', nargs="*")
-    parser.add_argument('-w', '--workspace',
-                      default='.',
-                      dest='workspace',
-                      help='Directory where the workspace lies. Default is the current directory')
     parser.add_argument('-n', '--name',
-                      default=None,
+                      default='extension',
                       dest='name',
                       help='Name of the extended workflow')
     params = parser.parse_args()
@@ -68,8 +66,8 @@ def main():
     t = load_template(params.template)
     vars_dic = extract_variables(params.variables)
 
-    with CurrentDir(params.workspace):
-        with open(get_a_name(), 'w') as ext_file:
+    with CurrentDir('.tuttle'):
+        with open(get_a_name(params.name), 'w') as ext_file:
             content = t.render(**vars_dic)
             ext_file.write(content.encode('utf8)'))
 

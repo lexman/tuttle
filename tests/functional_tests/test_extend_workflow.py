@@ -34,7 +34,7 @@ class TestExtendWorkflow:
         self.init_tuttle_project()  # ensures there is a .tuttle directory
         extend = abspath(join(__file__, '..', '..', '..', 'bin', 'tuttle-extend-workflow'))
         output = check_output(['python', extend, 'b-produces-x.tuttle', 'x="C"'])
-        expected_file = join('.tuttle', 'extensions', 'extension_1')
+        expected_file = join('.tuttle', 'extensions', 'extension1')
         assert isfile(expected_file), output
 
     @isolate(['A', 'b-produces-x.tuttle'])
@@ -43,7 +43,8 @@ class TestExtendWorkflow:
         self.init_tuttle_project()  # ensures there is a .tuttle directory
         cmd = self.get_cmd_extend('b-produces-x.tuttle x="C"')
         output = check_output(split(cmd))
-        expected_file = join('.tuttle', 'extensions', 'extension_1')
+        expected_file = join('.tuttle', 'extensions', 'extension1')
+        print getcwd()
         assert isfile(expected_file), output
         extension = open(expected_file).read()
         rule_pos = extension.find("file://C <- file://B")
@@ -74,3 +75,16 @@ class TestExtendWorkflow:
             assert e.returncode == 2
             pos_err = e.output.find('Can\'t find template file')
             assert pos_err > -1, e.output
+
+    @isolate(['A', 'b-produces-x.tuttle'])
+    def test_create_two_extensions(self):
+        """ If tuttle-extend-workflow is called twice, it should create two extension files (with distinct names) """
+        self.init_tuttle_project()  # ensures there is a .tuttle directory
+        cmd = self.get_cmd_extend('b-produces-x.tuttle x="C"')
+        output = check_output(split(cmd))
+        cmd = self.get_cmd_extend('b-produces-x.tuttle x="D"')
+        output = check_output(split(cmd))
+        expected_file = join('.tuttle', 'extensions', 'extension1')
+        assert isfile(expected_file), output
+        expected_file = join('.tuttle', 'extensions', 'extension2')
+        assert isfile(expected_file), output
