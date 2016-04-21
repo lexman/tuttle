@@ -6,9 +6,10 @@ This module is responsible for the inner structure of the .tuttle directory
 """
 
 from shutil import rmtree
-from os import remove, makedirs
+from os import remove, makedirs, getcwd
 from os.path import join, isdir, isfile
 from tuttle.error import TuttleError
+from tuttle.utils import EnvVar
 
 
 class ResourceError(TuttleError):
@@ -69,3 +70,12 @@ def print_log_if_exists(log_file, header):
 def print_logs(process):
     print_log_if_exists(process.log_stdout, "stdout")
     print_log_if_exists(process.log_stderr, "stderr")
+
+
+class TuttleEnv(EnvVar):
+    """
+    Adds the 'TUTTLE_ENV' environment variable so subprocesses can find the .tuttle directory.
+    """
+    def __init__(self):
+        directory = join(getcwd(), '.tuttle')
+        super(TuttleEnv, self).__init__('TUTTLE_ENV', directory)
