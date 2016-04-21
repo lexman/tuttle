@@ -61,3 +61,16 @@ class TestExtendWorkflow:
             assert e.returncode == 1
             pos_err = e.output.find('Can\'t extract variable from parameter')
             assert pos_err > -1, e.output
+
+    @isolate(['A'])
+    def test_bad_template_file(self):
+        """ If the template file does not exist, tuttle-extend-workflow is wrong it should fail"""
+        self.init_tuttle_project()  # ensures there is a .tuttle directory
+        cmd = self.get_cmd_extend('unknown x"C"')
+        try:
+            output = check_output(split(cmd))
+            assert False, "tuttle-extend-workflow should have exited in error"
+        except CalledProcessError as e:
+            assert e.returncode == 2
+            pos_err = e.output.find('Can\'t find template file')
+            assert pos_err > -1, e.output
