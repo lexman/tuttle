@@ -17,6 +17,7 @@ from tuttle.version import version
 from jinja2 import Template
 from os import environ
 
+
 def get_a_name(prefix):
     # TODO : not scalable if called a lot of times
     i = 1
@@ -62,25 +63,31 @@ def get_tuttle_env():
     return env
 
 
+def render_extension(name, t, tuttle_env, vars_dic):
+    with CurrentDir(tuttle_env):
+        with open(get_a_name(name), 'w') as ext_file:
+            content = t.render(**vars_dic)
+            ext_file.write(content.encode('utf8)'))
+
+
 def main():
     parser = ArgumentParser(
-        description="Extends a workflow by adding a templated tuttle project. Must be run from a preprocessor in a tuttle project - version {}".format(version)
+        description="Extends a workflow by adding a templated tuttle project. Must be run from a preprocessor in a "
+                    "tuttle project - version {}".format(version)
     )
     parser.add_argument("template", help="template file")
-    parser.add_argument('variables', help='variables to insert into the template int the form my_var="my value"', nargs="*")
+    parser.add_argument('variables', help='variables to insert into the template int the form my_var="my value"',
+                        nargs="*")
     parser.add_argument('-n', '--name',
-                      default='extension',
-                      dest='name',
-                      help='Name of the extended workflow')
+                        default='extension',
+                        dest='name',
+                        help='Name of the extended workflow')
     params = parser.parse_args()
 
     t = load_template(params.template)
     vars_dic = extract_variables(params.variables)
     tuttle_env = get_tuttle_env()
-    with CurrentDir(tuttle_env):
-        with open(get_a_name(params.name), 'w') as ext_file:
-            content = t.render(**vars_dic)
-            ext_file.write(content.encode('utf8)'))
+    render_extension(params.name, t, tuttle_env, vars_dic)
 
 if __name__ == '__main__':
     sys.exit(main())
