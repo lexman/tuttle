@@ -138,7 +138,7 @@ class TestDownloadProcessor():
         project = " file://google.html <- http://www.google.com/ ! download"
         pp = ProjectParser()
         pp.set_project(project)
-        workflow = pp.parse_and_check_project()
+        workflow = pp.parse_extend_and_check_project()
         workflow.static_check_processes()
         workflow.run()
         assert isfile("google.html")
@@ -154,7 +154,7 @@ class TestDownloadProcessor():
         project = " file://jquery.js <- http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js ! download"
         pp = ProjectParser()
         pp.set_project(project)
-        workflow = pp.parse_and_check_project()
+        workflow = pp.parse_extend_and_check_project()
         workflow.static_check_processes()
         workflow.run()
         assert isfile("jquery.js")
@@ -168,7 +168,7 @@ class TestDownloadProcessor():
         pp = ProjectParser()
         pp.set_project(project)
         try:
-            workflow = pp.parse_and_check_project()
+            workflow = pp.parse_extend_and_check_project()
             assert False, "An exception should be raised"
         except TuttleError:
             assert True

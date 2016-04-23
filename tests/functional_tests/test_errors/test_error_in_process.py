@@ -116,7 +116,7 @@ file://D <- file://A
 
         pp = ProjectParser()
         pp.set_project(first)
-        workflow = pp.parse_and_check_project()
+        workflow = pp.parse_extend_and_check_project()
         try:
             workflow.run()
             assert False, "A resource error should have been raised"

@@ -95,15 +95,24 @@ class ProjectParser():
         self._num_line = 0
         self._eof = True
         self._filename = "_"
-
         self._streamer = LinesStreamer()
 
     def parse_and_check_file(self, filename):
+        """ Reads a workflows from a tuttle file, runs the preprocesses, load the extensions and make
+        overall static checks
+        :param filename:
+        :return: the workflow
+        """
         self._streamer = LinesStreamer()
         self._streamer.add_file(filename)
-        return self.parse_and_check_project()
+        return self.parse_extend_and_check_project()
 
-    def parse_and_check_project(self):
+    def parse_extend_and_check_project(self):
+        """ Reads a workflows from the current streamer, runs the preprocesses, load the extensions and make
+        overall static checks in order to return a valid workflow
+        :param filename:
+        :return: the workflow
+        """
         workflow = self.parse_project()
         workflow.run_pre_processes()
         unreachable = workflow.circular_references()
@@ -274,7 +283,7 @@ class ProjectParser():
         return process
 
     def parse_project(self):
-        """ Parse a full project describing a workflow
+        """ Parse a full project describing a workflow with its inclusions
         """
         workflow = Workflow(self.resources)
         line, num_line, eof = self.read_line()
