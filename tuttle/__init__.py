@@ -16,7 +16,6 @@ PROCESS_HAS_FAILED = "The resource has been produced by a failing process"
 def parse_project(tuttlefile):
     pp = ProjectParser()
     workflow = pp.parse_and_check_file(tuttlefile)
-    workflow.static_check_processes()
     return workflow
 
 
@@ -41,7 +40,6 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
         try:
             inv_collector = InvalidResourceCollector()
             workflow = parse_project(tuttlefile)
-            workflow.run_pre_processes()
             previous_workflow = Workflow.load()
 
             shrunk = False

@@ -105,6 +105,7 @@ class ProjectParser():
 
     def parse_and_check_project(self):
         workflow = self.parse_project()
+        workflow.run_pre_processes()
         unreachable = workflow.circular_references()
         if unreachable:
             error_msg = "The following resources references one another as inputs in a circular way that don't allow " \
@@ -112,6 +113,7 @@ class ProjectParser():
             for process in unreachable:
                 error_msg += "* {}\n".format(process.id)
             raise WorkflowError(error_msg, self._filename, self._streamer._num_line)
+        workflow.static_check_processes()
         return workflow
 
     def set_project(self, text):

@@ -3,6 +3,7 @@
 import re
 from os.path import isfile, join
 from tests.functional_tests import isolate, run_tuttle_file
+from tuttle.error import TuttleError
 from tuttle.project_parser import ProjectParser
 from tuttle.extensions.net import HTTPResource
 from BaseHTTPServer import BaseHTTPRequestHandler
@@ -166,11 +167,10 @@ class TestDownloadProcessor():
         project = " http://www.google.com/ <-  ! download"
         pp = ProjectParser()
         pp.set_project(project)
-        workflow = pp.parse_and_check_project()
         try:
-            workflow.pre_check_processes()
+            workflow = pp.parse_and_check_project()
             assert False, "An exception should be raised"
-        except:
+        except TuttleError:
             assert True
 
 
