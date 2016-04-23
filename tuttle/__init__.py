@@ -13,7 +13,7 @@ NOT_PRODUCED_BY_TUTTLE = "The existing resource has not been produced by tuttle"
 USER_REQUEST = "User request"
 PROCESS_HAS_FAILED = "The resource has been produced by a failing process"
 
-def parse_project(tuttlefile):
+def load_project(tuttlefile):
     pp = ProjectParser()
     workflow = pp.parse_and_check_file(tuttlefile)
     return workflow
@@ -39,7 +39,7 @@ def run(workflow):
 def parse_invalidate_and_run(tuttlefile, threshold=-1):
         try:
             inv_collector = InvalidResourceCollector()
-            workflow = parse_project(tuttlefile)
+            workflow = load_project(tuttlefile)
             previous_workflow = Workflow.load()
 
             shrunk = False
@@ -92,7 +92,7 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
         print("Tuttle has not run yet ! It has produced nothing, so there is nothing to invalidate.")
         return 2
     try:
-        workflow = parse_project(tuttlefile)
+        workflow = load_project(tuttlefile)
         # TODO : add preprocessors to invalidation
     except TuttleError as e:
         print("Invalidation has failed because tuttlefile is has errors (a valid project is needed for "
