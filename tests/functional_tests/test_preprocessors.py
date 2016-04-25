@@ -77,7 +77,7 @@ class TestPreprocessors:
         cmd_extend = "{} {}".format(py_cli, extend)
         return cmd_extend
 
-    @isolate(['A'])
+    @isolate(['A', 'b-produces-x.tuttle'])
     def test_call_extend(self):
         """ A preprocess should be able to call the tuttle-extend-workflow command"""
         cmd_extend = self.get_cmd_extend_workflow()
@@ -112,3 +112,21 @@ class TestPreprocessors:
         assert pos_A > -1, output
         pos_C = report.find("file%3A//C")
         assert pos_C > -1, report[pos_A:]
+
+
+    @isolate(['A'])
+    def test_pre_process_fails(self):
+        """ A preprocess should be able to call the tuttle-extend-workflow command"""
+        cmd_extend = self.get_cmd_extend_workflow()
+        project = """file://B <- file://A
+    echo Should not be executed
+    echo A produces B > B
+
+|<<
+    echo Failling
+    Failling command
+""".format(cmd_extend=cmd_extend)
+        rcode, output = run_tuttle_file(project)
+        assert rcode != 0, "{} -> {}\n{}".format(cmd_extend, rcode, output)
+        pos = output.find("Should not be executed")
+        assert pos == -1, output
