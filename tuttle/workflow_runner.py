@@ -4,7 +4,7 @@
 Utility methods for use in running workflows.
 This module is responsible for the inner structure of the .tuttle directory
 """
-
+from glob import glob
 from shutil import rmtree
 from os import remove, makedirs, getcwd
 from os.path import join, isdir, isfile
@@ -70,6 +70,11 @@ def print_log_if_exists(log_file, header):
 def print_logs(process):
     print_log_if_exists(process.log_stdout, "stdout")
     print_log_if_exists(process.log_stderr, "stderr")
+
+
+def list_extensions():
+    path = join(_extensions_dir, '*')
+    return glob(path)
 
 
 class TuttleEnv(EnvVar):

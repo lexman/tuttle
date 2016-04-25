@@ -2,7 +2,7 @@
 from report.html_repport import create_html_report
 from pickle import dump, load
 from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
-    prepare_paths, empty_extension_dir, TuttleEnv
+    prepare_paths, empty_extension_dir, TuttleEnv, list_extensions
 
 
 NO_LONGER_CREATED = "Resource no longer created by the newer process"
@@ -191,6 +191,9 @@ class Workflow:
                 return load(f)
         except:
             return None
+
+    def get_extensions(self):
+        return list_extensions()
 
     def find_process_that_creates(self, url):
         """

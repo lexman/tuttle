@@ -107,6 +107,12 @@ class ProjectParser():
         self._streamer.add_file(filename)
         return self.parse_extend_and_check_project()
 
+    def parse_extensions_to_workflow(self, workflow):
+        extensions = workflow.get_extensions()
+        for ext in extensions:
+            self._streamer.add_file(ext)
+        self.parse_project_to_workflow(workflow)
+
     def parse_extend_and_check_project(self):
         """ Reads a workflows from the current streamer, runs the preprocesses, load the extensions and make
         overall static checks in order to return a valid workflow
@@ -115,6 +121,8 @@ class ProjectParser():
         """
         workflow = self.parse_project()
         workflow.run_pre_processes()
+        self.parse_extensions_to_workflow(workflow)
+
         unreachable = workflow.circular_references()
         if unreachable:
             error_msg = "The following resources references one another as inputs in a circular way that don't allow " \
@@ -282,10 +290,7 @@ class ProjectParser():
         process.set_code(process_code)
         return process
 
-    def parse_project(self):
-        """ Parse a full project describing a workflow with its inclusions
-        """
-        workflow = Workflow(self.resources)
+    def parse_project_to_workflow(self, workflow):
         line, num_line, eof = self.read_line()
         while True:
             while self.is_blank(line):
@@ -304,3 +309,10 @@ class ProjectParser():
                 workflow.add_process(process)
             if self._eof:
                 return workflow
+
+    def parse_project(self):
+        """ Parse a full project describing a workflow with its inclusions
+        """
+        workflow = Workflow(self.resources)
+        self.parse_project_to_workflow(workflow)
+        return workflow

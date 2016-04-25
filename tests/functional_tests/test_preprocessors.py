@@ -77,7 +77,7 @@ class TestPreprocessors:
         cmd_extend = "{} {}".format(py_cli, extend)
         return cmd_extend
 
-    @isolate(['A', 'b-produces-x.tuttle'])
+    @isolate(['A'])
     def test_call_extend(self):
         """ A preprocess should be able to call the tuttle-extend-workflow command"""
         cmd_extend = self.get_cmd_extend_workflow()
@@ -86,29 +86,29 @@ class TestPreprocessors:
 
 |<<
     echo Expending workflow in preprocess
-    echo "{cmd_extend} b-produces-x.tuttle"
-    {cmd_extend} b-produces-x.tuttle
+    echo "{cmd_extend} -h"
+    {cmd_extend} -h
 """.format(cmd_extend=cmd_extend)
         rcode, output = run_tuttle_file(project)
-        assert rcode == 0, "{}\n{}".format(cmd_extend, output)
+        assert rcode == 0, "{} -> {}\n{}".format(cmd_extend, rcode, output)
 
-#     @isolate(['A', 'b-produces-x.tuttle'])
-#     def test_extend_workflow(self):
-#         """ One should be able to extend the workflow from a preprocess"""
-#         cmd_extend = self.get_cmd_extend_workflow()
-#         project = """file://B <- file://A
-#     echo A produces B > B
-#
-# |<<
-#     echo Running preprocess
-#     {cmd_extend} b-produces-x.tuttle x="C"
-# """.format(cmd_extend=cmd_extend)
-#         rcode, output = run_tuttle_file(project)
-#         assert rcode == 0, output
-#         report_path = join('.tuttle', 'report.html')
-#         assert isfile(report_path)
-#         report = open(report_path).read()
-#         pos_A = report.find("file%3A//A")
-#         assert pos_A > -1, output
-#         pos_C = report.find("file%3A//C")
-#         assert pos_C > -1, report[pos_A:]
+    @isolate(['A', 'b-produces-x.tuttle'])
+    def test_extend_workflow(self):
+        """ One should be able to extend the workflow from a preprocess"""
+        cmd_extend = self.get_cmd_extend_workflow()
+        project = """file://B <- file://A
+    echo A produces B > B
+
+|<<
+    echo Running preprocess
+    {cmd_extend} b-produces-x.tuttle x="C"
+""".format(cmd_extend=cmd_extend)
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        report_path = join('.tuttle', 'report.html')
+        assert isfile(report_path)
+        report = open(report_path).read()
+        pos_A = report.find("file%3A//A")
+        assert pos_A > -1, output
+        pos_C = report.find("file%3A//C")
+        assert pos_C > -1, report[pos_A:]
