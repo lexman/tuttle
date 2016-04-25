@@ -2,6 +2,10 @@
 # -*- coding: utf8 -*-
 
 import sys
+from jinja2.environment import Environment
+from jinja2.exceptions import UndefinedError
+from jinja2.loaders import FileSystemLoader
+from jinja2.runtime import StrictUndefined
 from os.path import abspath, exists, dirname, join
 if getattr(sys, 'frozen', False):
     # frozen
@@ -43,8 +47,9 @@ def extract_variables(variables):
 
 def load_template(template):
     try:
+        jinja_env = Environment(loader=FileSystemLoader("."), undefined=StrictUndefined)
         with open(template, 'rb') as ftpl:
-            t = Template(ftpl.read().decode('utf8'))
+            t = jinja_env.get_template(template)
     except IOError:
         msg = 'Can\'t find template file "{}"'.format(template)
         print(msg)
@@ -66,7 +71,12 @@ def get_tuttle_env():
 def render_extension(name, t, tuttle_env, vars_dic):
     with CurrentDir(tuttle_env):
         with open(get_a_name(name), 'w') as ext_file:
-            content = t.render(**vars_dic)
+            try:
+                content = t.render(**vars_dic)
+            except UndefinedError as e:
+                msg = 'Missing value for a template variable.\n{}'.format(e.message)
+                print(msg)
+                exit(4)
             ext_file.write(content.encode('utf8)'))
 
 

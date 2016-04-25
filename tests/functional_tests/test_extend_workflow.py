@@ -101,3 +101,15 @@ class TestExtendWorkflow:
             assert e.returncode == 3, e.returncode
             pos_err = e.output.find('Can\'t find workspace')
             assert pos_err > -1, e.output
+
+    @isolate(['A', 'b-produces-x.tuttle'])
+    def test_missing_variable(self):
+        """ If a variable in the template has no value, tuttle-extend-workflow should fail"""
+        try:
+            output = self.run_extend_workflow('b-produces-x.tuttle')
+            assert False, "tuttle-extend-workflow should have exited in error"
+        except CalledProcessError as e:
+            assert e.returncode == 4
+            pos_err = e.output.find('Missing value for a template variable""')
+            assert pos_err > -1, e.output
+
