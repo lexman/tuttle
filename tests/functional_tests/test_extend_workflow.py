@@ -110,6 +110,6 @@ class TestExtendWorkflow:
             assert False, "tuttle-extend-workflow should have exited in error"
         except CalledProcessError as e:
             assert e.returncode == 4
-            pos_err = e.output.find('Missing value for a template variable""')
+            pos_err = e.output.find('Missing value for a template variable')
             assert pos_err > -1, e.output
 
