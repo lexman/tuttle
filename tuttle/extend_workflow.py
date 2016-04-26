@@ -26,13 +26,27 @@ def get_a_name(prefix):
 
 def extract_variables(variables):
     res = {}
-    for var in variables:
-        try:
+    it = iter(variables)
+    try:
+        var = next(it)
+        while True:
             name, value = var.split("=", 2)
-        except ValueError:
-            msg = 'Can\'t extract variable from parameter "{}"'.format(var)
-            raise ExtendError(msg)
-        res[name] = value
+            if name.endswith("[]"):
+                name = name[:-2]
+                array = [value]
+                res[name] = array
+                var = next(it)
+                while var.find('=') == -1:
+                    array.append(var)
+                    var = next(it)
+            else:
+                res[name] = value
+                var = next(it)
+    except ValueError:
+        msg = 'Can\'t extract variable from parameter "{}"'.format(var)
+        raise ExtendError(msg)
+    except StopIteration:
+        pass
     return res
 
 

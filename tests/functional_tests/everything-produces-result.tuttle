@@ -1,0 +1,3 @@
+file://RESULT <- {% for input in inputs %}file://{{input}}{% if not loop.last %}, {% endif %}{% endfor %}
+    echo **{{ foo }}**
+    echo everything produces RESULT > RESULT

@@ -6,6 +6,7 @@ from os import path, environ, getcwd
 from tests.functional_tests import isolate, run_tuttle_file
 from shlex import split
 from pipes import quote
+from tuttle.extend_workflow import extract_variables
 from tuttle.workflow_runner import TuttleEnv
 
 
@@ -113,13 +114,33 @@ class TestExtendWorkflow:
             assert pos_err > -1, e.output
             assert e.returncode == 1, e.returncode
 
-#    @isolate(['A', 'everything-produces-result.tuttle'])
-#    def test_variable_array(self):
-#        """tuttle-extend-workflow can have parameters setting an array for a variable"""
-#        output = self.run_extend_workflow('everything-produces-result.tuttle inputs[]=A B')
-#        expected_file = join('.tuttle', 'extensions', 'extension1')
-#        assert isfile(expected_file), output
-#        extension = open(expected_file).read()
-#        rule_pos = extension.find("file://RESULT <- file://A, file://B")
-#        assert rule_pos > -1, extension
+    def test_extract_variable_an_array(self):
+        """  simple array should be constructed from the args"""
+        args = ['inputs[]=A', 'B']
+        vars = extract_variables(args)
+        assert isinstance(vars, dict), type(vars)
+        assert len(vars) == 1, vars
+        assert isinstance(vars['inputs'], list), type(vars['inputs'])
+        assert vars['inputs'] == ['A', 'B'], vars['inputs']
 
+    def test_extract_variable_multiple(self):
+        """  a complex extract variable case should work """
+        args = ['inputs[]=A', 'B', 'C', 'foo=bar']
+        vars = extract_variables(args)
+        expected = {'inputs' : ['A', 'B', 'C'], 'foo' : 'bar'}
+        assert vars == expected, vars
+
+    @isolate(['A', 'everything-produces-result.tuttle'])
+    def test_variable_array(self):
+        """tuttle-extend-workflow can have parameters setting an array for a variable"""
+        try:
+           output = self.run_extend_workflow('everything-produces-result.tuttle inputs[]=A B C foo=bar')
+        except CalledProcessError as e:
+            print(e.output)
+        expected_file = join('.tuttle', 'extensions', 'extension1')
+        assert isfile(expected_file), output
+        extension = open(expected_file).read()
+        rule_pos = extension.find("file://RESULT <- file://A, file://B")
+        assert rule_pos > -1, extension
+        bar_pos = extension.find("**bar**")
+        assert bar_pos > -1, extension
