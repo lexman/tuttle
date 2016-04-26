@@ -71,7 +71,7 @@ class TestExtendWorkflow:
             output = self.run_extend_workflow('unknown_template x"C"')
             assert False, "tuttle-extend-workflow should have exited in error"
         except CalledProcessError as e:
-            assert e.returncode == 2
+            assert e.returncode == 1
             pos_err = e.output.find('Can\'t find template file')
             assert pos_err > -1, e.output
 
@@ -98,9 +98,9 @@ class TestExtendWorkflow:
             output = check_output(split(cmd))
             assert False, output
         except CalledProcessError as e:
-            assert e.returncode == 3, e.returncode
             pos_err = e.output.find('Can\'t find workspace')
             assert pos_err > -1, e.output
+            assert e.returncode == 1, e.returncode
 
     @isolate(['A', 'b-produces-x.tuttle'])
     def test_missing_variable(self):
@@ -109,7 +109,17 @@ class TestExtendWorkflow:
             output = self.run_extend_workflow('b-produces-x.tuttle')
             assert False, "tuttle-extend-workflow should have exited in error"
         except CalledProcessError as e:
-            assert e.returncode == 4
             pos_err = e.output.find('Missing value for a template variable')
             assert pos_err > -1, e.output
+            assert e.returncode == 1, e.returncode
+
+#    @isolate(['A', 'everything-produces-result.tuttle'])
+#    def test_variable_array(self):
+#        """tuttle-extend-workflow can have parameters setting an array for a variable"""
+#        output = self.run_extend_workflow('everything-produces-result.tuttle inputs[]=A B')
+#        expected_file = join('.tuttle', 'extensions', 'extension1')
+#        assert isfile(expected_file), output
+#        extension = open(expected_file).read()
+#        rule_pos = extension.find("file://RESULT <- file://A, file://B")
+#        assert rule_pos > -1, extension
 

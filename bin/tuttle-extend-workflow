@@ -18,8 +18,11 @@ sys.path.insert(0,tuttle_module)
 from argparse import ArgumentParser
 from tuttle.utils import CurrentDir
 from tuttle.version import version
-from jinja2 import Template
 from os import environ
+
+
+class ExtendError(Exception):
+    pass
 
 
 def get_a_name(prefix):
@@ -39,8 +42,7 @@ def extract_variables(variables):
             name, value = var.split("=", 2)
         except ValueError:
             msg = 'Can\'t extract variable from parameter "{}"'.format(var)
-            print(msg)
-            exit(1)
+            raise ExtendError(msg)
         res[name] = value
     return res
 
@@ -48,23 +50,20 @@ def extract_variables(variables):
 def load_template(template):
     try:
         jinja_env = Environment(loader=FileSystemLoader("."), undefined=StrictUndefined)
-        with open(template, 'rb') as ftpl:
-            t = jinja_env.get_template(template)
+        t = jinja_env.get_template(template)
     except IOError:
         msg = 'Can\'t find template file "{}"'.format(template)
-        print(msg)
-        exit(2)
+        raise ExtendError(msg)
     return t
 
 
-def get_tuttle_env():
+def get_tuttle_env(env_vars):
     try:
-        env = environ['TUTTLE_ENV']
+        env = env_vars['TUTTLE_ENV']
     except KeyError:
         msg = 'Can\'t find workspace... Maybe your are not running tuttle-extend-workflow from a preprocessor in a ' \
               'tuttle project'
-        print(msg)
-        exit(3)
+        raise ExtendError(msg)
     return env
 
 
@@ -75,9 +74,15 @@ def render_extension(name, t, tuttle_env, vars_dic):
                 content = t.render(**vars_dic)
             except UndefinedError as e:
                 msg = 'Missing value for a template variable.\n{}'.format(e.message)
-                print(msg)
-                exit(4)
+                raise ExtendError(msg)
             ext_file.write(content.encode('utf8)'))
+
+
+def extend_workflow(template, variables, name, env_vars):
+    t = load_template(template)
+    vars_dic = extract_variables(variables)
+    tuttle_env = get_tuttle_env(env_vars)
+    render_extension(name, t, tuttle_env, vars_dic)
 
 
 def main():
@@ -94,10 +99,12 @@ def main():
                         help='Name of the extended workflow')
     params = parser.parse_args()
 
-    t = load_template(params.template)
-    vars_dic = extract_variables(params.variables)
-    tuttle_env = get_tuttle_env()
-    render_extension(params.name, t, tuttle_env, vars_dic)
+    try:
+        extend_workflow(params.template, params.variables, params.name, environ)
+    except ExtendError as e:
+        print e.message
+        exit(1)
+
 
 if __name__ == '__main__':
     sys.exit(main())
