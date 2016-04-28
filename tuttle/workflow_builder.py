@@ -48,9 +48,19 @@ class WorkflowBuilder():
         url_scheme = url[:separator_pos]
         return url_scheme
 
+    def url_is_empty(self, url):
+        """
+        :param url:
+        :return: True if the url consist only in the scheme without further information
+        """
+        separator_pos = url.find('://')
+        return separator_pos == (len(url) - len('://'))
+
     def build_resource(self, url):
         scheme = self.extract_scheme(url)
         if scheme is False or scheme not in self._resources_definition:
+            return None
+        if self.url_is_empty(url):
             return None
         ResDefClass = self._resources_definition[scheme]
         return ResDefClass(url)

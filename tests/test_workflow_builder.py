@@ -32,6 +32,13 @@ class TestProjectBuilder():
         resource = wb.build_resource(url)
         assert resource is None
 
+    def test_cannot_build_ressource_with_only_scheme(self):
+        """Building a resource with only the protocol should return None"""
+        wb = WorkflowBuilder()
+        url = "file://"
+        resource = wb.build_resource(url)
+        assert resource is None
+
     def test_build_ressource_with_mallformed_uri(self):
         """Building a resource with a malformed uri should return None"""
         wb = WorkflowBuilder()
