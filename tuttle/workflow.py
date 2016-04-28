@@ -2,7 +2,8 @@
 from report.html_repport import create_html_report
 from pickle import dump, load
 from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
-    prepare_paths, empty_extension_dir, TuttleEnv, list_extensions
+    prepare_paths, empty_extension_dir, TuttleEnv, list_extensions, print_preprocesses_header, print_preprocess_header, \
+    print_preprocesses_footer
 
 
 NO_LONGER_CREATED = "Resource no longer created by the newer process"
@@ -139,15 +140,18 @@ class Workflow:
         empty_extension_dir()
         if not self.has_preprocesses():
             return
+        print_preprocesses_header()
         with TuttleEnv():
             for preprocess in self.iter_preprocesses():
-                print_header(preprocess)
+                print_preprocess_header(preprocess)
                 try:
                     reserved_path, log_stdout, log_stderr = prepare_paths(preprocess)
                     preprocess.run(reserved_path, log_stdout, log_stderr)
                 finally:
                     self.create_reports()
                     print_logs(preprocess)
+        print_preprocesses_footer()
+
 
     def run(self):
         """ Runs a workflow by running every process in the right order

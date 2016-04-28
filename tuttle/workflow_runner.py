@@ -57,6 +57,24 @@ def print_header(process):
     print "=" * 60
 
 
+def print_preprocess_header(process):
+    print "-" * 60
+    print "Preprocess : {}".format(process.id)
+    print "-" * 60
+
+
+def print_preprocesses_header():
+    print "=" * 60
+    print "Running preprocesses for this workflow"
+    print "=" * 60
+
+
+def print_preprocesses_footer():
+    print "=" * 60
+    print "End of preprocesses... Running the workflow"
+    print "=" * 60
+
+
 def print_log_if_exists(log_file, header):
     if not isfile(log_file):
         return
