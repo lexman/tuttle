@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-
+from os import getcwd
 
 from jinja2.environment import Environment
 from jinja2.exceptions import UndefinedError
@@ -52,8 +52,9 @@ def extract_variables(variables):
 
 def load_template(template):
     try:
-        jinja_env = Environment(loader=FileSystemLoader("."), undefined=StrictUndefined)
-        t = jinja_env.get_template(template)
+        jinja_env = Environment(undefined=StrictUndefined)
+        with open(template, 'rb') as ftpl:
+            t = jinja_env.from_string(ftpl.read().decode('utf8'))
     except IOError:
         msg = 'Can\'t find template file "{}"'.format(template)
         raise ExtendError(msg)

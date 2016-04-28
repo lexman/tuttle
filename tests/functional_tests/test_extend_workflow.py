@@ -2,11 +2,12 @@
 from subprocess import Popen, PIPE, check_output, CalledProcessError
 from os.path import isfile, dirname, abspath, join
 
-from os import path, environ, getcwd
+from os import path, environ, getcwd, mkdir
 from tests.functional_tests import isolate, run_tuttle_file
 from shlex import split
 from pipes import quote
-from tuttle.extend_workflow import extract_variables
+from tuttle.extend_workflow import extract_variables, load_template
+from tuttle.utils import CurrentDir
 from tuttle.workflow_runner import TuttleEnv
 
 
@@ -144,3 +145,11 @@ class TestExtendWorkflow:
         assert rule_pos > -1, extension
         bar_pos = extension.find("**bar**")
         assert bar_pos > -1, extension
+
+    @isolate(['b-produces-x.tuttle'])
+    def test_template_can_be_anywhere(self):
+        """  the template file could be located anywhere including in .. and path should be with local separator """
+        mkdir('test')
+        with CurrentDir('test'):
+            tpl_path = join('..', 'b-produces-x.tuttle')
+            load_template(tpl_path)
