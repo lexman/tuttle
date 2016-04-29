@@ -21,7 +21,7 @@ We can store it on the ``src`` directory of our project. Then we can run tuttle 
     cd src
     tuttle run
 
-You should see me ![me](https://avatars.githubusercontent.com/u/2512784) in your project directory :)
+You should see ![me](https://avatars.githubusercontent.com/u/2512784) in your project directory :)
 
 
 Now that's done,lLet's have a look at the overall structure of the sources our project :
@@ -87,8 +87,8 @@ tuttlefile in order to apply the previous snippet to the first file in our image
     |<<
         tuttle-extend-workflow img.tpl.tuttlefile img=IMG_001.jpg
 
-The last two lines in the main tuttlefile declares a **preprocess**. As the symbol ``|<<`` suggests (it should look
-like a rewind button !), this code will be executed **before** the whole workflow is run.
+The last two lines in the main tuttlefile declares a *preprocess*. As the symbol ``|<<`` suggests (it should look
+like a rewind button !), this code will be executed *before* the whole workflow is run.
 
 Therefore you can add some extra processes to the main workflow (with the tuttle-extend-workflow command), which
 injects the ``img`` variable into the template we wrote.
@@ -107,7 +107,7 @@ Let's ``tuttle run`` this workflow. We can see the dependency graph show the new
 [IMG]
 
 Note that all the preprocesses are run once and for all before trying to run the workflow. This means tuttle can
-still make some **static** analysis on the workflow to detect missing resources, wrong definitions or circular
+still make some *static* analysis on the workflow to detect missing resources, wrong definitions or circular
 references, but only once the processes are known.
 
 For example let's ``tuttle run`` again :
@@ -240,7 +240,7 @@ for every photo in the ``images/`` directory. In order to do that, we'll run cod
     |<<
         tuttle-extend-workflow img.tpl.tuttlefile img=IMG_001.jpg
 
-The previous section, added to the main tuttlefile declares a **preprocess**. As the ``|<<`` suggests, it is run before any thing. 
+The previous section, added to the main tuttlefile declares a *preprocess*. As the ``|<<`` suggests, it is run before any thing.
 Therefore you can add some processes to the main workflow (with the tuttle-extend-workflow command), which injects the ``img`` variable
 into the template we wrote.
 
