@@ -28,11 +28,9 @@ def dot_id(url):
     import urllib
     return urllib.quote(url)
 
-
-def dot_id(url):
-    import urllib
-    return urllib.quote(url)
-
+def process_node_id(id):
+    p_node = '"p_{}"'.format(id)
+    return p_node
 
 def dot(workflow):
     # TODO :
@@ -41,7 +39,7 @@ def dot(workflow):
     result = DOT_HEADER
     for process in workflow.iter_processes():
         color = color_from_process(process)
-        p_node = "p_{}".format(process.id)
+        p_node = process_node_id(process.id)
         if color != "none":
             fontcolor = color
         else:
