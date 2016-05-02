@@ -1,3 +1,15 @@
+New on Version 0.4
+===
+
+## Parametric processes
+... To describe a workflow according to a configuration file or a the content of a directory :
+  * 'preprocesses' are run before the workflow is executed
+  * you can add processes to a workflow with the new command ``tuttle-extend-workflow`` from a preprocesses
+  * a new tutorial explains how it works in detail
+
+## A few bug fixes
+  * ...
+  
 New on Version 0.3
 ===
 
