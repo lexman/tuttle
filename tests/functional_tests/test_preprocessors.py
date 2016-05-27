@@ -113,7 +113,6 @@ class TestPreprocessors:
         pos_C = report.find("file%3A//C")
         assert pos_C > -1, report[pos_A:]
 
-
     @isolate(['A'])
     def test_pre_process_fails(self):
         """ A preprocess should be able to call the tuttle-extend-workflow command"""
@@ -130,3 +129,25 @@ class TestPreprocessors:
         assert rcode != 0, "{} -> {}\n{}".format(cmd_extend, rcode, output)
         pos = output.find("Should not be executed")
         assert pos == -1, output
+
+    @isolate(['A', 'b-produces-x.tuttle'])
+    def test_extend_workflow_from_python(self):
+        """ One should be able to extend the workflow from python a preprocess"""
+        cmd_extend = self.get_cmd_extend_workflow()
+        project = """file://B <- file://A
+    echo A produces B > B
+
+|<< ! python
+    from tuttle import extend_workflow
+    print("Running a python preprocess")
+    extend_workflow('b-produces-x.tuttle', x="C")
+""".format(cmd_extend=cmd_extend)
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        report_path = join('.tuttle', 'report.html')
+        assert isfile(report_path)
+        report = open(report_path).read()
+        pos_A = report.find("file%3A//A")
+        assert pos_A > -1, output
+        pos_C = report.find("file%3A//C")
+        assert pos_C > -1, report[pos_A:]

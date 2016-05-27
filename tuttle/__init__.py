@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 
 from tuttle import workflow
+from tuttle.extend_workflow import extend_workflow
 from tuttle.invalidation import InvalidResourceCollector
 from error import TuttleError
 from project_parser import ProjectParser
@@ -9,9 +10,13 @@ from tuttle.workflow_builder import WorkflowBuilder
 from workflow import Workflow
 
 
+extend_workflow = extend_workflow
+
+
 NOT_PRODUCED_BY_TUTTLE = "The existing resource has not been produced by tuttle"
 USER_REQUEST = "User request"
 PROCESS_HAS_FAILED = "The resource has been produced by a failing process"
+
 
 def load_project(tuttlefile):
     pp = ProjectParser()

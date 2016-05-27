@@ -14,7 +14,7 @@ sys.path.insert(0,tuttle_module)
 
 from argparse import ArgumentParser
 from tuttle.version import version
-from tuttle.extend_workflow import extend_workflow, ExtendError
+from tuttle.extend_workflow import extend_workflow, ExtendError, extract_variables
 from os import environ
 
 
@@ -33,7 +33,8 @@ def main():
     params = parser.parse_args()
 
     try:
-        extend_workflow(params.template, params.variables, params.name, environ)
+        vars_dic = extract_variables(params.variables)
+        extend_workflow(params.template, name=params.name, **vars_dic)
     except ExtendError as e:
         print e.message
         exit(1)

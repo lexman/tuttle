@@ -70,7 +70,7 @@ class TestExtendWorkflow:
     def test_bad_template_file(self):
         """ If the template file does not exist, tuttle-extend-workflow is wrong it should fail"""
         try:
-            output = self.run_extend_workflow('unknown_template x"C"')
+            output = self.run_extend_workflow('unknown_template x="C"')
             assert False, "tuttle-extend-workflow should have exited in error"
         except CalledProcessError as e:
             assert e.returncode == 1

@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-from os import getcwd
 
 from jinja2.environment import Environment
 from jinja2.exceptions import UndefinedError
-from jinja2.loaders import FileSystemLoader
 from jinja2.runtime import StrictUndefined
 from os.path import abspath, exists, join
+from os import environ
 from tuttle.utils import CurrentDir
 
 
@@ -65,7 +64,7 @@ def get_tuttle_env(env_vars):
     try:
         env = env_vars['TUTTLE_ENV']
     except KeyError:
-        msg = 'Can\'t find workspace... Maybe your are not running tuttle-extend-workflow from a preprocessor in a ' \
+        msg = 'Can\'t find workspace... Maybe your are not extending a workflow from a preprocessor in a ' \
               'tuttle project'
         raise ExtendError(msg)
     return env
@@ -82,8 +81,7 @@ def render_extension(name, t, tuttle_env, vars_dic):
             ext_file.write(content.encode('utf8)'))
 
 
-def extend_workflow(template, variables, name, env_vars):
+def extend_workflow(template, name='extension', env_vars=environ, **variables):
     t = load_template(template)
-    vars_dic = extract_variables(variables)
     tuttle_env = get_tuttle_env(env_vars)
-    render_extension(name, t, tuttle_env, vars_dic)
+    render_extension(name, t, tuttle_env, variables)
