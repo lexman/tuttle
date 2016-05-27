@@ -407,7 +407,24 @@ several preprocess) :
 The brackets in ``images[]`` specify that the ``image`` variable is an array, and that value will
 be on the command line separated by spaces. That's how we set the list of images to iterate in the template file.
 
+# Extend from python
+
+In case your inputs are as simple as all the files from a directory, or if you want a portable project executable either under windows or Linux, you can switch 
+you preprocess to python :
+
+    |<< !python
+        from tuttle import extend_workflow
+        from os import listdir
+        from os.path import join
+        images = listdir(join('..', 'images')
+        extend_workflow('index.tpl.tuttlefile', images=images)
+
+In python you can use the ``extend_workflow`` function to add some extra processes.
+        
+
 # Conclusion
 You can use these parametrized sub-workflows when you don't know the list of input resources at the time you write the tuttlefile. It can be a list of pictures inside a directory 
 you need to put online, a configuration file that states a list of urls to archive, or the graphic assets of an application that you have to resize for every phone's resolutions.
+Usualy you'll add extra processes from a shell (or a batch, under windows) preprocess, but if you want more control you can use any language implemented in tuttle, 
+if it offers an API to do it. At the moment, this means Python...
 
