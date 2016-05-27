@@ -16,11 +16,11 @@ class ExtendError(Exception):
 
 def get_a_name(prefix):
     # TODO : not scalable if called a lot of times
+    name = abspath(join('extensions', prefix))
     i = 1
-    name = abspath(join('extensions', "{}{}".format(prefix, i)))
     while exists(name):
-        name = abspath(join('extensions', "{}{}".format(prefix, i)))
         i += 1
+        name = abspath(join('extensions', "{}{}".format(prefix, i)))
     return name
 
 

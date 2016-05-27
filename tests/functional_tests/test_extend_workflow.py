@@ -42,14 +42,14 @@ class TestExtendWorkflow:
     def test_create_extension_file(self):
         """ Calling tuttle-extend-workflow command creates an extension file in the right directory"""
         output = self.run_extend_workflow('b-produces-x.tuttle x="C"')
-        expected_file = join('.tuttle', 'extensions', 'extension1')
+        expected_file = join('.tuttle', 'extensions', 'extension')
         assert isfile(expected_file), output
 
     @isolate(['A', 'b-produces-x.tuttle'])
     def test_create_extension_from_template(self):
         """ A call the tuttle-extend-workflow command creates an extension file and injects variables """
         output = self.run_extend_workflow('b-produces-x.tuttle x="C"')
-        expected_file = join('.tuttle', 'extensions', 'extension1')
+        expected_file = join('.tuttle', 'extensions', 'extension')
         assert isfile(expected_file), output
         extension = open(expected_file).read()
         rule_pos = extension.find("file://C <- file://B")
@@ -86,7 +86,7 @@ class TestExtendWorkflow:
             output = check_output(split(cmd))
             cmd = self.get_cmd_extend('b-produces-x.tuttle x="D"')
             output = check_output(split(cmd))
-        expected_file = join('.tuttle', 'extensions', 'extension1')
+        expected_file = join('.tuttle', 'extensions', 'extension')
         assert isfile(expected_file), output
         expected_file = join('.tuttle', 'extensions', 'extension2')
         assert isfile(expected_file), output
@@ -138,7 +138,7 @@ class TestExtendWorkflow:
            output = self.run_extend_workflow('everything-produces-result.tuttle inputs[]=A B C foo=bar')
         except CalledProcessError as e:
             print(e.output)
-        expected_file = join('.tuttle', 'extensions', 'extension1')
+        expected_file = join('.tuttle', 'extensions', 'extension')
         assert isfile(expected_file), output
         extension = open(expected_file).read()
         rule_pos = extension.find("file://RESULT <- file://A, file://B")
@@ -153,3 +153,10 @@ class TestExtendWorkflow:
         with CurrentDir('test'):
             tpl_path = join('..', 'b-produces-x.tuttle')
             load_template(tpl_path)
+
+    @isolate(['A', 'b-produces-x.tuttle'])
+    def test_extension_name(self):
+        """ The name of the extension can be chosen by the user"""
+        output = self.run_extend_workflow('-n my_extension b-produces-x.tuttle x="C"')
+        expected_file = join('.tuttle', 'extensions', 'my_extension')
+        assert isfile(expected_file), output
