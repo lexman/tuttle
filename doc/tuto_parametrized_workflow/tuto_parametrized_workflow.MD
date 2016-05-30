@@ -416,10 +416,10 @@ you preprocess to python :
         from tuttle import extend_workflow
         from os import listdir
         from os.path import join
-        images = listdir(join('..', 'images')
+        images = listdir(join('..', 'images'))
         extend_workflow('index.tpl.tuttlefile', images=images)
 
-In python you can use the ``extend_workflow`` function to add some extra processes.
+In python you can use the ``extend_workflow`` function to add extra processes.
         
 
 # Conclusion
