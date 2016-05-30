@@ -1,5 +1,5 @@
 # News
-Dec 1st : version 0.3 is [out](https://github.com/lexman/tuttle/releases/tag/v0.3-rc1) !
+May 3rd : version 0.4-rc0 is [out](https://github.com/lexman/tuttle/releases/tag/v0.4-rc0), time to test !
 
 # Tuttle : Make for data
 
@@ -87,7 +87,7 @@ Tuttle is a python project you can download and install :
 
 Contributions are very welcome through pull request. You can contribute to :
 * documentation : formal doc, tutorials
-* code : improve tuttle kernel, add new extensions : spreadshits, mongodb, hdfs, etc.
+* code : improve tuttle kernel, add new extensions : spreadshits, mongodb, hdfs, etc. Code have to come with tests and documentation
 * tests : use Tuttle for your projects and report bugs
 * syntax : help define the perfect way to describe workflows
 * design : please help improve the look of the [report](http://lexman.github.io/tuttle/docs/sales_assets/tuttle_report.html) to ease readability !
