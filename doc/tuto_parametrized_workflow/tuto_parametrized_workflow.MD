@@ -63,7 +63,7 @@ size photo to be displayed by the index, and the photo to download, as we can se
 
 Before any else, we need to add those lines to the `tuttlefile` to create the necessary directories to welcome this structure :
 
-    file://../web, file://../web/thumbnails <- 
+    file://../web file://../web/thumbnails <-
         mkdir ../web
         mkdir ../web/thumbnails    
         
@@ -75,11 +75,11 @@ download image. My small avatar should appear on the bottom left corner of the i
 create a ``src/img.tpl.tuttlefile`` file that will have all the tuttle code for one image :
 
 
-    file://../web/{{img}} <- file://../images/{{img}}, file://../web
+    file://../web/{{img}} <- file://../images/{{img}} file://../web
     # creates the directory for the web page presenting the picture
         mkdir ../web/{{img}}
 
-    file://../web/{{img}}/{{img}} <- file://../images/{{img}}, file://../web/{{img}}, file://avatar200x200.jpg
+    file://../web/{{img}}/{{img}} <- file://../images/{{img}} file://../web/{{img}} file://avatar200x200.jpg
     # add the avatar to the bottom left corner of the image and stores it to the web site
         echo "Adding the avatar on picture {{img}}"
         composite -gravity SouthWest avatar200x200.jpg ../images/{{img}} ../web/{{img}}/{{img}}
@@ -99,7 +99,7 @@ tuttlefile in order to apply the previous snippet to the first file in our image
     # Use imagemagick to resize the avatar
         convert avatar.jpg -resize 200x200 avatar200x200.jpg
 
-    file://../web, file://../web/thumbnails <- 
+    file://../web file://../web/thumbnails <-
         mkdir ../web
         mkdir ../web/thumbnails    
         
@@ -230,24 +230,24 @@ that we want it copied in every image's directory. The new ``src/img.tpl.tuttlef
 small image, the download link and the html file now looks like this :
 
 
-    file://../web/{{img}} <- file://../images/{{img}}, file://../web
+    file://../web/{{img}} <- file://../images/{{img}} file://../web
     # creates the directory for the web page presenting the picture
         mkdir ../web/{{img}}
 
-    file://../web/{{img}}/img_download.jpg <- file://../images/{{img}}, file://../web/{{img}}, file://avatar200x200.jpg
+    file://../web/{{img}}/img_download.jpg <- file://../images/{{img}} file://../web/{{img}} file://avatar200x200.jpg
     # add the avatar to the bottom left corner of the image and stores it to the web site
         echo "Adding the avatar on picture {{img}}"
         composite -gravity SouthWest avatar200x200.jpg ../images/{{img}} ../web/{{img}}/img_download.jpg
 
-    file://../web/{{img}}/index.html <- file://img_index.html, file://../web/{{img}}
+    file://../web/{{img}}/index.html <- file://img_index.html file://../web/{{img}}
     # creates the html index that will display the picture
         cp img_index.html ../web/{{img}}/index.html
 
-    file://../web/{{img}}/img_800x600.jpg <- file://../images/{{img}}, file://../web/{{img}}
+    file://../web/{{img}}/img_800x600.jpg <- file://../images/{{img}} file://../web/{{img}}
     # create a a 800X600 image in the center of the html file
         convert ../images/{{img}} -resize 800x600 ../web/{{img}}/img_800x600.jpg
 
-    file://../web/thumbnails/{{img}} <- file://../images/{{img}}, file://../web/thumbnails
+    file://../web/thumbnails/{{img}} <- file://../images/{{img}} file://../web/thumbnails
     # create a a 200x150 thumbnail with border with imagemagick
         convert ../images/{{img}} -resize 200x150 -bordercolor white -border 20x20 ../web/thumbnails/{{img}}
 

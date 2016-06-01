@@ -208,7 +208,7 @@ data is really used for the first time. And it's oten our final users who find t
 We'll have to fix python code by making it robust to case. In the new code, all strings are converted to lower case
 with the `lower()` function before comparisons :
 
-    file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
+    file://characters_count.dat <- file://Les_trois_mousquetaires.txt ! python
         names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
         with open('characters_count.dat', 'w') as f_out:
             with open('Les_trois_mousquetaires.txt') as f_in:
@@ -270,7 +270,7 @@ colleague *Michel* will be in charge of that task.
 The first thing he does is checking out the code from the repository to his own computer, then he changes the list of
 people to count on line 2 :
 
-    file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
+    file://characters_count.dat <- file://Les_trois_mousquetaires.txt ! python
         names = ["Athos", "Porthos", "Aramis", "d'Artagnan", "Richelieu", "Rochefort"]
         with open('characters_count.dat', 'w') as f_out:
             with open('Les_trois_mousquetaires.txt') as f_in:
@@ -457,7 +457,7 @@ and he would only have to run
 But how can we benefit from reprocessing when the code change, with this language that have not been implemented in
 `tuttle` ? We only have to add the code as a dependency :
 
-    file://characters_count.png <- file://characters_count.dat, file://myplot.gnuplot
+    file://characters_count.png <- file://characters_count.dat file://myplot.gnuplot
         gnuplot myplot.gnuplot
 
 
@@ -541,7 +541,7 @@ published the zip updates it while we are working on the gnuplot part ? The whol
 This could be a problem if you have a long workflow... Imagine that our python process would begin
 by a heavy processing phase, like this `sleep(10)` instruction :
 
-    file://characters_count.dat <- file://Les_trois_mousquetaires.txt !# python
+    file://characters_count.dat <- file://Les_trois_mousquetaires.txt ! python
         import time
         time.sleep(10)
         names = ["Athos", "Porthos", "Aramis", "d'Artagnan"]
