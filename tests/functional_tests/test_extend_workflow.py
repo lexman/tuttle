@@ -141,7 +141,7 @@ class TestExtendWorkflow:
         expected_file = join('.tuttle', 'extensions', 'extension')
         assert isfile(expected_file), output
         extension = open(expected_file).read()
-        rule_pos = extension.find("file://RESULT <- file://A, file://B")
+        rule_pos = extension.find("file://RESULT <- file://A file://B")
         assert rule_pos > -1, extension
         bar_pos = extension.find("**bar**")
         assert bar_pos > -1, extension

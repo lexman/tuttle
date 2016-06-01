@@ -125,7 +125,7 @@ file://C <- file://B
         rcode, output = run_tuttle_file(project)
         assert rcode == 0
 
-        bad_project = """file://B <- file://A,
+        bad_project = """file://B <- file://A bad
             echo A produces B
             echo A produces B > B
             """

@@ -88,6 +88,11 @@ class ProjectParser():
         The text describing a Workflow is called Projet
         The text describing a Process (dependencies and code)is called a section"""
 
+    ARROW = '<-'
+    REW = '|<<'
+    OLD_SEP = ',' # Old resources separator
+    SPACE_SEP = ' ' # separator for resources : space
+
     def __init__(self):
         self.wb = WorkflowBuilder()
         self.resources = {}
@@ -151,7 +156,7 @@ class ProjectParser():
         return len(line_stripped) == 0
         
     def parse_dependencies_and_processor(self):
-        arrow_pos = self._line.find('<-')
+        arrow_pos = self._line.find(self.ARROW)
         if arrow_pos == -1:
             raise ParseError("Definition of dependency expected. Or maybe you just got confused with indentation :)",
                                self._filename, self._num_line)
@@ -164,24 +169,26 @@ class ProjectParser():
         process = self.wb.build_process(processor_name, self._filename, self._num_line)
         if not process:
             raise InvalidProcessorError("Invalid processor : '{}' ".format(processor_name), self._filename, self._num_line)
-        input_urls = self._line[arrow_pos + 2:mark_pos].split(',')
-        if len(input_urls) > 1 or input_urls[0].strip() != "":
-            for input_url in input_urls:
-                in_res = self.wb.get_or_build_resource(input_url.strip(), self.resources)
-                if in_res is None:
-                    raise InvalidResourceError("Invalid resource url : '{}' in inputs".format(input_url.strip()), self._filename, self._num_line)
-                process.add_input(in_res)
-        outputs_urls = self._line[:arrow_pos].split(',')
-        if len(outputs_urls) > 1 or outputs_urls[0].strip() != "":
-            for output_url in outputs_urls:
-                out_res = self.wb.get_or_build_resource(output_url.strip(), self.resources)
-                if out_res is None:
-                    raise InvalidResourceError("Invalid resource url : '{}' in outputs".format(output_url.strip()), self._filename, self._num_line)
-                if out_res.creator_process is not None:
-                    raise WorkflowError("{} has been already defined in the workflow (by processor : {})".format(output_url,
-                                        process._processor.name), self._filename, self._num_line)
-                out_res.set_creator_process(process)
-                process.add_output(out_res)
+        # Main separator is space, but comas are still accepted
+        inputs = self._line[arrow_pos + 2:mark_pos].replace(self.OLD_SEP, self.SPACE_SEP)
+        input_urls = inputs.split()
+        for input_url in input_urls:
+            in_res = self.wb.get_or_build_resource(input_url.strip(), self.resources)
+            if in_res is None:
+                raise InvalidResourceError("Invalid resource url : '{}' in inputs".format(input_url.strip()), self._filename, self._num_line)
+            process.add_input(in_res)
+        # Main separator is space, but comas are still accepted
+        outputs = self._line[:arrow_pos].replace(self.OLD_SEP, self.SPACE_SEP)
+        outputs_urls = outputs.split()
+        for output_url in outputs_urls:
+            out_res = self.wb.get_or_build_resource(output_url.strip(), self.resources)
+            if out_res is None:
+                raise InvalidResourceError("Invalid resource url : '{}' in outputs".format(output_url.strip()), self._filename, self._num_line)
+            if out_res.creator_process is not None:
+                raise WorkflowError("{} has been already defined in the workflow (by processor : {})".format(output_url,
+                                    process._processor.name), self._filename, self._num_line)
+            out_res.set_creator_process(process)
+            process.add_output(out_res)
         return process
 
     def is_first_process_line(self):
@@ -268,7 +275,7 @@ class ProjectParser():
     def is_preprocess(self, line):
         """ Check whether the current line is starting a preprocess section
         """
-        return line.startswith("|<<")
+        return line.startswith(self.REW)
 
     def parse_preprocess_declaration(self):
         mark_pos = self._line.find('!')

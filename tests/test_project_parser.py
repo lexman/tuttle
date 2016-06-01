@@ -592,3 +592,20 @@ file:///resource2 <- file:///resource3
         process = pp.parse_dependencies_and_processor()
         assert process._processor.name == "shell"
 
+    def test_inputs_and_outputs_separated_by_space(self):
+        """Inputs and outputs can be separated only by a spaces"""
+        pp = ProjectParser()
+        project = """file:///result1 file:///result2 file:///result3 <- file:///source1 file:///source2
+        Some code
+        """
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_section()
+        assert len(process._inputs) == 2
+        assert process._inputs[0].url == 'file:///source1'
+        assert process._inputs[1].url == 'file:///source2'
+        assert len(process._outputs) == 3
+        assert process._outputs[0].url == 'file:///result1'
+        assert process._outputs[1].url == 'file:///result2'
+        assert process._outputs[2].url == 'file:///result3'
+        assert process._code == "Some code\n"

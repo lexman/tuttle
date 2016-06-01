@@ -159,7 +159,7 @@ file://C <- file://B
     @isolate(['A', 'B'])
     def test_should_display_invalid_resource_only_once(self):
         """ If a resource has several reasons to be invalidated, it should be displayed only once"""
-        project = """file://C <- file://A, file://B
+        project = """file://C <- file://A file://B
     echo A and B produces C
     echo A and B produces C > C
 """
@@ -169,7 +169,7 @@ file://C <- file://B
             f.write('A has changed')
         with open('B', 'w') as f:
             f.write('B has changed')
-        project = """file://C <- file://A, file://B
+        project = """file://C <- file://A file://B
     echo A and B produces C differently
     echo A and B produces C differently > C
 """

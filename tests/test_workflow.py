@@ -13,7 +13,7 @@ class TestWorkflow():
     def test_missing_inputs(self):
         """Test the list of missing inputs"""
         pp = ProjectParser()
-        project = """file://result <- file://file1, file://A"""
+        project = """file://result <- file://file1 file://A"""
         pp.set_project(project)
         workflow = pp.parse_project()
         missing = workflow.missing_inputs()
