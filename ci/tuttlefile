@@ -152,4 +152,4 @@ file://ambiguities.csv <- sqlite://world-cities.sqlite/country, sqlite://world-c
 
 |<< ! python
     from tuttle import extend_workflow
-    extend-workflow('touch-x.tuttle', x='from-python')
+    extend_workflow('touch-x.tuttle', x='from-python')
