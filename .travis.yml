@@ -38,7 +38,10 @@ script:
 - cd ..
 # building docker image
 - cd docker
-- docker build -t tuttle/tuttle .
+- docker login -u "tuttle" -p "$DOCKER_PASS"
+- docker build -t tuttle/tuttle:master .
+- docker push tuttle/tuttle
+- docker logout
 - cd ..
 
 deploy:
@@ -51,3 +54,7 @@ deploy:
   on:
     repo: lexman/tuttle
     tags: true
+
+env:
+  global:
+    secure: BmtqLxb3sUrY9nMCBe/DqE/yMPXuT2NFpvK9aPkJmRHl+PWJxwQsCbHzFm0xLDkq1vdOjrBnT9M57lUownDH4cddnG2VQJxYTglYas7JRKKTNhnforG5yzge1M7XggIFgtUk0cUcKCYq4l7iD1tRUZlAu/5zw0cNQ8aqsdl/pxM=
