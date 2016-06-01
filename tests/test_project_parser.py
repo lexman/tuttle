@@ -571,3 +571,24 @@ file:///resource2 <- file:///resource3
         pp.set_project(project)
         workflow = pp.parse_project()
         assert len(workflow._preprocesses) == 1
+
+    def test_preprocess_statement_not_separated(self):
+        """ Preprocessors should be available from the workflow... Even without separator
+        """
+        pp = ProjectParser()
+        project = """|<< !python
+        Some code
+        """
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow._preprocesses) == 1
+
+    def test_parse_dependencies_and_processor_not_separated(self):
+        """ Ensure we can set a processor even without a space after !"""
+        pp = ProjectParser()
+        project = "file:///result1 <- file:///source1 !shell"
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_dependencies_and_processor()
+        assert process._processor.name == "shell"
+

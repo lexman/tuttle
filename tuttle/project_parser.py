@@ -160,7 +160,7 @@ class ProjectParser():
             mark_pos = len(self._line)
             processor_name = "default"
         else:
-            processor_name = self._line[mark_pos + 2:].strip()
+            processor_name = self._line[mark_pos + 1:].strip()
         process = self.wb.build_process(processor_name, self._filename, self._num_line)
         if not process:
             raise InvalidProcessorError("Invalid processor : '{}' ".format(processor_name), self._filename, self._num_line)
@@ -275,7 +275,7 @@ class ProjectParser():
         if mark_pos == -1:
             processor_name = "default"
         else:
-            processor_name = self._line[mark_pos + 2:].strip()
+            processor_name = self._line[mark_pos + 1:].strip()
         process = self.wb.build_process(processor_name, self._filename, self._num_line)
         if not process:
             raise InvalidProcessorError("Invalid processor : '{}' ".format(processor_name), self._filename, self._num_line)
