@@ -1,3 +1,4 @@
+
 addons:
   postgresql: "9.1"
 
@@ -17,17 +18,24 @@ install:
 - psql -c 'CREATE DATABASE tuttle_test_db;' -U postgres
 
 script:
+# Running tests
 - pip install .
 - nosetests
+# Making .deb package
 - dpkg-buildpackage -us -uc
 - mkdir -p dist/debian
 - mv -v ../tuttle_* dist/debian/
 - sudo dpkg -i dist/debian/tuttle_0.4-1_amd64.deb
+# Be sure the .deb package works
 - cd ci
 - tuttle run
 - cp world-cities.csv workflow_execution_success
 - cp from-python workflow_execution_success2
 - cp from-shell-or-batch workflow_execution_success3
+- cd ..
+# building docker image
+- cd docker
+- docker build -t tuttle/tuttle .
 - cd ..
 
 deploy:
