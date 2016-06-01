@@ -54,7 +54,7 @@ test_script:
   - cmd: cd C:\projects\tuttle\ci
   - tuttle run
   - cmd: copy world-cities.csv workflow_execution_success.html
-  - cmd: copy from-python  workflow_execution_success2.html
+  - cmd: copy from-python workflow_execution_success2.html
   - cmd: copy from-shell-or-batch workflow_execution_success3.html
 
 artifacts:
