@@ -146,3 +146,10 @@ file://ambiguities.csv <- sqlite://world-cities.sqlite/country, sqlite://world-c
         for name, country, subcountry, nb in c.execute(sql):
             row = (name.encode('utf8'), country.encode('utf8'), subcountry.encode('utf8'), nb)
             writer.writerow(row)
+
+|<<
+    tuttle-extend-workflow touch-x.tuttle x=from-shell-or-batch
+
+|<< ! python
+    from tuttle import extend_workflow
+    extend-workflow('touch-x.tuttle', x='from-python')

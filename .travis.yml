@@ -26,6 +26,8 @@ script:
 - cd ci
 - tuttle run
 - cp world-cities.csv workflow_execution_success
+- cp from-python workflow_execution_success2
+- cp from-shell-or-batch workflow_execution_success3
 - cd ..
 
 deploy:
