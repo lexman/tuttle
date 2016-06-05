@@ -1,12 +1,15 @@
 tuttle (0.4-1) UNRELEASED; urgency=medium
 
   * Preprocesses are run before the workflow is executed
-  * Processes can be added to a workflow with the new command ``tuttle-extend-workflow`` from a preprocesses
+  * Parametric processes can be added to a workflow with the new command ``tuttle-extend-workflow`` from a preprocesses
   * A new tutorial explains how to declare parametric processes in detail
-  * Bugfixes...
+  * Coma is DEPRECATED in favor of space to separate resources in dependency definitions
+  * Docker image
+  * Bugfixes
 
- -- Lexman <tuttle@lexman.org>  Thu, 03 May 2016 18:00:00 -0500
+ -- Lexman <tuttle@lexman.org>  Thu, 01 Jun 2016 17:00:00 -0500
 
+ 
 tuttle (0.3-1) UNRELEASED; urgency=medium
 
   * New "include" statement in order to split a tuttle project in several files

@@ -7,8 +7,16 @@ New on Version 0.4
   * you can add processes to a workflow with the new command ``tuttle-extend-workflow`` from a preprocesses
   * a new tutorial explains how it works in detail
 
-## A few bug fixes
-  * ...
+## Other
+  * coma is DEPRECATED to separate resources in dependency definitions. You should now use space instead
+  * [docker image](https://hub.docker.com/r/tuttle/) to use tuttle
+
+## Bug fixes
+  * escape process ids in the report
+  * ``file://`` is not a valid resource
+  * ``!shell`` does not stand for processor ``hell``
+
+
   
 New on Version 0.3
 ===
