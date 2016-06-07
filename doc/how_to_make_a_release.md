@@ -4,6 +4,8 @@
 1. Make sure the changelog (CHANGELOG.MD) is up to date
 1. Make sure the ```Build version format``` in [Appveyor](https://ci.appveyor.com/project/lexman/tuttle/settings) is up to date with the intended release version, eg ```0.3-{build}```
 1. Change the version number in file ```tuttle/VERSION```, eg ```0.3-rc0```
+1. Change the version number of docker image in file ``.travis.yml``, eg ``- docker tag tuttle/tuttle:master tuttle/tuttle:v0.4``
+1. Add ``- docker tag tuttle/tuttle:master tuttle/tuttle:latest`` to the ``.travis.yml`` file
 1. Update the debian version of the package :
   * Add the new version and the changelog in the file debian/changelog
   * Update travis.yml to follow the new version number in the package name. Package name is in
@@ -22,3 +24,5 @@
 1. Make new RCs until ready... And eventually make a final version.
 1. Make the version in ```tuttle/VERSION``` ready for next release, eg ```0.4-pre```
 1. Make ```Build version format``` in (Appveyor)[https://ci.appveyor.com/project/lexman/tuttle/settings] ready for next release, eg ```0.4-{build}```
+1. Remove ``- docker tag tuttle/tuttle:master tuttle/tuttle:latest`` to the ``.travis.yml`` file
+1. Change the version number of docker image in file ``.travis.yml``, eg ``- docker tag tuttle/tuttle:master tuttle/tuttle:v0.4-pre``
