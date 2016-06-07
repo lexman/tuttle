@@ -71,5 +71,6 @@ deploy:
   artifact: dist\*
   draft: true
   prerelease: true
+  force_update: true
   on:
     appveyor_repo_tag: true        # deploy on tag push only
