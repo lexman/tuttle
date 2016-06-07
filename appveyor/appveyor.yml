@@ -70,7 +70,7 @@ deploy:
     secure: 7aNfc1VhEopoawEBNhOwZHswi5BZnK/XUNWeSxaGMfutQRETWAFK1D0+5aWC2oUk
   artifact: dist\tuttle-*.msi
   draft: true
-  prerelease: false
+  prerelease: true
   on:
     branch: master                 # release from master branch only
     appveyor_repo_tag: true        # deploy on tag push only
