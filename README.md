@@ -1,5 +1,5 @@
 # News
-May 3rd : version 0.4-rc0 is [out](https://github.com/lexman/tuttle/releases/tag/v0.4-rc0), time to test !
+June 7th : version 0.4 is [out](https://github.com/lexman/tuttle/releases/tag/v0.4) !
 
 # Tuttle : Make for data
 
