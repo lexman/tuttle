@@ -40,6 +40,8 @@ script:
 - cd docker
 - docker login -u "tuttle" -p "$DOCKER_PASS" -e "$DOCKER_MAIL"
 - docker build -t tuttle/tuttle:master .
+- docker tag tuttle/tuttle:master tuttle/tuttle:latest
+- docker tag tuttle/tuttle:master tuttle/tuttle:v0.4
 - docker push tuttle/tuttle
 - docker logout
 - cd ..
