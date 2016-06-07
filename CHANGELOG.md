@@ -9,7 +9,7 @@ New on Version 0.4
 
 ## Other
   * coma is DEPRECATED to separate resources in dependency definitions. You should now use space instead
-  * [docker image](https://hub.docker.com/r/tuttle/) to use tuttle
+  * [docker images](https://hub.docker.com/r/tuttle/tuttle/) are available to use tuttle
 
 ## Bug fixes
   * escape process ids in the report
