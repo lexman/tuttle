@@ -68,7 +68,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: 7aNfc1VhEopoawEBNhOwZHswi5BZnK/XUNWeSxaGMfutQRETWAFK1D0+5aWC2oUk
-  artifact: dist\*
+  artifact: dist\tuttle-installer.msi
   draft: true
   prerelease: true
   force_update: true
