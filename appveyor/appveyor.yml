@@ -43,6 +43,8 @@ test_script:
   # cleanup
   - python -m pip uninstall tuttle
 
+  # To release tag to github
+  - echo d | xcopy dist\tuttle-*.msi ..
   # ... And check that tuttle works
   # Ensure we know exactly the name of the installer, on every platform (amd64 and x86)
   # http://stackoverflow.com/questions/14704333/using-wildard-with-dos-copy-command-corrupts-destination-file
@@ -68,7 +70,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: 7aNfc1VhEopoawEBNhOwZHswi5BZnK/XUNWeSxaGMfutQRETWAFK1D0+5aWC2oUk
-  artifact: /dist\\tuttle-0.*\.msi/
+  artifact: /.*\.msi/
   draft: true
   prerelease: true
   force_update: true
