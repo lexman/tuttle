@@ -28,7 +28,7 @@ script:
 - dpkg-buildpackage -us -uc
 - mkdir -p dist/debian
 - mv -v ../tuttle_* dist/debian/
-- sudo dpkg -i dist/debian/tuttle_0.4-1_amd64.deb
+- sudo dpkg -i dist/debian/tuttle_0.5-1_amd64.deb
 # Be sure the .deb package works
 - cd ci
 - tuttle run
@@ -40,8 +40,8 @@ script:
 - cd docker
 - docker login -u "tuttle" -p "$DOCKER_PASS" -e "$DOCKER_MAIL"
 - docker build -t tuttle/tuttle:master .
-- docker tag tuttle/tuttle:master tuttle/tuttle:latest
-- docker tag tuttle/tuttle:master tuttle/tuttle:v0.4
+#- docker tag tuttle/tuttle:master tuttle/tuttle:latest
+- docker tag tuttle/tuttle:master tuttle/tuttle:v0.5-pre
 - docker push tuttle/tuttle
 - docker logout
 - cd ..
@@ -51,7 +51,7 @@ deploy:
   provider: releases
   api_key:
     secure: CNw4FQYKEtQGl5rZH+N/p3d0w1PsVEvNEP46hLes4H5t12Vueh3D5zkz9HasTywZV1UVxa67sTLMuo063GJMJWBHs3hUo9QyHkbETz4PWsUEc1ayhlcP+I/IeNKyTXHoEj93hAYT1LDiApSEa5KKsUW1c188Z2L5G9Z2cFvpKfY=
-  file: dist/debian/tuttle_0.4-1_amd64.deb
+  file: dist/debian/tuttle_0.5-1_amd64.deb
   skip_cleanup: true
   on:
     repo: lexman/tuttle
