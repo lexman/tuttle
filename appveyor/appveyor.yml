@@ -64,7 +64,7 @@ artifacts:
 #on_success:
 #  - TODO: upload the content of dist/*.msi to github releases
 deploy:
-  description: 'Release description'
+  description: 'Version $(appveyor_repo_tag_name)'
   provider: GitHub
   auth_token:
     secure: 7aNfc1VhEopoawEBNhOwZHswi5BZnK/XUNWeSxaGMfutQRETWAFK1D0+5aWC2oUk
