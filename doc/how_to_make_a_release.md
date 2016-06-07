@@ -14,9 +14,8 @@
 1. Push the tag :
   * Github will create a new release
   * Travis will make the deb64 package and push it to github release
-  * Appveyor will create the win32 and win64 packages and will save save them localy
+  * Appveyor will create the win32 and win64 packages and push them to github release
 1. Finish the release on github :
-  * download win32 and win64 packages from appveyor and copy them to Github release
   * Compile a deb32 package on a debian environment and upload it to Github release
   * Copy and Paste the release changelog to Github release
 
