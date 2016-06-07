@@ -127,15 +127,15 @@ class TestExtendWorkflow:
     def test_extract_variable_multiple(self):
         """  a complex extract variable case should work """
         args = ['inputs[]=A', 'B', 'C', 'foo=bar']
-        vars = extract_variables(args)
+        variables = extract_variables(args)
         expected = {'inputs' : ['A', 'B', 'C'], 'foo' : 'bar'}
-        assert vars == expected, vars
+        assert variables == expected, variables
 
     @isolate(['A', 'everything-produces-result.tuttle'])
     def test_variable_array(self):
         """tuttle-extend-workflow can have parameters setting an array for a variable"""
         try:
-           output = self.run_extend_workflow('everything-produces-result.tuttle inputs[]=A B C foo=bar')
+            output = self.run_extend_workflow('everything-produces-result.tuttle inputs[]=A B C foo=bar')
         except CalledProcessError as e:
             print(e.output)
         expected_file = join('.tuttle', 'extensions', 'extension')
@@ -160,3 +160,14 @@ class TestExtendWorkflow:
         output = self.run_extend_workflow('-n my_extension b-produces-x.tuttle x="C"')
         expected_file = join('.tuttle', 'extensions', 'my_extension')
         assert isfile(expected_file), output
+
+    @isolate(['A', 'everything-produces-result.tuttle'])
+    def test_verbosity(self):
+        """tuttle-extend-workflow should display what it does when called verbosely"""
+        output = self.run_extend_workflow('-v everything-produces-result.tuttle inputs[]=A B C foo=bar')
+        pos_template = output.find("everything-produces-result.tuttle")
+        assert pos_template >= 0, output
+        pos_simple_var = output.find("foo=bar")
+        assert pos_simple_var >= 0, output
+        pos_complex_var = output.find("inputs[]=A B C")
+        assert pos_complex_var >= 0, output
