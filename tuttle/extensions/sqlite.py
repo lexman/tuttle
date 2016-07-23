@@ -119,6 +119,7 @@ class SQLiteResource(ResourceMixIn, object):
 
     def signature(self):
         db = sqlite3.connect(self.db_file)
+        db.text_factory = str
         try:
             obj_type = self.sqlite_object_type(db, self.objectname)
             if obj_type == "table":

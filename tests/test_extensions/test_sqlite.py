@@ -168,6 +168,11 @@ class TestSQLiteResource():
         assert res3.exists()
         res3.remove()
         assert not res3.exists()
+        url3 = "sqlite://tests.sqlite/test_encoding"
+        res3 = SQLiteResource(url3)
+        assert res3.exists()
+        res3.remove()
+        assert not res3.exists()
         assert not isfile("tests.sqlite")
 
     @isolate(['tests.sqlite'])
@@ -261,4 +266,12 @@ class TestSQLiteResource():
         assert res.exists()
         res.remove()
         assert not res.exists()
+    # TODO test a table with space in name
+
+    @isolate(['tests.sqlite'])
+    def test_encoding(self):
+        """signature should not fail even if the table was feed with some utf8 text"""
+        url = "sqlite://tests.sqlite/test_encoding"
+        res = SQLiteResource(url)
+        sig = res.signature()
     # TODO test a table with space in name
