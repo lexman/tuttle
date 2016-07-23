@@ -1,6 +1,8 @@
 # -*- coding: utf8 -*-
 import csv
 import sqlite3
+import chardet
+import codecs
 
 from tuttle.error import TuttleError
 from tuttle.extensions.sqlite import SQLiteResource
@@ -26,12 +28,42 @@ def create_table(db, table_name, column_names):
     print sql
     db.execute(sql)
 
+class UTF8Recoder:
+    """
+    Iterator that reads an encoded stream and reencodes the input to UTF-8
+    """
+    def __init__(self, f, encoding):
+        self.reader = codecs.getreader(encoding)(f)
 
+    def __iter__(self):
+        return self
+
+    def next(self):
+        return self.reader.next().encode("utf-8")
+
+class UnicodeReader:
+    """
+    A CSV reader which will iterate over lines in the CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        f = UTF8Recoder(f, encoding)
+        self.reader = csv.reader(f, dialect=dialect, **kwds)
+
+    def next(self):
+        row = self.reader.next()
+        return [unicode(s, "utf-8") for s in row]
+
+    def __iter__(self):
+        return self
+        
 def open_csv(csv_file):
     sample = csv_file.read(1024)
     csv_file.seek(0)
     dialect = csv.Sniffer().sniff(sample)
-    return csv.reader(csv_file, dialect)
+    detect = chardet.detect(sample)
+    return UnicodeReader(csv_file, dialect=dialect, encoding=detect['encoding'])
 
 
 def check_csv_row(csv_reader, nb_cols):
@@ -52,7 +84,6 @@ def fill_table(db, table_name, column_names, csv_reader):
     db.commit()
 
 
-# TODO : handle utf8
 def csv2sqlite(db, table_name, csv_file):
     csv_reader = open_csv(csv_file)
     column_names = csv_reader.next()

@@ -115,7 +115,7 @@ United Arab Emirates,ARE,9346129""".split("\n")
                 assert True
 
     @isolate(['bad_csv.csv'])
-    def test_bad_csv__should_fail_with_csv_2sqlite(self):
+    def test_bad_csv_should_fail_with_csv_2sqlite(self):
         """ A csv without the good number of columns in one raw should make the process fail"""
         project = """sqlite://db.sqlite/pop <- file://bad_csv.csv ! csv2sqlite
         """
@@ -159,3 +159,13 @@ United Arab Emirates,ARE,9346129""".split("\n")
     #     error_log = open(join('.tuttle', 'processes', 'logs', 'sqlite_1_err')).read()
     #     assert error_log.find('near "NOT": syntax error') >= 0, error_log
     #
+
+    @isolate(['utf8.csv'])
+    def test_encoding(self):
+        """csv2sqlite should guess the encoding """
+        project = """sqlite://db.sqlite/test <- file://utf8.csv ! csv2sqlite
+        """
+        rcode, output = run_tuttle_file(project)
+        # The above should fail due to encoding error
+        assert rcode == 0, output
+
