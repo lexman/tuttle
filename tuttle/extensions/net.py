@@ -83,7 +83,6 @@ class DownloadProcessor:
             notifier.write('.')
 
     def run(self, process, reserved_path, log_stdout, log_stderr):
-        # TODO how do we handle errors ?
         inputs = [res for res in process.iter_inputs()]
         outputs = [res for res in process.iter_outputs()]
         file_name = outputs[0]._get_path()
