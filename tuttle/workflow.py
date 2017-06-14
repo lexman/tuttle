@@ -3,7 +3,7 @@ from report.html_repport import create_html_report
 from pickle import dump, load
 from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
     prepare_paths, empty_extension_dir, TuttleEnv, list_extensions, print_preprocesses_header, print_preprocess_header, \
-    print_preprocesses_footer
+    print_preprocesses_footer, get_logger
 
 
 NO_LONGER_CREATED = "Resource no longer created by the newer process"
@@ -159,13 +159,14 @@ class Workflow:
         :return:
         :raises ExecutionError if an error occurs
         """
+        logger = get_logger()
         # TODO create tuttle dirs only once
         create_tuttle_dirs()
         nb_process_run = 0
         process = self.pick_a_process_to_run()
         while process is not None:
             nb_process_run += 1
-            print_header(process)
+            print_header(process, logger)
             try:
                 self.run_process(process)
             finally:

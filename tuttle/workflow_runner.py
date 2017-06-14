@@ -51,10 +51,10 @@ def empty_extension_dir():
         makedirs(_extensions_dir)
 
 
-def print_header(process):
-    print "=" * 60
-    print process.id
-    print "=" * 60
+def print_header(process, logger):
+    logger.info("=" * 60)
+    logger.info(process.id)
+    logger.info("=" * 60)
 
 
 def print_preprocess_header(process):
@@ -93,6 +93,19 @@ def print_logs(process):
 def list_extensions():
     path = join(_extensions_dir, '*')
     return glob(path)
+
+
+def get_logger():
+	import logging
+	import sys
+	logger = logging.getLogger(__name__)
+	formater = logging.Formatter("%(message)s")
+	handler = logging.StreamHandler(sys.stdout)
+	handler.setFormatter(formater)
+	handler.setLevel(logging.INFO)
+	logger.setLevel(logging.INFO)
+	logger.addHandler(handler)
+	return logger
 
 
 class TuttleEnv(EnvVar):
