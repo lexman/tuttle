@@ -18,6 +18,7 @@ class CaptureOutputs(object):
     def __enter__(self):
         self._out = StringIO()
         sys.stdout,sys.stderr = self._out, self._out
+        return self
  
     def __exit__(self, *args):
         sys.stdout, sys.stderr = self._oldout, self._olderr
@@ -29,10 +30,7 @@ class TestLogFollower():
     @isolate([])
     def test_log_single_file(self):
         """LogTracer logs the content of a file in stdout"""
-        oldout, olderr = sys.stdout, sys.stderr
-        out = StringIO()
-        try:
-            sys.stdout,sys.stderr = out, out
+        with CaptureOutputs() as co:
             logger = get_logger()
             lt = LogTracer(logger, logging.INFO, "test.log")
             with open("test.log", "w") as f:
@@ -40,9 +38,7 @@ class TestLogFollower():
                 f.write("line 2\n")
                 f.write("line 3\n")
             lt.trace()
-        finally:
-            sys.stdout, sys.stderr = oldout, olderr
-        output = out.getvalue()
+        output = co.output
         assert output.find("line 1") >= 0, output
         assert output.find("line 2") >= 0, output
         assert output.find("line 3") >= 0, output
