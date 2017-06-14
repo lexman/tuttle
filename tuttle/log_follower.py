@@ -39,9 +39,9 @@ class LogsFollower:
     def __init__(self):
         self._logs = []
         
-    def add_log(self, name, filestdout, filestderr):
-        tracer_stdin = LogTracer(name, filestdout)
-        tracer_stderr = LogTracer(name, filestderr)
+    def add_log(self, logger, filestdout, filestderr):
+        tracer_stdin = LogTracer(logger, logging.info, filestdout)
+        tracer_stderr = LogTracer(logger, logging.info, filestderr)
         self._logs.append(tracer_stdin)
         self._logs.append(tracer_stderr)
         
