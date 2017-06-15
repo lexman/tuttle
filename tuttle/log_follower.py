@@ -14,6 +14,9 @@ from time import sleep
 class LogTracer:
         
     READ_SIZE = 1024
+    TUTTLE = 22
+    STDOUT = 24
+    STDERR = 26
     
     def __init__(self, logger, loglevel, filename):
         self._filename = filename
@@ -30,8 +33,25 @@ class LogTracer:
             lines = self._filedescr.readlines(self.READ_SIZE)
             for line in lines:
                 traced = True
-                self._logger.info(line[:-1])
+                if line[-1:] == "\n":
+                    self._logger.log(self._loglevel, line[:-1])
+                else:
+                    self._logger.log(self._loglevel, line)
         return traced
+
+    @staticmethod
+    def get_logger():
+        logger = logging.getLogger(__name__)
+        logging.addLevelName(LogTracer.TUTTLE, 'tuttle')
+        logging.addLevelName(LogTracer.STDOUT, 'stdout')
+        logging.addLevelName(LogTracer.STDERR, 'stderr')
+        formater = logging.Formatter("[%(levelname)s] %(message)s")
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setFormatter(formater)
+        handler.setLevel(logging.INFO)
+        logger.setLevel(logging.INFO)
+        logger.addHandler(handler)
+        return logger
 
 
 class LogsFollower:
@@ -40,8 +60,8 @@ class LogsFollower:
         self._logs = []
         
     def add_log(self, logger, filestdout, filestderr):
-        tracer_stdin = LogTracer(logger, logging.info, filestdout)
-        tracer_stderr = LogTracer(logger, logging.info, filestderr)
+        tracer_stdin = LogTracer(logger, LogTracer.STDOUT, filestdout)
+        tracer_stderr = LogTracer(logger, LogTracer.STDERR, filestderr)
         self._logs.append(tracer_stdin)
         self._logs.append(tracer_stderr)
         
@@ -56,4 +76,8 @@ class LogsFollower:
         while True:
             if not self.trace_logs():
                 sleep(0.1)
+
+    @staticmethod
+    def get_logger():
+        return LogTracer.get_logger()
                 

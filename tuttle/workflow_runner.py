@@ -10,7 +10,7 @@ from os import remove, makedirs, getcwd
 from os.path import join, isdir, isfile
 from tuttle.error import TuttleError
 from tuttle.utils import EnvVar
-
+from tuttle.log_follower import LogsFollower
 
 class ResourceError(TuttleError):
     pass
@@ -96,16 +96,7 @@ def list_extensions():
 
 
 def get_logger():
-	import logging
-	import sys
-	logger = logging.getLogger(__name__)
-	formater = logging.Formatter("%(message)s")
-	handler = logging.StreamHandler(sys.stdout)
-	handler.setFormatter(formater)
-	handler.setLevel(logging.INFO)
-	logger.setLevel(logging.INFO)
-	logger.addHandler(handler)
-	return logger
+	return LogsFollower.get_logger()
 
 
 class TuttleEnv(EnvVar):

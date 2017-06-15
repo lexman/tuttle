@@ -44,6 +44,32 @@ class TestLogFollower():
         assert output.find("line 3") >= 0, output
 
     @isolate([])
+    def test_log_should_not_double_carriage_return(self):
+        """ """
+        with CaptureOutputs() as co:
+            logger = get_logger()
+            lt = LogTracer(logger, logging.INFO, "test.log")
+            with open("test.log", "w") as f:
+                f.write("line 1\n")
+                f.write("line 2\n")
+            lt.trace()
+        output = co.output
+        assert output.find("\n\n") == -1, output
+
+    @isolate([])
+    def test_log_should_(self):
+        """ The last char of the file must be logged even if the 
+            file does not finish with CR """
+        with CaptureOutputs() as co:
+            logger = get_logger()
+            lt = LogTracer(logger, logging.INFO, "test.log")
+            with open("test.log", "w") as f:
+                f.write("line 1")
+            lt.trace()
+        output = co.output
+        assert output.find("line 1") >= 0, output
+
+    @isolate([])
     def test_log_huge_file(self):
         """LogTracer should log the content of a big file in stdout"""
         with CaptureOutputs() as co:
@@ -101,3 +127,28 @@ class TestLogFollower():
         assert output.find("w2.stdout - line 4999") >= 0, output
         assert output.find("w3.stdout - line 4999") >= 0, output
         assert output.find("w3.stderr - line 4999") >= 0, output
+
+    @isolate([])
+    def test_log_format(self):
+        """logs should display log level and message"""
+        with CaptureOutputs() as co:
+            logger = LogTracer.get_logger()
+            logger.info("MESSAGE")
+        assert co.output.find("[INFO] MESSAGE") == 0, co.output
+        
+    @isolate([])
+    def test_log_format(self):
+        """logs should display log level and message"""
+        with CaptureOutputs() as co:
+            logger = LogTracer.get_logger()
+            lf = LogsFollower()
+            lf.add_log(logger, "stdout", "stderr")
+            with open("stdout", "w") as fout, \
+                 open("stderr", "w") as ferr:
+                     fout.write("file stdout")
+                     ferr.write("file stderr")
+            while lf.trace_logs():
+                pass
+            
+        assert co.output.find("[stdout] file stdout") >= 0, co.output
+        assert co.output.find("[stderr] file stderr") >= 0, co.output        
