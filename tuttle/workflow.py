@@ -147,16 +147,16 @@ class Workflow:
                     print_logs(preprocess)
         print_preprocesses_footer()
 
-    def run_process(self, process):
-        reserved_path, log_stdout, log_stderr = prepare_paths(process)
-        process.run(reserved_path, log_stdout, log_stderr)
-        for res in process.iter_outputs():
-            if not res.exists():
-                process.post_fail()
-                msg = "After execution of process {} : resource {} should have been created".format(process.id,
-                                                                                                    res.url)
-                raise ResourceError(msg)
-        self.update_signatures(process)
+#    def run_process(self, process):
+#        reserved_path, log_stdout, log_stderr = prepare_paths(process)
+#        process.run(reserved_path, log_stdout, log_stderr)
+#        for res in process.iter_outputs():
+#            if not res.exists():
+#                process.post_fail()
+#                msg = "After execution of process {} : resource {} should have been created".format(process.id,
+#                                                                                                    res.url)
+#                raise ResourceError(msg)
+#        self.update_signatures(process)
 
     def run(self):
         """ Runs a workflow by running every process in the right order
@@ -173,7 +173,15 @@ class Workflow:
             nb_process_run += 1
             print_header(process, logger)
             try:
-                self.run_process(process)
+                reserved_path, log_stdout, log_stderr = prepare_paths(process)
+                process.run(reserved_path, log_stdout, log_stderr)
+                for res in process.iter_outputs():
+                    if not res.exists():
+                        process.post_fail()
+                        msg = "After execution of process {} : resource {} should have been created".format(process.id,
+                                                                                                            res.url)
+                        raise ResourceError(msg)
+                self.update_signatures(process)
             finally:
                 self.dump()
                 self.create_reports()
