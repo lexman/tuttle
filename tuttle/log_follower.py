@@ -9,6 +9,7 @@ import logging
 import sys
 from os.path import isfile
 from time import sleep
+from threading import Thread
 
 
 class LogTracer:
@@ -58,6 +59,7 @@ class LogsFollower:
     
     def __init__(self):
         self._logs = []
+        self._stop = False
         
     def add_log(self, logger, filestdout, filestderr):
         tracer_stdin = LogTracer(logger, LogTracer.STDOUT, filestdout)
@@ -76,6 +78,24 @@ class LogsFollower:
         while True:
             if not self.trace_logs():
                 sleep(0.1)
+
+    def trace_in_background(self):
+        def trace_logs_until_stop():
+            traced = True
+            while True:
+                traced = self.trace_logs()
+                if self._stop and not traced:
+                    break
+                if not traced:
+                    sleep(0.1)
+        self._thread = Thread(target=trace_logs_until_stop, name="worker")
+        self._thread.start()
+        print(self._thread.is_alive())
+        
+    def stop(self):
+        #sleep(0.1) # wait for flush
+        self._stop = True
+        self._thread.join()
 
     @staticmethod
     def get_logger():

@@ -137,7 +137,7 @@ class TestLogFollower():
         assert co.output.find("[INFO] MESSAGE") == 0, co.output
         
     @isolate([])
-    def test_log_format(self):
+    def test_log_format_stdout_stderr(self):
         """logs should display log level and message"""
         with CaptureOutputs() as co:
             logger = LogTracer.get_logger()
@@ -152,3 +152,45 @@ class TestLogFollower():
             
         assert co.output.find("[stdout] file stdout") >= 0, co.output
         assert co.output.find("[stderr] file stderr") >= 0, co.output        
+
+    @isolate([])
+    def test_log_in_background(self):
+        """Should log in background ans stop when foreground processing 
+           is over"""
+        import time
+        with CaptureOutputs() as co:
+            logger = LogTracer.get_logger()
+            lf = LogsFollower()
+            lf.add_log(logger, "stdout", "stderr")
+            lf.trace_in_background()
+            with open("stdout", "w") as fout, \
+                 open("stderr", "w") as ferr:
+                     fout.write("file stdout")
+                     ferr.write("file stderr")
+            lf.stop()
+        assert co.output.find("[stdout] file stdout") >= 0, co.output
+        assert co.output.find("[stderr] file stderr") >= 0, co.output        
+
+
+    @isolate([])
+    def test_log_a_lot_in_background(self):
+        """Should log in background ans stop when foreground processing 
+           is over even with a lot a data"""
+        import time
+        with CaptureOutputs() as co:
+            logger = LogTracer.get_logger()
+            lf = LogsFollower()
+            lf.add_log(logger, "stdout", "stderr")
+            lf.trace_in_background()
+            with open("stdout", "w") as fout, \
+                 open("stderr", "w") as ferr:
+                     fout.write("file stdout")
+                     ferr.write("file stderr")
+                     for i in xrange(5000):
+                        fout.write("stdout - line {}\n".format(i))
+                        ferr.write("stderr - line {}\n".format(i))
+            lf.stop()
+        assert co.output.find("[stdout] stdout - line 1") >= 0, co.output
+        assert co.output.find("[stderr] stderr - line 1") >= 0, co.output        
+        assert co.output.find("[stdout] stdout - line 4999") >= 0, co.output
+        assert co.output.find("[stderr] stderr - line 4999") >= 0, co.output        
