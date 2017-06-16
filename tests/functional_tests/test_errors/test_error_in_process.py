@@ -28,7 +28,7 @@ file://D <- file://A
 """
         rcode, output = run_tuttle_file(first)
         assert rcode == 2
-        assert output.find("- stderr : -") >= 0, output
+        assert output.find("[stderr]") >= 0, output
         assert output.find("Obvious") >= 0, output
         assert output.find("Process ended with error code 1") >= 0, output
 

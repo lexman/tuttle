@@ -4,6 +4,7 @@ from pickle import dump, load
 from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
     prepare_paths, empty_extension_dir, TuttleEnv, list_extensions, print_preprocesses_header, print_preprocess_header, \
     print_preprocesses_footer, get_logger
+from tuttle.log_follower import LogsFollower
 
 
 NO_LONGER_CREATED = "Resource no longer created by the newer process"
@@ -147,46 +148,40 @@ class Workflow:
                     print_logs(preprocess)
         print_preprocesses_footer()
 
-#    def run_process(self, process):
-#        reserved_path, log_stdout, log_stderr = prepare_paths(process)
-#        process.run(reserved_path, log_stdout, log_stderr)
-#        for res in process.iter_outputs():
-#            if not res.exists():
-#                process.post_fail()
-#                msg = "After execution of process {} : resource {} should have been created".format(process.id,
-#                                                                                                    res.url)
-#                raise ResourceError(msg)
-#        self.update_signatures(process)
-
     def run(self):
         """ Runs a workflow by running every process in the right order
 
         :return:
         :raises ExecutionError if an error occurs
         """
-        logger = get_logger()
         # TODO create tuttle dirs only once
         create_tuttle_dirs()
-        nb_process_run = 0
-        process = self.pick_a_process_to_run()
-        while process is not None:
-            nb_process_run += 1
-            print_header(process, logger)
-            try:
-                reserved_path, log_stdout, log_stderr = prepare_paths(process)
-                process.run(reserved_path, log_stdout, log_stderr)
-                for res in process.iter_outputs():
-                    if not res.exists():
-                        process.post_fail()
-                        msg = "After execution of process {} : resource {} should have been created".format(process.id,
-                                                                                                            res.url)
-                        raise ResourceError(msg)
-                self.update_signatures(process)
-            finally:
-                self.dump()
-                self.create_reports()
-                print_logs(process)
+        lt = LogsFollower()
+        logger = LogsFollower.get_logger()        
+        lt.trace_in_background()
+        try :
+            nb_process_run = 0
             process = self.pick_a_process_to_run()
+            while process is not None:
+                nb_process_run += 1
+                print_header(process, logger)
+                try:
+                    reserved_path, log_stdout, log_stderr = prepare_paths(process)
+                    lt.add_log(logger, log_stdout, log_stderr)
+                    process.run(reserved_path, log_stdout, log_stderr)
+                    for res in process.iter_outputs():
+                        if not res.exists():
+                            process.post_fail()
+                            msg = "After execution of process {} : resource {} should have been created".format(process.id,
+                                                                                                                res.url)
+                            raise ResourceError(msg)
+                    self.update_signatures(process)
+                finally:
+                    self.dump()
+                    self.create_reports()
+                process = self.pick_a_process_to_run()
+        finally:
+            lt.stop()
         return nb_process_run
 
     def create_reports(self):
