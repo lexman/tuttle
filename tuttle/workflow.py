@@ -118,18 +118,6 @@ class Workflow:
         for process in self.iter_processes():
             process.static_check()
 
-    def run_process(self, process):
-        reserved_path, log_stdout, log_stderr = prepare_paths(process)
-        process.run(reserved_path, log_stdout, log_stderr)
-        for res in process.iter_outputs():
-            if not res.exists():
-                process.post_fail()
-                msg = "After execution of process {} : resource {} should have been created".format(process.id,
-                                                                                                    res.url)
-                raise ResourceError(msg)
-        for res in process.iter_outputs():
-            self._resources_signatures[res.url] = res.signature()
-
     def run_pre_processes(self):
         """ Runs all the preprocesses
 
@@ -152,6 +140,17 @@ class Workflow:
                     print_logs(preprocess)
         print_preprocesses_footer()
 
+    def run_process(self, process):
+        reserved_path, log_stdout, log_stderr = prepare_paths(process)
+        process.run(reserved_path, log_stdout, log_stderr)
+        for res in process.iter_outputs():
+            if not res.exists():
+                process.post_fail()
+                msg = "After execution of process {} : resource {} should have been created".format(process.id,
+                                                                                                    res.url)
+                raise ResourceError(msg)
+        for res in process.iter_outputs():
+            self._resources_signatures[res.url] = res.signature()
 
     def run(self):
         """ Runs a workflow by running every process in the right order

@@ -109,7 +109,8 @@ file://file3 <- file://file1
             """)
         process = workflow._processes[0]
         create_tuttle_dirs()
-        workflow.run_process(process)
+        reserved_path, log_stdout, log_stderr = prepare_paths(process)
+        process.run(reserved_path, log_stdout, log_stderr)
         assert path.isfile("result")
 
     @isolate(['A'])
@@ -125,20 +126,21 @@ file://file3 <- file://file1
         assert rcode == 2
         assert path.isfile(path.join(".tuttle", "last_workflow.pickle"))
 
-    @isolate
+    @isolate(['A'])
     def test_check_process_output(self):
         """
         Should raise an exception if the output resource was not really created
         """
         workflow = self.get_workflow(
-            """file://result <- file://source
+            """file://result <- file://A
             echo test
             """)
         workflow.static_check_processes()
         try:
-            process = workflow._processes[0]
-            create_tuttle_dirs()
-            workflow.run_process(process)
+            #process = workflow._processes[0]
+            #create_tuttle_dirs()
+            #workflow.run_process(process)
+            workflow.run()
             assert False, "Exception has not been not raised"
         except ResourceError:
             assert True
