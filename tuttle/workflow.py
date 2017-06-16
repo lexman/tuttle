@@ -118,6 +118,13 @@ class Workflow:
         for process in self.iter_processes():
             process.static_check()
 
+    def update_signatures(self, process):
+        """ updates the workflow's signatures after the process has run 
+        :param preprocess:
+        """
+        for res in process.iter_outputs():
+            self._resources_signatures[res.url] = res.signature()        
+
     def run_pre_processes(self):
         """ Runs all the preprocesses
 
@@ -149,8 +156,7 @@ class Workflow:
                 msg = "After execution of process {} : resource {} should have been created".format(process.id,
                                                                                                     res.url)
                 raise ResourceError(msg)
-        for res in process.iter_outputs():
-            self._resources_signatures[res.url] = res.signature()
+        self.update_signatures(process)
 
     def run(self):
         """ Runs a workflow by running every process in the right order
