@@ -54,6 +54,19 @@ class LogTracer:
         logger.addHandler(handler)
         return logger
 
+class EnsureLogsFollowerStops(object):
+    """
+    Ensures a LogFollower is stopped when no longer required
+    """
+    def __init__(self, lf):
+        self._lf = lf
+
+    def __enter__(self):
+        pass
+ 
+    def __exit__(self, *args):
+        self._lf.stop()
+
 
 class LogsFollower:
     
@@ -90,7 +103,7 @@ class LogsFollower:
                     sleep(0.1)
         self._thread = Thread(target=trace_logs_until_stop, name="worker")
         self._thread.start()
-        print(self._thread.is_alive())
+        return EnsureLogsFollowerStops(self)
         
     def stop(self):
         #sleep(0.1) # wait for flush

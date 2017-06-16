@@ -158,8 +158,7 @@ class Workflow:
         create_tuttle_dirs()
         lt = LogsFollower()
         logger = LogsFollower.get_logger()        
-        lt.trace_in_background()
-        try :
+        with lt.trace_in_background():
             nb_process_run = 0
             process = self.pick_a_process_to_run()
             while process is not None:
@@ -180,8 +179,6 @@ class Workflow:
                     self.dump()
                     self.create_reports()
                 process = self.pick_a_process_to_run()
-        finally:
-            lt.stop()
         return nb_process_run
 
     def create_reports(self):
