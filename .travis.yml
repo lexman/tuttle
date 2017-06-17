@@ -1,10 +1,11 @@
 
 addons:
-  postgresql: "9.1"
+  postgresql: "9.2"
 
 services:
   - docker
-
+  - postgresql
+ 
 language: python
 
 python:
