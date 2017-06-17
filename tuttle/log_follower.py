@@ -65,16 +65,17 @@ class EnsureLogsFollowerStops(object):
         pass
  
     def __exit__(self, *args):
-        self._lf.stop()
+        self._lf.terminate()
 
 
 class LogsFollower:
     
     def __init__(self):
         self._logs = []
-        self._stop = False
+        self._terminate = False
         
-    def add_log(self, logger, filestdout, filestderr):
+    def follow_process(self, logger, filestdout, filestderr):
+        """ Adds 2 files to follow : the stderr and stdin of a process """
         tracer_stdin = LogTracer(logger, LogTracer.STDOUT, filestdout)
         tracer_stderr = LogTracer(logger, LogTracer.STDERR, filestderr)
         self._logs.append(tracer_stdin)
@@ -97,7 +98,7 @@ class LogsFollower:
             traced = True
             while True:
                 traced = self.trace_logs()
-                if self._stop and not traced:
+                if self._terminate and not traced:
                     break
                 if not traced:
                     sleep(0.1)
@@ -105,9 +106,9 @@ class LogsFollower:
         self._thread.start()
         return EnsureLogsFollowerStops(self)
         
-    def stop(self):
+    def terminate(self):
         #sleep(0.1) # wait for flush
-        self._stop = True
+        self._terminate = True
         self._thread.join()
 
     @staticmethod

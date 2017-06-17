@@ -92,9 +92,9 @@ class TestLogFollower():
         with CaptureOutputs() as co:
             logger = get_logger()
             lf = LogsFollower()
-            lf.add_log(logger, "w1.stdout", "w1.stderr")
-            lf.add_log(logger, "w2.stdout", "w2.stderr")
-            lf.add_log(logger, "w3.stdout", "w3.stderr")
+            lf.follow_process(logger, "w1.stdout", "w1.stderr")
+            lf.follow_process(logger, "w2.stdout", "w2.stderr")
+            lf.follow_process(logger, "w3.stdout", "w3.stderr")
 
             with open("w1.stdout", "w") as fo1, \
                  open("w1.stderr", "w") as fe1, \
@@ -142,7 +142,7 @@ class TestLogFollower():
         with CaptureOutputs() as co:
             logger = LogTracer.get_logger()
             lf = LogsFollower()
-            lf.add_log(logger, "stdout", "stderr")
+            lf.follow_process(logger, "stdout", "stderr")
             with open("stdout", "w") as fout, \
                  open("stderr", "w") as ferr:
                      fout.write("file stdout")
@@ -161,13 +161,13 @@ class TestLogFollower():
         with CaptureOutputs() as co:
             logger = LogTracer.get_logger()
             lf = LogsFollower()
-            lf.add_log(logger, "stdout", "stderr")
+            lf.follow_process(logger, "stdout", "stderr")
             lf.trace_in_background()
             with open("stdout", "w") as fout, \
                  open("stderr", "w") as ferr:
                      fout.write("file stdout")
                      ferr.write("file stderr")
-            lf.stop()
+            lf.terminate()
         assert co.output.find("[stdout] file stdout") >= 0, co.output
         assert co.output.find("[stderr] file stderr") >= 0, co.output        
 
@@ -179,7 +179,7 @@ class TestLogFollower():
         with CaptureOutputs() as co:
             logger = LogTracer.get_logger()
             lf = LogsFollower()
-            lf.add_log(logger, "stdout", "stderr")
+            lf.follow_process(logger, "stdout", "stderr")
             lf.trace_in_background()
             with open("stdout", "w") as fout, \
                  open("stderr", "w") as ferr:
@@ -188,7 +188,7 @@ class TestLogFollower():
                      for i in xrange(5000):
                         fout.write("stdout - line {}\n".format(i))
                         ferr.write("stderr - line {}\n".format(i))
-            lf.stop()
+            lf.terminate()
         assert co.output.find("[stdout] stdout - line 1") >= 0, co.output
         assert co.output.find("[stderr] stderr - line 1") >= 0, co.output        
         assert co.output.find("[stdout] stdout - line 4999") >= 0, co.output
@@ -199,7 +199,7 @@ class TestLogFollower():
         """When a section of code using the LogsFollower is complete, the thread should stop"""
         logger = LogTracer.get_logger()
         lf = LogsFollower()
-        lf.add_log(logger, "stdout", "stderr")
+        lf.follow_process(logger, "stdout", "stderr")
         with lf.trace_in_background():
             assert lf._thread.is_alive(), "Backgroung thread isn't running..."
             with open("stdout", "w") as fout, \

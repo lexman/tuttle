@@ -166,7 +166,7 @@ class Workflow:
                 print_header(process, logger)
                 try:
                     reserved_path, log_stdout, log_stderr = prepare_paths(process)
-                    lt.add_log(logger, log_stdout, log_stderr)
+                    lt.follow_process(logger, log_stdout, log_stderr)
                     process.run(reserved_path, log_stdout, log_stderr)
                     for res in process.iter_outputs():
                         if not res.exists():
