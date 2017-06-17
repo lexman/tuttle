@@ -57,10 +57,10 @@ def print_header(process, logger):
     logger.info("=" * 60)
 
 
-def print_preprocess_header(process):
-    print "-" * 60
-    print "Preprocess : {}".format(process.id)
-    print "-" * 60
+def print_preprocess_header(process, logger):
+    logger.info("-" * 60)
+    logger.info("Preprocess : {}".format(process.id))
+    logger.info("-" * 60)
 
 
 def print_preprocesses_header():
@@ -96,7 +96,7 @@ def list_extensions():
 
 
 def get_logger():
-	return LogsFollower.get_logger()
+    return LogsFollower.get_logger()
 
 
 class TuttleEnv(EnvVar):

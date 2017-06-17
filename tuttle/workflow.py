@@ -136,16 +136,19 @@ class Workflow:
         empty_extension_dir()
         if not self.has_preprocesses():
             return
+        lt = LogsFollower()
         print_preprocesses_header()
-        with TuttleEnv():
-            for preprocess in self.iter_preprocesses():
-                print_preprocess_header(preprocess)
-                try:
-                    reserved_path, log_stdout, log_stderr = prepare_paths(preprocess)
-                    preprocess.run(reserved_path, log_stdout, log_stderr)
-                finally:
-                    self.create_reports()
-                    print_logs(preprocess)
+        logger = LogsFollower.get_logger()        
+        with lt.trace_in_background():
+            with TuttleEnv():
+                for preprocess in self.iter_preprocesses():
+                    print_preprocess_header(preprocess, logger)
+                    try:
+                        reserved_path, log_stdout, log_stderr = prepare_paths(preprocess)
+                        lt.follow_process(logger, log_stdout, log_stderr)
+                        preprocess.run(reserved_path, log_stdout, log_stderr)
+                    finally:
+                        self.create_reports()
         print_preprocesses_footer()
 
     def run(self):
