@@ -2,6 +2,7 @@
 *.pyc
 .coverage
 env_tuttle
+env
 cover
 build
 dist
