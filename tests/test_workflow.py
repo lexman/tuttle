@@ -140,7 +140,8 @@ file://file3 <- file://file1
             #process = workflow._processes[0]
             #create_tuttle_dirs()
             #workflow.run_process(process)
-            workflow.run()
+            WorkflowRuner.run_workflow(workflow)
+            #workflow.run()
             assert False, "Exception has not been not raised"
         except ResourceError:
             assert True

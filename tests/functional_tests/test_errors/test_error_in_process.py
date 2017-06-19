@@ -4,6 +4,7 @@ import glob
 from os.path import isfile
 from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.project_parser import ProjectParser
+from tuttle.workflow_runner import WorkflowRuner
 
 
 class TestErrorInProcess():
@@ -118,7 +119,8 @@ file://D <- file://A
         pp.set_project(first)
         workflow = pp.parse_extend_and_check_project()
         try:
-            workflow.run()
+            #workflow.run()
+            WorkflowRuner.run_workflow(workflow)
             assert False, "A resource error should have been raised"
         except:
             assert True

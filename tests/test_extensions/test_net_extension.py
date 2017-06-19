@@ -9,6 +9,8 @@ from tuttle.extensions.net import HTTPResource
 from BaseHTTPServer import BaseHTTPRequestHandler
 from SocketServer import TCPServer
 
+from tuttle.workflow_runner import WorkflowRuner
+
 
 class MockHTTPHandler(BaseHTTPRequestHandler):
     """ This class is used to mock some HTTP behaviours :
@@ -140,7 +142,8 @@ class TestDownloadProcessor():
         pp.set_project(project)
         workflow = pp.parse_extend_and_check_project()
         workflow.static_check_processes()
-        workflow.run()
+        #workflow.run()
+        WorkflowRuner.run_workflow(workflow)
         assert isfile("google.html")
         content = open("google.html").read()
         assert content.find("<title>Google</title>") >= 0
@@ -156,7 +159,8 @@ class TestDownloadProcessor():
         pp.set_project(project)
         workflow = pp.parse_extend_and_check_project()
         workflow.static_check_processes()
-        workflow.run()
+        #workflow.run()
+        WorkflowRuner.run_workflow(workflow)
         assert isfile("jquery.js")
         logs = open(join(".tuttle", "processes", "logs", "__1_stdout.txt"), "r").read()
         assert logs.find("...") >= 0
