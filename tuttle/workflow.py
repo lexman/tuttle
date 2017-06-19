@@ -152,7 +152,7 @@ class Workflow:
                         self.create_reports()
                 WorkflowRuner.print_preprocesses_footer()
 
-    def run(self):
+    def run_old(self):
         """ Runs a workflow by running every process in the right order
 
         :return:
