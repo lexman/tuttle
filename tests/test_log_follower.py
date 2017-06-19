@@ -2,7 +2,6 @@
 
 from tests.functional_tests import isolate, run_tuttle_file
 from cStringIO import StringIO
-from tuttle.workflow_runner import get_logger
 from tuttle.log_follower import LogTracer, LogsFollower
 import logging
 import sys
@@ -31,7 +30,7 @@ class TestLogFollower():
     def test_log_single_file(self):
         """LogTracer should log the content of a file"""
         with CaptureOutputs() as co:
-            logger = get_logger()
+            logger = LogsFollower.get_logger()
             lt = LogTracer(logger, logging.INFO, "test.log")
             with open("test.log", "w") as f:
                 f.write("line 1\n")
@@ -47,7 +46,7 @@ class TestLogFollower():
     def test_log_should_not_double_carriage_return(self):
         """ """
         with CaptureOutputs() as co:
-            logger = get_logger()
+            logger = LogsFollower.get_logger()
             lt = LogTracer(logger, logging.INFO, "test.log")
             with open("test.log", "w") as f:
                 f.write("line 1\n")
@@ -61,7 +60,7 @@ class TestLogFollower():
         """ The last char of the file must be logged even if the 
             file does not finish with CR """
         with CaptureOutputs() as co:
-            logger = get_logger()
+            logger = LogsFollower.get_logger()
             lt = LogTracer(logger, logging.INFO, "test.log")
             with open("test.log", "w") as f:
                 f.write("line 1")
@@ -73,7 +72,7 @@ class TestLogFollower():
     def test_log_huge_file(self):
         """LogTracer should log the content of a big file in stdout"""
         with CaptureOutputs() as co:
-            logger = get_logger()
+            logger = LogsFollower.get_logger()
             lt = LogTracer(logger, logging.INFO, "test.log")
             with open("test.log", "w") as f:
                 for i in xrange(5000):
@@ -90,7 +89,7 @@ class TestLogFollower():
     def test_log_multiple_files(self):
         """LogTracer should log the content of several files in stdout"""
         with CaptureOutputs() as co:
-            logger = get_logger()
+            logger = LogsFollower.get_logger()
             lf = LogsFollower()
             lf.follow_process(logger, "w1.stdout", "w1.stderr")
             lf.follow_process(logger, "w2.stdout", "w2.stderr")

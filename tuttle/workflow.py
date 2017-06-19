@@ -1,9 +1,10 @@
 # -*- coding: utf8 -*-
 from report.html_repport import create_html_report
 from pickle import dump, load
-from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
-    prepare_paths, empty_extension_dir, TuttleEnv, list_extensions, print_preprocesses_header, print_preprocess_header, \
-    print_preprocesses_footer, get_logger
+#from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
+#    prepare_paths, empty_extension_dir, TuttleEnv, list_extensions, print_preprocesses_header, print_preprocess_header, \
+#    print_preprocesses_footer, get_logger
+from tuttle.workflow_runner import WorkflowRuner, TuttleEnv, ResourceError
 from tuttle.log_follower import LogsFollower
 
 
@@ -132,24 +133,24 @@ class Workflow:
         :return:
         :raises ExecutionError if an error occurs
         """
-        create_tuttle_dirs()
-        empty_extension_dir()
+        WorkflowRuner.create_tuttle_dirs()
+        WorkflowRuner.empty_extension_dir()
         if not self.has_preprocesses():
             return
         lt = LogsFollower()
-        print_preprocesses_header()
+        WorkflowRuner.print_preprocesses_header()
         logger = LogsFollower.get_logger()        
         with lt.trace_in_background():
             with TuttleEnv():
                 for preprocess in self.iter_preprocesses():
-                    print_preprocess_header(preprocess, logger)
+                    WorkflowRuner.print_preprocess_header(preprocess, logger)
                     try:
-                        reserved_path, log_stdout, log_stderr = prepare_paths(preprocess)
+                        reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(preprocess)
                         lt.follow_process(logger, log_stdout, log_stderr)
                         preprocess.run(reserved_path, log_stdout, log_stderr)
                     finally:
                         self.create_reports()
-        print_preprocesses_footer()
+                WorkflowRuner.print_preprocesses_footer()
 
     def run(self):
         """ Runs a workflow by running every process in the right order
@@ -158,7 +159,7 @@ class Workflow:
         :raises ExecutionError if an error occurs
         """
         # TODO create tuttle dirs only once
-        create_tuttle_dirs()
+        WorkflowRuner.create_tuttle_dirs()
         lt = LogsFollower()
         logger = LogsFollower.get_logger()        
         with lt.trace_in_background():
@@ -166,9 +167,9 @@ class Workflow:
             process = self.pick_a_process_to_run()
             while process is not None:
                 nb_process_run += 1
-                print_header(process, logger)
+                WorkflowRuner.print_header(process, logger)
                 try:
-                    reserved_path, log_stdout, log_stderr = prepare_paths(process)
+                    reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(process)
                     lt.follow_process(logger, log_stdout, log_stderr)
                     process.run(reserved_path, log_stdout, log_stderr)
                     for res in process.iter_outputs():
@@ -188,25 +189,25 @@ class Workflow:
         """ Write to disk files describing the workflow, with color for states
         :return: None
         """
-        create_html_report(self, tuttle_dir("report.html"))
+        create_html_report(self, WorkflowRuner.tuttle_dir("report.html"))
 
     def dump(self):
         """ Pickles the workflow and writes it to last_workflow.pickle
         :return: None
         """
-        with open(tuttle_dir("last_workflow.pickle"), "w") as f:
+        with open(WorkflowRuner.tuttle_dir("last_workflow.pickle"), "w") as f:
             dump(self, f)
 
     @staticmethod
     def load():
         try:
-            with open(tuttle_dir("last_workflow.pickle"), "r") as f:
+            with open(WorkflowRuner.tuttle_dir("last_workflow.pickle"), "r") as f:
                 return load(f)
         except:
             return None
 
     def get_extensions(self):
-        return list_extensions()
+        return WorkflowRuner.list_extensions()
 
     def find_process_that_creates(self, url):
         """
