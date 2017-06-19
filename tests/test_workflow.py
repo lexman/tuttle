@@ -4,7 +4,7 @@ from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.workflow import *
 from test_project_parser import ProjectParser
 from os import path
-from tuttle.workflow_runner import ResourceError
+from tuttle.workflow_runner import ResourceError, WorkflowRuner, tuttle_dir
 
 
 class TestWorkflow():
@@ -108,8 +108,8 @@ file://file3 <- file://file1
             echo result > result
             """)
         process = workflow._processes[0]
-        create_tuttle_dirs()
-        reserved_path, log_stdout, log_stderr = prepare_paths(process)
+        WorkflowRuner.create_tuttle_dirs()
+        reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(process)
         process.run(reserved_path, log_stdout, log_stderr)
         assert path.isfile("result")
 
