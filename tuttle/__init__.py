@@ -43,26 +43,6 @@ def raise_if_process_in_error(workflow):
         raise TuttleError(msg)
 
 
-def run_old(workflow):
-#    missing = workflow.missing_inputs()
-#    if missing:
-#        error_msg = "Missing the following resources to launch the workflow :\n"
-#        for mis in missing:
-#            error_msg += "* {}\n".format(mis.url)
-#        raise TuttleError(error_msg)
-#    failing_process = workflow.pick_a_failing_process()
-#    if failing_process:
-#        msg = "Workflow already failed on process '{}'. Fix the process and run tuttle again.".format(failing_process.id)
-#        msg += "\n\nIf failure has been caused by an external factor like a connection breakdown, " \
-#               'use "tuttle invalidate" to reset execution then "tuttle run" again.'
-#        raise TuttleError(msg)
-#    nb_process_run = workflow.run()
-    raise_if_missing_input(workflow)
-    raise_if_process_in_error(workflow)
-    nb_process_run = WorkflowRuner.run_workflow(workflow)
-    return nb_process_run
-
-
 def parse_invalidate_and_run(tuttlefile, threshold=-1):
         try:
             inv_collector = InvalidResourceCollector()
@@ -86,7 +66,6 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
             workflow.create_reports()
             workflow.dump()
 
-            #nb_process_run = run(workflow)
             raise_if_missing_input(workflow)
             raise_if_process_in_error(workflow)
             nb_process_run = WorkflowRuner.run_workflow(workflow)
