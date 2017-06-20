@@ -152,39 +152,6 @@ class Workflow:
                         self.create_reports()
                 WorkflowRuner.print_preprocesses_footer()
 
-    def run_old(self):
-        """ Runs a workflow by running every process in the right order
-
-        :return:
-        :raises ExecutionError if an error occurs
-        """
-        # TODO create tuttle dirs only once
-        WorkflowRuner.create_tuttle_dirs()
-        lt = LogsFollower()
-        logger = LogsFollower.get_logger()        
-        with lt.trace_in_background():
-            nb_process_run = 0
-            process = self.pick_a_process_to_run()
-            while process is not None:
-                nb_process_run += 1
-                WorkflowRuner.print_header(process, logger)
-                try:
-                    reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(process)
-                    lt.follow_process(logger, log_stdout, log_stderr)
-                    process.run(reserved_path, log_stdout, log_stderr)
-                    for res in process.iter_outputs():
-                        if not res.exists():
-                            process.post_fail()
-                            msg = "After execution of process {} : resource {} should have been created".format(process.id,
-                                                                                                                res.url)
-                            raise ResourceError(msg)
-                    self.update_signatures(process)
-                finally:
-                    self.dump()
-                    self.create_reports()
-                process = self.pick_a_process_to_run()
-        return nb_process_run
-
     def create_reports(self):
         """ Write to disk files describing the workflow, with color for states
         :return: None

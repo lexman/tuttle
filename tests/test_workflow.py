@@ -137,11 +137,7 @@ file://file3 <- file://file1
             """)
         workflow.static_check_processes()
         try:
-            #process = workflow._processes[0]
-            #create_tuttle_dirs()
-            #workflow.run_process(process)
             WorkflowRuner.run_workflow(workflow)
-            #workflow.run()
             assert False, "Exception has not been not raised"
         except ResourceError:
             assert True
