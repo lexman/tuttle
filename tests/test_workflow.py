@@ -142,6 +142,26 @@ file://file3 <- file://file1
         except ResourceError:
             assert True
 
+    @isolate(['A'])
+    def test_missing_outputs(self):
+        """Test the list of missing outputs"""
+        pp = ProjectParser()
+        project = """file://B file://C file://D  <- file://file1 file://A
+            echo C > C
+        """
+        pp.set_project(project)
+        workflow = pp.parse_project()
+
+        process = workflow._processes[0]
+        WorkflowRuner.create_tuttle_dirs()
+        reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(process)
+        process.run(reserved_path, log_stdout, log_stderr)
+        missing = process.missing_outputs()
+
+        assert len(missing) == 2
+        assert missing[0].url == "file://B"
+        assert missing[1].url == "file://D"
+
     def test_check_circular_references(self):
         """
         Should return true for there are some circular references

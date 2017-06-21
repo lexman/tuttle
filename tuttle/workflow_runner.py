@@ -105,6 +105,11 @@ class WorkflowRuner():
         return LogsFollower.get_logger()
 
     @staticmethod
+    def resources2list(urls):
+        res = "\n".join(("* {}".format(url) for url in urls))
+        return res
+
+    @staticmethod
     def run_workflow(workflow):
         """ Runs a workflow by running every process in the right order
 
@@ -125,12 +130,13 @@ class WorkflowRuner():
                     reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(process)
                     lt.follow_process(logger, log_stdout, log_stderr)
                     process.run(reserved_path, log_stdout, log_stderr)
-                    for res in process.iter_outputs():
-                        if not res.exists():
-                            process.post_fail()
-                            msg = "After execution of process {} : resource {} should have been created".format(process.id,
-                                                                                                                res.url)
-                            raise ResourceError(msg)
+                    missing_outputs = process.missing_outputs()
+                    if missing_outputs:
+                        process.post_fail()
+                        msg = "After execution of process {} : these resources " \
+                              "should have been created : \n{} ".format(process.id, WorkflowRuner.resources2list(
+                            missing_outputs))
+                        raise ResourceError(msg)
                     workflow.update_signatures(process)
                 finally:
                     workflow.dump()
