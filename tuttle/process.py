@@ -132,3 +132,13 @@ class Process:
             if not in_res.exists():
                 return False
         return True
+
+    def missing_outputs(self):
+        """
+        :return: True if all input resources for this process exist, False otherwise
+        """
+        result = []
+        for resource in self.iter_outputs():
+            if not resource.exists():
+                result.append(resource)
+        return result
