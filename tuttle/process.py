@@ -19,6 +19,7 @@ class Process:
         self._code = ""
         self.log_stdout = None
         self.log_stderr = None
+        self._reserved_path = None
         self.success = None
         self._id = "{}_{}".format(self._filename, self._line_num)
 
@@ -96,6 +97,19 @@ class Process:
          is run
         """
         self._processor.static_check(self)
+
+    def assign_paths(self, reserved_path, log_stdout, log_stderr):
+        assert reserved_path != None
+        self._reserved_path = reserved_path
+        self.log_stdout = log_stdout
+        self.log_stderr = log_stderr
+
+    def set_start(self):
+        self._start = time()
+
+    def set_end(self, success):
+        self._end = time()
+        self.success = success
 
     def run(self, reserved_path, log_stdout, log_stderr):
         """

@@ -30,16 +30,35 @@ class WorkflowRuner():
     def tuttle_dir(*args):
         return join('.tuttle', *args)
 
+#    @staticmethod
+#    def prepare_paths(process):
+#        log_stdout = join(WorkflowRuner._logs_dir, "{}_stdout.txt".format(process.id))
+#        log_stderr = join(WorkflowRuner._logs_dir, "{}_err.txt".format(process.id))
+#        reserved_path = join(WorkflowRuner._processes_dir, process.id)
+#        if isdir(reserved_path):
+#            rmtree(reserved_path)
+#        elif isfile(reserved_path):
+#            remove(reserved_path)
+#        return reserved_path, log_stdout, log_stderr
+
     @staticmethod
-    def prepare_paths(process):
+    def prepare_and_assign_paths(process):
         log_stdout = join(WorkflowRuner._logs_dir, "{}_stdout.txt".format(process.id))
         log_stderr = join(WorkflowRuner._logs_dir, "{}_err.txt".format(process.id))
+        # It would be a good idea to clean up all directories before
+        # running the whole workflow
+        # For the moment we clean here : before folowing the logs
+        if isfile(log_stdout):
+            remove(log_stdout)
+        if isfile(log_stderr):
+            remove(log_stderr)
         reserved_path = join(WorkflowRuner._processes_dir, process.id)
         if isdir(reserved_path):
             rmtree(reserved_path)
         elif isfile(reserved_path):
             remove(reserved_path)
-        return reserved_path, log_stdout, log_stderr
+        assert reserved_path != None
+        process.assign_paths(reserved_path, log_stdout, log_stderr)
 
     @staticmethod
     def create_tuttle_dirs():
@@ -120,6 +139,11 @@ class WorkflowRuner():
         WorkflowRuner.create_tuttle_dirs()
         lt = LogsFollower()
         logger = LogsFollower.get_logger()
+
+        for process in workflow.iter_processes():
+            WorkflowRuner.prepare_and_assign_paths(process)
+            lt.follow_process(logger, process.log_stdout, process.log_stderr)
+
         with lt.trace_in_background():
             nb_process_run = 0
             process = workflow.pick_a_process_to_run()
@@ -127,15 +151,17 @@ class WorkflowRuner():
                 nb_process_run += 1
                 WorkflowRuner.print_header(process, logger)
                 try:
-                    reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(process)
-                    lt.follow_process(logger, log_stdout, log_stderr)
-                    process.run(reserved_path, log_stdout, log_stderr)
+                    #reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(process)
+                    #WorkflowRuner.prepare_and_assign_paths(process)
+                    #lt.follow_process(logger, process.log_stdout, process.log_stderr)
+                    assert process._reserved_path != None
+                    process.run(process._reserved_path, process.log_stdout, process.log_stderr)
                     missing_outputs = process.missing_outputs()
                     if missing_outputs:
                         process.post_fail()
                         msg = "After execution of process {} : these resources " \
                               "should have been created : \n{} ".format(process.id, WorkflowRuner.resources2list(
-                            missing_outputs))
+                                missing_outputs))
                         raise ResourceError(msg)
                     workflow.update_signatures(process)
                 finally:
