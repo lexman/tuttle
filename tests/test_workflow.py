@@ -109,8 +109,10 @@ file://file3 <- file://file1
             """)
         process = workflow._processes[0]
         WorkflowRuner.create_tuttle_dirs()
-        reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(process)
-        process.run(reserved_path, log_stdout, log_stderr)
+        #reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(process)
+        #process.run(reserved_path, log_stdout, log_stderr)
+        WorkflowRuner.prepare_and_assign_paths(process)
+        process.run(process._reserved_path, process.log_stdout, process.log_stderr)
         assert path.isfile("result")
 
     @isolate(['A'])
@@ -154,8 +156,9 @@ file://file3 <- file://file1
 
         process = workflow._processes[0]
         WorkflowRuner.create_tuttle_dirs()
-        reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(process)
-        process.run(reserved_path, log_stdout, log_stderr)
+        #reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(process)
+        WorkflowRuner.prepare_and_assign_paths(process)
+        process.run(process._reserved_path, process.log_stdout, process.log_stderr)
         missing = process.missing_outputs()
 
         assert len(missing) == 2
