@@ -234,7 +234,7 @@ file://file3 <- file://file2""")
 
     @isolate(['A'])
     def test_should_run_after_invalidation(self):
-        """ Should display a message if there is no tuttlefile in the current directory"""
+        """  """
         project = """file://B <- file://A
             echo A produces B
             echo A produces B > B
