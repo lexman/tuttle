@@ -40,6 +40,10 @@ class LogTracer:
                     self._logger.log(self._loglevel, line)
         return traced
 
+    def close(self):
+        if self._filedescr:
+            self._filedescr.close()
+
     @staticmethod
     def get_logger():
         logger = logging.getLogger(__name__)
@@ -95,7 +99,6 @@ class LogsFollower:
 
     def trace_in_background(self):
         def trace_logs_until_stop():
-            traced = True
             while True:
                 traced = self.trace_logs()
                 if self._terminate and not traced:
@@ -110,6 +113,8 @@ class LogsFollower:
         #sleep(0.1) # wait for flush
         self._terminate = True
         self._thread.join()
+        for log in self._logs:
+            log.close()
 
     @staticmethod
     def get_logger():
