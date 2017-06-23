@@ -30,17 +30,6 @@ class WorkflowRuner():
     def tuttle_dir(*args):
         return join('.tuttle', *args)
 
-#    @staticmethod
-#    def prepare_paths(process):
-#        log_stdout = join(WorkflowRuner._logs_dir, "{}_stdout.txt".format(process.id))
-#        log_stderr = join(WorkflowRuner._logs_dir, "{}_err.txt".format(process.id))
-#        reserved_path = join(WorkflowRuner._processes_dir, process.id)
-#        if isdir(reserved_path):
-#            rmtree(reserved_path)
-#        elif isfile(reserved_path):
-#            remove(reserved_path)
-#        return reserved_path, log_stdout, log_stderr
-
     @staticmethod
     def prepare_and_assign_paths(process):
         log_stdout = join(WorkflowRuner._logs_dir, "{}_stdout.txt".format(process.id))
@@ -99,7 +88,7 @@ class WorkflowRuner():
         print "=" * 60
 
     @staticmethod
-    def print_log_if_exists(log_file, header):
+    def print_log_if_exists_old(log_file, header):
         if not isfile(log_file):
             return
         with open(log_file, "r") as f:
@@ -109,7 +98,7 @@ class WorkflowRuner():
                 print content
 
     @staticmethod
-    def print_logs(process):
+    def print_logs_old(process):
         WorkflowRuner.print_log_if_exists(process.log_stdout, "stdout")
         WorkflowRuner.print_log_if_exists(process.log_stderr, "stderr")
 
