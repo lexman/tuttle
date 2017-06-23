@@ -57,7 +57,6 @@ class WorkflowRuner():
             rmtree(reserved_path)
         elif isfile(reserved_path):
             remove(reserved_path)
-        assert reserved_path != None
         process.assign_paths(reserved_path, log_stdout, log_stderr)
 
     @staticmethod
@@ -129,17 +128,27 @@ class WorkflowRuner():
         return res
 
     @staticmethod
+    def raise_if_missing_process_outputs(process):
+        missing_outputs = process.missing_outputs()
+        if missing_outputs:
+            msg = "After execution of process {} : these resources " \
+                  "should have been created : \n{} ".format(process.id, WorkflowRuner.resources2list(
+                missing_outputs))
+            raise ResourceError(msg)
+        pass
+
+    @staticmethod
     def run_workflow(workflow):
         """ Runs a workflow by running every process in the right order
 
         :return:
         :raises ExecutionError if an error occurs
         """
-        # TODO create tuttle dirs only once
-        WorkflowRuner.create_tuttle_dirs()
         lt = LogsFollower()
         logger = LogsFollower.get_logger()
 
+        # TODO create tuttle dirs only once
+        WorkflowRuner.create_tuttle_dirs()
         for process in workflow.iter_processes():
             WorkflowRuner.prepare_and_assign_paths(process)
             lt.follow_process(logger, process.log_stdout, process.log_stderr)
@@ -150,21 +159,17 @@ class WorkflowRuner():
             while process is not None:
                 nb_process_run += 1
                 WorkflowRuner.print_header(process, logger)
+                success = True
                 try:
-                    #reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(process)
-                    #WorkflowRuner.prepare_and_assign_paths(process)
-                    #lt.follow_process(logger, process.log_stdout, process.log_stderr)
-                    assert process._reserved_path != None
-                    process.run(process._reserved_path, process.log_stdout, process.log_stderr)
-                    missing_outputs = process.missing_outputs()
-                    if missing_outputs:
-                        process.post_fail()
-                        msg = "After execution of process {} : these resources " \
-                              "should have been created : \n{} ".format(process.id, WorkflowRuner.resources2list(
-                                missing_outputs))
-                        raise ResourceError(msg)
+                    process.set_start()
+                    process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
+                    WorkflowRuner.raise_if_missing_process_outputs(process)
                     workflow.update_signatures(process)
+                except:
+                    success = False
+                    raise
                 finally:
+                    process.set_end(success)
                     workflow.dump()
                     workflow.create_reports()
                 process = workflow.pick_a_process_to_run()

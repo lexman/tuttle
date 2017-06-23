@@ -111,33 +111,6 @@ class Process:
         self._end = time()
         self.success = success
 
-    def run(self, reserved_path, log_stdout, log_stderr):
-        """
-        Runs the process and retreive all the metadata : logs, return code, duration...
-        :param reserved_path: Path where the processor can write a file or a directory to store executable
-        :param log_stdout: File name where to write stdout
-        :param log_stderr: File name where to write stderr
-        :return: The return code for the process
-        """
-        self.log_stdout = log_stdout
-        self.log_stderr = log_stderr
-        self._start = time()
-        try:
-            self._processor.run(self, reserved_path, self.log_stdout, self.log_stderr)
-        except:
-            self.success = False
-            raise
-        else:
-            self.success = True
-        finally:
-            self._end = time()
-
-    def post_fail(self):
-        """
-        Called if post verification that every resource have been created failed
-        """
-        self.success = False
-
     def all_inputs_exists(self):
         """
         :return: True if all input resources for this process exist, False otherwise
