@@ -149,9 +149,6 @@ class Workflow:
                 for preprocess in self.iter_preprocesses():
                     WorkflowRuner.print_preprocess_header(preprocess, logger)
                     try:
-                        #reserved_path, log_stdout, log_stderr = WorkflowRuner.prepare_paths(preprocess)
-                        #lt.follow_process(logger, log_stdout, log_stderr)
-                        #preprocess.run(preprocess._reserved_path, preprocess.log_stdout, preprocess.log_stderr)
                         preprocess._processor.run(preprocess, preprocess._reserved_path, preprocess.log_stdout, preprocess.log_stderr)
 
                     finally:
