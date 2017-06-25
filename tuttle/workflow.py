@@ -318,3 +318,13 @@ class Workflow:
             resource = self.find_resource(url)
             if resource and resource.creator_process:
                 resource.creator_process.reset_execution_info()
+
+    def runnable_processes(self):
+        """ List processes that can be run (because they have all inputs)
+        :return:
+        """
+        res = set
+        for process in self.iter_processes():
+            if process.start is None and process.all_inputs_exists():
+                return res.add(process)
+        return res

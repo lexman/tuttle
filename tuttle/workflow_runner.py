@@ -5,6 +5,7 @@ Utility methods for use in running workflows.
 This module is responsible for the inner structure of the .tuttle directory
 """
 from glob import glob
+from multiprocessing import Pool
 from shutil import rmtree
 from os import remove, makedirs, getcwd
 from os.path import join, isdir, isfile
@@ -162,6 +163,58 @@ class WorkflowRuner():
                     workflow.dump()
                     workflow.create_reports()
                 process = workflow.pick_a_process_to_run()
+        return nb_process_run
+
+    def __init__(self, poolsize):
+        self._lt = LogsFollower()
+        self._logger = LogsFollower.get_logger()
+        self._pool = Pool(poolsize)
+        self._free_processes = poolsize
+
+    def run_process_without_exception(self, process):
+        try:
+            process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
+            WorkflowRuner.raise_if_missing_process_outputs(process)
+        except Exception as e:
+            process.set_end(False)
+            return False, e
+        process.set_end(True)
+        return True, None
+
+    def run_parallel_processes(self, workflow):
+        nb_process_run = 0
+        process = workflow.pick_a_process_to_run()
+        runnables = workflow.runnable_processes()
+        while process is not None:
+            nb_process_run += 1
+            WorkflowRuner.print_header(process, self._logger)
+            success, e = self.run_process_without_exception(process)
+            process.set_start()
+            if (success):
+                workflow.update_signatures(process)
+            process.set_end(success)
+            workflow.dump()
+            workflow.create_reports()
+            if not success:
+                raise e
+            process = workflow.pick_a_process_to_run()
+        return nb_process_run
+
+    def run_parallel_workflow(self, workflow):
+        """ Runs a workflow by running every process in the right order
+
+        :return:
+        :raises ExecutionError if an error occurs
+        """
+        # TODO create tuttle dirs only once
+        WorkflowRuner.create_tuttle_dirs()
+        for process in workflow.iter_processes():
+            WorkflowRuner.prepare_and_assign_paths(process)
+            self._lt.follow_process(self._logger, process.log_stdout, process.log_stderr)
+
+        nb_process_run = 0
+        with self._lt.trace_in_background():
+            nb_process_run = self.run_parallel_processes(self, workflow)
         return nb_process_run
 
 
