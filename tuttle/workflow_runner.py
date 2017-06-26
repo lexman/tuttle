@@ -172,7 +172,7 @@ class WorkflowRuner():
         self._pool = Pool(poolsize)
         self._free_workers = poolsize
         self._completed_processes = set()
-        self._error = False
+        self._errors = []
 
     def acquire_worker(self):
         self._free_workers -= 1
@@ -204,7 +204,7 @@ class WorkflowRuner():
                 workflow.update_signatures(process)
                 self._completed_processes.add(process)
             else :
-                self._error = e
+                self._errors.append(e)
             process.set_end(success)
             workflow.dump()
             workflow.create_reports()
@@ -216,19 +216,20 @@ class WorkflowRuner():
     def run_parallel_processes(self, workflow):
         nb_process_run = 0
         runnables = workflow.runnable_processes()
-        while runnables and self._error is False:
+        while runnables and not self._errors:
             if self.workers_available():
                 # In steady state, this means a process has complete
                 completed_process = self._completed_processes.pop()
                 while completed_process:
                     runnables = runnables + workflow.discover_runnable_processes(completed_process)
+                    nb_process_run += 1
                     completed_process = self._completed_processes.pop()
                 process = runnables.pop()
                 self.run_process_async(process, workflow)
             else:
                 sleep(0.1)
-        if not self._error is False:
-            raise self._error
+        if self._errors:
+            raise self._errors[0]
 
         return nb_process_run
 
