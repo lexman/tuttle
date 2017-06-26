@@ -64,6 +64,16 @@ class Process:
     def has_outputs(self):
         return len(self._outputs) > 0
 
+    def has_input(self, resource):
+        return resource in self._inputs
+
+    def depends_on_process(self, process):
+        """ Returns True if self deprends on a resource created by process"""
+        for output_resource in process.iter_outputs():
+            if self.has_input(output_resource):
+                return True
+        return False
+
     def pick_an_output(self):
         if not self.has_outputs():
             return None
