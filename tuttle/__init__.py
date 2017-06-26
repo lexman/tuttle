@@ -68,7 +68,10 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
 
             raise_if_missing_input(workflow)
             raise_if_process_in_error(workflow)
-            nb_process_run = WorkflowRuner.run_workflow(workflow)
+            wr = WorkflowRuner(4)
+            nb_process_run = wr.run_workflow(workflow)
+            #WorkflowRuner.run_workflow(workflow)
+            #nb_process_run = WorkflowRuner.run_workflow(workflow)
 
             if nb_process_run > 0 or shrunk:
                 print("====")
