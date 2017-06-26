@@ -12,6 +12,7 @@ from os.path import join, isdir, isfile
 from tuttle.error import TuttleError
 from tuttle.utils import EnvVar
 from tuttle.log_follower import LogsFollower
+from time import sleep
 
 class ResourceError(TuttleError):
     pass
@@ -169,35 +170,66 @@ class WorkflowRuner():
         self._lt = LogsFollower()
         self._logger = LogsFollower.get_logger()
         self._pool = Pool(poolsize)
-        self._free_processes = poolsize
+        self._free_workers = poolsize
+        self._completed_processes = set()
+        self._error = False
 
-    def run_process_without_exception(self, process):
-        try:
-            process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
-            WorkflowRuner.raise_if_missing_process_outputs(process)
-        except Exception as e:
-            process.set_end(False)
-            return False, e
-        process.set_end(True)
-        return True, None
+    def acquire_worker(self):
+        self._free_workers -= 1
 
-    def run_parallel_processes(self, workflow):
-        nb_process_run = 0
-        process = workflow.pick_a_process_to_run()
-        runnables = workflow.runnable_processes()
-        while process is not None:
-            nb_process_run += 1
-            WorkflowRuner.print_header(process, self._logger)
-            success, e = self.run_process_without_exception(process)
-            process.set_start()
-            if (success):
+    def release_worker(self):
+        self._free_workers += 1
+
+    def workers_available(self):
+        return self._free_workers
+
+    def run_process_async(self, process, workflow):
+        self.acquire_worker()
+
+        def run_process_without_exception(process):
+            try:
+                process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
+                WorkflowRuner.raise_if_missing_process_outputs(process)
+            except Exception as e:
+                process.set_end(False)
+                return False, e
+            process.set_end(True)
+            return True, None
+
+        def process_run_callback(self, success, e):
+            self.release_worker()
+            print "Success : {}".format(success)
+            print "Exception : {}".format(str(e))
+            if success:
                 workflow.update_signatures(process)
+                self._completed_processes.add(process)
+            else :
+                self._error = e
             process.set_end(success)
             workflow.dump()
             workflow.create_reports()
-            if not success:
-                raise e
-            process = workflow.pick_a_process_to_run()
+
+        process.set_start()
+        WorkflowRuner.print_header(process, self._logger)
+        self._pool.apply_async(run_process_without_exception, [process], callback = process_run_callback)
+
+    def run_parallel_processes(self, workflow):
+        nb_process_run = 0
+        runnables = workflow.runnable_processes()
+        while runnables and self._error is False:
+            if self.workers_available():
+                # In steady state, this means a process has complete
+                completed_process = self._completed_processes.pop()
+                while completed_process:
+                    runnables = runnables + workflow.discover_runnable_processes(completed_process)
+                    completed_process = self._completed_processes.pop()
+                process = runnables.pop()
+                self.run_process_async(process, workflow)
+            else:
+                sleep(0.1)
+        if not self._error is False:
+            raise self._error
+
         return nb_process_run
 
     def run_parallel_workflow(self, workflow):

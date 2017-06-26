@@ -323,8 +323,20 @@ class Workflow:
         """ List processes that can be run (because they have all inputs)
         :return:
         """
-        res = set
+        res = set()
         for process in self.iter_processes():
             if process.start is None and process.all_inputs_exists():
                 return res.add(process)
+        return res
+
+    def discover_runnable_processes(self, complete_process):
+        """ List processes that can be run (because they have all inputs)
+        :return:
+        """
+        res = set()
+        for process in self.iter_processes():
+            if process.start is None:
+                if process.depends_on_process(complete_process):
+                    if process.all_inputs_exists():
+                        res.add(process)
         return res
