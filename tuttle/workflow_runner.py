@@ -13,6 +13,22 @@ from tuttle.error import TuttleError
 from tuttle.utils import EnvVar
 from tuttle.log_follower import LogsFollower
 from time import sleep
+import sys
+
+
+# This is a free method, because it will be serialized and passed
+# to another process, so it must not be linked to objects nor
+# capture closures
+def run_process_without_exception(process):
+    try:
+        process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
+        WorkflowRuner.raise_if_missing_process_outputs(process)
+    except Exception as e:
+        process.set_end(False)
+        return False, e
+    process.set_end(True)
+    return True, None
+
 
 class ResourceError(TuttleError):
     pass
@@ -169,8 +185,8 @@ class WorkflowRuner():
     def __init__(self, poolsize):
         self._lt = LogsFollower()
         self._logger = LogsFollower.get_logger()
-        self._pool = Pool(poolsize)
-        self._free_workers = poolsize
+        self._pool = None
+        self._poolsize = poolsize
         self._completed_processes = set()
         self._errors = []
 
@@ -183,54 +199,68 @@ class WorkflowRuner():
     def workers_available(self):
         return self._free_workers
 
+    def active_workers(self):
+        return self._free_workers != self._poolsize
+
     def run_process_async(self, process, workflow):
         self.acquire_worker()
 
-        def run_process_without_exception(process):
-            try:
-                process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
-                WorkflowRuner.raise_if_missing_process_outputs(process)
-            except Exception as e:
-                process.set_end(False)
-                return False, e
-            process.set_end(True)
-            return True, None
-
-        def process_run_callback(self, success, e):
+        def process_run_callback(result):
+            self._logger.info("Callback !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            success, e = result
             self.release_worker()
-            print "Success : {}".format(success)
-            print "Exception : {}".format(str(e))
+            self._logger.info("Success : {}".format(success))
+            self._logger.info("Process : {} - {}".format(process, process.id))
+            self._completed_processes.add(process)
             if success:
-                workflow.update_signatures(process)
-                self._completed_processes.add(process)
+                self._logger.info("self._completed_processes = {}".format(self._completed_processes))
             else :
+                self._logger.info("Adding e to error")
                 self._errors.append(e)
             process.set_end(success)
-            workflow.dump()
-            workflow.create_reports()
+            #workflow.dump()
+            #workflow.create_reports()
 
         process.set_start()
         WorkflowRuner.print_header(process, self._logger)
-        self._pool.apply_async(run_process_without_exception, [process], callback = process_run_callback)
+        resp = self._pool.apply_async(run_process_without_exception, [process], callback = process_run_callback)
 
     def run_parallel_processes(self, workflow):
         nb_process_run = 0
         runnables = workflow.runnable_processes()
-        while runnables and not self._errors:
+        self._logger.info(self._errors )
+        self._logger.info(self.active_workers())
+        self._logger.info(runnables)
+        error = False
+        while not error and (self.active_workers() or self._completed_processes or runnables):
+            self._logger.info("while")
             if self.workers_available():
+                self._logger.info("workers_available")
+                self._logger.info("self._completed_processes = {}".format(self._completed_processes))
                 # In steady state, this means a process has complete
-                completed_process = self._completed_processes.pop()
-                while completed_process:
-                    runnables = runnables + workflow.discover_runnable_processes(completed_process)
-                    nb_process_run += 1
+                while self._completed_processes:
                     completed_process = self._completed_processes.pop()
-                process = runnables.pop()
-                self.run_process_async(process, workflow)
+                    if completed_process.success:
+                        workflow.update_signatures(completed_process )
+                    else :
+                        error = True
+                    workflow.dump()
+                    workflow.create_reports()
+                    self._logger.info("completed_process = {} - {}".format(str(completed_process), completed_process.id))
+                    runnables = runnables | workflow.discover_runnable_processes(completed_process)
+                    self._logger.info("runnables = {}".format(str(runnables)))
+                    nb_process_run += 1
+                if runnables:
+                    process = runnables.pop()
+                    self._logger.info("run_process_async")
+                    self.run_process_async(process, workflow)
+                else:
+                    sleep(0.1)
             else:
                 sleep(0.1)
         if self._errors:
-            raise self._errors[0]
-
+            raise TuttleError(str(self._errors[0]))
+        self._logger.info("nb_process_run = {}".format(nb_process_run))
         return nb_process_run
 
     def run_parallel_workflow(self, workflow):
@@ -247,7 +277,14 @@ class WorkflowRuner():
 
         nb_process_run = 0
         with self._lt.trace_in_background():
-            nb_process_run = self.run_parallel_processes(self, workflow)
+            self._pool = Pool(self._poolsize)
+            self._free_workers = self._poolsize
+            try:
+                nb_process_run = self.run_parallel_processes(workflow)
+            finally:
+                self._pool.terminate()
+                self._pool.join()
+        self._logger.info("nb_process_run = {}".format(nb_process_run))
         return nb_process_run
 
 

@@ -326,7 +326,7 @@ class Workflow:
         res = set()
         for process in self.iter_processes():
             if process.start is None and process.all_inputs_exists():
-                return res.add(process)
+                res.add(process)
         return res
 
     def discover_runnable_processes(self, complete_process):
@@ -334,9 +334,15 @@ class Workflow:
         :return:
         """
         res = set()
+        #import logging
+        #logging.getLogger("foo").info(res)
         for process in self.iter_processes():
+            #logging.getLogger("foo").info(process.id)
             if process.start is None:
+                #logging.getLogger("foo").info("... has not started yet")
                 if process.depends_on_process(complete_process):
+                    #logging.getLogger("foo").info("And depends on the complete process")
                     if process.all_inputs_exists():
+                        #logging.getLogger("foo").info("And all its inputs exist")
                         res.add(process)
         return res

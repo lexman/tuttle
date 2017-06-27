@@ -202,3 +202,23 @@ file://B <- file://A
             """)
         p = workflow.pick_a_process_to_run()
         assert p.id.find("_5") >= 0, p.id
+
+
+    @isolate(['A'])
+    def test_runnable_processes(self):
+        """
+        Should run a process and update the state of the workflow
+        """
+        workflow = self.get_workflow(
+            """file://C <- file://B
+            echo C > C
+            echo B creates C
+
+file://B <- file://A
+            echo B > B
+            echo A creates B
+            """)
+        processes = workflow.runnable_processes()
+        assert processes, processes
+        p = processes.pop()
+        assert p.id.find("_5") >= 0, p.id
