@@ -96,7 +96,7 @@ file://file3 <- file://file1
 """)
         workflow.compute_dependencies()
         assert workflow._resources['file://file1'].dependant_processes == [workflow._processes[0],
-                                                                          workflow._processes[1]]
+                                                                           workflow._processes[1]]
 
     @isolate
     def test_run_process(self):
@@ -137,7 +137,8 @@ file://file3 <- file://file1
             """)
         workflow.static_check_processes()
         try:
-            WorkflowRuner.run_workflow(workflow)
+            wr = WorkflowRuner(3)
+            wr.run_parallel_workflow(workflow)
             assert False, "Exception has not been not raised"
         except ResourceError:
             assert True
@@ -202,7 +203,6 @@ file://B <- file://A
             """)
         p = workflow.pick_a_process_to_run()
         assert p.id.find("_5") >= 0, p.id
-
 
     @isolate(['A'])
     def test_runnable_processes(self):

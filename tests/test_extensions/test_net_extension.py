@@ -98,7 +98,7 @@ class TestHttpResource():
 
     def test_resource_last_modified_signature(self):
         """ An HTTPResource with an Last-Modified should use it as signature in case it doesn't have Etag"""
-        #res = HTTPResource("http://www.wikipedia.org/")
+        # res = HTTPResource("http://www.wikipedia.org/")
         res = HTTPResource("http://localhost:8042/resource_with_last_modified")
         sig = res.signature()
         assert sig == 'Last-Modified: Tue, 30 Jun 1981 03:14:59 GMT', sig
@@ -109,7 +109,7 @@ class TestHttpResource():
         sig = res.signature()
         assert sig == 'sha1-32K: 7ab4a6c6ca8bbcb3de82530797a0e455070e18fa', sig
 
-class TestHttpsResource():
+class TestHttpsResource:
 
     def test_real_resource_exists(self):
         """A real resource should exist"""
@@ -132,7 +132,7 @@ class TestHttpsResource():
         assert len(inputs) == 1
 
 
-class TestDownloadProcessor():
+class TestDownloadProcessor:
 
     @isolate
     def test_standard_download(self):
@@ -142,7 +142,8 @@ class TestDownloadProcessor():
         pp.set_project(project)
         workflow = pp.parse_extend_and_check_project()
         workflow.static_check_processes()
-        WorkflowRuner.run_workflow(workflow)
+        wr = WorkflowRuner(3)
+        wr.run_parallel_workflow(workflow)
         assert isfile("google.html")
         content = open("google.html").read()
         assert content.find("<title>Google</title>") >= 0
@@ -158,7 +159,8 @@ class TestDownloadProcessor():
         pp.set_project(project)
         workflow = pp.parse_extend_and_check_project()
         workflow.static_check_processes()
-        WorkflowRuner.run_workflow(workflow)
+        wr = WorkflowRuner(3)
+        wr.run_parallel_workflow(workflow)
         assert isfile("jquery.js")
         logs = open(join(".tuttle", "processes", "logs", "__1_stdout.txt"), "r").read()
         assert logs.find("...") >= 0
@@ -174,7 +176,6 @@ class TestDownloadProcessor():
             assert False, "An exception should be raised"
         except TuttleError:
             assert True
-
 
     # @isolate
     # def test_download_fails(self):

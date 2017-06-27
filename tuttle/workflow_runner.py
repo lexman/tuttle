@@ -130,8 +130,8 @@ class WorkflowRuner():
         return LogsFollower.get_logger()
 
     @staticmethod
-    def resources2list(urls):
-        res = "\n".join(("* {}".format(url) for url in urls))
+    def resources2list(resources):
+        res = "\n".join(("* {}".format(resource.url) for resource in resources))
         return res
 
     @staticmethod
@@ -142,45 +142,6 @@ class WorkflowRuner():
                   "should have been created : \n{} ".format(process.id, WorkflowRuner.resources2list(
                 missing_outputs))
             raise ResourceError(msg)
-        pass
-
-    @staticmethod
-    def run_workflow(workflow):
-        """ Runs a workflow by running every process in the right order
-
-        :return:
-        :raises ExecutionError if an error occurs
-        """
-        lt = LogsFollower()
-        logger = LogsFollower.get_logger()
-
-        # TODO create tuttle dirs only once
-        WorkflowRuner.create_tuttle_dirs()
-        for process in workflow.iter_processes():
-            WorkflowRuner.prepare_and_assign_paths(process)
-            lt.follow_process(logger, process.log_stdout, process.log_stderr)
-
-        with lt.trace_in_background():
-            nb_process_run = 0
-            process = workflow.pick_a_process_to_run()
-            while process is not None:
-                nb_process_run += 1
-                WorkflowRuner.print_header(process, logger)
-                success = True
-                try:
-                    process.set_start()
-                    process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
-                    WorkflowRuner.raise_if_missing_process_outputs(process)
-                    workflow.update_signatures(process)
-                except:
-                    success = False
-                    raise
-                finally:
-                    process.set_end(success)
-                    workflow.dump()
-                    workflow.create_reports()
-                process = workflow.pick_a_process_to_run()
-        return nb_process_run
 
     def __init__(self, poolsize):
         self._lt = LogsFollower()
@@ -208,11 +169,11 @@ class WorkflowRuner():
 
         def process_run_callback(result):
             success, e = result
+            process.set_end(success)
             self.release_worker()
             self._completed_processes.add(process)
             if not success:
                 self._errors.append(e)
-            process.set_end(success)
 
         process.set_start()
         WorkflowRuner.print_header(process, self._logger)
@@ -221,9 +182,6 @@ class WorkflowRuner():
     def run_parallel_processes(self, workflow):
         nb_process_run = 0
         runnables = workflow.runnable_processes()
-        self._logger.info(self._errors )
-        self._logger.info(self.active_workers())
-        self._logger.info(runnables)
         error = False
         while not error and (self.active_workers() or self._completed_processes or runnables):
             started_a_process = False
@@ -251,7 +209,8 @@ class WorkflowRuner():
             if not (handled_completed_process or started_a_process):
                 sleep(0.1)
         if self._errors:
-            raise TuttleError(str(self._errors[0]))
+            # TODO this fucks up the stacktrace
+            raise self._errors[0]
         return nb_process_run
 
     def run_parallel_workflow(self, workflow):
@@ -266,7 +225,6 @@ class WorkflowRuner():
             WorkflowRuner.prepare_and_assign_paths(process)
             self._lt.follow_process(self._logger, process.log_stdout, process.log_stderr)
 
-        nb_process_run = 0
         with self._lt.trace_in_background():
             self._pool = Pool(self._poolsize)
             self._free_workers = self._poolsize
