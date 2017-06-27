@@ -3,6 +3,7 @@
 import glob
 from os.path import isfile
 from tests.functional_tests import isolate, run_tuttle_file
+from tuttle.error import TuttleError
 from tuttle.project_parser import ProjectParser
 from tuttle.workflow_runner import WorkflowRuner
 
@@ -36,7 +37,8 @@ file://D <- file://A
     @isolate(['A', 'test_error_in_process.py'])
     def test_isolation_decorator(self):
         files = glob.glob("*")
-        assert set(files) == set(['A', 'test_error_in_process.py']), files
+        assert set(files) == {'A', 'test_error_in_process.py'}, files
+        # assert set(files) == set(['A', 'test_error_in_process.py']), files
 
     @isolate
     def test_isolation_decorator_without_args(self):
@@ -64,7 +66,7 @@ file://D <- file://A
         assert rcode == 2
         assert isfile('B')
         assert not isfile('C')
-        #assert not isfile('D')
+        # assert not isfile('D')
         second = """file://B <- file://A
     echo A produces B
     echo B > B
@@ -120,9 +122,10 @@ file://D <- file://A
         pp.set_project(first)
         workflow = pp.parse_extend_and_check_project()
         try:
-            WorkflowRuner.run_workflow(workflow)
+            wr = WorkflowRuner(3)
+            wr.run_parallel_workflow(workflow)
             assert False, "A resource error should have been raised"
-        except:
+        except TuttleError:
             assert True
         process = workflow._processes[0]
         assert process.success is False, "Process should be marked as failed"
