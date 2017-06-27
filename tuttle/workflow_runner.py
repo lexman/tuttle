@@ -203,7 +203,7 @@ class WorkflowRuner():
     def active_workers(self):
         return self._free_workers != self._poolsize
 
-    def run_process_in_background(self, process, workflow):
+    def start_process_in_background(self, process, workflow):
         self.acquire_worker()
 
         def process_run_callback(result):
@@ -230,7 +230,7 @@ class WorkflowRuner():
             while self.workers_available() and runnables:
                 # No error
                 process = runnables.pop()
-                self.run_process_in_background(process, workflow)
+                self.start_process_in_background(process, workflow)
                 started_a_process = True
 
             handled_completed_process = False
@@ -240,7 +240,8 @@ class WorkflowRuner():
                     workflow.update_signatures(completed_process)
                 else:
                     error = True
-                runnables = runnables | workflow.discover_runnable_processes(completed_process)
+                new_runnables = workflow.discover_runnable_processes(completed_process)
+                runnables.update(new_runnables)
                 handled_completed_process = True
                 nb_process_run += 1
             if handled_completed_process:
