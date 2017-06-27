@@ -46,7 +46,7 @@ file://D <- file://C
     echo D > D
 """
         rcode, output = run_tuttle_file(first)
-        assert rcode == 2
+        assert rcode == 2, output
         assert isfile(path.join(".tuttle", 'report.html'))
         assert path.isfile(path.join(".tuttle", "last_workflow.pickle"))
         second = """file://B <- file://A
@@ -95,7 +95,7 @@ file://C <- file://B
 """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
-        assert output.find("A produces B") >= 0
+        assert output.find("A produces B") >= 0, output
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
         assert output.find("Nothing to do") >= 0, output

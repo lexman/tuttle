@@ -43,6 +43,12 @@ def raise_if_process_in_error(workflow):
         raise TuttleError(msg)
 
 
+import logging
+l = logging.getLogger("MAIN")
+def log_processes_status(workflow):
+    for process in workflow.iter_processes():
+        l.info("process {} - success {}".format(process.id, process.success))
+
 def parse_invalidate_and_run(tuttlefile, threshold=-1):
         try:
             inv_collector = InvalidResourceCollector()
@@ -51,7 +57,11 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
 
             shrunk = False
             if previous_workflow:
+                l.info("Previous workflow")
+                log_processes_status(previous_workflow)
                 workflow.retrieve_execution_info(previous_workflow)
+                l.info("workflow after retrieve_execution_info")
+                log_processes_status(workflow)
                 shrunk = workflow.retrieve_signatures(previous_workflow)
                 different_res = previous_workflow.resources_not_created_the_same_way(workflow)
                 inv_collector.collect_with_dependencies(different_res, previous_workflow)
@@ -61,7 +71,11 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
             not_created = workflow.resources_not_created_by_tuttle()
             inv_collector.collect_resources(not_created, NOT_PRODUCED_BY_TUTTLE)
 
+            l.info("workflow before reset")
+            log_processes_status(workflow)
             workflow.reset_process_exec_info(inv_collector.urls())
+            l.info("workflow after reset")
+            log_processes_status(workflow)
             inv_collector.warn_and_remove(threshold)
             workflow.create_reports()
             workflow.dump()
@@ -69,7 +83,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
             raise_if_missing_input(workflow)
             raise_if_process_in_error(workflow)
             wr = WorkflowRuner(4)
-            nb_process_run = wr.run_workflow(workflow)
+            nb_process_run = wr.run_parallel_workflow(workflow)
             #WorkflowRuner.run_workflow(workflow)
             #nb_process_run = WorkflowRuner.run_workflow(workflow)
 
