@@ -203,18 +203,14 @@ class WorkflowRuner():
     def active_workers(self):
         return self._free_workers != self._poolsize
 
-    def run_process_async(self, process, workflow):
+    def run_process_in_background(self, process, workflow):
         self.acquire_worker()
 
         def process_run_callback(result):
-            #self._logger.info("Callback !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             success, e = result
             self.release_worker()
-            #self._logger.info("Success : {}".format(success))
-            #self._logger.info("Process : {} - {}".format(process, process.id))
             self._completed_processes.add(process)
             if not success:
-                #self._logger.info("Adding e to error")
                 self._errors.append(e)
             process.set_end(success)
 
@@ -230,31 +226,22 @@ class WorkflowRuner():
         self._logger.info(runnables)
         error = False
         while not error and (self.active_workers() or self._completed_processes or runnables):
-            self._logger.info("while")
             started_a_process = False
             while self.workers_available() and runnables:
                 # No error
-                started_a_process = True
-                #self._logger.info("workers_available")
-                #self._logger.info("self._completed_processes = {}".format(self._completed_processes))
-                # In steady state, this means a process has complete
                 process = runnables.pop()
-                #self._logger.info("run_process_async")
-                self.run_process_async(process, workflow)
+                self.run_process_in_background(process, workflow)
+                started_a_process = True
 
             handled_completed_process = False
             while self._completed_processes:
-                handled_completed_process = True
                 completed_process = self._completed_processes.pop()
                 if completed_process.success:
                     workflow.update_signatures(completed_process)
                 else:
                     error = True
-#                workflow.dump()
-#                workflow.create_reports()
-                # self._logger.info("completed_process = {} - {}".format(str(completed_process), completed_process.id))
                 runnables = runnables | workflow.discover_runnable_processes(completed_process)
-                # self._logger.info("runnables = {}".format(str(runnables)))
+                handled_completed_process = True
                 nb_process_run += 1
             if handled_completed_process:
                 workflow.dump()
@@ -263,7 +250,6 @@ class WorkflowRuner():
             if not (handled_completed_process or started_a_process):
                 sleep(0.1)
         if self._errors:
-            self._logger.info("Raising error")
             raise TuttleError(str(self._errors[0]))
         return nb_process_run
 
