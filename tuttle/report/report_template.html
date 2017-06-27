@@ -77,7 +77,7 @@
                     <tr>
                         <td>{{ process.start }}</td>
                         <td>{{ process.end }}</td>
-                        <td>{{ process.duration|round(3) }}</td>
+                        <td>{% if process.duration %} {{ process.duration|round(3) }} {% endif %}</td>
                         <td>{% if process.log_stdout_size == "empty" %}
                             (empty)
                             {% else %}
