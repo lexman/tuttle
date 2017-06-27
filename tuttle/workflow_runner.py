@@ -187,6 +187,7 @@ class WorkflowRuner():
         self._logger = LogsFollower.get_logger()
         self._pool = None
         self._poolsize = poolsize
+        self._free_workers = None
         self._completed_processes = set()
         self._errors = []
 
@@ -206,20 +207,16 @@ class WorkflowRuner():
         self.acquire_worker()
 
         def process_run_callback(result):
-            self._logger.info("Callback !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            #self._logger.info("Callback !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             success, e = result
             self.release_worker()
-            self._logger.info("Success : {}".format(success))
-            self._logger.info("Process : {} - {}".format(process, process.id))
+            #self._logger.info("Success : {}".format(success))
+            #self._logger.info("Process : {} - {}".format(process, process.id))
             self._completed_processes.add(process)
-            if success:
-                self._logger.info("self._completed_processes = {}".format(self._completed_processes))
-            else :
-                self._logger.info("Adding e to error")
+            if not success:
+                #self._logger.info("Adding e to error")
                 self._errors.append(e)
             process.set_end(success)
-            #workflow.dump()
-            #workflow.create_reports()
 
         process.set_start()
         WorkflowRuner.print_header(process, self._logger)
@@ -234,33 +231,40 @@ class WorkflowRuner():
         error = False
         while not error and (self.active_workers() or self._completed_processes or runnables):
             self._logger.info("while")
-            if self.workers_available():
-                self._logger.info("workers_available")
-                self._logger.info("self._completed_processes = {}".format(self._completed_processes))
+            started_a_process = False
+            while self.workers_available() and runnables:
+                # No error
+                started_a_process = True
+                #self._logger.info("workers_available")
+                #self._logger.info("self._completed_processes = {}".format(self._completed_processes))
                 # In steady state, this means a process has complete
-                while self._completed_processes:
-                    completed_process = self._completed_processes.pop()
-                    if completed_process.success:
-                        workflow.update_signatures(completed_process )
-                    else :
-                        error = True
-                    workflow.dump()
-                    workflow.create_reports()
-                    self._logger.info("completed_process = {} - {}".format(str(completed_process), completed_process.id))
-                    runnables = runnables | workflow.discover_runnable_processes(completed_process)
-                    self._logger.info("runnables = {}".format(str(runnables)))
-                    nb_process_run += 1
-                if runnables:
-                    process = runnables.pop()
-                    self._logger.info("run_process_async")
-                    self.run_process_async(process, workflow)
+                process = runnables.pop()
+                #self._logger.info("run_process_async")
+                self.run_process_async(process, workflow)
+
+            handled_completed_process = False
+            while self._completed_processes:
+                handled_completed_process = True
+                completed_process = self._completed_processes.pop()
+                if completed_process.success:
+                    workflow.update_signatures(completed_process)
                 else:
-                    sleep(0.1)
-            else:
+                    error = True
+#                workflow.dump()
+#                workflow.create_reports()
+                # self._logger.info("completed_process = {} - {}".format(str(completed_process), completed_process.id))
+                runnables = runnables | workflow.discover_runnable_processes(completed_process)
+                # self._logger.info("runnables = {}".format(str(runnables)))
+                nb_process_run += 1
+            if handled_completed_process:
+                workflow.dump()
+                workflow.create_reports()
+
+            if not (handled_completed_process or started_a_process):
                 sleep(0.1)
         if self._errors:
+            self._logger.info("Raising error")
             raise TuttleError(str(self._errors[0]))
-        self._logger.info("nb_process_run = {}".format(nb_process_run))
         return nb_process_run
 
     def run_parallel_workflow(self, workflow):
@@ -284,7 +288,6 @@ class WorkflowRuner():
             finally:
                 self._pool.terminate()
                 self._pool.join()
-        self._logger.info("nb_process_run = {}".format(nb_process_run))
         return nb_process_run
 
 
