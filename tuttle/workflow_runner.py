@@ -24,9 +24,7 @@ def run_process_without_exception(process):
         process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
         WorkflowRuner.raise_if_missing_process_outputs(process)
     except Exception as e:
-        process.set_end(False)
         return False, e
-    process.set_end(True)
     return True, None
 
 
@@ -62,16 +60,25 @@ class WorkflowRuner():
                 missing_outputs))
             raise ResourceError(msg)
 
-    def __init__(self, poolsize):
+    def __init__(self, nb_workers):
         self._lt = LogsFollower()
         self._logger = LogsFollower.get_logger()
         self._pool = None
-        self._poolsize = poolsize
+        self._nb_workers = nb_workers
         self._free_workers = None
         self._completed_processes = set()
         self._errors = []
 
+    def init_workers(self):
+        self._pool = Pool(self._nb_workers)
+        self._free_workers = self._nb_workers
+
+    def terminate_workers(self):
+        self._pool.terminate()
+        self._pool.join()
+
     def acquire_worker(self):
+        assert self._free_workers > 0
         self._free_workers -= 1
 
     def release_worker(self):
@@ -81,9 +88,9 @@ class WorkflowRuner():
         return self._free_workers
 
     def active_workers(self):
-        return self._free_workers != self._poolsize
+        return self._free_workers != self._nb_workers
 
-    def start_process_in_background(self, process, workflow):
+    def start_process_in_background(self, process):
         self.acquire_worker()
 
         def process_run_callback(result):
@@ -107,7 +114,7 @@ class WorkflowRuner():
             while self.workers_available() and runnables:
                 # No error
                 process = runnables.pop()
-                self.start_process_in_background(process, workflow)
+                self.start_process_in_background(process)
                 started_a_process = True
 
             handled_completed_process = False
@@ -145,13 +152,11 @@ class WorkflowRuner():
             self._lt.follow_process(self._logger, process.log_stdout, process.log_stderr)
 
         with self._lt.trace_in_background():
-            self._pool = Pool(self._poolsize)
-            self._free_workers = self._poolsize
+            self.init_workers()
             try:
                 nb_process_run = self.run_parallel_processes(workflow)
             finally:
-                self._pool.terminate()
-                self._pool.join()
+                self.terminate_workers()
                 WorkflowRuner.mark_unfinished_processes_as_failure(workflow)
         return nb_process_run
 
