@@ -116,7 +116,8 @@ class WorkflowRuner():
         resp = self._pool.apply_async(run_process_without_exception, [process], callback = process_run_callback)
 
     def run_parallel_processes(self, workflow):
-        nb_process_run = 0
+        success_processes = []
+        failure_processes = []
         runnables = workflow.runnable_processes()
         error = False
         while not error and (self.active_workers() or self._completed_processes or runnables):
@@ -132,43 +133,43 @@ class WorkflowRuner():
                 completed_process = self._completed_processes.pop()
                 if completed_process.success:
                     workflow.update_signatures(completed_process)
+                    success_processes.append(process)
                 else:
                     error = True
+                    failure_processes.append(process)
                 new_runnables = workflow.discover_runnable_processes(completed_process)
                 runnables.update(new_runnables)
                 handled_completed_process = True
-                nb_process_run += 1
             if handled_completed_process:
                 workflow.dump()
                 workflow.create_reports()
 
             if not (handled_completed_process or started_a_process):
                 sleep(0.1)
-        if self._errors:
-            # TODO this fucks up the stacktrace
-            raise TuttleError(self._errors[0])
-        return nb_process_run
+        return success_processes, failure_processes
 
-    def run_parallel_workflow(self, workflow):
-        """ Runs a workflow by running every process in the right order
-
-        :return:
-        :raises ExecutionError if an error occurs
-        """
+    def prepare_dirs_and_processes(self, workflow):
         # TODO create tuttle dirs only once
         WorkflowRuner.create_tuttle_dirs()
         for process in workflow.iter_processes():
             WorkflowRuner.prepare_and_assign_paths(process)
             self._lt.follow_process(self._logger, process.log_stdout, process.log_stderr)
 
+    def run_parallel_workflow(self, workflow):
+        """ Runs a workflow by running every process in the right order
+
+        :return: success_processes, failure_processes :
+        list of processes ended with success, list of processes ended with failure
+        """
+        self.prepare_dirs_and_processes(workflow)
         with self._lt.trace_in_background():
             self.init_workers()
-            try:
-                nb_process_run = self.run_parallel_processes(workflow)
-            finally:
-                self.terminate_workers()
+            success_processes, failure_processes = self.run_parallel_processes(workflow)
+            self.terminate_workers()
+            if failure_processes:
                 WorkflowRuner.mark_unfinished_processes_as_failure(workflow)
-        return nb_process_run
+
+        return success_processes, failure_processes
 
     @staticmethod
     def mark_unfinished_processes_as_failure(workflow):
