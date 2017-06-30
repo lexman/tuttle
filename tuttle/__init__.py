@@ -57,11 +57,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
 
             shrunk = False
             if previous_workflow:
-                l.info("Previous workflow")
-                log_processes_status(previous_workflow)
                 workflow.retrieve_execution_info(previous_workflow)
-                l.info("workflow after retrieve_execution_info")
-                log_processes_status(workflow)
                 shrunk = workflow.retrieve_signatures(previous_workflow)
                 different_res = previous_workflow.resources_not_created_the_same_way(workflow)
                 inv_collector.collect_with_dependencies(different_res, previous_workflow)
@@ -71,11 +67,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
             not_created = workflow.resources_not_created_by_tuttle()
             inv_collector.collect_resources(not_created, NOT_PRODUCED_BY_TUTTLE)
 
-            l.info("workflow before reset")
-            log_processes_status(workflow)
             workflow.reset_process_exec_info(inv_collector.urls())
-            l.info("workflow after reset")
-            log_processes_status(workflow)
             inv_collector.warn_and_remove(threshold)
             workflow.create_reports()
             workflow.dump()

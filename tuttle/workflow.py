@@ -4,7 +4,7 @@ from pickle import dump, load
 #from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
 #    prepare_paths, empty_extension_dir, TuttleEnv, list_extensions, print_preprocesses_header, print_preprocess_header, \
 #    print_preprocesses_footer, get_logger
-from tuttle.workflow_runner import WorkflowRuner, TuttleEnv, ResourceError
+from tuttle.workflow_runner import WorkflowRuner, TuttleEnv
 from tuttle.log_follower import LogsFollower
 
 

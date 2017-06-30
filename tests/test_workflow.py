@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from tests.functional_tests import isolate, run_tuttle_file
+from tuttle.error import TuttleError
 from tuttle.workflow import *
 from test_project_parser import ProjectParser
 from os import path
-from tuttle.workflow_runner import ResourceError, WorkflowRuner, tuttle_dir
+from tuttle.workflow_runner import WorkflowRuner, tuttle_dir
 
 
 class TestWorkflow():
@@ -140,7 +141,8 @@ file://file3 <- file://file1
             wr = WorkflowRuner(3)
             wr.run_parallel_workflow(workflow)
             assert False, "Exception has not been not raised"
-        except ResourceError:
+        except TuttleError:
+        #except ResourceError:
             assert True
 
     @isolate(['A'])

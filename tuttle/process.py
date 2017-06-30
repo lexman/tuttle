@@ -20,7 +20,8 @@ class Process:
         self.log_stdout = None
         self.log_stderr = None
         self._reserved_path = None
-        self.success = None
+        self._success = None
+        self._error_message = None
         self._id = "{}_{}".format(self._filename, self._line_num)
 
     @property
@@ -42,6 +43,14 @@ class Process:
     # TODO Use a setter ?
     def set_code(self, code):
         self._code = code
+
+    @property
+    def success(self):
+        return self._success
+
+    @property
+    def error_message(self):
+        return self._error_message
 
     @property
     def processor(self):
@@ -86,7 +95,7 @@ class Process:
         """
         self._start = process.start
         self._end = process.end
-        self.success = process.success
+        self._success = process.success
         self.log_stdout = process.log_stdout
         self.log_stderr = process.log_stderr
 
@@ -99,7 +108,7 @@ class Process:
         self._end = None
         self.log_stdout = None
         self.log_stderr = None
-        self.success = None
+        self._success = None
 
     def static_check(self):
         """
@@ -109,7 +118,7 @@ class Process:
         self._processor.static_check(self)
 
     def assign_paths(self, reserved_path, log_stdout, log_stderr):
-        assert reserved_path != None
+        assert reserved_path is not None
         self._reserved_path = reserved_path
         self.log_stdout = log_stdout
         self.log_stderr = log_stderr
@@ -117,9 +126,10 @@ class Process:
     def set_start(self):
         self._start = time()
 
-    def set_end(self, success):
+    def set_end(self, success, error_msg):
         self._end = time()
-        self.success = success
+        self._success = success
+        self._error_message = error_msg
 
     def all_inputs_exists(self):
         """
