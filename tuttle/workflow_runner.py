@@ -115,59 +115,54 @@ class WorkflowRuner():
         WorkflowRuner.print_header(process, self._logger)
         resp = self._pool.apply_async(run_process_without_exception, [process], callback = process_run_callback)
 
-    def run_parallel_processes(self, workflow):
-        success_processes = []
-        failure_processes = []
-        runnables = workflow.runnable_processes()
-        error = False
-        while not error and (self.active_workers() or self._completed_processes or runnables):
-            started_a_process = False
-            while self.workers_available() and runnables:
-                # No error
-                process = runnables.pop()
-                self.start_process_in_background(process)
-                started_a_process = True
-
-            handled_completed_process = False
-            while self._completed_processes:
-                completed_process = self._completed_processes.pop()
-                if completed_process.success:
-                    workflow.update_signatures(completed_process)
-                    success_processes.append(process)
-                else:
-                    error = True
-                    failure_processes.append(process)
-                new_runnables = workflow.discover_runnable_processes(completed_process)
-                runnables.update(new_runnables)
-                handled_completed_process = True
-            if handled_completed_process:
-                workflow.dump()
-                workflow.create_reports()
-
-            if not (handled_completed_process or started_a_process):
-                sleep(0.1)
-        return success_processes, failure_processes
-
-    def prepare_dirs_and_processes(self, workflow):
-        # TODO create tuttle dirs only once
-        WorkflowRuner.create_tuttle_dirs()
-        for process in workflow.iter_processes():
-            WorkflowRuner.prepare_and_assign_paths(process)
-            self._lt.follow_process(self._logger, process.log_stdout, process.log_stderr)
-
     def run_parallel_workflow(self, workflow):
         """ Runs a workflow by running every process in the right order
 
         :return: success_processes, failure_processes :
         list of processes ended with success, list of processes ended with failure
         """
-        self.prepare_dirs_and_processes(workflow)
+        # TODO create tuttle dirs only once
+        WorkflowRuner.create_tuttle_dirs()
+        for process in workflow.iter_processes():
+            WorkflowRuner.prepare_and_assign_paths(process)
+            self._lt.follow_process(process.log_stdout, process.log_stderr)
+
+        success_processes = []
+        failure_processes = []
         with self._lt.trace_in_background():
             self.init_workers()
-            success_processes, failure_processes = self.run_parallel_processes(workflow)
+            runnables = workflow.runnable_processes()
+            error = False
+            while not error and (self.active_workers() or self._completed_processes or runnables):
+                started_a_process = False
+                while self.workers_available() and runnables:
+                    # No error
+                    process = runnables.pop()
+                    self.start_process_in_background(process)
+                    started_a_process = True
+
+                handled_completed_process = False
+                while self._completed_processes:
+                    completed_process = self._completed_processes.pop()
+                    if completed_process.success:
+                        workflow.update_signatures(completed_process)
+                        success_processes.append(process)
+                    else:
+                        error = True
+                        failure_processes.append(process)
+                    new_runnables = workflow.discover_runnable_processes(completed_process)
+                    runnables.update(new_runnables)
+                    handled_completed_process = True
+                if handled_completed_process:
+                    workflow.dump()
+                    workflow.create_reports()
+
+                if not (handled_completed_process or started_a_process):
+                    sleep(0.1)
+
             self.terminate_workers()
-            if failure_processes:
-                WorkflowRuner.mark_unfinished_processes_as_failure(workflow)
+        if failure_processes:
+            WorkflowRuner.mark_unfinished_processes_as_failure(workflow)
 
         return success_processes, failure_processes
 
