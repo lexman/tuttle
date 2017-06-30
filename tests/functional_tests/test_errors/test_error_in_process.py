@@ -121,11 +121,7 @@ file://D <- file://A
         pp = ProjectParser()
         pp.set_project(first)
         workflow = pp.parse_extend_and_check_project()
-        try:
-            wr = WorkflowRuner(3)
-            wr.run_parallel_workflow(workflow)
-            assert False, "A resource error should have been raised"
-        except TuttleError:
-            assert True
-        process = workflow._processes[0]
-        assert process.success is False, "Process should be marked as failed"
+        wr = WorkflowRuner(3)
+        successes, failures = wr.run_parallel_workflow(workflow)
+        assert failures, "Process should be marked as failed"
+        assert failures[0].success is False, "Process should be marked as failed"

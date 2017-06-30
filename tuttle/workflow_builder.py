@@ -11,6 +11,7 @@ from tuttle.extensions.s3 import S3Resource
 from tuttle.extensions.sqlite import SQLiteProcessor, SQLiteResource
 import os
 
+
 class WorkflowBuilder():
     """A helper class to build Process classes from the name of processors and resources"""
     
@@ -33,7 +34,7 @@ class WorkflowBuilder():
         self._processors['sqlite'] = SQLiteProcessor()
         self._processors['postgresql'] = PostgresqlProcessor()
         self._processors['csv2sqlite'] = CSV2SQLiteProcessor()
-        if os.name =="nt":
+        if os.name == "nt":
             self._processors['default'] = self._processors['bat']
         else:
             self._processors['default'] = self._processors['shell']

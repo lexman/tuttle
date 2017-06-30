@@ -137,13 +137,11 @@ file://file3 <- file://file1
             echo test
             """)
         workflow.static_check_processes()
-        try:
-            wr = WorkflowRuner(3)
-            wr.run_parallel_workflow(workflow)
-            assert False, "Exception has not been not raised"
-        except TuttleError:
-        #except ResourceError:
-            assert True
+        wr = WorkflowRuner(3)
+        successes, failures = wr.run_parallel_workflow(workflow)
+        assert failures
+        failure = failures[0]
+        assert failure.error_message.find("these resources should have been created") >= 0, failure.error_message
 
     @isolate(['A'])
     def test_missing_outputs(self):
