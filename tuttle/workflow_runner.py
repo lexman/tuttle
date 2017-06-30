@@ -9,11 +9,18 @@ from multiprocessing import Pool
 from shutil import rmtree
 from os import remove, makedirs, getcwd
 from os.path import join, isdir, isfile
+from traceback import format_exception
+
 from tuttle.error import TuttleError
 from tuttle.utils import EnvVar
 from tuttle.log_follower import LogsFollower
 from time import sleep
 import sys
+
+
+def resources2list(resources):
+    res = "\n".join(("* {}".format(resource.url) for resource in resources))
+    return res
 
 
 # This is a free method, because it will be serialized and passed
@@ -22,9 +29,20 @@ import sys
 def run_process_without_exception(process):
     try:
         process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
-        WorkflowRuner.raise_if_missing_process_outputs(process)
-    except Exception as e:
-        return False, e
+    except TuttleError as e:
+        return False, str(e)
+    except Exception:
+        exc_info = sys.exc_info()
+        stacktrace = "".join(format_exception(*exc_info))
+        error_msg = "An unexpected error have happen in tuttle processor {} : \n" \
+                    "{}\n" \
+                    "Process {} will not complete.".format(process._processor.name, stacktrace, process.id)
+        return False, error_msg
+    missing_outputs = process.missing_outputs()
+    if missing_outputs:
+        msg = "After execution of process {} : these resources " \
+              "should have been created : \n{} ".format(process.id, resources2list(missing_outputs))
+        return False, msg
     return True, None
 
 
@@ -50,15 +68,6 @@ class WorkflowRuner():
     def resources2list(resources):
         res = "\n".join(("* {}".format(resource.url) for resource in resources))
         return res
-
-    @staticmethod
-    def raise_if_missing_process_outputs(process):
-        missing_outputs = process.missing_outputs()
-        if missing_outputs:
-            msg = "After execution of process {} : these resources " \
-                  "should have been created : \n{} ".format(process.id, WorkflowRuner.resources2list(
-                missing_outputs))
-            raise ResourceError(msg)
 
     def __init__(self, nb_workers):
         self._lt = LogsFollower()
@@ -95,7 +104,8 @@ class WorkflowRuner():
 
         def process_run_callback(result):
             success, e = result
-            process.set_end(success)
+            error_msg = e
+            process.set_end(success, error_msg)
             self.release_worker()
             self._completed_processes.add(process)
             if not success:
@@ -136,7 +146,7 @@ class WorkflowRuner():
                 sleep(0.1)
         if self._errors:
             # TODO this fucks up the stacktrace
-            raise self._errors[0]
+            raise TuttleError(self._errors[0])
         return nb_process_run
 
     def run_parallel_workflow(self, workflow):
@@ -164,7 +174,8 @@ class WorkflowRuner():
     def mark_unfinished_processes_as_failure(workflow):
         for process in workflow.iter_processes():
             if process.start and not process.end:
-                process.set_end(False)
+                error_msg = "This process was canceled because another process has failed"
+                process.set_end(False, error_msg)
         workflow.dump()
         workflow.create_reports()
 
