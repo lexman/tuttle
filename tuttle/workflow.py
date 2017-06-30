@@ -139,15 +139,14 @@ class Workflow:
             return
         lt = LogsFollower()
         WorkflowRuner.print_preprocesses_header()
-        logger = LogsFollower.get_logger()        
         for process in self.iter_preprocesses():
             WorkflowRuner.prepare_and_assign_paths(process)
-            lt.follow_process(logger, process.log_stdout, process.log_stderr)
+            lt.follow_process(process.log_stdout, process.log_stderr)
 
         with lt.trace_in_background():
             with TuttleEnv():
                 for preprocess in self.iter_preprocesses():
-                    WorkflowRuner.print_preprocess_header(preprocess, logger)
+                    WorkflowRuner.print_preprocess_header(preprocess, lt._logger)
                     try:
                         preprocess._processor.run(preprocess, preprocess._reserved_path, preprocess.log_stdout, preprocess.log_stderr)
 

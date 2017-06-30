@@ -23,18 +23,16 @@ def run_first_process(one_process_workflow, extra_processor = None):
     """ utility method to run the first process of a workflow and assert on process result """
     pp = ProjectParser()
     if extra_processor:
-        # we can inject a new processor to test thing like exception
+        # we can inject a new processor to test exceptions
         pp.wb._processors[extra_processor.name] = extra_processor
     pp.set_project(one_process_workflow)
     workflow = pp.parse_extend_and_check_project()
     process = workflow._processes[0]
-    print process
-    print process.id
     wr = WorkflowRuner(2)
     wr.init_workers()
     try:
         WorkflowRuner.prepare_and_assign_paths(process)
-        wr._lt.follow_process(wr._logger, process.log_stdout, process.log_stderr)
+        wr._lt.follow_process(process.log_stdout, process.log_stderr)
         with wr._lt.trace_in_background():
             wr.start_process_in_background(process) # The function we're testing !
         timeout = time() + 0.5

@@ -44,20 +44,6 @@ class LogTracer:
         if self._filedescr:
             self._filedescr.close()
 
-    @staticmethod
-    def get_logger():
-        logger = logging.getLogger(__name__)
-        logging.addLevelName(LogTracer.TUTTLE, 'tuttle')
-        logging.addLevelName(LogTracer.STDOUT, 'stdout')
-        logging.addLevelName(LogTracer.STDERR, 'stderr')
-        formater = logging.Formatter("[%(levelname)s] %(message)s")
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setFormatter(formater)
-        handler.setLevel(logging.INFO)
-        logger.setLevel(logging.INFO)
-        logger.addHandler(handler)
-        return logger
-
 class EnsureLogsFollowerStops(object):
     """
     Ensures a LogFollower is stopped when no longer required
@@ -77,11 +63,12 @@ class LogsFollower:
     def __init__(self):
         self._logs = []
         self._terminate = False
-        
-    def follow_process(self, logger, filestdout, filestderr):
+        self._logger = LogsFollower.get_logger()
+
+    def follow_process(self, filestdout, filestderr):
         """ Adds 2 files to follow : the stderr and stdin of a process """
-        tracer_stdin = LogTracer(logger, LogTracer.STDOUT, filestdout)
-        tracer_stderr = LogTracer(logger, LogTracer.STDERR, filestderr)
+        tracer_stdin = LogTracer(self._logger, LogTracer.STDOUT, filestdout)
+        tracer_stderr = LogTracer(self._logger, LogTracer.STDERR, filestderr)
         self._logs.append(tracer_stdin)
         self._logs.append(tracer_stderr)
         
@@ -118,5 +105,14 @@ class LogsFollower:
 
     @staticmethod
     def get_logger():
-        return LogTracer.get_logger()
-                
+        logger = logging.getLogger(__name__)
+        logging.addLevelName(LogTracer.TUTTLE, 'tuttle')
+        logging.addLevelName(LogTracer.STDOUT, 'stdout')
+        logging.addLevelName(LogTracer.STDERR, 'stderr')
+        formater = logging.Formatter("[%(levelname)s] %(message)s")
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setFormatter(formater)
+        handler.setLevel(logging.INFO)
+        logger.setLevel(logging.INFO)
+        logger.addHandler(handler)
+        return logger

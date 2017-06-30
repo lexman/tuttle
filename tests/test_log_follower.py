@@ -89,11 +89,10 @@ class TestLogFollower():
     def test_log_multiple_files(self):
         """LogTracer should log the content of several files in stdout"""
         with CaptureOutputs() as co:
-            logger = LogsFollower.get_logger()
             lf = LogsFollower()
-            lf.follow_process(logger, "w1.stdout", "w1.stderr")
-            lf.follow_process(logger, "w2.stdout", "w2.stderr")
-            lf.follow_process(logger, "w3.stdout", "w3.stderr")
+            lf.follow_process("w1.stdout", "w1.stderr")
+            lf.follow_process("w2.stdout", "w2.stderr")
+            lf.follow_process("w3.stdout", "w3.stderr")
 
             with open("w1.stdout", "w") as fo1, \
                  open("w1.stderr", "w") as fe1, \
@@ -131,7 +130,7 @@ class TestLogFollower():
     def test_log_format(self):
         """logs should display log level and message"""
         with CaptureOutputs() as co:
-            logger = LogTracer.get_logger()
+            logger = LogsFollower.get_logger()
             logger.info("MESSAGE")
         assert co.output.find("[INFO] MESSAGE") == 0, co.output
         
@@ -139,9 +138,8 @@ class TestLogFollower():
     def test_log_format_stdout_stderr(self):
         """logs should display log level and message"""
         with CaptureOutputs() as co:
-            logger = LogTracer.get_logger()
             lf = LogsFollower()
-            lf.follow_process(logger, "stdout", "stderr")
+            lf.follow_process("stdout", "stderr")
             with open("stdout", "w") as fout, \
                  open("stderr", "w") as ferr:
                      fout.write("file stdout")
@@ -158,9 +156,8 @@ class TestLogFollower():
            is over"""
         import time
         with CaptureOutputs() as co:
-            logger = LogTracer.get_logger()
             lf = LogsFollower()
-            lf.follow_process(logger, "stdout", "stderr")
+            lf.follow_process("stdout", "stderr")
             lf.trace_in_background()
             with open("stdout", "w") as fout, \
                  open("stderr", "w") as ferr:
@@ -176,9 +173,8 @@ class TestLogFollower():
         """Should log in background ans stop when foreground processing 
            is over even with a lot a data"""
         with CaptureOutputs() as co:
-            logger = LogTracer.get_logger()
             lf = LogsFollower()
-            lf.follow_process(logger, "stdout", "stderr")
+            lf.follow_process("stdout", "stderr")
             lf.trace_in_background()
             with open("stdout", "w") as fout, \
                  open("stderr", "w") as ferr:
@@ -196,9 +192,8 @@ class TestLogFollower():
     @isolate([])
     def test_thread_protection(self):
         """When a section of code using the LogsFollower is complete, the thread should stop"""
-        logger = LogTracer.get_logger()
         lf = LogsFollower()
-        lf.follow_process(logger, "stdout", "stderr")
+        lf.follow_process("stdout", "stderr")
         with lf.trace_in_background():
             assert lf._thread.is_alive(), "Backgroung thread isn't running..."
             with open("stdout", "w") as fout, \
