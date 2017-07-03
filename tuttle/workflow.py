@@ -143,16 +143,15 @@ class Workflow:
             WorkflowRuner.prepare_and_assign_paths(process)
             lt.follow_process(process.log_stdout, process.log_stderr)
 
-        with lt.trace_in_background():
-            with TuttleEnv():
-                for preprocess in self.iter_preprocesses():
-                    WorkflowRuner.print_preprocess_header(preprocess, lt._logger)
-                    try:
-                        preprocess._processor.run(preprocess, preprocess._reserved_path, preprocess.log_stdout, preprocess.log_stderr)
+        with lt.trace_in_background(), TuttleEnv():
+            for preprocess in self.iter_preprocesses():
+                WorkflowRuner.print_preprocess_header(preprocess, lt._logger)
+                try:
+                    preprocess._processor.run(preprocess, preprocess._reserved_path, preprocess.log_stdout, preprocess.log_stderr)
 
-                    finally:
-                        self.create_reports()
-                WorkflowRuner.print_preprocesses_footer()
+                finally:
+                    self.create_reports()
+            WorkflowRuner.print_preprocesses_footer()
 
     def create_reports(self):
         """ Write to disk files describing the workflow, with color for states
