@@ -25,29 +25,18 @@ def load_project(tuttlefile):
     return workflow
 
 
-def raise_if_missing_input(workflow):
-    missing = workflow.missing_inputs()
-    if missing:
-        error_msg = "Missing the following resources to launch the workflow :\n"
-        for mis in missing:
-            error_msg += "* {}\n".format(mis.url)
-        raise TuttleError(error_msg)
+def print_missing_input(missing):
+    error_msg = "Missing the following resources to launch the workflow :\n"
+    for mis in missing:
+        error_msg += "* {}\n".format(mis.url)
+    print(error_msg)
 
 
-def raise_if_process_in_error(workflow):
-    failing_process = workflow.pick_a_failing_process()
-    if failing_process:
-        msg = "Workflow already failed on process '{}'. Fix the process and run tuttle again.".format(failing_process.id)
-        msg += "\n\nIf failure has been caused by an external factor like a connection breakdown, " \
-               'use "tuttle invalidate" to reset execution then "tuttle run" again.'
-        raise TuttleError(msg)
-
-
-import logging
-l = logging.getLogger("MAIN")
-def log_processes_status(workflow):
-    for process in workflow.iter_processes():
-        l.info("process {} - success {}".format(process.id, process.success))
+def print_failing_process(failing_process):
+    msg = "Workflow already failed on process '{}'. Fix the process and run tuttle again.".format(failing_process.id)
+    msg += "\n\nIf failure has been caused by an external factor like a connection breakdown, " \
+           'use "tuttle invalidate" to reset execution then "tuttle run" again.'
+    print(msg)
 
 
 def print_failures(failure_processes):
@@ -68,46 +57,58 @@ def print_nothing_to_do():
 
 
 def parse_invalidate_and_run(tuttlefile, threshold=-1):
-        try:
-            inv_collector = InvalidResourceCollector()
-            workflow = load_project(tuttlefile)
-            previous_workflow = Workflow.load()
+    inv_collector = InvalidResourceCollector()
+    try:
+        workflow = load_project(tuttlefile)
+        previous_workflow = Workflow.load()
+    except TuttleError as e:
+        print(e)
+        return 2
 
-            shrunk = False
-            if previous_workflow:
-                workflow.retrieve_execution_info(previous_workflow)
-                shrunk = workflow.retrieve_signatures(previous_workflow)
-                different_res = previous_workflow.resources_not_created_the_same_way(workflow)
-                inv_collector.collect_with_dependencies(different_res, previous_workflow)
+    shrunk = False
+    if previous_workflow:
+        workflow.retrieve_execution_info(previous_workflow)
+        shrunk = workflow.retrieve_signatures(previous_workflow)
+        different_res = previous_workflow.resources_not_created_the_same_way(workflow)
+        inv_collector.collect_with_dependencies(different_res, previous_workflow)
 
-            modified_primary_resources = workflow.update_primary_resource_signatures()
-            inv_collector.collect_dependencies_only(modified_primary_resources, workflow)
-            not_created = workflow.resources_not_created_by_tuttle()
-            inv_collector.collect_resources(not_created, NOT_PRODUCED_BY_TUTTLE)
+    modified_primary_resources = workflow.update_primary_resource_signatures()
+    inv_collector.collect_dependencies_only(modified_primary_resources, workflow)
+    not_created = workflow.resources_not_created_by_tuttle()
+    inv_collector.collect_resources(not_created, NOT_PRODUCED_BY_TUTTLE)
 
-            workflow.reset_process_exec_info(inv_collector.urls())
-            inv_collector.warn_and_remove(threshold)
-            workflow.create_reports()
-            workflow.dump()
+    workflow.reset_process_exec_info(inv_collector.urls())
+    try:
+        inv_collector.warn_and_remove(threshold)
+    except TuttleError as e:
+        print(e)
+        return 2
+    workflow.create_reports()
+    workflow.dump()
 
-            raise_if_missing_input(workflow)
-            raise_if_process_in_error(workflow)
-            # TODO : find a good default parameter
-            wr = WorkflowRuner(4)
-            success_processes, failure_processes = wr.run_parallel_workflow(workflow)
-            if failure_processes:
-                print_failures(failure_processes)
-                return 2
+    missing = workflow.missing_inputs()
+    if missing:
+        print_missing_input(missing)
+        return 2
 
-            if success_processes or shrunk:
-                print_success()
-            else:
-                print_nothing_to_do()
+    failing_process = workflow.pick_a_failing_process()
+    if failing_process:
+        print_failing_process(failing_process)
+        return 2
 
-        except TuttleError as e:
-            print(e)
-            return 2
-        return 0
+    # TODO : find a good default parameter
+    wr = WorkflowRuner(4)
+    success_processes, failure_processes = wr.run_parallel_workflow(workflow)
+    if failure_processes:
+        print_failures(failure_processes)
+        return 2
+
+    if success_processes or shrunk:
+        print_success()
+    else:
+        print_nothing_to_do()
+
+    return 0
 
 def get_resources(urls):
     result = []
