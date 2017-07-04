@@ -143,7 +143,7 @@ class WorkflowRuner:
                     completed_process, signatures = self._completed_processes.pop()
                     if completed_process.success:
                         success_processes.append(process)
-                        workflow.update_signatures_from_complete_process(signatures)
+                        workflow.update_signatures(signatures)
                     else:
                         failure_processes.append(process)
                         error = True
