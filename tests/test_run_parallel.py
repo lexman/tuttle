@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from os.path import isfile
+from os.path import isfile, abspath, exists
 
 from test_project_parser import ProjectParser
 from tests.functional_tests import run_tuttle_file, isolate
+from tuttle.resources import FileResource
 from tuttle.workflow_runner import WorkflowRuner
 from tuttle.workflow import Workflow
 from time import time, sleep
@@ -19,12 +20,42 @@ class BuggyProcessor:
         raise Exception("Unexpected error in processor")
 
 
-def run_first_process(one_process_workflow, extra_processor = None):
+class BuggySignatureResource(FileResource):
+    # This class mus remain outside another class because it is serialized
+    scheme = 'buggy'
+
+    def _get_path(self):
+        return abspath(self.url[len("buggy://"):])
+
+    def signature(self):
+        raise Exception("Unexpected error in signature()")
+
+
+class BuggyExistsResource(FileResource):
+    # This class mus remain outside another class because it is serialized
+    scheme = 'buggy'
+
+    def _get_path(self):
+        return abspath(self.url[len("buggy://"):])
+
+    def exists(self):
+        if exists(self._get_path()):
+            raise Exception("Unexpected error in exists()")
+        else:
+            return False
+
+
+def run_first_process(one_process_workflow, extra_processor = None, extra_resource = None):
     """ utility method to run the first process of a workflow and assert on process result """
     pp = ProjectParser()
     if extra_processor:
         # we can inject a new processor to test exceptions
         pp.wb._processors[extra_processor.name] = extra_processor
+
+    if extra_resource:
+        # we can inject a new resource to test exceptions
+        pp.wb._resources_definition[extra_resource.scheme] = extra_resource
+
     pp.set_project(one_process_workflow)
     workflow = pp.parse_extend_and_check_project()
     process = workflow._processes[0]
@@ -154,10 +185,28 @@ file://C <- file://A
     def test_unexpected_error_in_signature(self):
         """ Tuttle should be protected against unexpected exceptions from resource.signature() """
         # TODO
-        pass
+        one_process_workflow = """buggy://B <- file://A
+            echo A produces B > B
+        """
+        process = run_first_process(one_process_workflow, extra_resource=BuggySignatureResource)
+        assert process.success is False, process.error_message
+        assert process.error_message.find('An unexpected error have happen in tuttle while retrieving signature' \
+                                         ) >= 0, process.error_message
+        assert process.error_message.find('Traceback (most recent call last):') >= 0, process.error_message
+        assert process.error_message.find('raise Exception("Unexpected error in signature()")') >= 0, process.error_message
+        assert process.error_message.find('Process cannot be considered complete.') >= 0, process.error_message
 
     @isolate(['A'])
     def test_unexpected_error_in_exists(self):
         """ Tuttle should be protected against unexpected exceptions from resource.exists() """
         # TODO
-        pass
+        one_process_workflow = """buggy://B <- file://A
+            echo A produces B > B
+        """
+        process = run_first_process(one_process_workflow, extra_resource=BuggyExistsResource)
+        assert process.success is False, process.error_message
+        assert process.error_message.find('An unexpected error have happen in tuttle while checking existence of '
+                                          'output resources' ) >= 0, process.error_message
+        assert process.error_message.find('Traceback (most recent call last):') >= 0, process.error_message
+        assert process.error_message.find('raise Exception("Unexpected error in exists()")') >= 0, process.error_message
+        assert process.error_message.find('Process cannot be considered complete.') >= 0, process.error_message

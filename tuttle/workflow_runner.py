@@ -43,12 +43,20 @@ def run_process_without_exception(process):
                     "{}\n" \
                     "Process {} will not complete.".format(process._processor.name, stacktrace, process.id)
         return False, error_msg, None
-    missing_outputs = process.missing_outputs()
+    try:
+        missing_outputs = process.missing_outputs()
+    except Exception:
+        exc_info = sys.exc_info()
+        stacktrace = "".join(format_exception(*exc_info))
+        error_msg = "An unexpected error have happen in tuttle while checking existence of output resources " \
+                    "after process {} has run: \n" \
+                    "{}\n" \
+                    "Process cannot be considered complete.".format(process.id, stacktrace)
+        return False, error_msg, None
     if missing_outputs:
         msg = "After execution of process {} : these resources " \
               "should have been created : \n{} ".format(process.id, resources2list(missing_outputs))
         return False, msg, None
-    signatures = {}
     try:
         signatures = output_signatures(process)
     except Exception:
@@ -96,7 +104,6 @@ class WorkflowRuner:
         self.acquire_worker()
 
         def process_run_callback(result):
-            print(result)
             success, error_msg, signatures = result
             process.set_end(success, error_msg)
             self.release_worker()
