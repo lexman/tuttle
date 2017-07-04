@@ -60,11 +60,11 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
     inv_collector = InvalidResourceCollector()
     try:
         workflow = load_project(tuttlefile)
-        previous_workflow = Workflow.load()
     except TuttleError as e:
         print(e)
         return 2
 
+    previous_workflow = Workflow.load()
     shrunk = False
     if previous_workflow:
         workflow.retrieve_execution_info(previous_workflow)
