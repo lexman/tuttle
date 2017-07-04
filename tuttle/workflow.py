@@ -120,19 +120,18 @@ class Workflow:
         for process in self.iter_processes():
             process.static_check()
 
-    def update_signatures(self, process):
-        """ updates the workflow's signatures after the process has run 
-        :param preprocess:
-        """
-        for res in process.iter_outputs():
-            self._resources_signatures[res.url] = res.signature()        
+#    def update_signatures_from_complete_process(self, process):
+#        """ updates the workflow's signatures after the process has run
+#        :param preprocess:
+#        """
+#        for res in process.iter_outputs():
+#            self._resources_signatures[res.url] = res.signature()
 
-    def update_signatures_from_complete_process(self, signatures):
+    def update_signatures(self, signatures):
         """ updates the workflow's signatures after the process has run
         :param preprocess:
         """
-        for url, signature in signatures.iteritems():
-            self._resources_signatures[url] = signature
+        self._resources_signatures.update(signatures)
 
     def run_pre_processes(self):
         """ Runs all the preprocesses
