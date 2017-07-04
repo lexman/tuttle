@@ -149,3 +149,15 @@ file://C <- file://A
         assert process.error_message.find('Traceback (most recent call last):') >= 0, process.error_message
         assert process.error_message.find('raise Exception("Unexpected error in processor")') >= 0, process.error_message
         assert process.error_message.find('will not complete.') >= 0, process.error_message
+
+    @isolate(['A'])
+    def test_unexpected_error_in_signature(self):
+        """ Tuttle should be protected against unexpected exceptions from resource.signature() """
+        # TODO
+        pass
+
+    @isolate(['A'])
+    def test_unexpected_error_in_exists(self):
+        """ Tuttle should be protected against unexpected exceptions from resource.exists() """
+        # TODO
+        pass

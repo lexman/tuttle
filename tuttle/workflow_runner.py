@@ -23,6 +23,11 @@ def resources2list(resources):
     return res
 
 
+def output_signatures(process):
+    result = {resource.url : str(resource.signature()) for resource in process.iter_outputs()}
+    return result
+
+
 # This is a free method, because it will be serialized and passed
 # to another process, so it must not be linked to objects nor
 # capture closures
@@ -30,20 +35,30 @@ def run_process_without_exception(process):
     try:
         process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
     except TuttleError as e:
-        return False, str(e)
+        return False, str(e), None
     except Exception:
         exc_info = sys.exc_info()
         stacktrace = "".join(format_exception(*exc_info))
         error_msg = "An unexpected error have happen in tuttle processor {} : \n" \
                     "{}\n" \
                     "Process {} will not complete.".format(process._processor.name, stacktrace, process.id)
-        return False, error_msg
+        return False, error_msg, None
     missing_outputs = process.missing_outputs()
     if missing_outputs:
         msg = "After execution of process {} : these resources " \
               "should have been created : \n{} ".format(process.id, resources2list(missing_outputs))
-        return False, msg
-    return True, None
+        return False, msg, None
+    signatures = {}
+    try:
+        signatures = output_signatures(process)
+    except Exception:
+        exc_info = sys.exc_info()
+        stacktrace = "".join(format_exception(*exc_info))
+        error_msg = "An unexpected error have happen in tuttle while retrieving signature after process {} has run: " \
+                    "\n{}\n" \
+                    "Process cannot be considered complete.".format(process.id, stacktrace)
+        return False, error_msg, None
+    return True, None, signatures
 
 
 class ResourceError(TuttleError):
@@ -54,7 +69,7 @@ def tuttle_dir(*args):
     return join('.tuttle', *args)
 
 
-class WorkflowRuner():
+class WorkflowRuner:
 
     _processes_dir = tuttle_dir('processes')
     _logs_dir = tuttle_dir('processes', 'logs')
@@ -75,41 +90,17 @@ class WorkflowRuner():
         self._pool = None
         self._nb_workers = nb_workers
         self._free_workers = None
-        self._completed_processes = set()
-        self._errors = []
-
-    def init_workers(self):
-        self._pool = Pool(self._nb_workers)
-        self._free_workers = self._nb_workers
-
-    def terminate_workers(self):
-        self._pool.terminate()
-        self._pool.join()
-
-    def acquire_worker(self):
-        assert self._free_workers > 0
-        self._free_workers -= 1
-
-    def release_worker(self):
-        self._free_workers += 1
-
-    def workers_available(self):
-        return self._free_workers
-
-    def active_workers(self):
-        return self._free_workers != self._nb_workers
+        self._completed_processes = []
 
     def start_process_in_background(self, process):
         self.acquire_worker()
 
         def process_run_callback(result):
-            success, e = result
-            error_msg = e
+            print(result)
+            success, error_msg, signatures = result
             process.set_end(success, error_msg)
             self.release_worker()
-            self._completed_processes.add(process)
-            if not success:
-                self._errors.append(e)
+            self._completed_processes.append((process, signatures))
 
         process.set_start()
         WorkflowRuner.print_header(process, self._logger)
@@ -117,7 +108,6 @@ class WorkflowRuner():
 
     def run_parallel_workflow(self, workflow):
         """ Runs a workflow by running every process in the right order
-
         :return: success_processes, failure_processes :
         list of processes ended with success, list of processes ended with failure
         """
@@ -143,13 +133,13 @@ class WorkflowRuner():
 
                 handled_completed_process = False
                 while self._completed_processes:
-                    completed_process = self._completed_processes.pop()
+                    completed_process, signatures = self._completed_processes.pop()
                     if completed_process.success:
-                        workflow.update_signatures(completed_process)
                         success_processes.append(process)
+                        workflow.update_signatures_from_complete_process(signatures)
                     else:
-                        error = True
                         failure_processes.append(process)
+                        error = True
                     new_runnables = workflow.discover_runnable_processes(completed_process)
                     runnables.update(new_runnables)
                     handled_completed_process = True
@@ -165,6 +155,27 @@ class WorkflowRuner():
             WorkflowRuner.mark_unfinished_processes_as_failure(workflow)
 
         return success_processes, failure_processes
+
+    def init_workers(self):
+        self._pool = Pool(self._nb_workers)
+        self._free_workers = self._nb_workers
+
+    def terminate_workers(self):
+        self._pool.terminate()
+        self._pool.join()
+
+    def acquire_worker(self):
+        assert self._free_workers > 0
+        self._free_workers -= 1
+
+    def release_worker(self):
+        self._free_workers += 1
+
+    def workers_available(self):
+        return self._free_workers
+
+    def active_workers(self):
+        return self._free_workers != self._nb_workers
 
     @staticmethod
     def mark_unfinished_processes_as_failure(workflow):
@@ -241,11 +252,6 @@ class WorkflowRuner():
             if len(content) > 1:
                 print "--- {} : {}".format(header, "-" * (60 - len(header) - 7))
                 print content
-
-    @staticmethod
-    def print_logs_old(process):
-        WorkflowRuner.print_log_if_exists(process.log_stdout, "stdout")
-        WorkflowRuner.print_log_if_exists(process.log_stderr, "stderr")
 
     @staticmethod
     def list_extensions():

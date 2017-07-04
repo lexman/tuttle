@@ -127,6 +127,13 @@ class Workflow:
         for res in process.iter_outputs():
             self._resources_signatures[res.url] = res.signature()        
 
+    def update_signatures_from_complete_process(self, signatures):
+        """ updates the workflow's signatures after the process has run
+        :param preprocess:
+        """
+        for url, signature in signatures.iteritems():
+            self._resources_signatures[url] = signature
+
     def run_pre_processes(self):
         """ Runs all the preprocesses
 
