@@ -146,7 +146,7 @@ file://C <- file://A
         assert not p.success, "Process that creates C should be in error in the dump"
 
     def test_error_message_from_background_process(self):
-        """ When the process fails, it should succes attribute should be false, and there should be an error message"""
+        """ When the process fails, its success attribute should be false, and there should be an error message"""
         one_process_workflow = """file://B <- file://A
             error
             echo A produces B > B
