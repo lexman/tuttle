@@ -124,8 +124,7 @@ class WorkflowRuner:
             WorkflowRuner.prepare_and_assign_paths(process)
             self._lt.follow_process(process.log_stdout, process.log_stderr)
 
-        success_processes = []
-        failure_processes = []
+        failure_processes, success_processes = [], []
         with self._lt.trace_in_background():
             self.init_workers()
             runnables = workflow.runnable_processes()
