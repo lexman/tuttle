@@ -147,7 +147,7 @@ class Workflow:
         WorkflowRuner.print_preprocesses_header()
         for process in self.iter_preprocesses():
             WorkflowRuner.prepare_and_assign_paths(process)
-            lt.follow_process(process.log_stdout, process.log_stderr)
+            lt.follow_process(process.log_stdout, process.log_stderr, process.id)
 
         with lt.trace_in_background(), TuttleEnv():
             for preprocess in self.iter_preprocesses():

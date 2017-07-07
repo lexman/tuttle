@@ -10,21 +10,26 @@ import sys
 from os.path import isfile
 from time import sleep
 from threading import Thread
+from traceback import format_exception
 
 
 class LogTracer:
         
     READ_SIZE = 1024
-    TUTTLE = 22
-    STDOUT = 24
-    STDERR = 26
-    
-    def __init__(self, logger, loglevel, filename):
+
+    def __init__(self, logger, namespace, filename):
         self._filename = filename
         self._logger = logger
-        self._loglevel = loglevel
+        self._namespace = namespace
         self._filedescr = None
-        
+
+    @staticmethod
+    def remove_ending_cr(line):
+        if line[-1:] == "\n":
+            return line[:-1]
+        else:
+            return line
+
     def trace(self):
         if not self._filedescr:
             if isfile(self._filename):
@@ -34,10 +39,8 @@ class LogTracer:
             lines = self._filedescr.readlines(self.READ_SIZE)
             for line in lines:
                 traced = True
-                if line[-1:] == "\n":
-                    self._logger.log(self._loglevel, line[:-1])
-                else:
-                    self._logger.log(self._loglevel, line)
+                msg = "[{}] {}".format(self._namespace, LogTracer.remove_ending_cr(line))
+                self._logger.info(msg)
         return traced
 
     def close(self):
@@ -65,11 +68,11 @@ class LogsFollower:
         self._terminate = False
         self._logger = LogsFollower.get_logger()
 
-    def follow_process(self, filestdout, filestderr):
+    def follow_process(self, filestdout, filestderr, process_name):
         """ Adds 2 files to follow : the stderr and stdin of a process """
-        tracer_stdin = LogTracer(self._logger, LogTracer.STDOUT, filestdout)
-        tracer_stderr = LogTracer(self._logger, LogTracer.STDERR, filestderr)
-        self._logs.append(tracer_stdin)
+        tracer_stdout = LogTracer(self._logger, "{}::stdout".format(process_name), filestdout)
+        tracer_stderr = LogTracer(self._logger, "{}::stderr".format(process_name), filestderr)
+        self._logs.append(tracer_stdout)
         self._logs.append(tracer_stderr)
         
     def trace_logs(self):
@@ -106,10 +109,7 @@ class LogsFollower:
     @staticmethod
     def get_logger():
         logger = logging.getLogger(__name__)
-        logging.addLevelName(LogTracer.TUTTLE, 'tuttle')
-        logging.addLevelName(LogTracer.STDOUT, 'stdout')
-        logging.addLevelName(LogTracer.STDERR, 'stderr')
-        formater = logging.Formatter("[%(levelname)s] %(message)s")
+        formater = logging.Formatter("%(message)s")
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(formater)
         handler.setLevel(logging.INFO)

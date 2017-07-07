@@ -63,7 +63,7 @@ def run_first_process(one_process_workflow, extra_processor = None, extra_resour
     wr.init_workers()
     try:
         WorkflowRuner.prepare_and_assign_paths(process)
-        wr._lt.follow_process(process.log_stdout, process.log_stderr)
+        wr._lt.follow_process(process.log_stdout, process.log_stderr, process.id)
         with wr._lt.trace_in_background():
             wr.start_process_in_background(process) # The function we're testing !
         timeout = time() + 0.5
