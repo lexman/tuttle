@@ -6,6 +6,7 @@ This module is responsible for the inner structure of the .tuttle directory
 """
 from glob import glob
 from multiprocessing import Pool
+import multiprocessing
 from shutil import rmtree
 from os import remove, makedirs, getcwd
 from os.path import join, isdir, isfile
@@ -16,6 +17,16 @@ from tuttle.utils import EnvVar
 from tuttle.log_follower import LogsFollower
 from time import sleep
 import sys
+import logging
+
+
+LOGGER = logging.getLogger(__name__)
+
+
+def print_process_header(process, logger):
+    pid = multiprocessing.current_process().pid
+    msg = "{}\nRunning process {} (pid={})".format("=" * 60, process.id, pid)
+    logger.info(msg)
 
 
 def resources2list(resources):
@@ -32,7 +43,9 @@ def output_signatures(process):
 # to another process, so it must not be linked to objects nor
 # capture closures
 def run_process_without_exception(process):
+    multiprocessing.current_process().name = process.id
     try:
+        print_process_header(process, LOGGER)
         process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
     except TuttleError as e:
         return False, str(e), None
@@ -94,7 +107,7 @@ class WorkflowRuner:
 
     def __init__(self, nb_workers):
         self._lt = LogsFollower()
-        self._logger = LogsFollower.get_logger()
+        self._logger = WorkflowRuner.get_logger()
         self._pool = None
         self._nb_workers = nb_workers
         self._free_workers = None
@@ -110,7 +123,6 @@ class WorkflowRuner:
             self._completed_processes.append((process, signatures))
 
         process.set_start()
-        WorkflowRuner.print_header(process, self._logger)
         resp = self._pool.apply_async(run_process_without_exception, [process], callback = process_run_callback)
 
     def run_parallel_workflow(self, workflow):
@@ -122,7 +134,7 @@ class WorkflowRuner:
         WorkflowRuner.create_tuttle_dirs()
         for process in workflow.iter_processes():
             WorkflowRuner.prepare_and_assign_paths(process)
-            self._lt.follow_process(process.log_stdout, process.log_stderr)
+            self._lt.follow_process(process.log_stdout, process.log_stderr, process.id)
 
         failure_processes, success_processes = [], []
         with self._lt.trace_in_background():
@@ -226,12 +238,6 @@ class WorkflowRuner:
             makedirs(WorkflowRuner._extensions_dir)
 
     @staticmethod
-    def print_header(process, logger):
-        logger.info("=" * 60)
-        logger.info(process.id)
-        logger.info("=" * 60)
-
-    @staticmethod
     def print_preprocess_header(process, logger):
         logger.info("-" * 60)
         logger.info("Preprocess : {}".format(process.id))
@@ -266,7 +272,15 @@ class WorkflowRuner:
 
     @staticmethod
     def get_logger():
-        return LogsFollower.get_logger()
+        logger = logging.getLogger(__name__)
+        formater = logging.Formatter("%(message)s")
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setFormatter(formater)
+        handler.setLevel(logging.INFO)
+        logger.setLevel(logging.INFO)
+        logger.addHandler(handler)
+        return logger
+
 
 
 class TuttleEnv(EnvVar):

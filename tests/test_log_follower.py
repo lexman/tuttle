@@ -73,7 +73,7 @@ class TestLogFollower():
         """LogTracer should log the content of a big file in stdout"""
         with CaptureOutputs() as co:
             logger = LogsFollower.get_logger()
-            lt = LogTracer(logger, logging.INFO, "test.log")
+            lt = LogTracer(logger, "namespace", "test.log")
             with open("test.log", "w") as f:
                 for i in xrange(5000):
                     f.write("line {}\n".format(i))
@@ -90,9 +90,9 @@ class TestLogFollower():
         """LogTracer should log the content of several files in stdout"""
         with CaptureOutputs() as co:
             lf = LogsFollower()
-            lf.follow_process("w1.stdout", "w1.stderr")
-            lf.follow_process("w2.stdout", "w2.stderr")
-            lf.follow_process("w3.stdout", "w3.stderr")
+            lf.follow_process("w1.stdout", "w1.stderr", "process1")
+            lf.follow_process("w2.stdout", "w2.stderr", "process2")
+            lf.follow_process("w3.stdout", "w3.stderr", "process3")
 
             with open("w1.stdout", "w") as fo1, \
                  open("w1.stderr", "w") as fe1, \
@@ -132,14 +132,14 @@ class TestLogFollower():
         with CaptureOutputs() as co:
             logger = LogsFollower.get_logger()
             logger.info("MESSAGE")
-        assert co.output.find("[INFO] MESSAGE") == 0, co.output
+        assert co.output.find("MESSAGE") == 0, co.output
         
     @isolate([])
     def test_log_format_stdout_stderr(self):
         """logs should display log level and message"""
         with CaptureOutputs() as co:
             lf = LogsFollower()
-            lf.follow_process("stdout", "stderr")
+            lf.follow_process("stdout", "stderr", "process_id")
             with open("stdout", "w") as fout, \
                  open("stderr", "w") as ferr:
                      fout.write("file stdout")
@@ -147,8 +147,8 @@ class TestLogFollower():
             while lf.trace_logs():
                 pass
             
-        assert co.output.find("[stdout] file stdout") >= 0, co.output
-        assert co.output.find("[stderr] file stderr") >= 0, co.output        
+        assert co.output.find("[process_id::stdout] file stdout") >= 0, co.output
+        assert co.output.find("[process_id::stderr] file stderr") >= 0, co.output
 
     @isolate([])
     def test_log_in_background(self):
@@ -157,15 +157,15 @@ class TestLogFollower():
         import time
         with CaptureOutputs() as co:
             lf = LogsFollower()
-            lf.follow_process("stdout", "stderr")
+            lf.follow_process("stdout", "stderr", "process_id")
             lf.trace_in_background()
             with open("stdout", "w") as fout, \
                  open("stderr", "w") as ferr:
                      fout.write("file stdout")
                      ferr.write("file stderr")
             lf.terminate()
-        assert co.output.find("[stdout] file stdout") >= 0, co.output
-        assert co.output.find("[stderr] file stderr") >= 0, co.output        
+        assert co.output.find("[process_id::stdout] file stdout") >= 0, co.output
+        assert co.output.find("[process_id::stderr] file stderr") >= 0, co.output
 
 
     @isolate([])
@@ -174,7 +174,7 @@ class TestLogFollower():
            is over even with a lot a data"""
         with CaptureOutputs() as co:
             lf = LogsFollower()
-            lf.follow_process("stdout", "stderr")
+            lf.follow_process("stdout", "stderr", "process_id")
             lf.trace_in_background()
             with open("stdout", "w") as fout, \
                  open("stderr", "w") as ferr:
@@ -184,16 +184,16 @@ class TestLogFollower():
                         fout.write("stdout - line {}\n".format(i))
                         ferr.write("stderr - line {}\n".format(i))
             lf.terminate()
-        assert co.output.find("[stdout] stdout - line 1") >= 0, co.output
-        assert co.output.find("[stderr] stderr - line 1") >= 0, co.output        
-        assert co.output.find("[stdout] stdout - line 4999") >= 0, co.output
-        assert co.output.find("[stderr] stderr - line 4999") >= 0, co.output        
+        assert co.output.find("[process_id::stdout] stdout - line 1") >= 0, co.output
+        assert co.output.find("[process_id::stderr] stderr - line 1") >= 0, co.output
+        assert co.output.find("[process_id::stdout] stdout - line 4999") >= 0, co.output
+        assert co.output.find("[process_id::stderr] stderr - line 4999") >= 0, co.output
 
     @isolate([])
     def test_thread_protection(self):
         """When a section of code using the LogsFollower is complete, the thread should stop"""
         lf = LogsFollower()
-        lf.follow_process("stdout", "stderr")
+        lf.follow_process("stdout", "stderr", "process_id")
         with lf.trace_in_background():
             assert lf._thread.is_alive(), "Backgroung thread isn't running..."
             with open("stdout", "w") as fout, \
