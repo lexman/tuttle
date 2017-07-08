@@ -1,9 +1,6 @@
 # -*- coding: utf8 -*-
 from report.html_repport import create_html_report
 from pickle import dump, load
-#from tuttle.workflow_runner import create_tuttle_dirs, print_header, print_logs, tuttle_dir, ResourceError, \
-#    prepare_paths, empty_extension_dir, TuttleEnv, list_extensions, print_preprocesses_header, print_preprocess_header, \
-#    print_preprocesses_footer, get_logger
 from tuttle.workflow_runner import WorkflowRuner, TuttleEnv
 from tuttle.log_follower import LogsFollower
 
@@ -119,13 +116,6 @@ class Workflow:
         """
         for process in self.iter_processes():
             process.static_check()
-
-#    def update_signatures_from_complete_process(self, process):
-#        """ updates the workflow's signatures after the process has run
-#        :param preprocess:
-#        """
-#        for res in process.iter_outputs():
-#            self._resources_signatures[res.url] = res.signature()
 
     def update_signatures(self, signatures):
         """ updates the workflow's signatures after the process has run
@@ -338,15 +328,10 @@ class Workflow:
         :return:
         """
         res = set()
-        #import logging
-        #logging.getLogger("foo").info(res)
+
         for process in self.iter_processes():
-            #logging.getLogger("foo").info(process.id)
             if process.start is None:
-                #logging.getLogger("foo").info("... has not started yet")
                 if process.depends_on_process(complete_process):
-                    #logging.getLogger("foo").info("And depends on the complete process")
                     if process.all_inputs_exists():
-                        #logging.getLogger("foo").info("And all its inputs exist")
                         res.add(process)
         return res

@@ -82,10 +82,6 @@ def run_process_without_exception(process):
     return True, None, signatures
 
 
-class ResourceError(TuttleError):
-    pass
-
-
 def tuttle_dir(*args):
     return join('.tuttle', *args)
 
@@ -254,16 +250,6 @@ class WorkflowRuner:
         print "=" * 60
         print "End of preprocesses... Running the workflow"
         print "=" * 60
-
-    @staticmethod
-    def print_log_if_exists_old(log_file, header):
-        if not isfile(log_file):
-            return
-        with open(log_file, "r") as f:
-            content = f.read()
-            if len(content) > 1:
-                print "--- {} : {}".format(header, "-" * (60 - len(header) - 7))
-                print content
 
     @staticmethod
     def list_extensions():
