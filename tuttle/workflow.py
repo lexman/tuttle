@@ -265,13 +265,32 @@ class Workflow:
          """
         for prev_process in previous.iter_processes():
             prev_output = prev_process.pick_an_output()
-            if prev_output and prev_output.url:
+            if prev_output:
                 # When running this function, invalidation has been computed already
                 # So if process from previous workflow creates a resource, it creates all the same
                 # resources as the process in the current workflow
                 process = self.find_process_that_creates(prev_output.url)
                 if process:
                     process.retrieve_execution_info(prev_process)
+            elif prev_process._inputs:
+                prev_input_urls = { resource.url for resource in prev_process._inputs}
+                # print "prev_input :"
+                # print prev_input_urls
+                for process in self._processes:
+                    proc_input_urls = {resource.url for resource in process._inputs}
+                    if prev_input_urls == proc_input_urls:
+                        # print "suspecting matching process :"
+                        # print process
+                        # print prev_process.code
+                        # print process.code
+                        # print prev_process.processor.name
+                        # print process.processor.name
+                        if prev_process.code == process.code \
+                            and prev_process.processor.name == process.processor.name:
+                            # print "found matching process :"
+                            # print process
+                            # both process and prev_process have code and inputs in common
+                            process.retrieve_execution_info(prev_process)
 
     def update_primary_resource_signatures(self):
         """ Updates the list of primary resources with current signatures
@@ -312,6 +331,13 @@ class Workflow:
             resource = self.find_resource(url)
             if resource and resource.creator_process:
                 resource.creator_process.reset_execution_info()
+        for process in self.iter_processes():
+            if not process.has_outputs():
+                for url in invalidated_urls:
+                    resource = self.find_resource(url)
+                    if resource and process.has_input(process):
+                        resource.creator_process.reset_execution_info()
+
 
     def runnable_processes(self):
         """ List processes that can be run (because they have all inputs)

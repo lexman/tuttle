@@ -110,6 +110,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
 
     return 0
 
+
 def get_resources(urls):
     result = []
     pb = WorkflowBuilder()
@@ -172,6 +173,9 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
             print(e)
             return 2
         workflow.reset_process_exec_info(inv_collector.urls())
+        for process in workflow.iter_processes():
+            if not process.success:
+                process.reset_execution_info()
         workflow.dump()
         workflow.create_reports()
     else:
