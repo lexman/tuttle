@@ -352,14 +352,12 @@ file://C <- file://A
         """ A change in a process without output should re-run the process (from bug) """
         first = """ <- file://A
             echo Action after A is created
-
 """
         rcode, output = run_tuttle_file(first)
         assert rcode == 0, output
 
         second = """ <- file://A
             echo Another action after A is created
-
 """
         rcode, output = run_tuttle_file(second)
         assert rcode == 0
