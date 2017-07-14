@@ -91,8 +91,8 @@ class InvalidResourceCollector():
             for resource, reason in self._resources_and_reasons:
                 print("* {} - {}".format(resource.url, reason))
             if threshold > -1 and inv_duration >= threshold:
-                msg = "You were about to loose {} seconds of processing time (which exceeds the {} seconds threshold). \n" \
-                      "Aborting... ".format(inv_duration, threshold)
+                msg = "You were about to loose {} seconds of processing time (which exceeds the {} seconds " \
+                      "threshold). \nAborting... ".format(inv_duration, threshold)
                 raise TuttleError(msg)
             print("{} seconds of processing will be lost".format(inv_duration))
             self.remove_resources()

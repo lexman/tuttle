@@ -18,12 +18,11 @@ class TestCommands():
         oldout, olderr = sys.stdout, sys.stderr
         out = StringIO()
         try:
-            sys.stdout,sys.stderr = out, out
+            sys.stdout, sys.stderr = out, out
             rcode = invalidate_resources('tuttlefile', urls)
         finally:
             sys.stdout, sys.stderr = oldout, olderr
         return rcode, out.getvalue()
-
 
     @isolate(['A'])
     def test_command_invalidate(self):
@@ -64,7 +63,6 @@ file://C <- file://B
         assert not isfile('B'), output
         assert not isfile('C'), output
 
-
     @isolate(['A'])
     def test_duration(self):
         """ Should display a message if there is no tuttlefile in the current directory"""
@@ -92,12 +90,11 @@ file://C <- file://B
         assert not isfile('B'), output
         assert not isfile('C'), output
 
-
     @isolate
     def test_invalidate_no_tuttle_file(self):
         """ Should display a message when launching invalidate and there is tuttlefile in the current directory"""
-        dir = dirname(__file__)
-        tuttle_cmd = abspath(join(dir, '..', '..', 'bin', 'tuttle'))
+        directory = dirname(__file__)
+        tuttle_cmd = abspath(join(directory, '..', '..', 'bin', 'tuttle'))
         proc = Popen(['python', tuttle_cmd, 'invalidate', 'file://B'], stdout=PIPE)
         output = proc.stdout.read()
         rcode = proc.wait()
@@ -106,14 +103,16 @@ file://C <- file://B
 
     @isolate
     def test_invalidate_nothing_have_run(self):
-        """ Should display a message when launching invalidate and tuttle hasn't been run before : noting to invaidate"""
+        """ Should display a message when launching invalidate and tuttle hasn't been run before :
+            nothing to invalidate """
         project = """file://B <- file://A
             echo A creates B
             echo A creates B > B
             """
         rcode, output = self.tuttle_invalide(project=project)
         assert rcode == 2, output
-        assert output.find("Tuttle has not run yet ! It has produced nothing, so there is nothing to invalidate.") >= 0, output
+        assert output.find("Tuttle has not run yet ! It has produced nothing, "
+                           "so there is nothing to invalidate.") >= 0, output
 
     @isolate(['A'])
     def test_try_invalidate_bad_project(self):
@@ -132,7 +131,6 @@ file://C <- file://B
         rcode, output = self.tuttle_invalide(project=bad_project, urls=['file://B'])
         assert rcode == 2, output
         assert output.find('Invalidation has failed because tuttlefile is has errors') >= 0, output
-
 
     @isolate(['A'])
     def test_invalidate_no_urls(self):
@@ -386,6 +384,27 @@ file://C <- file://B
 
         rcode, output = self.tuttle_invalide()
         assert rcode == 0
+
         report = open(report_path).read()
         title_match_failure = search(r'<h1>.*Failure.*</h1>', report, DOTALL)
         assert not title_match_failure, title_match_failure.group()
+
+    @isolate(['A', 'B'])
+    def test_dont_invalidate_outputless_process(self):
+        """ Don't invalidate a successful process without outputs(from bug) """
+        first = """file://C <- file://A
+    echo A produces C > C
+
+<- file://B
+    echo Action after B is created
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+
+        rcode, output = self.tuttle_invalide()
+        assert rcode == 0, output
+
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0
+        assert output.find("Nothing to do") >= 0, output
+        assert output.find("Action") == -1, output
