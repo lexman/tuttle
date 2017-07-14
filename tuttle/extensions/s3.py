@@ -31,8 +31,8 @@ class S3Resource(ResourceMixIn, object):
     def _object(self):
         session = Session()
         s3 = session.resource('s3', endpoint_url=self._endpoint)
-        object = s3.Object(self._bucket,self._key)
-        return object
+        obj = s3.Object(self._bucket, self._key)
+        return obj
 
     def exists(self):
         object = self._object()
