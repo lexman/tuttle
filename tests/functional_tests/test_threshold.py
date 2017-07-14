@@ -114,8 +114,8 @@ file://C <- file://B
 """
         with open('tuttlefile', "w") as f:
             f.write(second)
-        dir = dirname(__file__)
-        tuttle_cmd = abspath(join(dir, '..', '..', 'bin', 'tuttle'))
+        directory = dirname(__file__)
+        tuttle_cmd = abspath(join(directory, '..', '..', 'bin', 'tuttle'))
         proc = Popen(['python', tuttle_cmd, 'run', '-t', '1'], stdout=PIPE)
         output = proc.stdout.read()
         rcode = proc.wait()
@@ -141,10 +141,10 @@ file://C <- file://B
     echo B has changed > B
 """
         with open('tuttefile', "w") as f:
-         f.write(second)
+            f.write(second)
 
-        dir = dirname(__file__)
-        tuttle_cmd = abspath(join(dir, '..', '..', 'bin', 'tuttle'))
+        directory = dirname(__file__)
+        tuttle_cmd = abspath(join(directory, '..', '..', 'bin', 'tuttle'))
         proc = Popen(['python', tuttle_cmd, 'run'], stdout=PIPE)
         output = proc.stdout.read()
         rcode = proc.wait()
@@ -163,8 +163,8 @@ file://C <- file://B
         assert rcode == 0, output
         assert isfile('B')
 
-        dir = dirname(__file__)
-        tuttle_cmd = abspath(join(dir, '..', '..', 'bin', 'tuttle'))
+        directory = dirname(__file__)
+        tuttle_cmd = abspath(join(directory, '..', '..', 'bin', 'tuttle'))
         proc = Popen(['python', tuttle_cmd, 'invalidate', '-t', '1', 'file://B'], stdout=PIPE)
         output = proc.stdout.read()
         rcode = proc.wait()
