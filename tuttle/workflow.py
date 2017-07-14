@@ -13,6 +13,8 @@ MUST_CREATE_RESOURCE = "The former primary resource has to be created by tuttle"
 RESOURCE_NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
 DEPENDENCY_CHANGED = "Resource depends on {} that have changed"
 RESOURCE_HAS_CHANGED = "Primary resource has changed"
+INCOHERENT_OUTPUTS = "Other outputs produced by the same process are missing"
+
 
 class Workflow:
     """ A workflow is a dependency tree of processes
@@ -22,6 +24,7 @@ class Workflow:
         self._preprocesses = []
         self._resources = resources
         self._resources_signatures = {}
+        self._available_resources = {}
 
     def add_process(self, process):
         """ Adds a process
@@ -64,6 +67,18 @@ class Workflow:
         for resource in self._resources.itervalues():
             if resource.is_primary():
                 if not resource.exists():
+                    missing.append(resource)
+        return missing
+
+    def primary_inputs_not_available(self):
+        """ Check that all primary resources (external resources) that are necessary to run the workflow are available
+        :return: a list of missing resources
+        :rtype: list
+        """
+        missing = []
+        for resource in self._resources.itervalues():
+            if resource.is_primary():
+                if not self.resource_available(resource.url):
                     missing.append(resource)
         return missing
 
@@ -119,9 +134,10 @@ class Workflow:
 
     def update_signatures(self, signatures):
         """ updates the workflow's signatures after the process has run
-        :param preprocess:
+        :param signatures: a dictionary of signatures indexed by urls
         """
         self._resources_signatures.update(signatures)
+        self._available_resources.update(signatures)
 
     def run_pre_processes(self):
         """ Runs all the preprocesses
@@ -143,7 +159,8 @@ class Workflow:
             for preprocess in self.iter_preprocesses():
                 WorkflowRuner.print_preprocess_header(preprocess, lt._logger)
                 try:
-                    preprocess._processor.run(preprocess, preprocess._reserved_path, preprocess.log_stdout, preprocess.log_stderr)
+                    preprocess.processor.run(preprocess, preprocess._reserved_path,
+                                             preprocess.log_stdout, preprocess.log_stderr)
 
                 finally:
                     self.create_reports()
@@ -232,7 +249,7 @@ class Workflow:
         """
         result = []
         for process in self._processes:
-            if process.success == False:
+            if process.success is False:
                 result.extend(process.iter_outputs())
         return result
 
@@ -255,6 +272,23 @@ class Workflow:
         for url, signature in previous._resources_signatures.iteritems():
             if url in self._resources:
                 self._resources_signatures[url] = signature
+            else:
+                removed_resources = True
+        return removed_resources
+
+    def iter_available_signatures(self):
+        for url, signature in self._available_resources.iteritems():
+            yield url, signature
+
+    def retrieve_signatures_new(self, previous):
+        """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
+            Returns True if some resources where in previous and no longer exist in self
+        """
+        removed_resources = False
+        for url, signature in previous.iter_available_signatures():
+            if url in self._resources:
+                if url in self._available_resources and self._available_resources[url] == "AVAILABLE":
+                    self._available_resources[url] = signature
             else:
                 removed_resources = True
         return removed_resources
@@ -313,6 +347,20 @@ class Workflow:
             if resource and resource.creator_process:
                 resource.creator_process.reset_execution_info()
 
+    def reset_modified_outputless_processes(self, prev_workflow):
+        for prev_process in prev_workflow.iter_processes():
+            if not prev_process.has_outputs():
+                process = self.find_process_with_same_inputs(prev_process)
+                if process and (prev_process.code != process.code or
+                                prev_process.processor.name != process.processor.name):
+                    process.reset_execution_info()
+
+    def reset_failing_outputless_process_exec_info(self):
+        for process in self._processes:
+            if not process.has_outputs():
+                if process.success is False:
+                    process.reset_execution_info()
+
     def runnable_processes(self):
         """ List processes that can be run (because they have all inputs)
         :return:
@@ -335,3 +383,96 @@ class Workflow:
                     if process.all_inputs_exists():
                         res.add(process)
         return res
+
+    def discover_resources(self):
+        for resource in self._resources.itervalues():
+            if resource.exists():
+                if resource.is_primary():
+                    self._available_resources[resource.url] = resource.signature()
+                else:
+                    self._available_resources[resource.url] = "AVAILABLE"
+
+    def signature(self, url):
+        # TODO simplier with __get__ ?
+        if url in self._available_resources:
+            return self._available_resources[url]
+        else:
+            return None
+
+    def resource_available(self, url):
+        return url in self._available_resources
+
+    def modified_resources(self, older_workflow, only_primary):
+        """ List the resources that have changed
+         returns the list of resources that have changed
+        :return:
+        # TODO : could check for modified resources, not only primaries for advanced check
+        """
+        assert only_primary is True, "Advanced check not implemented"
+        result = []
+        for resource in self._resources.itervalues():
+            if resource.is_primary():
+                if older_workflow.signature(resource.url) != self._available_resources[resource.url]:
+                    result.append(resource)
+        return result
+
+    def incoherent_outputs_from_successfull_processes(self):
+        """ returns the list of resources of each process where some outputs are missing
+        :return:
+        """
+        result = []
+        for process in self._processes:
+            if process.success:
+                missing = False
+                for resource in process.iter_outputs():
+                    if not self.resource_available(resource.url):
+                        missing = True
+                        break
+                if missing:
+                    for resource in process.iter_outputs():
+                        if self.resource_available(resource.url):
+                            result.append((resource, INCOHERENT_OUTPUTS))
+        return result
+
+    def resources_not_created_by_tuttle_new(self, previous_workflow):
+        result = []
+        for resource in self._resources.itervalues():
+            if not resource.is_primary():
+                if self.resource_available(resource.url):
+                    if not previous_workflow or not previous_workflow.resource_available(resource.url):
+                        result.append(resource)
+        return result
+
+    def find_process_with_same_inputs(self, process_from_other_workflow):
+        other_wf_urls = process_from_other_workflow.input_urls()
+        for process in self.iter_processes():
+            if process.input_urls() == other_wf_urls:
+                return process
+        return None
+
+    def similar_process(self, process_from_other_workflow):
+        output_resource = process_from_other_workflow.pick_an_output()
+        if output_resource:
+            return self.find_process_that_creates(output_resource.url)
+        else:
+            other_wf_urls = process_from_other_workflow.input_urls()
+            for process in self.iter_processes():
+                if process.input_urls() == other_wf_urls:
+                    return process
+        return None
+
+    def retrieve_execution_info_new(self, previous):
+        """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
+         where the processes are in common. Ignore information for the processes that are not in common
+         """
+        for prev_process in previous.iter_processes():
+            prev_output = prev_process.pick_an_output()
+            if prev_output:
+                process = self.find_process_that_creates(prev_output.url)
+            else:
+                # process with neither inputs nor outputs are not allowed
+                # neither two outputless processes without same inputs
+                # Also if the process isn't similar enough, it will be invalidated later
+                process = self.find_process_with_same_inputs(prev_process)
+            if process:
+                process.retrieve_execution_info(prev_process)

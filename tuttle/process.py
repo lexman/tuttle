@@ -76,6 +76,9 @@ class Process:
     def has_input(self, resource):
         return resource in self._inputs
 
+    def input_urls(self):
+        return {resource.url for resource in self._inputs}
+
     def depends_on_process(self, process):
         """ Returns True if self deprends on a resource created by process"""
         for output_resource in process.iter_outputs():

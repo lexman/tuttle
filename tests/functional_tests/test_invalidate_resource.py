@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from os.path import isfile, join
 
-from os import path
+from os import path, remove
 from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.invalidation import InvalidResourceCollector
 from tuttle.project_parser import ProjectParser
@@ -96,23 +96,24 @@ file://C <- file://B
 
     @isolate(['A', 'B'])
     def test_resource_becomes_primary(self):
-        """ If a resource used to be primary but is now created by tuttle, it should be invalidated """
-        first = """file://C <- file://B
-    echo B produces C
-    echo C > C
-"""
+        """ If a resource becomes primary, it should not be invalidated """
+        first = """file://B <- file://A
+            echo A produces B
+            echo B > B
+
+        file://C <- file://B
+            echo B produces C
+            echo C > C"""
         rcode, output = run_tuttle_file(first)
         assert rcode == 0
-        second = """file://B <- file://A
-    echo A produces B
-    echo B > B
-
-file://C <- file://B
-    echo B produces C
-    echo C > C"""
+        second = """file://C <- file://B
+            echo B produces C
+            echo C > C
+        """
         rcode, output = run_tuttle_file(second)
         assert rcode == 0
-        assert output.find("* file://B") >= 0, output
+        assert output.find("* file://B") == -1, output
+        assert output.find("Done") >= 0, output
 
     @isolate(['A'])
     def test_modified_primary_resource_should_invalidate_dependencies(self):
@@ -155,7 +156,6 @@ file://C <- file://B
         assert output.find('A produces B') >= 0, output
         assert output.find('B produces C') >= 0, output
 
-
     @isolate(['A', 'B'])
     def test_should_display_invalid_resource_only_once(self):
         """ If a resource has several reasons to be invalidated, it should be displayed only once"""
@@ -181,7 +181,6 @@ file://C <- file://B
         assert pos_start >= 0, output
         pos2 = output.find('* file://C', pos_end)
         assert pos2 == -1, output
-
 
     @isolate(['A'])
     def test_should_not_display_invalid_twice(self):
@@ -220,7 +219,7 @@ file://file3 <- file://file2""")
 file://file3 <- file://file2""")
         inv_collector = InvalidResourceCollector()
         different_res = workflow1.resources_not_created_the_same_way(workflow2)
-        assert len(different_res) == 1, [(res.url, reason) for (res, reason,) in invalid]
+        assert len(different_res) == 1, [(res.url, reason) for (res, reason,) in different_res]
         (resource, invalidation_reason) = different_res[0]
         assert resource.url == "file://file2"
         assert invalidation_reason == PROCESS_HAS_CHANGED
@@ -230,7 +229,6 @@ file://file3 <- file://file2""")
         (resource, invalidation_reason) = inv_collector._resources_and_reasons[1]
         assert resource.url == "file://file3"
         assert invalidation_reason.find("file://file2") >= 0, invalidation_reason
-
 
     @isolate(['A'])
     def test_should_run_after_invalidation(self):
@@ -324,3 +322,65 @@ file://C <- file://B
         assert report.find('file://A') == -1, report
         dump = open(join('.tuttle', 'last_workflow.pickle')).read()
         assert report.find('file://A') == -1, report
+
+    @isolate(['A'])
+    def test_dont_invalidate_if_errors(self):
+        """ When there is a process in error, invalidation prior to running must not occur """
+        first = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+
+file://C <- file://A
+            error
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 2, output
+
+        second = """file://B <- file://A
+            echo Not fixing the right thing
+            echo A produces B > B
+
+file://C <- file://A
+            error
+"""
+        rcode, output = run_tuttle_file(second)
+        assert rcode == 2
+        assert output.find("Workflow already failed") >= 0, output
+
+    @isolate(['A'])
+    def test_dont_invalidate_if_errors(self):
+        """ A change in a process without output should re-run the process (from bug) """
+        first = """ <- file://A
+            echo Action after A is created
+
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+
+        second = """ <- file://A
+            echo Another action after A is created
+
+"""
+        rcode, output = run_tuttle_file(second)
+        assert rcode == 0
+        assert output.find("Another") >= 0, output
+
+    @isolate(['A'])
+    def test_invalidate_all_outputs_from_a_process_if_one_missing(self):
+        """ If an output of a successfull process is missing, all others outputs should be removed
+            and the process should re-run """
+        first = """file://C file://B <- file://A
+    echo A produces B
+    echo A produces B > B
+    echo A produces C
+    echo A produces C > C
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+        remove('B')
+
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0
+        assert output.find("file://C") >= 0, output
+        assert output.find("A produces B") >= 0, output
+        assert output.find("A produces C") >= 0, output
