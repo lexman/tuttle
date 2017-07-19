@@ -13,7 +13,7 @@ else:
 sys.path.insert(0,tuttle_module)
 
 from argparse import ArgumentParser
-from tuttle import parse_invalidate_and_run, invalidate_resources
+from tuttle.commands import parse_invalidate_and_run, invalidate_resources
 from tuttle.utils import CurrentDir
 from tuttle.version import version
 

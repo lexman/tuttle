@@ -23,7 +23,6 @@ class Workflow:
         self._processes = []
         self._preprocesses = []
         self._resources = resources
-        self._resources_signatures = {}
         self._available_resources = {}
 
     def add_process(self, process):
@@ -136,7 +135,6 @@ class Workflow:
         """ updates the workflow's signatures after the process has run
         :param signatures: a dictionary of signatures indexed by urls
         """
-        self._resources_signatures.update(signatures)
         self._available_resources.update(signatures)
 
     def run_pre_processes(self):
@@ -234,14 +232,6 @@ class Workflow:
             # Primary resources must not be invalidated
         return changing_resources
 
-    def resources_not_created_by_tuttle(self):
-        result = []
-        for resource in self._resources.itervalues():
-            if not resource.is_primary():
-                if resource.url not in self._resources_signatures and resource.exists():
-                    result.append(resource)
-        return result
-
     def failed_resources(self):
         """
         Returns the list of resources that would have been produced by processes that have failed
@@ -264,18 +254,6 @@ class Workflow:
             for resource in process.iter_inputs():
                 resource.dependant_processes.append(process)
 
-    def retrieve_signatures(self, previous):
-        """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
-            Returns True if some resources where in previous and no longer exist in self
-        """
-        removed_resources = False
-        for url, signature in previous._resources_signatures.iteritems():
-            if url in self._resources:
-                self._resources_signatures[url] = signature
-            else:
-                removed_resources = True
-        return removed_resources
-
     def iter_available_signatures(self):
         for url, signature in self._available_resources.iteritems():
             yield url, signature
@@ -284,57 +262,19 @@ class Workflow:
         """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
             Returns True if some resources where in previous and no longer exist in self
         """
-        removed_resources = False
         for url, signature in previous.iter_available_signatures():
-            print "{} -> {}".format(url, url in self._resources)
             if url in self._resources:
                 if url in self._available_resources and self._available_resources[url] == "AVAILABLE":
                     self._available_resources[url] = signature
-            else:
-                removed_resources = True
-        return removed_resources
 
-    def retrieve_execution_info(self, previous):
-        """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
-         where the processes are in common. Ignore information for the processes that are not in common
-         """
-        for prev_process in previous.iter_processes():
-            prev_output = prev_process.pick_an_output()
-            if prev_output and prev_output.url:
-                # When running this function, invalidation has been computed already
-                # So if process from previous workflow creates a resource, it creates all the same
-                # resources as the process in the current workflow
-                process = self.find_process_that_creates(prev_output.url)
-                if process:
-                    process.retrieve_execution_info(prev_process)
-
-    def update_primary_resource_signatures(self):
-        """ Updates the list of primary resources with current signatures
-         returns the list of resources that have changed
-        :return:
+    def removed_resources(self, previous):
+        """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
+            Returns True if some resources where in previous and no longer exist in self
         """
-        result = []
-        for resource in self._resources.itervalues():
-            if resource.is_primary():
-                signature = resource.signature()
-                if resource.url not in self._resources_signatures:
-                    self._resources_signatures[resource.url] = signature
-                elif self._resources_signatures[resource.url] != signature:
-                    self._resources_signatures[resource.url] = signature
-                    result.append(resource)
-        return result
-
-    def modified_primary_resources(self):
-        """ returns the list of resources that have changed, according to the signatures
-        :return:
-        """
-        result = []
-        for resource in self._resources.itervalues():
-            if resource.is_primary():
-                signature = resource.signature()
-                if resource.url in self._resources_signatures and self._resources_signatures[resource.url] != signature:
-                    result.append((resource, RESOURCE_HAS_CHANGED))
-        return result
+        for url, signature in previous.iter_available_signatures():
+            if url not in self._resources:
+                return True
+        return False
 
     def pick_a_failing_process(self):
         for process in self.iter_processes():

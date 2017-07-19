@@ -45,12 +45,10 @@ def nice_file_size(filename):
 
 
 def format_resource(resource, workflow):
-    sig = None
-    if resource.url in workflow._resources_signatures:
-        sig = workflow._resources_signatures[resource.url]
+    sig = workflow.signature(resource.url)
     return {
         'url': resource.url,
-        'signature' : sig,
+        'signature': sig,
     }
 
 
@@ -71,6 +69,7 @@ def path2url(path, ref_path):
     parts = split(rel_path)
     return '/'.join(parts)
 
+
 def format_process(process, workflow, report_dir):
     duration = ""
     start = ""
@@ -83,7 +82,7 @@ def format_process(process, workflow, report_dir):
 
     return {
         'id': process.id,
-        'processor': process._processor.name,
+        'processor': process.processor.name,
         'start': start,
         'end': end,
         'duration': duration,
@@ -93,7 +92,7 @@ def format_process(process, workflow, report_dir):
         'log_stderr_size': nice_file_size(process.log_stderr),
         'outputs': (format_resource(resource, workflow) for resource in process.iter_outputs()),
         'inputs': (format_resource(resource, workflow) for resource in process.iter_inputs()),
-        'code' : process._code,
+        'code': process.code,
         'success': process.success,
     }
 

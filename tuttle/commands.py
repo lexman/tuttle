@@ -1,10 +1,55 @@
-from tuttle import load_project, print_missing_input, print_failing_process, print_failures, print_success, \
-    print_nothing_to_do, NOT_PRODUCED_BY_TUTTLE, PROCESS_HAS_FAILED, USER_REQUEST, print_updated
 from tuttle.error import TuttleError
 from tuttle.invalidation import InvalidResourceCollector
+from tuttle.project_parser import ProjectParser
 from tuttle.workflow import Workflow
 from tuttle.workflow_builder import WorkflowBuilder
 from tuttle.workflow_runner import WorkflowRuner
+
+NOT_PRODUCED_BY_TUTTLE = "The existing resource has not been produced by tuttle"
+USER_REQUEST = "User request"
+PROCESS_HAS_FAILED = "The resource has been produced by a failing process"
+
+
+def load_project(tuttlefile):
+    pp = ProjectParser()
+    workflow = pp.parse_and_check_file(tuttlefile)
+    return workflow
+
+
+def print_missing_input(missing):
+    error_msg = "Missing the following resources to launch the workflow :\n"
+    for mis in missing:
+        error_msg += "* {}\n".format(mis.url)
+    print(error_msg)
+
+
+def print_failing_process(failing_process):
+    msg = "Workflow already failed on process '{}'. Fix the process and run tuttle again.".format(failing_process.id)
+    msg += "\n\nIf failure has been caused by an external factor like a connection breakdown, " \
+           'use "tuttle invalidate" to reset execution then "tuttle run" again.'
+    print(msg)
+
+
+def print_failures(failure_processes):
+    print("Some processes have failed")
+    for process in failure_processes:
+        header = "== Process : {} ==".format(process.id)
+        print(header)
+        print(process.error_message)
+
+
+def print_success():
+    print("====")
+    print("Done")
+
+
+def print_nothing_to_do():
+    print("Nothing to do")
+
+
+def print_updated():
+    print("Report has been updated to reflect tuttlefile")
+
 
 
 def parse_invalidate_and_run(tuttlefile, threshold=-1):
@@ -110,25 +155,6 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
     return 0
 
 
-def prepare_workflow_for_run_invalidation(workflow, previous_workflow):
-    inv_collector = InvalidResourceCollector()
-    workflow_changed = False
-    if previous_workflow:
-        different_res = previous_workflow.resources_not_created_the_same_way(workflow)
-        inv_collector.collect_with_dependencies(different_res, previous_workflow)
-        modified_primary_resources = workflow.modified_resources(previous_workflow, only_primary=True)
-        inv_collector.collect_dependencies_only(modified_primary_resources, workflow)
-    not_created = workflow.resources_not_created_by_tuttle_new(previous_workflow)
-    inv_collector.collect_resources(not_created, NOT_PRODUCED_BY_TUTTLE)
-    if previous_workflow:
-        workflow_changed = workflow.retrieve_signatures_new(previous_workflow)  # In advanced check, we should need only shrunk
-        workflow.retrieve_execution_info_new(previous_workflow)
-
-        incoherent = workflow.incoherent_outputs_from_successfull_processes()
-        inv_collector.collect_with_dependencies(incoherent, previous_workflow)
-    return inv_collector, workflow_changed
-
-
 def prepare_workflow_for_invalidation(workflow, previous_workflow, urls, invalidate_failed_resources):
     inv_collector = InvalidResourceCollector()
     workflow_changed = False
@@ -143,8 +169,9 @@ def prepare_workflow_for_invalidation(workflow, previous_workflow, urls, invalid
     inv_collector.collect_resources(not_created, NOT_PRODUCED_BY_TUTTLE)
 
     if previous_workflow:
-        shrunk = workflow.retrieve_signatures_new(previous_workflow)  # In advanced check, we should need only shrunk
-        workflow_changed = workflow_changed or shrunk
+        workflow.retrieve_signatures_new(previous_workflow)  # In advanced check, we should need only shrunk
+        removed_resources = workflow.removed_resources(previous_workflow)
+        workflow_changed = workflow_changed or removed_resources
         workflow.retrieve_execution_info_new(previous_workflow)
 
         incoherent = workflow.incoherent_outputs_from_successfull_processes()
@@ -174,35 +201,3 @@ def prepare_workflow_for_invalidation(workflow, previous_workflow, urls, invalid
         inv_collector.collect_dependencies_only(to_invalidate, workflow)
 
     return inv_collector, workflow_changed
-
-
-def prepare_workflow_for_invalidate_invalidation(workflow, urls, previous_workflow):
-    inv_collector = InvalidResourceCollector()
-
-    different_res = previous_workflow.resources_not_created_the_same_way(workflow)
-    inv_collector.collect_with_dependencies(different_res, previous_workflow)
-    modified_primary_resources = workflow.modified_resources(previous_workflow, only_primary=True)
-    inv_collector.collect_dependencies_only(modified_primary_resources, workflow)
-
-    workflow.retrieve_signatures_new(previous_workflow)  # In advanced check, we should not need that
-    workflow.retrieve_execution_info_new(previous_workflow)
-    failed_res = workflow.failed_resources()
-    inv_collector.collect_resources(failed_res, PROCESS_HAS_FAILED)
-    url_not_invalidated = inv_collector.not_invalidated(urls)
-    to_invalidate = []
-    for url in url_not_invalidated:
-        resource = workflow.find_resource(url)
-        if not resource:
-            msg = "Ignoring {} : this resource does not belong to the workflow.".format(url)
-            print(msg)
-        elif not workflow.resource_available(url):
-            msg = "Ignoring {} : this resource has not been produced yet.".format(url)
-            print(msg)
-        elif resource.is_primary():
-            msg = "Ignoring {} : primary resources can't be invalidated.".format(url)
-            print(msg)
-        else:
-            to_invalidate.append(resource)
-    inv_collector.collect_resources(to_invalidate, USER_REQUEST)
-    inv_collector.collect_dependencies_only(to_invalidate, workflow)
-    return inv_collector
