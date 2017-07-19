@@ -90,15 +90,19 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
 
     reseted = workflow.reset_failing_outputless_process_exec_info()
     workflow_changed = workflow_changed or reseted
-    if inv_collector.urls() or previous_workflow.pick_a_failing_process() or workflow_changed:
+    if inv_collector.urls():
         if inv_collector.warn_and_abort_on_threshold(threshold):
             return 2
         inv_collector.remove_resources()
-        workflow.reset_process_exec_info(
+    workflow.reset_process_exec_info(
             inv_collector.urls())  # Fortunately, duration will be computed from the previous processes
-        if (previous_workflow.pick_a_failing_process() or workflow_changed) and not inv_collector.urls():
-            print_updated()
-        workflow.reset_failing_outputless_process_exec_info()
+    if previous_workflow.pick_a_failing_process() :
+        reset_failing = workflow.reset_failing_outputless_process_exec_info()
+        workflow_changed = workflow_changed or reset_failing
+    if not inv_collector.urls() and workflow_changed:
+        print_updated()
+
+    if inv_collector.urls() or workflow_changed:
         workflow.dump()
         workflow.create_reports()
     else:
