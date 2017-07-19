@@ -55,6 +55,10 @@ def print_nothing_to_do():
     print("Nothing to do")
 
 
+def print_updated():
+    print("Report has been updated to reflect tuttlefile")
+
+
 def parse_invalidate_and_run(tuttlefile, threshold=-1):
     import commands
     return commands.parse_invalidate_and_run(tuttlefile, threshold)

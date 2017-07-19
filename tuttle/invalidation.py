@@ -84,24 +84,6 @@ class InvalidResourceCollector():
                           'it should not be considered valid.'.format(resource.url)
                     print(msg)
 
-    def warn_and_remove_old(self, threshold):
-        if self._resources_and_reasons:
-            inv_duration = self.duration()
-            print "The following resources are not valid any more and will be removed :"
-            for resource, reason in self._resources_and_reasons:
-                print("* {} - {}".format(resource.url, reason))
-            if threshold > -1 and inv_duration >= threshold:
-                msg = "You were about to loose {} seconds of processing time (which exceeds the {} seconds " \
-                      "threshold). \nAborting... ".format(inv_duration, threshold)
-                raise TuttleError(msg)
-            print("{} seconds of processing will be lost".format(inv_duration))
-            self.remove_resources()
-
-    def warn_and_remove(self, threshold):
-        if self.warn_and_abort_on_threshold(threshold):
-            raise TuttleError("Aborted")
-        self.remove_resources()
-
     def warn_and_abort_on_threshold(self, threshold):
         aborted = False
         if self._resources_and_reasons:

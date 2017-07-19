@@ -1,5 +1,5 @@
 from tuttle import load_project, print_missing_input, print_failing_process, print_failures, print_success, \
-    print_nothing_to_do, NOT_PRODUCED_BY_TUTTLE, PROCESS_HAS_FAILED, USER_REQUEST
+    print_nothing_to_do, NOT_PRODUCED_BY_TUTTLE, PROCESS_HAS_FAILED, USER_REQUEST, print_updated
 from tuttle.error import TuttleError
 from tuttle.invalidation import InvalidResourceCollector
 from tuttle.workflow import Workflow
@@ -23,8 +23,8 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
 
     previous_workflow = Workflow.load()
     inv_collector, workflow_changed = prepare_workflow_for_invalidation(workflow, previous_workflow, [], False)
-    if previous_workflow:
-        workflow.reset_modified_outputless_processes(previous_workflow)
+    #if previous_workflow:
+    #    workflow.reset_modified_outputless_processes(previous_workflow)
     workflow.reset_process_exec_info(inv_collector.urls())
 
     failing_process = workflow.pick_a_failing_process()
@@ -88,12 +88,16 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
     workflow.discover_resources()
     inv_collector, workflow_changed = prepare_workflow_for_invalidation(workflow, previous_workflow, urls, True)
 
-    if inv_collector.urls() or previous_workflow.pick_a_failing_process():
+    reseted = workflow.reset_failing_outputless_process_exec_info()
+    workflow_changed = workflow_changed or reseted
+    if inv_collector.urls() or previous_workflow.pick_a_failing_process() or workflow_changed:
         if inv_collector.warn_and_abort_on_threshold(threshold):
             return 2
         inv_collector.remove_resources()
         workflow.reset_process_exec_info(
             inv_collector.urls())  # Fortunately, duration will be computed from the previous processes
+        if (previous_workflow.pick_a_failing_process() or workflow_changed) and not inv_collector.urls():
+            print_updated()
         workflow.reset_failing_outputless_process_exec_info()
         workflow.dump()
         workflow.create_reports()
@@ -123,7 +127,7 @@ def prepare_workflow_for_run_invalidation(workflow, previous_workflow):
 
 def prepare_workflow_for_invalidation(workflow, previous_workflow, urls, invalidate_failed_resources):
     inv_collector = InvalidResourceCollector()
-    shrunk = False
+    workflow_changed = False
     if previous_workflow:
         different_res = previous_workflow.resources_not_created_the_same_way(workflow)
         inv_collector.collect_with_dependencies(different_res, previous_workflow)
@@ -136,11 +140,13 @@ def prepare_workflow_for_invalidation(workflow, previous_workflow, urls, invalid
 
     if previous_workflow:
         shrunk = workflow.retrieve_signatures_new(previous_workflow)  # In advanced check, we should need only shrunk
+        workflow_changed = workflow_changed or shrunk
         workflow.retrieve_execution_info_new(previous_workflow)
 
         incoherent = workflow.incoherent_outputs_from_successfull_processes()
         inv_collector.collect_with_dependencies(incoherent, previous_workflow)
-        workflow.reset_modified_outputless_processes(previous_workflow)
+        reseted = workflow.reset_modified_outputless_processes(previous_workflow)
+        workflow_changed = workflow_changed or reseted
     if invalidate_failed_resources:
         failed_res = workflow.failed_resources()
         inv_collector.collect_resources(failed_res, PROCESS_HAS_FAILED)
@@ -163,7 +169,7 @@ def prepare_workflow_for_invalidation(workflow, previous_workflow, urls, invalid
         inv_collector.collect_resources(to_invalidate, USER_REQUEST)
         inv_collector.collect_dependencies_only(to_invalidate, workflow)
 
-    return inv_collector, shrunk
+    return inv_collector, workflow_changed
 
 
 def prepare_workflow_for_invalidate_invalidation(workflow, urls, previous_workflow):

@@ -4,6 +4,8 @@ import sys
 from subprocess import Popen, PIPE
 from os.path import abspath, join, dirname, isfile
 from re import search, DOTALL
+from unittest.case import SkipTest
+
 from tests.functional_tests import isolate, run_tuttle_file
 from cStringIO import StringIO
 from tuttle import invalidate_resources
@@ -228,7 +230,7 @@ file://C <- file://B
 """
         rcode, output = self.tuttle_invalide(project=project)
         assert rcode == 0, output
-        assert output.find("Nothing to do") >= 0, output
+        assert output.find("Report has been updated to reflect") >= 0, output
 
     @isolate(['A'])
     def test_modified_new_primary_resources_should_invalidate_dependencies(self):
@@ -283,7 +285,7 @@ file://C <- file://B
 """
         rcode, output = self.tuttle_invalide(project=project)
         assert rcode == 0, output
-        assert output.find("Nothing to do") >= 0, output
+        assert output.find("Report has been updated to reflect") >= 0, output
 
 
     @isolate(['A'])
@@ -408,3 +410,35 @@ file://C <- file://B
         assert rcode == 0
         assert output.find("Nothing to do") >= 0, output
         assert output.find("Action") == -1, output
+
+    @isolate(['A'])
+    def test_changes_in_the_graph_without_removing_resource(self):
+        """ If the graph changes without removing resource tuttle should display a message
+            event if the removed resource is used elsewhere (from bug) """
+        raise SkipTest("Failing for the moment")
+
+        first = """ <- file://A
+    echo Action after A is created.
+
+file://B <- file://A
+    echo B > B 
+
+file://C <- file://B
+    echo C > C
+"""
+        rcode, output = run_tuttle_file(first)
+        print output
+        assert rcode == 0, output
+
+        second = """ <- file://A
+    echo Action after A is created.
+
+file://B <- file://A
+    echo B > B 
+
+file://C <- file://B
+    echo C > C
+"""
+        rcode, output = self.tuttle_invalide(project=second)
+        assert rcode == 0, output
+        assert output.find("Report has been updated to reflect") >= 0, output

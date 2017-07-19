@@ -286,6 +286,7 @@ class Workflow:
         """
         removed_resources = False
         for url, signature in previous.iter_available_signatures():
+            print "{} -> {}".format(url, url in self._resources)
             if url in self._resources:
                 if url in self._available_resources and self._available_resources[url] == "AVAILABLE":
                     self._available_resources[url] = signature
@@ -348,18 +349,24 @@ class Workflow:
                 resource.creator_process.reset_execution_info()
 
     def reset_modified_outputless_processes(self, prev_workflow):
+        workflow_changed = False
         for prev_process in prev_workflow.iter_processes():
             if not prev_process.has_outputs():
                 process = self.find_process_with_same_inputs(prev_process)
                 if process and (prev_process.code != process.code or
                                 prev_process.processor.name != process.processor.name):
                     process.reset_execution_info()
+                    workflow_changed = True
+        return workflow_changed
 
     def reset_failing_outputless_process_exec_info(self):
+        workflow_changed = False
         for process in self._processes:
             if not process.has_outputs():
                 if process.success is False:
                     process.reset_execution_info()
+                    workflow_changed = True
+        return workflow_changed
 
     def runnable_processes(self):
         """ List processes that can be run (because they have all inputs)
