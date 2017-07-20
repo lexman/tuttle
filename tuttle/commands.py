@@ -51,7 +51,6 @@ def print_updated():
     print("Report has been updated to reflect tuttlefile")
 
 
-
 def parse_invalidate_and_run(tuttlefile, threshold=-1):
     try:
         workflow = load_project(tuttlefile)
@@ -161,18 +160,18 @@ def prepare_workflow_for_invalidation(workflow, previous_workflow, urls, invalid
     if previous_workflow:
         different_res = previous_workflow.resources_not_created_the_same_way(workflow)
         inv_collector.collect_with_dependencies(different_res, previous_workflow)
-        modified_primary_resources = workflow.modified_resources(previous_workflow, only_primary=True)
+        modified_primary_resources = workflow.modified_primary_resources(previous_workflow)
         inv_collector.collect_dependencies_only(modified_primary_resources, workflow)
 
     # Should be ok for invalidate
-    not_created = workflow.resources_not_created_by_tuttle_new(previous_workflow)
+    not_created = workflow.resources_not_created_by_tuttle(previous_workflow)
     inv_collector.collect_resources(not_created, NOT_PRODUCED_BY_TUTTLE)
 
     if previous_workflow:
-        workflow.retrieve_signatures_new(previous_workflow)  # In advanced check, we should need only shrunk
+        workflow.retrieve_signatures(previous_workflow)  # In advanced check, we should need only shrunk
         removed_resources = workflow.removed_resources(previous_workflow)
         workflow_changed = workflow_changed or removed_resources
-        workflow.retrieve_execution_info_new(previous_workflow)
+        workflow.retrieve_execution_info(previous_workflow)
 
         incoherent = workflow.incoherent_outputs_from_successfull_processes()
         inv_collector.collect_with_dependencies(incoherent, previous_workflow)

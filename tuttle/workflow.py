@@ -258,7 +258,7 @@ class Workflow:
         for url, signature in self._available_resources.iteritems():
             yield url, signature
 
-    def retrieve_signatures_new(self, previous):
+    def retrieve_signatures(self, previous):
         """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
             Returns True if some resources where in previous and no longer exist in self
         """
@@ -349,13 +349,12 @@ class Workflow:
     def resource_available(self, url):
         return url in self._available_resources
 
-    def modified_resources(self, older_workflow, only_primary):
+    def modified_primary_resources(self, older_workflow):
         """ List the resources that have changed
          returns the list of resources that have changed
         :return:
         # TODO : could check for modified resources, not only primaries for advanced check
         """
-        assert only_primary is True, "Advanced check not implemented"
         result = []
         for resource in self._resources.itervalues():
             if resource.is_primary():
@@ -381,7 +380,7 @@ class Workflow:
                             result.append((resource, INCOHERENT_OUTPUTS))
         return result
 
-    def resources_not_created_by_tuttle_new(self, previous_workflow):
+    def resources_not_created_by_tuttle(self, previous_workflow):
         result = []
         for resource in self._resources.itervalues():
             if not resource.is_primary():
@@ -408,7 +407,7 @@ class Workflow:
                     return process
         return None
 
-    def retrieve_execution_info_new(self, previous):
+    def retrieve_execution_info(self, previous):
         """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
          where the processes are in common. Ignore information for the processes that are not in common
          """
