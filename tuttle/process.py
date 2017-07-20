@@ -134,15 +134,6 @@ class Process:
         self._success = success
         self._error_message = error_msg
 
-    def all_inputs_exists(self):
-        """
-        :return: True if all input resources for this process exist, False otherwise
-        """
-        for in_res in self.iter_inputs():
-            if not in_res.exists():
-                return False
-        return True
-
     def missing_outputs(self):
         """
         :return: True if all input resources for this process exist, False otherwise

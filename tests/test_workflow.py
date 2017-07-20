@@ -137,6 +137,7 @@ file://file3 <- file://file1
             echo test
             """)
         workflow.static_check_processes()
+        workflow.discover_resources()
         wr = WorkflowRuner(3)
         successes, failures = wr.run_parallel_workflow(workflow)
         assert failures
@@ -188,23 +189,6 @@ file://B <- file://C
         assert not workflow.circular_references()
 
     @isolate(['A'])
-    def test_pick_a_process_to_run(self):
-        """
-        Should run a process and update the state of the workflow
-        """
-        workflow = self.get_workflow(
-            """file://C <- file://B
-            echo C > C
-            echo B creates C
-
-file://B <- file://A
-            echo B > B
-            echo A creates B
-            """)
-        p = workflow.pick_a_process_to_run()
-        assert p.id.find("_5") >= 0, p.id
-
-    @isolate(['A'])
     def test_runnable_processes(self):
         """
         Should run a process and update the state of the workflow
@@ -218,6 +202,7 @@ file://B <- file://A
             echo B > B
             echo A creates B
             """)
+        workflow.discover_resources()
         processes = workflow.runnable_processes()
         assert processes, processes
         p = processes.pop()

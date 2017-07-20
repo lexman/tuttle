@@ -115,15 +115,6 @@ class Workflow:
             p = pick_a_process()
         return processes_to_run
 
-    def pick_a_process_to_run(self):
-        """ Pick up a process to run
-        :return:
-        """
-        for process in self.iter_processes():
-            if process.start is None and process.all_inputs_exists():
-                return process
-        return None
-
     def static_check_processes(self):
         """ Runs a pre-check for every process, in order to catch early obvious errors, even before invalidation
         :return: None
@@ -308,13 +299,22 @@ class Workflow:
                     workflow_changed = True
         return workflow_changed
 
+    def all_inputs_available(self, process):
+        """
+        :return: True if all input resources for this process are vailable, False otherwise
+        """
+        for in_res in process.iter_inputs():
+            if not self.resource_available(in_res.url):
+                return False
+        return True
+
     def runnable_processes(self):
         """ List processes that can be run (because they have all inputs)
         :return:
         """
         res = set()
         for process in self.iter_processes():
-            if process.start is None and process.all_inputs_exists():
+            if process.start is None and self.all_inputs_available(process):
                 res.add(process)
         return res
 
@@ -327,7 +327,7 @@ class Workflow:
         for process in self.iter_processes():
             if process.start is None:
                 if process.depends_on_process(complete_process):
-                    if process.all_inputs_exists():
+                    if self.all_inputs_available(process):
                         res.add(process)
         return res
 

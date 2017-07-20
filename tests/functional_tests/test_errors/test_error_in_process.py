@@ -120,6 +120,7 @@ file://D <- file://A
         pp = ProjectParser()
         pp.set_project(first)
         workflow = pp.parse_extend_and_check_project()
+        workflow.discover_resources()
         wr = WorkflowRuner(3)
         successes, failures = wr.run_parallel_workflow(workflow)
         assert failures, "Process should be marked as failed"
