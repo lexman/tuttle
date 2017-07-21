@@ -422,3 +422,8 @@ class Workflow:
                 process = self.find_process_with_same_inputs(prev_process)
             if process:
                 process.retrieve_execution_info(prev_process)
+
+    def clear_signatures(self, urls):
+        for url in urls:
+            if url in self._available_resources:
+                del self._available_resources[url]

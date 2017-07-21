@@ -82,6 +82,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1):
     # We have to remove resources, even if there is no previous workflow,
     # because of resources that may not have been produced by tuttle
     inv_collector.remove_resources()
+    workflow.clear_signatures(inv_collector.urls())
     workflow.create_reports()
     workflow.dump()
 
@@ -138,8 +139,9 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
         if inv_collector.warn_and_abort_on_threshold(threshold):
             return 2
         inv_collector.remove_resources()
+        workflow.clear_signatures(inv_collector.urls())
     workflow.reset_process_exec_info(
-            inv_collector.urls())  # Fortunately, duration will be computed from the previous processes
+        inv_collector.urls())  # Fortunately, duration will be computed from the previous processes
     if previous_workflow.pick_a_failing_process() :
         reset_failing = workflow.reset_failing_outputless_process_exec_info()
         workflow_changed = workflow_changed or reset_failing
