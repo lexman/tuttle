@@ -2,9 +2,9 @@
 
 from hashlib import sha1
 from urllib2 import Request, urlopen, URLError, HTTPError
-from tuttle.error import TuttleError
-from tuttle.resources import ResourceMixIn
-from tuttle.version import version
+from tuttlelib.error import TuttleError
+from tuttlelib.resources import ResourceMixIn
+from tuttlelib.version import version
 
 
 USER_AGENT = "tuttle/{}".format(version)

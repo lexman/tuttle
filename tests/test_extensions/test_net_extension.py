@@ -3,13 +3,13 @@
 import re
 from os.path import isfile, join
 from tests.functional_tests import isolate, run_tuttle_file
-from tuttle.error import TuttleError
-from tuttle.project_parser import ProjectParser
-from tuttle.extensions.net import HTTPResource
+from tuttlelib.error import TuttleError
+from tuttlelib.project_parser import ProjectParser
+from tuttlelib.extensions.net import HTTPResource
 from BaseHTTPServer import BaseHTTPRequestHandler
 from SocketServer import TCPServer
 
-from tuttle.workflow_runner import WorkflowRuner
+from tuttlelib.workflow_runner import WorkflowRuner
 
 
 class MockHTTPHandler(BaseHTTPRequestHandler):

@@ -2,8 +2,8 @@
 from itertools import chain
 
 from re import compile
-from tuttle.error import TuttleError
-from tuttle.resources import MalformedUrl, ResourceMixIn
+from tuttlelib.error import TuttleError
+from tuttlelib.resources import MalformedUrl, ResourceMixIn
 from hashlib import sha1
 import psycopg2
 
@@ -83,7 +83,7 @@ class PostgreSQLResource(ResourceMixIn, object):
             db = psycopg2.connect(conn_string)
             result = self.pg_object_type(db, self._schema, self._objectname) is not None
             db.close()
-        except psycopg2.OperationalError:
+        except psycopg2.OperationalError as e:
             return False
         return result
 

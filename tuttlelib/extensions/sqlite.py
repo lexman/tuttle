@@ -6,8 +6,8 @@ from sqlite3 import OperationalError
 from os import remove
 from os.path import isfile
 from re import compile
-from tuttle.error import TuttleError
-from tuttle.resources import MalformedUrl, ResourceMixIn
+from tuttlelib.error import TuttleError
+from tuttlelib.resources import MalformedUrl, ResourceMixIn
 from hashlib import sha1
 
 

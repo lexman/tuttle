@@ -3,8 +3,8 @@
 
 from nose.tools import *
 from tests.functional_tests import isolate
-from tuttle.process import Process
-from tuttle.processors import ShellProcessor
+from tuttlelib.process import Process
+from tuttlelib.processors import ShellProcessor
 from os import remove
 
 

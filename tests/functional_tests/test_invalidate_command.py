@@ -8,7 +8,7 @@ from unittest.case import SkipTest
 
 from tests.functional_tests import isolate, run_tuttle_file
 from cStringIO import StringIO
-from tuttle.commands import invalidate_resources
+from tuttlelib.commands import invalidate_resources
 
 
 class TestCommands():

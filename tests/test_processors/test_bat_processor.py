@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 from glob import glob
 from tests.functional_tests import isolate
-from tuttle.process import Process
-from tuttle.processors import BatProcessor
+from tuttlelib.process import Process
+from tuttlelib.processors import BatProcessor
 from os.path import join
 
 class TestBatProcessor():

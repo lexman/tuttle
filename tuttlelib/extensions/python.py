@@ -3,8 +3,8 @@
 from os import path, chmod, stat, mkdir
 from stat import S_IXUSR, S_IXGRP, S_IXOTH
 from subprocess import Popen, PIPE
-from tuttle.error import TuttleError
-from tuttle.processors import run_and_log
+from tuttlelib.error import TuttleError
+from tuttlelib.processors import run_and_log
 
 
 

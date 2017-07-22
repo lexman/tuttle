@@ -3,9 +3,9 @@ from os.path import isfile, join
 
 from os import path, remove
 from tests.functional_tests import isolate, run_tuttle_file
-from tuttle.invalidation import InvalidResourceCollector
-from tuttle.project_parser import ProjectParser
-from tuttle.workflow import PROCESS_HAS_CHANGED
+from tuttlelib.invalidation import InvalidResourceCollector
+from tuttlelib.project_parser import ProjectParser
+from tuttlelib.workflow import PROCESS_HAS_CHANGED
 
 
 class TestInvalidateResource():

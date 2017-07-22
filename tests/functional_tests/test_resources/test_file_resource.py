@@ -3,12 +3,12 @@ from tempfile import mkdtemp
 from shutil import rmtree, copytree, copy
 from os.path import isdir, join, isfile
 from tests.functional_tests import isolate, run_tuttle_file
-from tuttle.commands import invalidate_resources
+from tuttlelib.commands import invalidate_resources
 
-from tuttle.resources import FileResource
-import tuttle.resources
+from tuttlelib.resources import FileResource
+import tuttlelib.resources
 from os import path, listdir
-from tuttle.utils import CurrentDir
+from tuttlelib.utils import CurrentDir
 
 
 def copycontent(src, dst):
@@ -24,7 +24,7 @@ class TestHttpResource():
 
     def test_real_resource_exists(self):
         """A real resource should exist"""
-        file_url = "file://{}".format(path.abspath(tuttle.resources.__file__))
+        file_url = "file://{}".format(path.abspath(tuttlelib.resources.__file__))
         res = FileResource(file_url)
         assert res.exists()
 

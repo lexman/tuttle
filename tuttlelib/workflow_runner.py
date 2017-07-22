@@ -12,9 +12,9 @@ from os import remove, makedirs, getcwd
 from os.path import join, isdir, isfile
 from traceback import format_exception
 
-from tuttle.error import TuttleError
-from tuttle.utils import EnvVar
-from tuttle.log_follower import LogsFollower
+from tuttlelib.error import TuttleError
+from tuttlelib.utils import EnvVar
+from tuttlelib.log_follower import LogsFollower
 from time import sleep, time
 import sys
 import logging

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from nose.tools import *
-from tuttle.workflow_builder import *
+from tuttlelib.workflow_builder import *
 
 
 class TestProjectBuilder():

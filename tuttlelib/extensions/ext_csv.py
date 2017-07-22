@@ -4,9 +4,9 @@ import sqlite3
 import chardet
 import codecs
 
-from tuttle.error import TuttleError
-from tuttle.extensions.sqlite import SQLiteResource
-from tuttle.resources import ResourceMixIn, FileResource
+from tuttlelib.error import TuttleError
+from tuttlelib.extensions.sqlite import SQLiteResource
+from tuttlelib.resources import ResourceMixIn, FileResource
 
 
 def strip_backstophes(st):

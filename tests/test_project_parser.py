@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from tests.functional_tests import isolate
-from tuttle.project_parser import *
+from tuttlelib.project_parser import *
 
 
 class TestLineStreamer():

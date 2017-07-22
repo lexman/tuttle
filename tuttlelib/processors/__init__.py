@@ -3,7 +3,7 @@
 from os import path, chmod, stat, mkdir
 from stat import S_IXUSR, S_IXGRP, S_IXOTH
 from subprocess import Popen, PIPE
-from tuttle.error import TuttleError
+from tuttlelib.error import TuttleError
 
 
 class ProcessExecutionError(TuttleError):

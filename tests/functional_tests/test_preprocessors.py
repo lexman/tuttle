@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from subprocess import Popen, PIPE
-from os.path import isfile, dirname, abspath, join
+from os.path import isfile, join
 
-from os import path, environ
 from tests.functional_tests import isolate, run_tuttle_file
 
 
@@ -134,7 +132,7 @@ class TestPreprocessors:
     echo A produces B > B
 
 |<< ! python
-    from tuttle import extend_workflow
+    from tuttlelib import extend_workflow
     print("Running a python preprocess")
     extend_workflow('b-produces-x.tuttle', x="C")
 """.format(cmd_extend=cmd_extend)

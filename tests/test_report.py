@@ -2,7 +2,7 @@
 from os.path import isfile, join
 from re import search, DOTALL, findall
 
-from tuttle.report.html_repport import nice_size
+from tuttlelib.report.html_repport import nice_size
 from tests.functional_tests import isolate, run_tuttle_file
 
 

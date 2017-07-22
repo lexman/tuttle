@@ -3,8 +3,8 @@
 import glob
 from os.path import isfile
 from tests.functional_tests import isolate, run_tuttle_file
-from tuttle.project_parser import ProjectParser
-from tuttle.workflow_runner import WorkflowRuner
+from tuttlelib.project_parser import ProjectParser
+from tuttlelib.workflow_runner import WorkflowRuner
 
 
 class TestErrorInProcess:

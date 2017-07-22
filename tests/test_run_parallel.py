@@ -3,9 +3,9 @@ from os.path import isfile, abspath, exists
 
 from test_project_parser import ProjectParser
 from tests.functional_tests import run_tuttle_file, isolate
-from tuttle.resources import FileResource
-from tuttle.workflow_runner import WorkflowRuner
-from tuttle.workflow import Workflow
+from tuttlelib.resources import FileResource
+from tuttlelib.workflow_runner import WorkflowRuner
+from tuttlelib.workflow import Workflow
 from time import time, sleep
 
 

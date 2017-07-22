@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 from itertools import chain
-from tuttle.error import TuttleError
+from tuttlelib.error import TuttleError
 
 
 DEPENDENCY_CHANGED = "Resource depends on {} that have changed"

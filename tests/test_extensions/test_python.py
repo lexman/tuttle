@@ -2,8 +2,8 @@
 # -*- coding: utf8 -*-
 from os.path import join, isfile
 from tests.functional_tests import isolate, run_tuttle_file
-from tuttle.extensions.sqlite import SQLiteResource, SQLiteTuttleError
-from tuttle.project_parser import ProjectParser
+from tuttlelib.extensions.sqlite import SQLiteResource, SQLiteTuttleError
+from tuttlelib.project_parser import ProjectParser
 
 
 class TestPythonProcessor():

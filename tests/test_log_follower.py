@@ -2,7 +2,7 @@
 
 from tests.functional_tests import isolate, run_tuttle_file
 from cStringIO import StringIO
-from tuttle.log_follower import LogTracer, LogsFollower
+from tuttlelib.log_follower import LogTracer, LogsFollower
 import logging
 import sys
 

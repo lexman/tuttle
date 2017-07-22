@@ -4,19 +4,19 @@
 import sys
 from os.path import abspath, exists, dirname, join
 
-if getattr(sys, 'frozen', False):
-    # frozen
-    tuttle_module = join(dirname(abspath(sys.executable)), '..', '..', 'tuttle')
-else:
-    # unfrozen
-    tuttle_module = join(dirname(abspath(__file__)), '..', '..', 'tuttle')
-sys.path.insert(0,tuttle_module)
+#if getattr(sys, 'frozen', False):
+#    # frozen
+#    tuttle_module = join(dirname(abspath(sys.executable)), '..', 'tuttlelib')
+#else:
+#    # unfrozen
+#    tuttle_module = join(dirname(abspath(__file__)), '..', 'tuttlelib')
+#sys.path.insert(0,tuttle_module)
 
 from argparse import ArgumentParser, ArgumentTypeError
-from tuttle.commands import parse_invalidate_and_run, invalidate_resources
-from tuttle.utils import CurrentDir
-from tuttle.version import version
-from tuttle.extend_workflow import extend_workflow, ExtendError, extract_variables
+from tuttlelib.commands import parse_invalidate_and_run, invalidate_resources
+from tuttlelib.utils import CurrentDir
+from tuttlelib.version import version
+from tuttlelib.extend_workflow import extend_workflow, ExtendError, extract_variables
 
 
 def check_minus_1_or_positive(value):

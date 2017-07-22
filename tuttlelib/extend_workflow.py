@@ -6,7 +6,7 @@ from jinja2.exceptions import UndefinedError
 from jinja2.runtime import StrictUndefined
 from os.path import abspath, exists, join
 from os import environ
-from tuttle.utils import CurrentDir
+from tuttlelib.utils import CurrentDir
 
 
 class ExtendError(Exception):
