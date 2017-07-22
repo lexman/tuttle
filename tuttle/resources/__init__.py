@@ -34,8 +34,8 @@ class ResourceMixIn:
         """
         Call to depends_on_same_inputs is valid only if both resources are not primary (ie creator_process exists !)
         """
-        self_inputs = set(in_res.url for in_res in self.creator_process.iter_inputs())
-        other_inputs = set(in_res.url for in_res in other_resource.creator_process.iter_inputs())
+        self_inputs = self.creator_process.input_urls()
+        other_inputs = other_resource.creator_process.input_urls()
         return self_inputs == other_inputs
 
 

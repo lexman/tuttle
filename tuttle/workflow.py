@@ -283,7 +283,7 @@ class Workflow:
         workflow_changed = False
         for prev_process in prev_workflow.iter_processes():
             if not prev_process.has_outputs():
-                process = self.find_process_with_same_inputs(prev_process)
+                process = self.find_outputless_process_with_same_inputs(prev_process)
                 if process and (prev_process.code != process.code or
                                 prev_process.processor.name != process.processor.name):
                     process.reset_execution_info()
@@ -389,10 +389,10 @@ class Workflow:
                         result.append(resource)
         return result
 
-    def find_process_with_same_inputs(self, process_from_other_workflow):
+    def find_outputless_process_with_same_inputs(self, process_from_other_workflow):
         other_wf_urls = process_from_other_workflow.input_urls()
         for process in self.iter_processes():
-            if process.input_urls() == other_wf_urls:
+            if not process.has_outputs() and process.input_urls() == other_wf_urls:
                 return process
         return None
 
@@ -419,7 +419,7 @@ class Workflow:
                 # process with neither inputs nor outputs are not allowed
                 # neither two outputless processes without same inputs
                 # Also if the process isn't similar enough, it will be invalidated later
-                process = self.find_process_with_same_inputs(prev_process)
+                process = self.find_outputless_process_with_same_inputs(prev_process)
             if process:
                 process.retrieve_execution_info(prev_process)
 
