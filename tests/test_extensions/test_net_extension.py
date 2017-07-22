@@ -142,6 +142,7 @@ class TestDownloadProcessor:
         pp.set_project(project)
         workflow = pp.parse_extend_and_check_project()
         workflow.static_check_processes()
+        workflow.discover_resources()
         wr = WorkflowRuner(3)
         wr.run_parallel_workflow(workflow)
         assert isfile("google.html")
@@ -159,9 +160,10 @@ class TestDownloadProcessor:
         pp.set_project(project)
         workflow = pp.parse_extend_and_check_project()
         workflow.static_check_processes()
+        workflow.discover_resources()
         wr = WorkflowRuner(3)
         wr.run_parallel_workflow(workflow)
-        assert isfile("jquery.js")
+        assert isfile("jquery.js"), "jquery.js is missing"
         logs = open(join(".tuttle", "processes", "logs", "__1_stdout.txt"), "r").read()
         assert logs.find("...") >= 0
 
