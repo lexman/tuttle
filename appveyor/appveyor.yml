@@ -52,7 +52,8 @@ test_script:
   - "PATH=%PATH%;\"C:\\Program Files (x86)\\tuttle\";\"C:\\Program Files\\tuttle\""
   - cmd: more C:\projects\install_tuttle.log
   - cmd: cd C:\projects\tuttle\ci
-  - tuttle run
+  - cmd: tuttle -h
+  - cmd: tuttle run
   - cmd: copy world-cities.csv workflow_execution_success.html
   - cmd: copy from-python workflow_execution_success2.html
   - cmd: copy from-shell-or-batch workflow_execution_success3.html

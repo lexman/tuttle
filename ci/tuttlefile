@@ -148,7 +148,7 @@ file://ambiguities.csv <- sqlite://world-cities.sqlite/country, sqlite://world-c
             writer.writerow(row)
 
 |<<
-    tuttle-extend-workflow touch-x.tuttle x=from-shell-or-batch
+    tuttle-extend-workflow -v touch-x.tuttle x=from-shell-or-batch
 
 |<< ! python
     from tuttle import extend_workflow
