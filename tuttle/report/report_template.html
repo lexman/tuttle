@@ -94,6 +94,9 @@
                 </tbody>
             </table>
             {% endif %}
+            {% if process.error_message %}
+            <div class="alert alert-danger" role="alert">{{ process.error_message }}</div>
+            {% endif %}
         </div>
         {% endfor %}
       {% if preprocesses %}

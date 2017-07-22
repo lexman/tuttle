@@ -94,6 +94,7 @@ def format_process(process, workflow, report_dir):
         'inputs': (format_resource(resource, workflow) for resource in process.iter_inputs()),
         'code': process.code,
         'success': process.success,
+        'error_message': process.error_message,
     }
 
 
