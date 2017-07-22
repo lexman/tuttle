@@ -1,4 +1,7 @@
 #!/usr/bin/make -f
 
+override_dh_strip:
+    dh_strip --exclude=psycopg2 --exclude=psutil
+
 %:
-	dh $@ --with python-virtualenv --preinstall psycopg2 --preinstall psutil
+	dh $@ --with python-virtualenv
