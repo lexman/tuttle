@@ -1,7 +1,6 @@
 #!/usr/bin/make -f
 
 override_dh_virtualenv:
-	dh_virtualenv --python=/usr/bin/python2.7 --preinstall psycopg2 --preinstall psutil
-
+    dh_virtualenv --extra-pip-arg='--no-binary' --extra-pip-arg=':all:'
 %:
 	dh $@ --with python-virtualenv
