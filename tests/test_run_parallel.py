@@ -137,7 +137,7 @@ file://C <- file://A
     echo A produces C > C
         """
 
-        rcode, output = run_tuttle_file(first)
+        rcode, output = run_tuttle_file(first, nb_workers=2)
         assert rcode == 2
         assert isfile('B')
         assert not isfile('C')
