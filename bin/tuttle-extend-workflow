@@ -10,12 +10,11 @@ if getattr(sys, 'frozen', False):
 else:
     # unfrozen
     tuttle_module = join(dirname(abspath(__file__)), '..', '..', 'tuttle')
-sys.path.insert(0,tuttle_module)
+sys.path.insert(0, tuttle_module)
 
 from argparse import ArgumentParser
 from tuttle.version import version
 from tuttle.extend_workflow import extend_workflow, ExtendError, extract_variables
-from os import environ
 
 
 def format_variable(name, value):
@@ -24,6 +23,7 @@ def format_variable(name, value):
     else:
         res = "{}={}".format(name, value)
     return res
+
 
 def main():
     parser = ArgumentParser(
