@@ -45,8 +45,6 @@ cx_freeze_opts = {
         'bdist_msi': build_msi_options,
         'build_exe': build_exe_options
     },
-    'executables':  [Executable(join("bin", "tuttle"), base=base),
-                     Executable(join("bin", "tuttle-extend-workflow"), base=base)]
 }
 package_description = tuttle_description
 package_description.update(cx_freeze_opts)
