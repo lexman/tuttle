@@ -30,26 +30,28 @@ tuttle_description = {
     'author_email': 'tuttle@lexman.org',
     'description': 'Make for data',
     'long_description': 'Reliably create data from different sources. Work as a team in an industrial environment... '
-                   'A tool for continuous data processing',
+                        'A tool for continuous data processing',
     'platforms': ['Linux', 'Windows'],
     'url': 'http://tuttle.lexman.org/',
     'license': 'MIT',
     'install_requires': ['jinja2', 'MarkupSafe', 'psycopg2', 'six', 'boto3', 'chardet', 'psutil'],
     'packages': [
-        'tuttle', 
-        'tuttle.report', 
+        'tuttle',
+        'tuttle.report',
         'tuttle.resources',
         'tuttle.processors',
         'tuttle.extensions',
-        ],
-    'scripts': [
-        'bin/tuttle',
-        'bin/tuttle-extend-workflow',
     ],
-    'include_package_data':  True,
-    'package_data':  {
-        'tuttle':  ['VERSION'],
-        'tuttle.report':  ['*.html', 'html_report_assets/*'],
+    'entry_points': {
+        'console_scripts': [
+            'tuttle=tuttle.entry_points:tuttle_main',
+            'tuttle-extend-workflow=tuttle.entry_points:tuttle_extend_workflow_main',
+        ],
+    },
+    'include_package_data': True,
+    'package_data': {
+        'tuttle': ['VERSION'],
+        'tuttle.report': ['*.html', 'html_report_assets/*'],
     },
 }
 
