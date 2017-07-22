@@ -5,7 +5,7 @@ Utility methods for use in running workflows.
 This module is responsible for the inner structure of the .tuttle directory
 """
 from glob import glob
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 import multiprocessing
 from shutil import rmtree
 from os import remove, makedirs, getcwd
@@ -105,7 +105,10 @@ class WorkflowRuner:
         self._lt = LogsFollower()
         self._logger = WorkflowRuner.get_logger()
         self._pool = None
-        self._nb_workers = nb_workers
+        if nb_workers == -1:
+            self._nb_workers = int(cpu_count() / 2)
+        else :
+            self._nb_workers = nb_workers
         self._free_workers = None
         self._completed_processes = []
 

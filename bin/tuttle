@@ -12,11 +12,17 @@ else:
     tuttle_module = join(dirname(abspath(__file__)), '..', '..', 'tuttle')
 sys.path.insert(0,tuttle_module)
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ArgumentTypeError
 from tuttle.commands import parse_invalidate_and_run, invalidate_resources
 from tuttle.utils import CurrentDir
 from tuttle.version import version
 
+
+def check_minus_1_or_positive(value):
+    ivalue = int(value)
+    if ivalue == 0 or ivalue < -1:
+         raise ArgumentTypeError("%s is an invalid positive int value or -1" % value)
+    return ivalue
 
 
 def main():
@@ -45,6 +51,11 @@ def main():
     subparsers = parser.add_subparsers(help='commands help', dest='command')
     parser_run = subparsers.add_parser('run', parents=[parent_parser],
                                        help='Run the missing part of workflow')
+    parser_run.add_argument('-j', '--jobs',
+                            help='Number of workers (to run processes in parallel)\n'
+                                 'Default -1 = half of the number of cpus',
+                            default=-1,
+                            type=check_minus_1_or_positive)
     parser_invalidate = subparsers.add_parser('invalidate', parents=[parent_parser],
                                               help='Remove some resources already computed and all their dependencies')
     parser_invalidate.add_argument('resources', help='url of the resources to invalidate', nargs="*")
@@ -56,7 +67,7 @@ def main():
         sys.exit(2)
     with CurrentDir(params.workspace):
         if params.command == 'run':
-            return parse_invalidate_and_run(tuttlefile_path, params.threshold)
+            return parse_invalidate_and_run(tuttlefile_path, params.threshold, params.jobs)
         elif params.command == 'invalidate':
             return invalidate_resources(tuttlefile_path, params.resources, params.threshold)
 
