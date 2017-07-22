@@ -30,6 +30,9 @@
             {% endif %}
             {{ process.id }}
             </h2>
+            {% if process.error_message %}
+            <div class="alert alert-danger" role="alert">{{ process.error_message }}</div>
+            {% endif %}
             <div class="row">
                 <div class="col-sm-4">
                     <ul> {% for output in process.outputs %}
@@ -93,9 +96,6 @@
                     </tr>
                 </tbody>
             </table>
-            {% endif %}
-            {% if process.error_message %}
-            <div class="alert alert-danger" role="alert">{{ process.error_message }}</div>
             {% endif %}
         </div>
         {% endfor %}
