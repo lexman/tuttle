@@ -115,6 +115,11 @@ class Workflow:
             p = pick_a_process()
         return processes_to_run
 
+    def iter_outputless_processes(self):
+        for process in self._processes:
+            if not process.has_outputs():
+                yield process
+
     def static_check_processes(self):
         """ Runs a pre-check for every process, in order to catch early obvious errors, even before invalidation
         :return: None

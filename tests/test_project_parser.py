@@ -609,3 +609,43 @@ file:///resource2 <- file:///resource3
         assert process._outputs[1].url == 'file:///result2'
         assert process._outputs[2].url == 'file:///result3'
         assert process._code == "Some code\n"
+
+    def test_outputless_processes(self):
+        """ Outputless processes are Ok as long as they don't have the same inputs """
+        pp = ProjectParser()
+        project = """ <- file://A
+    echo Do something with file A
+        
+ <- file://A file://B
+    echo Do something with file A and B
+"""
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow._processes) == 2
+
+    def test_arrow(self):
+        """ A process can have no input nor outputs """
+        pp = ProjectParser()
+        project = """ <- 
+    echo Do something once
+"""
+        pp.set_project(project)
+        workflow = pp.parse_project()
+        assert len(workflow._processes) == 1
+
+    def test_only_one_arrow(self):
+        """ A process can have no input nor outputs as long as there is only one in the project """
+        pp = ProjectParser()
+        project = """ <- 
+    echo Do something once
+
+ <- 
+    echo Can't do something else once
+"""
+        pp.set_project(project)
+        try:
+            workflow = pp.parse_project()
+            assert False, "A process can have no input nor outputs as long as there is only one in the project"
+        except WorkflowError:
+            assert True
+

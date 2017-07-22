@@ -101,6 +101,7 @@ class ProjectParser():
         self._eof = True
         self._filename = "_"
         self._streamer = LinesStreamer()
+        self._outputless_processes = {}
 
     def parse_and_check_file(self, filename):
         """ Reads a workflows from a tuttle file, runs the preprocesses, load the extensions and make
@@ -186,9 +187,17 @@ class ProjectParser():
                 raise InvalidResourceError("Invalid resource url : '{}' in outputs".format(output_url.strip()), self._filename, self._num_line)
             if out_res.creator_process is not None:
                 raise WorkflowError("{} has been already defined in the workflow (by processor : {})".format(output_url,
-                                    process._processor.name), self._filename, self._num_line)
+                                    process.processor.name), self._filename, self._num_line)
             out_res.set_creator_process(process)
             process.add_output(out_res)
+        if not process.has_outputs():
+            process_key = process.sorted_inputs_string()
+            if process_key in self._outputless_processes:
+                msg = "Process {} is ambigous with previously defined process {}. They have no outputs but they both " \
+                      "have exactly the same inputs !".format(process.id, self._outputless_processes[process_key].id)
+                raise WorkflowError(msg, self._filename, self._num_line)
+            else:
+                self._outputless_processes[process_key] = process
         return process
 
     def is_first_process_line(self):
