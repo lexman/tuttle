@@ -10,9 +10,7 @@ class TestNoTuttlefile():
     @isolate
     def test_no_file_in_current_dir(self):
         """ Should display a message if there is no tuttlefile in the current directory"""
-        dir = dirname(__file__)
-        tuttle_cmd = abspath(join(dir, '..', '..', '..', 'bin', 'tuttle'))
-        proc = Popen(['python', tuttle_cmd, 'run'], stdout=PIPE)
+        proc = Popen(['tuttle', 'run'], stdout=PIPE)
         output = proc.stdout.read()
         rcode = proc.wait()
         assert rcode == 2
@@ -20,9 +18,7 @@ class TestNoTuttlefile():
 
     def test_tuttle_file_does_not_exist(self):
         """ Should display a message if the tuttlefile passed as argument to the command line does not exist"""
-        dir = dirname(__file__)
-        tuttle_cmd = abspath(join(dir, '..', '..', '..', 'bin', 'tuttle'))
-        proc = Popen(['python', tuttle_cmd, 'run', '-f', 'inexistant_file' ], stdout=PIPE)
+        proc = Popen(['tuttle', 'run', '-f', 'inexistant_file' ], stdout=PIPE)
         output = proc.stdout.read()
         rcode = proc.wait()
         assert rcode == 2

@@ -70,11 +70,7 @@ class TestPreprocessors:
         """
         :return: A command line to call tuttle-extend-workflow even if tuttle has not been installed with pip
         """
-        py_cli = 'python'
-        #if environ.has_key('VIRTUAL_ENV'):
-        #    py_cli = join(environ['VIRTUAL_ENV'], 'Scripts', 'python')
-        extend = abspath(join(__file__, '..', '..', '..', 'bin', 'tuttle-extend-workflow'))
-        cmd_extend = "{} {}".format(py_cli, extend)
+        cmd_extend = 'tuttle-extend-workflow'
         return cmd_extend
 
     @isolate(['A', 'b-produces-x.tuttle'])

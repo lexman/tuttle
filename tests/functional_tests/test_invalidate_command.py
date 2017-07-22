@@ -95,9 +95,7 @@ file://C <- file://B
     @isolate
     def test_invalidate_no_tuttle_file(self):
         """ Should display a message when launching invalidate and there is tuttlefile in the current directory"""
-        directory = dirname(__file__)
-        tuttle_cmd = abspath(join(directory, '..', '..', 'bin', 'tuttle'))
-        proc = Popen(['python', tuttle_cmd, 'invalidate', 'file://B'], stdout=PIPE)
+        proc = Popen(['tuttle', 'invalidate', 'file://B'], stdout=PIPE)
         output = proc.stdout.read()
         rcode = proc.wait()
         assert rcode == 2, output
