@@ -51,7 +51,7 @@ def print_updated():
     print("Report has been updated to reflect tuttlefile")
 
 
-def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1):
+def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going=False):
     try:
         workflow = load_project(tuttlefile)
     except TuttleError as e:
@@ -87,7 +87,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1):
     workflow.dump()
 
     wr = WorkflowRuner(nb_workers)
-    success_processes, failure_processes = wr.run_parallel_workflow(workflow)
+    success_processes, failure_processes = wr.run_parallel_workflow(workflow, keep_going)
     if failure_processes:
         print_failures(failure_processes)
         return 2

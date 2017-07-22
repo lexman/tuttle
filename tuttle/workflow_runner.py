@@ -125,7 +125,7 @@ class WorkflowRuner:
         process.set_start()
         resp = self._pool.apply_async(run_process_without_exception, [process], callback = process_run_callback)
 
-    def run_parallel_workflow(self, workflow):
+    def run_parallel_workflow(self, workflow, keep_going=False):
         """ Runs a workflow by running every process in the right order
         :return: success_processes, failure_processes :
         list of processes ended with success, list of processes ended with failure
@@ -140,8 +140,8 @@ class WorkflowRuner:
         with self._lt.trace_in_background():
             self.init_workers()
             runnables = workflow.runnable_processes()
-            error = False
-            while not error and (self.active_workers() or self._completed_processes or runnables):
+            failures = False
+            while (keep_going or not failures) and (self.active_workers() or self._completed_processes or runnables):
                 started_a_process = False
                 while self.workers_available() and runnables:
                     # No error
@@ -155,11 +155,11 @@ class WorkflowRuner:
                     if completed_process.success:
                         success_processes.append(completed_process)
                         workflow.update_signatures(signatures)
+                        new_runnables = workflow.discover_runnable_processes(completed_process)
+                        runnables.update(new_runnables)
                     else:
                         failure_processes.append(completed_process)
-                        error = True
-                    new_runnables = workflow.discover_runnable_processes(completed_process)
-                    runnables.update(new_runnables)
+                        failures = True
                     handled_completed_process = True
                 if handled_completed_process:
                     workflow.dump()

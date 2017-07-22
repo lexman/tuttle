@@ -10,7 +10,7 @@ from cStringIO import StringIO
 from tuttle.commands import parse_invalidate_and_run
 
 
-def run_tuttle_file(content=None, threshold=-1, nb_workers=-1):
+def run_tuttle_file(content=None, threshold=-1, nb_workers=-1, keep_going=False):
     if content is not None:
         with open('tuttlefile', "w") as f:
             f.write(content.encode("utf8"))
@@ -18,7 +18,7 @@ def run_tuttle_file(content=None, threshold=-1, nb_workers=-1):
     out = StringIO()
     try:
         sys.stdout,sys.stderr = out, out
-        rcode = parse_invalidate_and_run('tuttlefile', threshold=threshold, nb_workers=nb_workers)
+        rcode = parse_invalidate_and_run('tuttlefile', threshold=threshold, nb_workers=nb_workers, keep_going=keep_going)
     finally:
         sys.stdout, sys.stderr = oldout, olderr
     return rcode, out.getvalue()

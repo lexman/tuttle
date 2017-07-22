@@ -56,6 +56,12 @@ def main():
                                  'Default -1 = half of the number of cpus',
                             default=-1,
                             type=check_minus_1_or_positive)
+    parser_run.add_argument('-k', '--keep-going',
+                            help='Number of workers (to run processes in parallel)\n'
+                                 'Default -1 = half of the number of cpus',
+                            default=False,
+                            dest='keep_going',
+                            action="store_true")
     parser_invalidate = subparsers.add_parser('invalidate', parents=[parent_parser],
                                               help='Remove some resources already computed and all their dependencies')
     parser_invalidate.add_argument('resources', help='url of the resources to invalidate', nargs="*")
@@ -67,7 +73,7 @@ def main():
         sys.exit(2)
     with CurrentDir(params.workspace):
         if params.command == 'run':
-            return parse_invalidate_and_run(tuttlefile_path, params.threshold, params.jobs)
+            return parse_invalidate_and_run(tuttlefile_path, params.threshold, params.jobs, params.keep_going)
         elif params.command == 'invalidate':
             return invalidate_resources(tuttlefile_path, params.resources, params.threshold)
 
