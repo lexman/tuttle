@@ -71,7 +71,7 @@ def run_first_process(one_process_workflow, extra_processor = None, extra_resour
             sleep(0.1)
         assert time() < timeout, "Process should have stoped now"
     finally:
-        wr.terminate_workers()
+        wr.terminate_workers_and_clean_subprocesses()
     return process
 
 
@@ -95,9 +95,9 @@ class TestRunParallel():
             assert wr.active_workers()
             wr.release_worker()
             assert wr.workers_available() == 2
-            wr.terminate_workers()
+            wr.terminate_workers_and_clean_subprocesses()
         except:
-            wr.terminate_workers()
+            wr.terminate_workers_and_clean_subprocesses()
 
     def test_background_process(self):
         """ Starting a process in background should end up with the process beeing
@@ -122,7 +122,7 @@ class TestRunParallel():
                 sleep(0.1)
             assert time() < timeout, "Process should have stoped now"
         finally:
-            wr.terminate_workers()
+            wr.terminate_workers_and_clean_subprocesses()
 
     @isolate(['A'])
     def test_error_before_all_processes_complete(self):

@@ -15,9 +15,10 @@ from traceback import format_exception
 from tuttle.error import TuttleError
 from tuttle.utils import EnvVar
 from tuttle.log_follower import LogsFollower
-from time import sleep
+from time import sleep, time
 import sys
 import logging
+import psutil
 
 
 LOGGER = logging.getLogger(__name__)
@@ -166,8 +167,7 @@ class WorkflowRuner:
 
                 if not (handled_completed_process or started_a_process):
                     sleep(0.1)
-
-            self.terminate_workers()
+            self.terminate_workers_and_clean_subprocesses()
         if failure_processes:
             WorkflowRuner.mark_unfinished_processes_as_failure(workflow)
 
@@ -177,9 +177,22 @@ class WorkflowRuner:
         self._pool = Pool(self._nb_workers)
         self._free_workers = self._nb_workers
 
-    def terminate_workers(self):
+    def terminate_workers_and_clean_subprocesses(self):
+        direct_procs = set(psutil.Process().children())
+        all_procs = set(psutil.Process().children(recursive=True))
+        sub_procs = all_procs - direct_procs
+
+        # Terminate cleanly direct procs instanciated by multiprocess
         self._pool.terminate()
         self._pool.join()
+
+        # Then terminate subprocesses that have not been terminated
+        for p in sub_procs:
+            p.terminate()
+        gone, still_alive = psutil.wait_procs(sub_procs, timeout=2)
+        for p in still_alive:
+            p.kill()
+
 
     def acquire_worker(self):
         assert self._free_workers > 0
