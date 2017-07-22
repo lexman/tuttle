@@ -32,6 +32,9 @@ file://D <- file://A
         assert output.find("::stderr") >= 0, output
         assert output.find("Obvious") >= 0, output
         assert output.find("Process ended with error code 1") >= 0, output
+        pos_have_failed = output.find("have failed")
+        assert pos_have_failed >= 0, output
+        assert output.find("tuttlefile_5", pos_have_failed) >= 0, output
 
     @isolate(['A', 'test_error_in_process.py'])
     def test_isolation_decorator(self):

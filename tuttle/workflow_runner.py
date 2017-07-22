@@ -153,10 +153,10 @@ class WorkflowRuner:
                 while self._completed_processes:
                     completed_process, signatures = self._completed_processes.pop()
                     if completed_process.success:
-                        success_processes.append(process)
+                        success_processes.append(completed_process)
                         workflow.update_signatures(signatures)
                     else:
-                        failure_processes.append(process)
+                        failure_processes.append(completed_process)
                         error = True
                     new_runnables = workflow.discover_runnable_processes(completed_process)
                     runnables.update(new_runnables)
