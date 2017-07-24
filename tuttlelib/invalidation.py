@@ -22,10 +22,12 @@ def dependant_resources(workflow, from_resources):
     dependencies = dependency_map(workflow)
     result = []
     discovered = []
+    discovered_urls = set()
     for resource in chain(from_resources, discovered):
         for dependant_process in dependencies[resource.url]:
             for dependant_resource in dependant_process.iter_outputs():
-                if dependant_resource not in result:
+                if dependant_resource.url not in discovered_urls:
+                    discovered_urls.add(dependant_resource.url)
                     discovered.append(dependant_resource)
                     result.append((dependant_resource, resource))
     return result
