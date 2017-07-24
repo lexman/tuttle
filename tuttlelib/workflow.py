@@ -344,6 +344,16 @@ class Workflow:
                 else:
                     self._available_resources[resource.url] = "AVAILABLE"
 
+    def discover_available_resources_new(self):
+        available_resources = {}
+        for resource in self._resources.itervalues():
+            if resource.exists():
+                if resource.is_primary():
+                    available_resources[resource.url] = resource.signature()
+                else:
+                    available_resources[resource.url] = True
+        return available_resources
+
     def signature(self, url):
         # TODO simplier with __get__ ?
         if url in self._available_resources:
@@ -432,3 +442,9 @@ class Workflow:
         for url in urls:
             if url in self._available_resources:
                 del self._available_resources[url]
+
+    def iter_processes_on_dependency_order(self):
+        pass
+
+    def set_availability(self, resource_availability):
+        self._available_resources = resource_availability
