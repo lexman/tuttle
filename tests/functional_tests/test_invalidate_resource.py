@@ -113,7 +113,7 @@ file://C <- file://B
         rcode, output = run_tuttle_file(second)
         assert rcode == 0
         assert output.find("* file://B") == -1, output
-        assert output.find("Done") >= 0, output
+        assert output.find("Report has been updated") >= 0, output
 
     @isolate(['A'])
     def test_modified_primary_resource_should_invalidate_dependencies(self):
@@ -317,7 +317,7 @@ file://C <- file://B
 """
         rcode, output = run_tuttle_file(second)
         assert rcode == 0, output
-        assert output.find("Done") >= 0, output
+        assert output.find("Report has been updated") >= 0, output
         report = open(join('.tuttle', 'report.html')).read()
         assert report.find('file://A') == -1, report
         dump = open(join('.tuttle', 'last_workflow.pickle')).read()

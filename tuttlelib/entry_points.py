@@ -13,7 +13,7 @@ from os.path import abspath, exists, dirname, join
 #sys.path.insert(0,tuttle_module)
 
 from argparse import ArgumentParser, ArgumentTypeError
-from tuttlelib.commands import parse_invalidate_and_run, invalidate_resources
+from tuttlelib.commands2 import parse_invalidate_and_run, invalidate_resources
 from tuttlelib.utils import CurrentDir
 from tuttlelib.version import version
 from tuttlelib.extend_workflow import extend_workflow, ExtendError, extract_variables

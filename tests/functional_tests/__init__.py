@@ -7,7 +7,7 @@ from shutil import rmtree, copy
 from functools import wraps
 from os.path import join, dirname
 from cStringIO import StringIO
-from tuttlelib.commands import parse_invalidate_and_run
+from tuttlelib.commands2 import parse_invalidate_and_run
 
 
 def run_tuttle_file(content=None, threshold=-1, nb_workers=-1, keep_going=False):

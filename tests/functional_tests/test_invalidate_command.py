@@ -8,7 +8,7 @@ from unittest.case import SkipTest
 
 from tests.functional_tests import isolate, run_tuttle_file
 from cStringIO import StringIO
-from tuttlelib.commands import invalidate_resources
+from tuttlelib.commands2 import invalidate_resources
 
 
 class TestCommands():
@@ -413,7 +413,7 @@ file://C <- file://B
     def test_changes_in_the_graph_without_removing_resource(self):
         """ If the graph changes without removing resource tuttle should display a message
             event if the removed resource is used elsewhere (from bug) """
-        raise SkipTest("Failing for the moment")
+        #raise SkipTest("Failing for the moment")
 
         first = """ <- file://A
     echo Action after A is created.
@@ -430,9 +430,6 @@ file://C <- file://B
 
         second = """ <- file://A
     echo Action after A is created.
-
-file://B <- file://A
-    echo B > B 
 
 file://C <- file://B
     echo C > C

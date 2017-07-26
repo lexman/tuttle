@@ -263,6 +263,14 @@ class Workflow:
                 if url in self._available_resources and self._available_resources[url] == "AVAILABLE":
                     self._available_resources[url] = signature
 
+    def retrieve_signatures_new(self, previous):
+        """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
+            Returns True if some resources where in previous and no longer exist in self
+        """
+        for url, signature in previous.iter_available_signatures():
+            if url in self._available_resources and self._available_resources[url] is True:
+                self._available_resources[url] = signature
+
     def removed_resources(self, previous):
         """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
             Returns True if some resources where in previous and no longer exist in self
@@ -302,6 +310,14 @@ class Workflow:
                 if process.success is False:
                     process.reset_execution_info()
                     workflow_changed = True
+        return workflow_changed
+
+    def reset_failures(self):
+        workflow_changed = False
+        for process in self._processes:
+            if process.success is False:
+                process.reset_execution_info()
+                workflow_changed = True
         return workflow_changed
 
     def all_inputs_available(self, process):
@@ -363,6 +379,19 @@ class Workflow:
 
     def resource_available(self, url):
         return url in self._available_resources
+
+    def clear_availability(self, urls):
+        for url in urls:
+            if url in self._available_resources:
+                del self._available_resources[url]
+
+    def fill_missing_availability(self):
+        for url, signature in self.iter_available_signatures():
+            if signature is True:
+                print("Filling availability for {}".format(url))
+                resource = self.find_resource(url)
+                new_signature = resource.signature()
+                self._available_resources[url] = new_signature
 
     def modified_primary_resources(self, older_workflow):
         """ List the resources that have changed
@@ -438,13 +467,38 @@ class Workflow:
             if process:
                 process.retrieve_execution_info(prev_process)
 
-    def clear_signatures(self, urls):
-        for url in urls:
-            if url in self._available_resources:
-                del self._available_resources[url]
-
     def iter_processes_on_dependency_order(self):
-        pass
+        """ returns an ier on processes according to dependency order"""
+        resources_to_build = {r for r in self._resources.itervalues() if r.creator_process}
+        processes_to_run = {p for p in self.iter_processes()}
 
-    def set_availability(self, resource_availability):
-        self._available_resources = resource_availability
+        def all_inputs_built(process):
+            """ Returns True if all inputs of this process where build, ie if the process can be executed """
+            for input_res in process.iter_inputs():
+                if input_res in resources_to_build:
+                    return False
+            return True
+
+        def pick_a_process():
+            """ Pick an executable process, if there is one
+            """
+            # TODO we could do better, this algorithm is not vey efficient
+            for process in processes_to_run:
+                if all_inputs_built(process):
+                    return process
+            # No more process to pick
+            return None
+
+        # The idea is to remove the resource from the list as we simulate execution of _processes
+        # Previous checks ensure there are no circular dependencies so we are sur
+        # to yield all processes
+        p = pick_a_process()
+        while p:
+            for r in p.iter_outputs():
+                resources_to_build.remove(r)
+            processes_to_run.remove(p)
+            yield p
+            p = pick_a_process()
+
+    def contains_resource(self, resource):
+        return self.find_resource(resource.url) is not None
