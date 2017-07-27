@@ -5,15 +5,41 @@ from tuttlelib.workflow_runner import WorkflowRuner, TuttleEnv
 from tuttlelib.log_follower import LogsFollower
 
 
-NO_LONGER_CREATED = "Resource no longer created by the newer process"
-NOT_SAME_INPUTS = "Resource was created with different inputs"
-PROCESS_HAS_CHANGED = "Process code has changed"
-PROCESSOR_HAS_CHANGED = "Processor has changed"
-MUST_CREATE_RESOURCE = "The former primary resource has to be created by tuttle"
-RESOURCE_NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
-DEPENDENCY_CHANGED = "Resource depends on {} that have changed"
-RESOURCE_HAS_CHANGED = "Primary resource has changed"
-INCOHERENT_OUTPUTS = "Other outputs produced by the same process are missing"
+class ProcessDependencyIterator:
+    """ Provides an iterator on processes according to dependency order"""
+
+    def __init__(self, workflow):
+        self._resources_to_build = {r for r in workflow.iter_resources() if r.creator_process}
+        self._processes_to_run = {p for p in workflow.iter_processes()}
+
+    def all_inputs_built(self, process):
+        """ Returns True if all inputs of this process where build, ie if the process can be executed """
+        for input_res in process.iter_inputs():
+            if input_res in self._resources_to_build:
+                return False
+        return True
+
+    def pick_a_process(self):
+        """ Pick an executable process, if there is one
+        """
+        for process in self._processes_to_run:
+            if self.all_inputs_built(process):
+                return process
+        # No more process to pick
+        return None
+
+    def iter_processes(self):
+        # The idea is to remove the resource from the list as we simulate execution of _processes
+        p = self.pick_a_process()
+        while p:
+            for r in p.iter_outputs():
+                self._resources_to_build.remove(r)
+            self._processes_to_run.remove(p)
+            yield p
+            p = self.pick_a_process()
+
+    def remaining(self):
+        return self._processes_to_run
 
 
 class Workflow:
@@ -48,26 +74,13 @@ class Workflow:
             yield preprocess
 
     def iter_resources(self):
-        for resource in self._resources.itervalues():
-            yield resource
+        return self._resources.itervalues()
 
     def has_preprocesses(self):
         """ Has preprocesses ?
         :return: True if the workflow has preprocesses
         """
         return len(self._preprocesses) > 0
-
-    def missing_inputs(self):
-        """ Check that all primary resources (external resources) that are necessary to run the workflow exist
-        :return: a list of missing resources
-        :rtype: list
-        """
-        missing = []
-        for resource in self._resources.itervalues():
-            if resource.is_primary():
-                if not resource.exists():
-                    missing.append(resource)
-        return missing
 
     def primary_inputs_not_available(self):
         """ Check that all primary resources (external resources) that are necessary to run the workflow are available
@@ -87,38 +100,11 @@ class Workflow:
         :return: a list of process that won't be able to run. No special indication about circular groups
         :rtype: list
         """
-        resources_to_build = [r for r in self._resources.itervalues() if r.creator_process]
-        processes_to_run = [p for p in self.iter_processes()]
+        process_iterator = ProcessDependencyIterator(self)
+        for _ in process_iterator.iter_processes():
+            pass
 
-        def all_inputs_built(process):
-            """ Returns True if all inputs of this process where build, ie if the process can be executed """
-            for input_res in process.iter_inputs():
-                if input_res in resources_to_build:
-                    return False
-            return True
-
-        def pick_a_process():
-            """ Pick an executable process, if there is one
-            """
-            for process in processes_to_run:
-                if all_inputs_built(process):
-                    return process
-            # No more process to pick
-            return None
-
-        # The idea is to remove the resource from the list as we simulate execution of _processes
-        p = pick_a_process()
-        while p:
-            for r in p.iter_outputs():
-                resources_to_build.remove(r)
-            processes_to_run.remove(p)
-            p = pick_a_process()
-        return processes_to_run
-
-    def iter_outputless_processes(self):
-        for process in self._processes:
-            if not process.has_outputs():
-                yield process
+        return process_iterator.remaining()
 
     def static_check_processes(self):
         """ Runs a pre-check for every process, in order to catch early obvious errors, even before invalidation
@@ -199,46 +185,6 @@ class Workflow:
         else:
             return None
 
-    def resources_not_created_the_same_way(self, newer_workflow):
-        """
-        Returns the list of resources that are not created the same way in the other workflow. Ie :
-            - the other workflow doesn't create this resource
-            - the other workflow doesn't create this resource from the same inputs
-            - the code that produces this resource is different
-        :param newer_workflow:
-        :return:
-        """
-        assert isinstance(newer_workflow, Workflow), newer_workflow
-        changing_resources = []
-        for url, resource in self._resources.iteritems():
-            newer_resource = newer_workflow.find_resource(url)
-            if newer_resource is None:
-                if not resource.is_primary():
-                    changing_resources.append((resource, NO_LONGER_CREATED))
-            elif not newer_resource.is_primary():
-                # Only not generated resources need to be invalidated
-                if resource.is_primary():
-                    changing_resources.append((resource, MUST_CREATE_RESOURCE))
-                elif not resource.created_by_same_inputs(newer_resource):
-                    changing_resources.append((resource, NOT_SAME_INPUTS))
-                elif resource.creator_process.code != newer_resource.creator_process.code:
-                    changing_resources.append((resource, PROCESS_HAS_CHANGED))
-                elif resource.creator_process.processor.name != newer_resource.creator_process.processor.name:
-                    changing_resources.append((resource, PROCESSOR_HAS_CHANGED))
-            # Primary resources must not be invalidated
-        return changing_resources
-
-    def failed_resources(self):
-        """
-        Returns the list of resources that would have been produced by processes that have failed
-        :return:
-        """
-        result = []
-        for process in self._processes:
-            if process.success is False:
-                result.extend(process.iter_outputs())
-        return result
-
     def compute_dependencies(self):
         """ Feeds the dependant_processes field in every resource
         :return: Nothing
@@ -251,8 +197,7 @@ class Workflow:
                 resource.dependant_processes.append(process)
 
     def iter_available_signatures(self):
-        for url, signature in self._available_resources.iteritems():
-            yield url, signature
+        return self._available_resources.iteritems()
 
     def retrieve_signatures_new(self, previous):
         """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
@@ -351,37 +296,9 @@ class Workflow:
         return None
 
     def iter_processes_on_dependency_order(self):
-        """ returns an ier on processes according to dependency order"""
-        resources_to_build = {r for r in self._resources.itervalues() if r.creator_process}
-        processes_to_run = {p for p in self.iter_processes()}
-
-        def all_inputs_built(process):
-            """ Returns True if all inputs of this process where build, ie if the process can be executed """
-            for input_res in process.iter_inputs():
-                if input_res in resources_to_build:
-                    return False
-            return True
-
-        def pick_a_process():
-            """ Pick an executable process, if there is one
-            """
-            # TODO we could do better, this algorithm is not vey efficient
-            for process in processes_to_run:
-                if all_inputs_built(process):
-                    return process
-            # No more process to pick
-            return None
-
-        # The idea is to remove the resource from the list as we simulate execution of _processes
-        # Previous checks ensure there are no circular dependencies so we are sur
-        # to yield all processes
-        p = pick_a_process()
-        while p:
-            for r in p.iter_outputs():
-                resources_to_build.remove(r)
-            processes_to_run.remove(p)
-            yield p
-            p = pick_a_process()
+        """ returns an iterator on processes according to dependency order"""
+        process_iterator = ProcessDependencyIterator(self)
+        return process_iterator.iter_processes()
 
     def contains_resource(self, resource):
-        return self.find_resource(resource.url) is not None
+        return resource.url in self._resources

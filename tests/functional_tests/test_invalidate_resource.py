@@ -3,8 +3,8 @@ from os.path import isfile, join
 
 from os import path, remove
 from tests.functional_tests import isolate, run_tuttle_file
+from tuttlelib.invalidation import NO_LONGER_CREATED, NOT_SAME_INPUTS, PROCESS_HAS_CHANGED
 from tuttlelib.project_parser import ProjectParser
-from tuttlelib.workflow import PROCESS_HAS_CHANGED
 
 
 class TestInvalidateResource():
@@ -72,6 +72,44 @@ file://D <- file://A
         rcode, output = run_tuttle_file(project2)
         assert rcode == 0
         assert output.find("* file://B") >= 0, output
+        assert output.find(PROCESS_HAS_CHANGED) >= 0, output
+
+    @isolate(['A'])
+    def test_removed_resource(self):
+        """ A resource should be invalidated if it is not created anymore
+        """
+        project1 = """file://B <- file://A
+    echo A creates B > B
+
+file://C <- file://A
+    echo A creates C > C
+"""
+        rcode, output = run_tuttle_file(project1)
+        assert isfile('B')
+        project2 = """file://B <- file://A
+    echo A creates B > B
+        """
+        rcode, output = run_tuttle_file(project2)
+        assert rcode == 0
+        assert output.find("* file://C") >= 0, output
+        assert output.find(NO_LONGER_CREATED) >= 0, output
+
+    @isolate(['A', 'B'])
+    def test_resource_dependency_change(self):
+        """ A resource should be invalidated if it does not depend on the same resource anymore
+        """
+        project1 = """file://C <- file://A, file://B  
+    echo A creates C > C
+"""
+        rcode, output = run_tuttle_file(project1)
+        assert isfile('B')
+        project2 = """file://C <- file://A
+    echo A creates C > C
+"""
+        rcode, output = run_tuttle_file(project2)
+        assert rcode == 0
+        assert output.find("* file://C") >= 0, output
+        assert output.find(NOT_SAME_INPUTS) >= 0, output
 
     @isolate(['A', 'B'])
     def test_resource_is_now_created_by_tuttle(self):
