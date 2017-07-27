@@ -174,10 +174,8 @@ class WorkflowRuner:
         return success_processes, failure_processes
 
     def init_workers(self):
-        print("init_workers")
         self._pool = Pool(self._nb_workers)
         self._free_workers = self._nb_workers
-        print("init_workers end")
 
     def terminate_workers_and_clean_subprocesses(self):
         direct_procs = set(psutil.Process().children())
