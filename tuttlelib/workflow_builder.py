@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 
-from resources import FileResource
-from processors import *
-from process import Process
+from tuttlelib.resources import FileResource
+from tuttlelib.processors import *
+from tuttlelib.process import Process
 from tuttlelib.extensions.ext_csv import CSV2SQLiteProcessor
 from tuttlelib.extensions.net import DownloadProcessor, HTTPResource
 from tuttlelib.extensions.postgres import PostgreSQLResource, PostgresqlProcessor

@@ -25,7 +25,7 @@ def column_list(column_names):
 def create_table(db, table_name, column_names):
     columns = column_list(column_names)
     sql = "CREATE TABLE `{}` ({})".format(table_name, columns)
-    print sql
+    print(sql)
     db.execute(sql)
 
 class UTF8Recoder:

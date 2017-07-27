@@ -1,7 +1,11 @@
 # -*- coding: utf8 -*-
 
 from hashlib import sha1
-from urllib2 import Request, urlopen, URLError, HTTPError
+try:
+    from urllib2 import Request, URLError, HTTPError
+except ImportError:
+    from urllib.request import urlopen, Request
+    from urllib.error import URLError, HTTPError
 from tuttlelib.error import TuttleError
 from tuttlelib.resources import ResourceMixIn
 from tuttlelib.version import version

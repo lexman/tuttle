@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from collections import deque
 
-from error import TuttleError
-from workflow_builder import WorkflowBuilder
-from workflow import Workflow
+from tuttlelib.error import TuttleError
+from tuttlelib.workflow_builder import WorkflowBuilder
+from tuttlelib.workflow import Workflow
 from os.path import basename
 
 

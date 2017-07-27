@@ -6,7 +6,11 @@ from os import getcwd, chdir
 from shutil import rmtree, copy
 from functools import wraps
 from os.path import join, dirname
-from cStringIO import StringIO
+#from cStringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from tuttlelib.commands import parse_invalidate_and_run
 
 

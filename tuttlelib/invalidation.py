@@ -51,13 +51,13 @@ class InvalidCollector:
         aborted = False
         if self._resources_and_reasons:  # BETTER TEST NEEDED HERE
             inv_duration = self.duration()
-            print "The following resources are not valid any more and will be removed :"
+            print("The following resources are not valid any more and will be removed :")
             for resource, reason in self._resources_and_reasons:
                 print("* {} - {}".format(resource.url, reason))
             if -1 < threshold <= inv_duration:
                 msg = "You were about to loose {} seconds of processing time (which exceeds the {} seconds " \
                       "threshold). \nAborting... ".format(inv_duration, threshold)
-                print msg
+                print(msg)
                 aborted = True
             else:
                 print("{} seconds of processing will be lost".format(inv_duration))
@@ -113,9 +113,7 @@ class InvalidCollector:
                 # All outputs have been invalidated, no need to dig further
                 return
         for output_resource in process.iter_outputs():
-            print output_resource.url
             if output_resource.url in invalidate_urls:
-                print output_resource.url
                 self.collect_resource(output_resource, USER_REQUEST)
                 reason = BROTHER_INVALID.format(output_resource.url)
                 self.collect_process_and_available_outputs(workflow, process, reason)

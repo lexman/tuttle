@@ -128,8 +128,7 @@ class TestProjectParser():
         assert process._inputs[0].url == 'file:///source1'
         assert len(process._outputs) == 1
         assert process._outputs[0].url == 'file:///result1'
-        print process._code
-        assert process._code == "Some code\n"
+        assert process._code == "Some code\n", process._code
 
     def test_read_section_multiple_inputs_and_outputs(self):
         """Read a sections with multiple inputs and outputs"""
@@ -200,7 +199,7 @@ class TestProjectParser():
         pp.set_project(project)
         pp.read_line()
         process = pp.parse_section()
-        print "'{}'".format(process._code)
+        print("'{}'".format(process._code))
         assert process._code == "bla\n"
 
     def test_read_last_unfinished_line_of_a_section(self):
@@ -211,7 +210,7 @@ class TestProjectParser():
         pp.set_project(project)
         pp.read_line()
         process = pp.parse_section()
-        print "'{}'".format(process._code)
+        print("'{}'".format(process._code))
         assert process._code == "bla\n"
 
     def test_read_section_with_indentation_error_in_process_code(self):
@@ -439,7 +438,7 @@ file://file3 <- file://file2
         pp.set_project(project)
         workflow = pp.parse_project()
         assert len(workflow._processes) == 1
-        print "'{}'".format(workflow._processes[0]._code)
+        print("'{}'".format(workflow._processes[0]._code))
         assert workflow._processes[0]._code == "Some code\n"
 
     def test_parse_dependencies_and_processor(self):

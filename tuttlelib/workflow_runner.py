@@ -257,15 +257,15 @@ class WorkflowRuner:
 
     @staticmethod
     def print_preprocesses_header():
-        print "=" * 60
-        print "Running preprocesses for this workflow"
-        print "=" * 60
+        print("=" * 60)
+        print("Running preprocesses for this workflow")
+        print("=" * 60)
 
     @staticmethod
     def print_preprocesses_footer():
-        print "=" * 60
-        print "End of preprocesses... Running the workflow"
-        print "=" * 60
+        print("=" * 60)
+        print("End of preprocesses... Running the workflow")
+        print("=" * 60)
 
     @staticmethod
     def list_extensions():

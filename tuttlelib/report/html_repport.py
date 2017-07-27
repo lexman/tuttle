@@ -4,7 +4,7 @@ from jinja2 import Template
 from os import path, error
 from shutil import copytree
 from time import strftime, localtime
-from dot_repport import dot
+from tuttlelib.report.dot_repport import dot
 from os.path import dirname, join, relpath, abspath, split
 import sys
 

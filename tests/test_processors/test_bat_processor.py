@@ -16,7 +16,6 @@ class TestBatProcessor():
         process = Process(processor, "tuttlefile", 23)
         process.set_code(code)
         bp.generate_executable(process, "tuttlefile_25")
-        print glob('*')
         content = open(join("tuttlefile_25", "tuttlefile_23.bat")).read()
         assert content.startswith("@echo off")
         assert content.find("bla bla") >= 0

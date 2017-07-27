@@ -1,9 +1,6 @@
 # -*- coding: utf8 -*-
 
-from hashlib import sha1
-from urllib2 import Request, urlopen, URLError, HTTPError
 from re import compile
-from tuttlelib.error import TuttleError
 from tuttlelib.resources import ResourceMixIn, MalformedUrl
 from tuttlelib.version import version
 from boto3.session import Session

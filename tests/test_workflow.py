@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from tests.functional_tests import isolate, run_tuttle_file
-from tuttlelib.error import TuttleError
-from tuttlelib.workflow import *
-from test_project_parser import ProjectParser
+from tests.test_project_parser import ProjectParser
 from os import path
 from tuttlelib.workflow_runner import WorkflowRuner, tuttle_dir
 

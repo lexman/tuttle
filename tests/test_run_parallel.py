@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from os.path import isfile, abspath, exists
 
-from test_project_parser import ProjectParser
+from tests.test_project_parser import ProjectParser
 from tests.functional_tests import run_tuttle_file, isolate
 from tuttlelib.resources import FileResource
 from tuttlelib.workflow_runner import WorkflowRuner
