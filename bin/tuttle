@@ -3,6 +3,7 @@
 
 import sys
 from os.path import abspath, dirname, join
+from multiprocessing import freeze_support
 
 if getattr(sys, 'frozen', False):
     # frozen
@@ -15,4 +16,5 @@ sys.path.insert(0, tuttle_module)
 from tuttlelib.entry_points import tuttle_main
 
 if __name__ == '__main__':
+    freeze_support()
     sys.exit(tuttle_main())
