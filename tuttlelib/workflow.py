@@ -254,15 +254,6 @@ class Workflow:
         for url, signature in self._available_resources.iteritems():
             yield url, signature
 
-    def retrieve_signatures(self, previous):
-        """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
-            Returns True if some resources where in previous and no longer exist in self
-        """
-        for url, signature in previous.iter_available_signatures():
-            if url in self._resources:
-                if url in self._available_resources and self._available_resources[url] == "AVAILABLE":
-                    self._available_resources[url] = signature
-
     def retrieve_signatures_new(self, previous):
         """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
             Returns True if some resources where in previous and no longer exist in self
@@ -271,46 +262,11 @@ class Workflow:
             if url in self._available_resources and self._available_resources[url] is True:
                 self._available_resources[url] = signature
 
-    def removed_resources(self, previous):
-        """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
-            Returns True if some resources where in previous and no longer exist in self
-        """
-        for url, signature in previous.iter_available_signatures():
-            if url not in self._resources:
-                return True
-        return False
-
     def pick_a_failing_process(self):
         for process in self.iter_processes():
             if process.end is not None and process.success is False:
                 return process
         return None
-
-    def reset_process_exec_info(self, invalidated_urls):
-        for url in invalidated_urls:
-            resource = self.find_resource(url)
-            if resource and resource.creator_process:
-                resource.creator_process.reset_execution_info()
-
-    def reset_modified_outputless_processes(self, prev_workflow):
-        workflow_changed = False
-        for prev_process in prev_workflow.iter_processes():
-            if not prev_process.has_outputs():
-                process = self.find_outputless_process_with_same_inputs(prev_process)
-                if process and (prev_process.code != process.code or
-                                prev_process.processor.name != process.processor.name):
-                    process.reset_execution_info()
-                    workflow_changed = True
-        return workflow_changed
-
-    def reset_failing_outputless_process_exec_info(self):
-        workflow_changed = False
-        for process in self._processes:
-            if not process.has_outputs():
-                if process.success is False:
-                    process.reset_execution_info()
-                    workflow_changed = True
-        return workflow_changed
 
     def reset_failures(self):
         workflow_changed = False
@@ -360,16 +316,6 @@ class Workflow:
                 else:
                     self._available_resources[resource.url] = "AVAILABLE"
 
-    def discover_available_resources_new(self):
-        available_resources = {}
-        for resource in self._resources.itervalues():
-            if resource.exists():
-                if resource.is_primary():
-                    available_resources[resource.url] = resource.signature()
-                else:
-                    available_resources[resource.url] = True
-        return available_resources
-
     def signature(self, url):
         # TODO simplier with __get__ ?
         if url in self._available_resources:
@@ -393,53 +339,6 @@ class Workflow:
                 new_signature = resource.signature()
                 self._available_resources[url] = new_signature
 
-    def modified_primary_resources(self, older_workflow):
-        """ List the resources that have changed
-         returns the list of resources that have changed
-        :return:
-        # TODO : could check for modified resources, not only primaries for advanced check
-        """
-        result = []
-        for resource in self._resources.itervalues():
-            if resource.is_primary():
-                if older_workflow.signature(resource.url) != self._available_resources[resource.url]:
-                    result.append(resource)
-        return result
-
-    def incoherent_outputs_from_successfull_processes(self):
-        """ returns the list of resources of each process where some outputs are missing
-        :return:
-        """
-        result = []
-        for process in self._processes:
-            if process.success:
-                missing = False
-                for resource in process.iter_outputs():
-                    if not self.resource_available(resource.url):
-                        missing = True
-                        break
-                if missing:
-                    for resource in process.iter_outputs():
-                        if self.resource_available(resource.url):
-                            result.append((resource, INCOHERENT_OUTPUTS))
-        return result
-
-    def resources_not_created_by_tuttle(self, previous_workflow):
-        result = []
-        for resource in self._resources.itervalues():
-            if not resource.is_primary():
-                if self.resource_available(resource.url):
-                    if not previous_workflow or not previous_workflow.resource_available(resource.url):
-                        result.append(resource)
-        return result
-
-    def find_outputless_process_with_same_inputs(self, process_from_other_workflow):
-        other_wf_urls = process_from_other_workflow.input_urls()
-        for process in self.iter_processes():
-            if not process.has_outputs() and process.input_urls() == other_wf_urls:
-                return process
-        return None
-
     def similar_process(self, process_from_other_workflow):
         output_resource = process_from_other_workflow.pick_an_output()
         if output_resource:
@@ -450,22 +349,6 @@ class Workflow:
                 if process.input_urls() == other_wf_urls:
                     return process
         return None
-
-    def retrieve_execution_info(self, previous):
-        """ Retrieve the execution information of the workflow's processes by getting them from the previous workflow,
-         where the processes are in common. Ignore information for the processes that are not in common
-         """
-        for prev_process in previous.iter_processes():
-            prev_output = prev_process.pick_an_output()
-            if prev_output:
-                process = self.find_process_that_creates(prev_output.url)
-            else:
-                # process with neither inputs nor outputs are not allowed
-                # neither two outputless processes without same inputs
-                # Also if the process isn't similar enough, it will be invalidated later
-                process = self.find_outputless_process_with_same_inputs(prev_process)
-            if process:
-                process.retrieve_execution_info(prev_process)
 
     def iter_processes_on_dependency_order(self):
         """ returns an ier on processes according to dependency order"""

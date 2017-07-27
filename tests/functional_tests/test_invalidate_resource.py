@@ -3,7 +3,6 @@ from os.path import isfile, join
 
 from os import path, remove
 from tests.functional_tests import isolate, run_tuttle_file
-from tuttlelib.invalidation import InvalidResourceCollector
 from tuttlelib.project_parser import ProjectParser
 from tuttlelib.workflow import PROCESS_HAS_CHANGED
 
@@ -204,31 +203,30 @@ file://C <- file://B
         assert output.find('* file://B', pos_end) == -1, output
         assert output.find('* has not been', pos_end) == -1, output
 
+    @isolate(['A'])
     def test_invalidation_in_cascade(self):
         """ When a resource is invalidated all resulting resources should be invalidated too
         """
-        workflow1 = self.get_workflow(
-            """file://file2 <- file://file1
-            Original code
 
-file://file3 <- file://file2""")
-        workflow2 = self.get_workflow(
-            """file://file2 <- file://file1
-            Updated code
+        project1 = """file://B <- file://A
+    echo A produces B > B
 
-file://file3 <- file://file2""")
-        inv_collector = InvalidResourceCollector()
-        different_res = workflow1.resources_not_created_the_same_way(workflow2)
-        assert len(different_res) == 1, [(res.url, reason) for (res, reason,) in different_res]
-        (resource, invalidation_reason) = different_res[0]
-        assert resource.url == "file://file2"
-        assert invalidation_reason == PROCESS_HAS_CHANGED
+file://C <- file://B
+    echo B produces C > C
+"""
+        rcode, output = run_tuttle_file(project1)
+        assert rcode == 0, output
 
-        inv_collector.collect_with_dependencies(different_res, workflow1)
-        assert len(inv_collector._resources_and_reasons) == 2, inv_collector._resources_and_reasons
-        (resource, invalidation_reason) = inv_collector._resources_and_reasons[1]
-        assert resource.url == "file://file3"
-        assert invalidation_reason.find("file://file2") >= 0, invalidation_reason
+        project2 = """file://B <- file://A
+    echo A produces another B > B
+
+file://C <- file://B
+    echo B produces C > C
+"""
+        rcode, output = run_tuttle_file(project2)
+        assert rcode == 0, output
+        assert output.find('* file://B - Process code has changed') > -1, output
+        assert output.find('* file://C') > -1, output
 
     @isolate(['A'])
     def test_should_run_after_invalidation(self):

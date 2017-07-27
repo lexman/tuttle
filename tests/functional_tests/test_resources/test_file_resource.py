@@ -3,7 +3,7 @@ from tempfile import mkdtemp
 from shutil import rmtree, copytree, copy
 from os.path import isdir, join, isfile
 from tests.functional_tests import isolate, run_tuttle_file
-from tuttlelib.commands2 import invalidate_resources
+from tuttlelib.commands import invalidate_resources
 
 from tuttlelib.resources import FileResource
 import tuttlelib.resources

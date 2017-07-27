@@ -8,7 +8,7 @@ from unittest.case import SkipTest
 
 from tests.functional_tests import isolate, run_tuttle_file
 from cStringIO import StringIO
-from tuttlelib.commands2 import invalidate_resources
+from tuttlelib.commands import invalidate_resources
 
 
 class TestCommands():
@@ -284,25 +284,6 @@ file://C <- file://B
         rcode, output = self.tuttle_invalide(project=project)
         assert rcode == 0, output
         assert output.find("Report has been updated to reflect") >= 0, output
-
-
-    @isolate(['A'])
-    def test_modified_primary_resources_should_invalidate_dependencies(self):
-        """ If a primary resource has changed, all its dependencies should be invalidated """
-        project = """file://B <- file://A
-            echo A produces B
-            echo A produces B > B
-"""
-        rcode, output = run_tuttle_file(project)
-        print output
-        assert rcode == 0, output
-
-        with open('A', "w") as f:
-            f.write("Another  A")
-
-        rcode, output = self.tuttle_invalide(project=project)
-        assert rcode == 0, output
-        assert output.find("file://B") >= 0, output
 
 
     @isolate(['A'])
