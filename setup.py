@@ -40,7 +40,7 @@ tuttle_description = {
         'tuttle.report',
         'tuttle.resources',
         'tuttle.processors',
-        'tuttle.extensions',
+        'tuttle.addons',
     ],
     'entry_points': {
         'console_scripts': [
