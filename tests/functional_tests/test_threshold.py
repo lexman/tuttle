@@ -15,7 +15,7 @@ class TestThreshold:
 
 file://C <- file://B
     echo B produces C
-    python -c "import time; time.sleep(2)"
+    python -c "import time; time.sleep(1.3)"
     echo C > C
 """
         rcode, output = run_tuttle_file(first)
@@ -27,7 +27,7 @@ file://C <- file://B
 
 file://C <- file://B
     echo B produces C
-    python -c "import time; time.sleep(2)"
+    python -c "import time; time.sleep(1.3)"
     echo C > C
 """
         rcode, output = run_tuttle_file(second, threshold=1)
@@ -125,7 +125,7 @@ file://C <- file://B
         """ Threshold should be ignored if not provided or left to default value"""
         first = """file://B <- file://A
     echo A produces B
-    python -c "import time; time.sleep(2)"
+    python -c "import time; time.sleep(1.3)"
     echo B > B
 """
         rcode, output = run_tuttle_file(first)
@@ -150,10 +150,32 @@ file://C <- file://B
         """ The threshold -t parameter should be available from the invalidate command"""
         first = """file://B <- file://A
     echo A produces B
-    python -c "import time; time.sleep(2)"
+    python -c "import time; time.sleep(1.3)"
     echo B > B
 """
         rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+        assert isfile('B')
+
+        proc = Popen(['tuttle', 'invalidate', '-t', '1', 'file://B'], stdout=PIPE)
+        output = proc.stdout.read()
+        rcode = proc.wait()
+        assert rcode == 2, output
+
+        assert output.find('Aborting') >= 0, output
+        assert isfile('B'), output
+
+    @isolate(['A'])
+    def test_threshold_with_outputless_processes(self):
+        """ The threshold should take into account outputless processes (from bug) """
+        project = """file://B <- file://A
+    echo A produces B
+    echo A produces B > B
+
+ <- file://B 
+    python -c "import time; time.sleep(1.1)"
+"""
+        rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
         assert isfile('B')
 

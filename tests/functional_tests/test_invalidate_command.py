@@ -2,16 +2,14 @@
 
 import sys
 from subprocess import Popen, PIPE
-from os.path import abspath, join, dirname, isfile
+from os.path import join, isfile
 from re import search, DOTALL
-from unittest.case import SkipTest
-
 from tests.functional_tests import isolate, run_tuttle_file
 from cStringIO import StringIO
 from tuttle.commands import invalidate_resources
 
 
-class TestCommands():
+class TestCommands:
 
     def tuttle_invalide(self, project=None, urls=[]):
         if project is not None:
@@ -206,6 +204,23 @@ file://C <- file://B
         assert output.find("Ignoring file://C : this resource has not been produced yet") >= 0, output
 
     @isolate(['A'])
+    def test_invalidate_an_output_should_invalidate_all_outputs(self):
+        """ Should invalidate all outputs if one is invalidated """
+        project = """file://B file://C <- file://A
+            echo A produces B
+            echo A produces B > B
+            echo A produces C
+            echo A produces C > C
+            """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0
+
+        rcode, output = self.tuttle_invalide(urls=['file://C'])
+        assert rcode == 0, output
+        assert output.find("* file://B") >= 0, output
+        assert output.find("* file://C") >= 0, output
+
+    @isolate(['A'])
     def test_new_primary_resources_should_not_be_invalidated(self):
         """ A primary resource that was produced with previous workflow shouldn't invalidate dependencies
         if it hasn't changed"""
@@ -285,7 +300,6 @@ file://C <- file://B
         assert rcode == 0, output
         assert output.find("Report has been updated to reflect") >= 0, output
 
-
     @isolate(['A'])
     def test_workflow_must_be_run_after_resource_invalidation(self):
         """ After invalidation of a resource, tuttle run should re-produce this resource """
@@ -338,7 +352,6 @@ file://C <- file://B
         assert rcode == 0, output
         assert output.find("file://B") >= 0, output
         assert not isfile('B'), output
-
 
     @isolate(['A'])
     def test_a_failing_process_without_output_should_be_invalidated(self):
@@ -394,7 +407,6 @@ file://C <- file://B
     def test_changes_in_the_graph_without_removing_resource(self):
         """ If the graph changes without removing resource tuttle should display a message
             event if the removed resource is used elsewhere (from bug) """
-        #raise SkipTest("Failing for the moment")
 
         first = """ <- file://A
     echo Action after A is created.
