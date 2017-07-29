@@ -32,7 +32,7 @@ script:
 - sudo dpkg -i dist/debian/tuttle_0.5-1_amd64.deb
 # Be sure the .deb package works
 - cd ci
-- tuttle run
+- tuttle run -j 3
 - cp world-cities.csv workflow_execution_success
 - cp from-python workflow_execution_success2
 - cp from-shell-or-batch workflow_execution_success3

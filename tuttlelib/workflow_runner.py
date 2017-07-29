@@ -107,7 +107,7 @@ class WorkflowRuner:
         self._logger = WorkflowRuner.get_logger()
         self._pool = None
         if nb_workers == -1:
-            self._nb_workers = int(cpu_count() / 2)
+            self._nb_workers = int((cpu_count() + 1) / 2)
         else :
             self._nb_workers = nb_workers
         self._free_workers = None

@@ -53,7 +53,7 @@ test_script:
   - cmd: more C:\projects\install_tuttle.log
   - cmd: cd C:\projects\tuttle\ci
   - cmd: tuttle -h
-  - cmd: tuttle run
+  - cmd: tuttle run -j 3
   - cmd: copy world-cities.csv workflow_execution_success.html
   - cmd: copy from-python workflow_execution_success2.html
   - cmd: copy from-shell-or-batch workflow_execution_success3.html
