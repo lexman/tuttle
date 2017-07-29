@@ -32,8 +32,8 @@ build_exe_options = {
     "includes": ["ConfigParser", "HTMLParser", ],
     "include_files": (
         six.__file__,
-        join("tuttlelib", "report"),
-        join("tuttlelib"),
+        join("tuttle", "report"),
+        join("tuttle"),
     )
 }
 build_msi_options = {

@@ -6,9 +6,9 @@ from os import path, environ, getcwd, mkdir
 from tests.functional_tests import isolate, run_tuttle_file
 from shlex import split
 from pipes import quote
-from tuttlelib.extend_workflow import extract_variables, load_template
-from tuttlelib.utils import CurrentDir
-from tuttlelib.workflow_runner import TuttleEnv
+from tuttle.extend_workflow import extract_variables, load_template
+from tuttle.utils import CurrentDir
+from tuttle.workflow_runner import TuttleEnv
 
 
 class TestExtendWorkflow:

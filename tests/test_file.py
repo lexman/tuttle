@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from tests.functional_tests import isolate
-from tuttlelib.resources import FileResource
+from tuttle.resources import FileResource
 import os
 
 

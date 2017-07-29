@@ -132,7 +132,7 @@ class TestPreprocessors:
     echo A produces B > B
 
 |<< ! python
-    from tuttlelib import extend_workflow
+    from tuttle import extend_workflow
     print("Running a python preprocess")
     extend_workflow('b-produces-x.tuttle', x="C")
 """.format(cmd_extend=cmd_extend)

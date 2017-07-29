@@ -1,9 +1,9 @@
 # -*- coding: utf8 -*-
 from os.path import join
 from tests.functional_tests import run_tuttle_file, isolate
-from tuttlelib.extensions.postgres import PostgreSQLResource, PostgresqlTuttleError
+from tuttle.extensions.postgres import PostgreSQLResource, PostgresqlTuttleError
 from nose.plugins.skip import SkipTest
-from tuttlelib.project_parser import ProjectParser
+from tuttle.project_parser import ProjectParser
 import psycopg2
 
 

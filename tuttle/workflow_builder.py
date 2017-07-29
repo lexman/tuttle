@@ -1,14 +1,14 @@
 # -*- coding: utf8 -*-
 
-from tuttlelib.resources import FileResource
-from tuttlelib.processors import *
-from tuttlelib.process import Process
-from tuttlelib.extensions.ext_csv import CSV2SQLiteProcessor
-from tuttlelib.extensions.net import DownloadProcessor, HTTPResource
-from tuttlelib.extensions.postgres import PostgreSQLResource, PostgresqlProcessor
-from tuttlelib.extensions.python import PythonProcessor
-from tuttlelib.extensions.s3 import S3Resource
-from tuttlelib.extensions.sqlite import SQLiteProcessor, SQLiteResource
+from tuttle.resources import FileResource
+from tuttle.processors import *
+from tuttle.process import Process
+from tuttle.extensions.ext_csv import CSV2SQLiteProcessor
+from tuttle.extensions.net import DownloadProcessor, HTTPResource
+from tuttle.extensions.postgres import PostgreSQLResource, PostgresqlProcessor
+from tuttle.extensions.python import PythonProcessor
+from tuttle.extensions.s3 import S3Resource
+from tuttle.extensions.sqlite import SQLiteProcessor, SQLiteResource
 import os
 
 

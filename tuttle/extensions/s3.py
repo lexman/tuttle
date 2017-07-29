@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 
 from re import compile
-from tuttlelib.resources import ResourceMixIn, MalformedUrl
-from tuttlelib.version import version
+from tuttle.resources import ResourceMixIn, MalformedUrl
+from tuttle.version import version
 from boto3.session import Session
 from botocore.exceptions import ClientError, BotoCoreError
 

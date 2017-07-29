@@ -3,8 +3,8 @@ from os.path import isfile, join
 
 from os import path, remove
 from tests.functional_tests import isolate, run_tuttle_file
-from tuttlelib.invalidation import NO_LONGER_CREATED, NOT_SAME_INPUTS, PROCESS_HAS_CHANGED
-from tuttlelib.project_parser import ProjectParser
+from tuttle.invalidation import NO_LONGER_CREATED, NOT_SAME_INPUTS, PROCESS_HAS_CHANGED
+from tuttle.project_parser import ProjectParser
 
 
 class TestInvalidateResource():

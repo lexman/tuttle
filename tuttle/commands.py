@@ -1,9 +1,9 @@
-from tuttlelib.error import TuttleError
-from tuttlelib.invalidation import prep_for_invalidation
-from tuttlelib.project_parser import ProjectParser
-from tuttlelib.workflow import Workflow
-from tuttlelib.workflow_builder import WorkflowBuilder
-from tuttlelib.workflow_runner import WorkflowRuner
+from tuttle.error import TuttleError
+from tuttle.invalidation import prep_for_invalidation
+from tuttle.project_parser import ProjectParser
+from tuttle.workflow import Workflow
+from tuttle.workflow_builder import WorkflowBuilder
+from tuttle.workflow_runner import WorkflowRuner
 
 
 

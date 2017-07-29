@@ -151,5 +151,5 @@ file://ambiguities.csv <- sqlite://world-cities.sqlite/country, sqlite://world-c
     tuttle-extend-workflow -v touch-x.tuttle x=from-shell-or-batch
 
 |<< ! python
-    from tuttlelib import extend_workflow
+    from tuttle import extend_workflow
     extend_workflow('touch-x.tuttle', x='from-python')

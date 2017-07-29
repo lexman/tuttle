@@ -5,8 +5,8 @@ from os import makedirs, environ
 from os.path import join
 from tests.functional_tests import isolate, run_tuttle_file
 from s3server import start
-from tuttlelib.project_parser import ProjectParser
-from tuttlelib.extensions.s3 import S3Resource
+from tuttle.project_parser import ProjectParser
+from tuttle.extensions.s3 import S3Resource
 
 class TestS3Resource():
 

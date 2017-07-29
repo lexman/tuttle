@@ -16,7 +16,7 @@ except ImportError:
 
 
 def get_version():
-    version_path = join(dirname(__file__), 'tuttlelib', 'VERSION')
+    version_path = join(dirname(__file__), 'tuttle', 'VERSION')
     version_details = open(version_path).read(getsize(version_path))
     return version_details.split("\n")[0]
 
@@ -36,22 +36,22 @@ tuttle_description = {
     'license': 'MIT',
     'install_requires': ['jinja2', 'MarkupSafe', 'psycopg2', 'six', 'boto3', 'chardet', 'psutil'],
     'packages': [
-        'tuttlelib',
-        'tuttlelib.report',
-        'tuttlelib.resources',
-        'tuttlelib.processors',
-        'tuttlelib.extensions',
+        'tuttle',
+        'tuttle.report',
+        'tuttle.resources',
+        'tuttle.processors',
+        'tuttle.extensions',
     ],
     'entry_points': {
         'console_scripts': [
-            'tuttle=tuttlelib.entry_points:tuttle_main',
-            'tuttle-extend-workflow=tuttlelib.entry_points:tuttle_extend_workflow_main',
+            'tuttle=tuttle.entry_points:tuttle_main',
+            'tuttle-extend-workflow=tuttle.entry_points:tuttle_extend_workflow_main',
         ],
     },
     'include_package_data': True,
     'package_data': {
-        'tuttlelib': ['VERSION'],
-        'tuttlelib.report': ['*.html', 'html_report_assets/*'],
+        'tuttle': ['VERSION'],
+        'tuttle.report': ['*.html', 'html_report_assets/*'],
     },
 }
 

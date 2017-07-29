@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
-from tuttlelib.report.html_repport import create_html_report
+from tuttle.report.html_repport import create_html_report
 from pickle import dump, load
-from tuttlelib.workflow_runner import WorkflowRuner, TuttleEnv
-from tuttlelib.log_follower import LogsFollower
+from tuttle.workflow_runner import WorkflowRuner, TuttleEnv
+from tuttle.log_follower import LogsFollower
 
 
 class ProcessDependencyIterator:

@@ -2,8 +2,8 @@
 from itertools import chain
 
 from re import compile
-from tuttlelib.error import TuttleError
-from tuttlelib.resources import MalformedUrl, ResourceMixIn
+from tuttle.error import TuttleError
+from tuttle.resources import MalformedUrl, ResourceMixIn
 from hashlib import sha1
 import psycopg2
 

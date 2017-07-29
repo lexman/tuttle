@@ -3,9 +3,9 @@ from os.path import isfile, abspath, exists
 
 from tests.test_project_parser import ProjectParser
 from tests.functional_tests import run_tuttle_file, isolate
-from tuttlelib.resources import FileResource
-from tuttlelib.workflow_runner import WorkflowRuner
-from tuttlelib.workflow import Workflow
+from tuttle.resources import FileResource
+from tuttle.workflow_runner import WorkflowRuner
+from tuttle.workflow import Workflow
 from time import time, sleep
 
 
@@ -66,7 +66,7 @@ def run_first_process(one_process_workflow, extra_processor = None, extra_resour
         wr._lt.follow_process(process.log_stdout, process.log_stderr, process.id)
         with wr._lt.trace_in_background():
             wr.start_process_in_background(process) # The function we're testing !
-        timeout = time() + 0.5
+        timeout = time() + 0.7
         while time() < timeout and not wr._completed_processes:
             sleep(0.1)
         assert time() < timeout, "Process should have stoped now"

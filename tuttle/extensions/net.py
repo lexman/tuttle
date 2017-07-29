@@ -6,9 +6,9 @@ try:
 except ImportError:
     from urllib.request import urlopen, Request
     from urllib.error import URLError, HTTPError
-from tuttlelib.error import TuttleError
-from tuttlelib.resources import ResourceMixIn
-from tuttlelib.version import version
+from tuttle.error import TuttleError
+from tuttle.resources import ResourceMixIn
+from tuttle.version import version
 
 
 USER_AGENT = "tuttle/{}".format(version)

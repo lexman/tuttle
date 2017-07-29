@@ -4,7 +4,7 @@ from shutil import rmtree
 from os.path import abspath, exists, isfile
 from os import remove
 from hashlib import sha1
-from tuttlelib.error import TuttleError
+from tuttle.error import TuttleError
 
 
 class MalformedUrl(TuttleError):

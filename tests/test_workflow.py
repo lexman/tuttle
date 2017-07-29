@@ -3,7 +3,7 @@
 from tests.functional_tests import isolate, run_tuttle_file
 from tests.test_project_parser import ProjectParser
 from os import path
-from tuttlelib.workflow_runner import WorkflowRuner, tuttle_dir
+from tuttle.workflow_runner import WorkflowRuner, tuttle_dir
 
 
 class TestWorkflow():

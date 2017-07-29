@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from subprocess import Popen, PIPE
-from os.path import isfile, dirname, abspath, join
-
-from os import path
+from os.path import isfile
 from tests.functional_tests import isolate, run_tuttle_file
 
 
