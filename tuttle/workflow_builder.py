@@ -3,12 +3,12 @@
 from tuttle.resources import FileResource
 from tuttle.processors import *
 from tuttle.process import Process
-from tuttle.extensions.ext_csv import CSV2SQLiteProcessor
-from tuttle.extensions.net import DownloadProcessor, HTTPResource
-from tuttle.extensions.postgres import PostgreSQLResource, PostgresqlProcessor
-from tuttle.extensions.python import PythonProcessor
-from tuttle.extensions.s3 import S3Resource
-from tuttle.extensions.sqlite import SQLiteProcessor, SQLiteResource
+from tuttle.addons.csv_addon import CSV2SQLiteProcessor
+from tuttle.addons.net import DownloadProcessor, HTTPResource
+from tuttle.addons.postgres import PostgreSQLResource, PostgresqlProcessor
+from tuttle.addons.python import PythonProcessor
+from tuttle.addons.s3 import S3Resource
+from tuttle.addons.sqlite import SQLiteProcessor, SQLiteResource
 import os
 
 

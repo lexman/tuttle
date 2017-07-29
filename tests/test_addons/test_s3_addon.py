@@ -6,7 +6,7 @@ from os.path import join
 from tests.functional_tests import isolate, run_tuttle_file
 from s3server import start
 from tuttle.project_parser import ProjectParser
-from tuttle.extensions.s3 import S3Resource
+from tuttle.addons.s3 import S3Resource
 
 class TestS3Resource():
 

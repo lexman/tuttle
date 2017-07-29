@@ -5,7 +5,7 @@ import chardet
 import codecs
 
 from tuttle.error import TuttleError
-from tuttle.extensions.sqlite import SQLiteResource
+from tuttle.addons.sqlite import SQLiteResource
 from tuttle.resources import ResourceMixIn, FileResource
 
 
