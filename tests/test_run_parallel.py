@@ -45,7 +45,7 @@ class BuggyExistsResource(FileResource):
             return False
 
 
-def run_first_process(one_process_workflow, extra_processor = None, extra_resource = None):
+def run_first_process(one_process_workflow, extra_processor=None, extra_resource=None):
     """ utility method to run the first process of a workflow and assert on process result """
     pp = ProjectParser()
     if extra_processor:
@@ -65,7 +65,7 @@ def run_first_process(one_process_workflow, extra_processor = None, extra_resour
         WorkflowRuner.prepare_and_assign_paths(process)
         wr._lt.follow_process(process.log_stdout, process.log_stderr, process.id)
         with wr._lt.trace_in_background():
-            wr.start_process_in_background(process) # The function we're testing !
+            wr.start_process_in_background(process)  # The function we're testing !
         timeout = time() + 0.7
         while time() < timeout and not wr._completed_processes:
             sleep(0.1)
@@ -75,7 +75,7 @@ def run_first_process(one_process_workflow, extra_processor = None, extra_resour
     return process
 
 
-class TestRunParallel():
+class TestRunParallel:
 
     def test_workers(self):
         """Test the flow of using workers"""
@@ -154,7 +154,6 @@ file://C <- file://A
         process = run_first_process(one_process_workflow)
         assert process.error_message.find("Process ended with error code") >= 0, process.error_message
 
-
     @isolate(['A'])
     def test_outputs_not_created(self):
         """ When the outputs have not been created by a process, there should be an error message"""
@@ -178,35 +177,34 @@ file://C <- file://A
         assert process.error_message.find('An unexpected error have happen in tuttle processor '
                                           'buggy_processor :') >= 0, process.error_message
         assert process.error_message.find('Traceback (most recent call last):') >= 0, process.error_message
-        assert process.error_message.find('raise Exception("Unexpected error in processor")') >= 0, process.error_message
+        assert process.error_message.find('raise Exception("Unexpected error in processor"') >= 0, process.error_message
         assert process.error_message.find('will not complete.') >= 0, process.error_message
 
     @isolate(['A'])
     def test_unexpected_error_in_signature(self):
         """ Tuttle should be protected against unexpected exceptions from resource.signature() """
-        # TODO
         one_process_workflow = """buggy://B <- file://A
             echo A produces B > B
         """
         process = run_first_process(one_process_workflow, extra_resource=BuggySignatureResource)
         assert process.success is False, process.error_message
-        assert process.error_message.find('An unexpected error have happen in tuttle while retrieving signature' \
-                                         ) >= 0, process.error_message
+        assert process.error_message.find('An unexpected error have happen in tuttle while retrieving signature'
+                                          ) >= 0, process.error_message
         assert process.error_message.find('Traceback (most recent call last):') >= 0, process.error_message
-        assert process.error_message.find('raise Exception("Unexpected error in signature()")') >= 0, process.error_message
+        assert process.error_message.find('raise Exception("Unexpected error in signature()")') >= 0, \
+            process.error_message
         assert process.error_message.find('Process cannot be considered complete.') >= 0, process.error_message
 
     @isolate(['A'])
     def test_unexpected_error_in_exists(self):
         """ Tuttle should be protected against unexpected exceptions from resource.exists() """
-        # TODO
         one_process_workflow = """buggy://B <- file://A
             echo A produces B > B
         """
         process = run_first_process(one_process_workflow, extra_resource=BuggyExistsResource)
         assert process.success is False, process.error_message
         assert process.error_message.find('An unexpected error have happen in tuttle while checking existence of '
-                                          'output resources' ) >= 0, process.error_message
+                                          'output resources') >= 0, process.error_message
         assert process.error_message.find('Traceback (most recent call last):') >= 0, process.error_message
         assert process.error_message.find('raise Exception("Unexpected error in exists()")') >= 0, process.error_message
         assert process.error_message.find('Process cannot be considered complete.') >= 0, process.error_message

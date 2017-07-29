@@ -1,29 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import sys
 from subprocess import Popen, PIPE
 from os.path import join, isfile
 from re import search, DOTALL
-from tests.functional_tests import isolate, run_tuttle_file
-from cStringIO import StringIO
-from tuttle.commands import invalidate_resources
+from tests.functional_tests import isolate, run_tuttle_file, tuttle_invalidate
 from tuttle.invalidation import BROTHER_INVALID
 
 
 class TestCommands:
-
-    def tuttle_invalide(self, project=None, urls=[]):
-        if project is not None:
-            with open('tuttlefile', "w") as f:
-                f.write(project)
-        oldout, olderr = sys.stdout, sys.stderr
-        out = StringIO()
-        try:
-            sys.stdout, sys.stderr = out, out
-            rcode = invalidate_resources('tuttlefile', urls)
-        finally:
-            sys.stdout, sys.stderr = oldout, olderr
-        return rcode, out.getvalue()
 
     @isolate(['A'])
     def test_command_invalidate(self):
@@ -36,7 +20,7 @@ class TestCommands:
         assert rcode == 0
         assert isfile('B')
 
-        rcode, output = self.tuttle_invalide(urls=['file://B'])
+        rcode, output = tuttle_invalidate(urls=['file://B'])
         assert rcode == 0, output
         assert output.find('* file://B') >= 0, output
         assert not isfile('B'), output
@@ -57,7 +41,7 @@ file://C <- file://B
         assert isfile('B')
         assert isfile('C')
 
-        rcode, output = self.tuttle_invalide(urls=['file://B'])
+        rcode, output = tuttle_invalidate(urls=['file://B'])
         assert rcode == 0, output
         assert output.find('* file://B') >= 0, output
         assert output.find('* file://C') >= 0, output
@@ -82,7 +66,7 @@ file://C <- file://B
         assert isfile('B')
         assert isfile('C')
 
-        rcode, output = self.tuttle_invalide(urls=['file://B'])
+        rcode, output = tuttle_invalidate(urls=['file://B'])
         assert rcode == 0, output
         assert output.find('* file://B') >= 0, output
         assert output.find('* file://C') >= 0, output
@@ -108,7 +92,7 @@ file://C <- file://B
             echo A creates B
             echo A creates B > B
             """
-        rcode, output = self.tuttle_invalide(project=project)
+        rcode, output = tuttle_invalidate(project=project)
         assert rcode == 2, output
         assert output.find("Tuttle has not run yet ! It has produced nothing, "
                            "so there is nothing to invalidate.") >= 0, output
@@ -127,7 +111,7 @@ file://C <- file://B
             echo A produces B
             echo A produces B > B
             """
-        rcode, output = self.tuttle_invalide(project=bad_project, urls=['file://B'])
+        rcode, output = tuttle_invalidate(project=bad_project, urls=['file://B'])
         assert rcode == 2, output
         assert output.find('Invalidation has failed because tuttlefile is has errors') >= 0, output
 
@@ -149,7 +133,7 @@ file://C <- file://B
             echo A produces B
             echo A produces B > B
             """
-        rcode, output = self.tuttle_invalide(project=new_project)
+        rcode, output = tuttle_invalidate(project=new_project)
         assert rcode == 0, output
         assert output.find('* file://C') >= 0, output
         assert output.find('no longer created') >= 0, output
@@ -164,7 +148,7 @@ file://C <- file://B
         rcode, output = run_tuttle_file(project)
         assert rcode == 0
 
-        rcode, output = self.tuttle_invalide(urls=['error://B'])
+        rcode, output = tuttle_invalidate(urls=['error://B'])
         assert rcode == 2, output
         assert output.find("'error://B'") >= 0, output
 
@@ -178,7 +162,7 @@ file://C <- file://B
         rcode, output = run_tuttle_file(project)
         assert rcode == 0
 
-        rcode, output = self.tuttle_invalide(urls=['file://C'])
+        rcode, output = tuttle_invalidate(urls=['file://C'])
         assert rcode == 0, output
         assert output.find("Ignoring file://C") >= 0, output
 
@@ -200,7 +184,7 @@ file://C <- file://B
             echo B produces C
             echo B produces C > C
 """
-        rcode, output = self.tuttle_invalide(project=project, urls=['file://C'])
+        rcode, output = tuttle_invalidate(project=project, urls=['file://C'])
         assert rcode == 0, output
         assert output.find("Ignoring file://C : this resource has not been produced yet") >= 0, output
 
@@ -216,7 +200,7 @@ file://C <- file://B
         rcode, output = run_tuttle_file(project)
         assert rcode == 0
 
-        rcode, output = self.tuttle_invalide(urls=['file://C'])
+        rcode, output = tuttle_invalidate(urls=['file://C'])
         assert rcode == 0, output
         assert output.find("* file://B") >= 0, output
         assert output.find("* file://C") >= 0, output
@@ -243,7 +227,7 @@ file://C <- file://B
             echo B produces C
             echo B produces C > C
 """
-        rcode, output = self.tuttle_invalide(project=project)
+        rcode, output = tuttle_invalidate(project=project)
         assert rcode == 0, output
         assert output.find("Report has been updated to reflect") >= 0, output
 
@@ -272,7 +256,7 @@ file://C <- file://B
             echo B produces C
             echo B produces C > C
 """
-        rcode, output = self.tuttle_invalide(project=project)
+        rcode, output = tuttle_invalidate(project=project)
         assert rcode == 0, output
         assert output.find("file://C") >= 0, output
 
@@ -298,7 +282,7 @@ file://C <- file://B
             echo B produces C
             echo B produces C > C
 """
-        rcode, output = self.tuttle_invalide(project=project)
+        rcode, output = tuttle_invalidate(project=project)
         assert rcode == 0, output
         assert output.find("Report has been updated to reflect") >= 0, output
 
@@ -369,7 +353,7 @@ file://C <- file://B
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
 
-        rcode, output = self.tuttle_invalide(urls=["file://C"])
+        rcode, output = tuttle_invalidate(urls=["file://C"])
         assert rcode == 0, output
         assert output.find("file://C") >= 0, output
         rcode, output = run_tuttle_file(project)
@@ -386,7 +370,7 @@ file://C <- file://B
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
 
-        rcode, output = self.tuttle_invalide(urls=["file://A"])
+        rcode, output = tuttle_invalidate(urls=["file://A"])
         assert rcode == 0, output
         assert output.find("Ignoring file://A") >= 0, output
 
@@ -403,7 +387,7 @@ file://C <- file://B
         assert rcode == 2, output
         assert isfile('B')
 
-        rcode, output = self.tuttle_invalide(project=project)
+        rcode, output = tuttle_invalidate(project=project)
         assert rcode == 0, output
         assert output.find("file://B") >= 0, output
         assert not isfile('B'), output
@@ -431,7 +415,7 @@ file://C <- file://B
         title_match_failure = search(r'<h1>.*Failure.*</h1>', report, DOTALL)
         assert title_match_failure, report
 
-        rcode, output = self.tuttle_invalide()
+        rcode, output = tuttle_invalidate()
         assert rcode == 0
 
         report = open(report_path).read()
@@ -450,7 +434,7 @@ file://C <- file://B
         rcode, output = run_tuttle_file(first)
         assert rcode == 0, output
 
-        rcode, output = self.tuttle_invalide()
+        rcode, output = tuttle_invalidate()
         assert rcode == 0, output
 
         rcode, output = run_tuttle_file(first)
@@ -482,7 +466,7 @@ file://C <- file://B
 file://C <- file://B
     echo C > C
 """
-        rcode, output = self.tuttle_invalide(project=second)
+        rcode, output = tuttle_invalidate(project=second)
         assert rcode == 0, output
         assert output.find("Report has been updated to reflect") >= 0, output
 
