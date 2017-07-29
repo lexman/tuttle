@@ -622,6 +622,23 @@ file:///resource2 <- file:///resource3
         workflow = pp.parse_project()
         assert len(workflow._processes) == 2
 
+    def test_two_outputless_processes_cant_have_same_inputs(self):
+        """ Outputless processes should not be ambiguous and their inputs distinguish them.
+        thus, two outputless processes shouldn't have same inputs"""
+        pp = ProjectParser()
+        project = """ <- file://A
+    echo Do something with file A
+
+ <- file://A
+    echo Do something else with file A
+"""
+        pp.set_project(project)
+        try:
+            workflow = pp.parse_project()
+            assert False, "A WorkflowError should have been raised"
+        except WorkflowError:
+            assert True
+
     def test_arrow(self):
         """ A process can have no input nor outputs """
         pp = ProjectParser()
