@@ -4,7 +4,7 @@ from tuttle.project_parser import ProjectParser
 from tuttle.workflow import Workflow
 from tuttle.workflow_builder import WorkflowBuilder
 from tuttle.workflow_runner import WorkflowRuner
-
+from os.path import abspath
 
 
 def load_project(tuttlefile):
@@ -35,9 +35,14 @@ def print_failures(failure_processes):
         print(process.error_message)
 
 
+def report_url():
+    report_path = abspath(WorkflowRuner.tuttle_dir("report.html"))
+    return "file://{}".format(report_path)
+
+
 def print_success():
     print("====")
-    print("Done")
+    print("Done. See report at {}".format(report_url()))
 
 
 def print_nothing_to_do():
@@ -45,7 +50,7 @@ def print_nothing_to_do():
 
 
 def print_updated():
-    print("Report has been updated to reflect tuttlefile")
+    print("Report has been updated to reflect tuttlefile. See {}".format(report_url()))
 
 
 def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going=False):
