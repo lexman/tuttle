@@ -8,12 +8,14 @@ NO_LONGER_CREATED = "Resource no longer created by the newer process"
 NOT_SAME_INPUTS = "Resource was created with different inputs"
 PROCESS_HAS_CHANGED = "Process code has changed"
 PROCESSOR_HAS_CHANGED = "Processor has changed"
-MUST_CREATE_RESOURCE = "The former primary resource has to be created by tuttle"  # Is it a subscase of NOT_PRODUCED_BY_TUTTLE ?
 RESOURCE_HAS_CHANGED = "Primary resource has changed"
 NOT_SAME_OUTPUTS = "Other outputs from same process have changed"
 DEPENDENCY_CHANGED = "Resource depends on {} that have changed"
 BROTHER_INVALID = "Resource is created along with {} that is invalid"
 BROTHER_MISSING = "Resource is created along with {} that is missing"
+
+# Is it a subscase of NOT_PRODUCED_BY_TUTTLE ?
+MUST_CREATE_RESOURCE = "The former primary resource has to be created by tuttle"
 
 
 class InvalidCollector:
@@ -151,7 +153,7 @@ class InvalidCollector:
             return
         for prev_process in self._previous_workflow.iter_processes():
             if prev_process.start:
-                # Don't need to retreive from a process that hasn't run yet
+                # Don't need to retrieve from a process that hasn't run yet
                 process = workflow.similar_process(prev_process)
                 if not process:
                     self.collect_prev_process_and_not_primary_outputs(workflow, prev_process, NO_LONGER_CREATED)
@@ -178,11 +180,3 @@ class InvalidCollector:
         workflow.clear_availability(self.iter_urls())
         # Not needed unless we make adding outputs more flexible
         # workflow.fill_missing_availability()
-
-
-def prep_for_invalidation(workflow, prev_workflow, invalidate_urls):
-    inv_collector = InvalidCollector(prev_workflow)
-    inv_collector.retrieve_common_processes_form_previous(workflow)
-    # workflow contains execution info based on what happened in previous
-    inv_collector.insure_dependency_coherence(workflow, invalidate_urls)
-    return inv_collector

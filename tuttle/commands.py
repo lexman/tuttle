@@ -1,5 +1,5 @@
 from tuttle.error import TuttleError
-from tuttle.invalidation import prep_for_invalidation
+from tuttle.invalidation import InvalidCollector
 from tuttle.project_parser import ProjectParser
 from tuttle.workflow import Workflow
 from tuttle.workflow_builder import WorkflowBuilder
@@ -10,6 +10,7 @@ from os.path import abspath
 def load_project(tuttlefile):
     pp = ProjectParser()
     workflow = pp.parse_and_check_file(tuttlefile)
+    workflow.discover_resources()
     return workflow
 
 
@@ -60,8 +61,6 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going
         print(e)
         return 2
 
-    workflow.discover_resources()
-
     missing = workflow.primary_inputs_not_available()
     if missing:
         print_missing_input(missing)
@@ -69,7 +68,9 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going
 
     previous_workflow = Workflow.load()
 
-    inv_collector = prep_for_invalidation(workflow, previous_workflow, [])
+    inv_collector = InvalidCollector(previous_workflow)
+    inv_collector.retrieve_common_processes_form_previous(workflow)
+    inv_collector.insure_dependency_coherence(workflow, [])
 
     failing_process = workflow.pick_a_failing_process()
     if failing_process:
@@ -151,11 +152,11 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
         print(e)
         return 2
 
-    workflow.discover_resources()
-
     to_invalidate = filter_invalidable_urls(workflow, urls)
 
-    inv_collector = prep_for_invalidation(workflow, previous_workflow, to_invalidate)
+    inv_collector = InvalidCollector(previous_workflow)
+    inv_collector.retrieve_common_processes_form_previous(workflow)
+    inv_collector.insure_dependency_coherence(workflow, to_invalidate)
 
     if inv_collector.resources_to_invalidate():
         if inv_collector.warn_and_abort_on_threshold(threshold):
