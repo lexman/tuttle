@@ -2,7 +2,7 @@
 
 from hashlib import sha1
 try:
-    from urllib2 import Request, URLError, HTTPError
+    from urllib2 import urlopen, Request, URLError, HTTPError
 except ImportError:
     from urllib.request import urlopen, Request
     from urllib.error import URLError, HTTPError
