@@ -3,7 +3,8 @@ from os.path import isfile, join
 
 from os import path, remove
 from tests.functional_tests import isolate, run_tuttle_file
-from tuttle.invalidation import NO_LONGER_CREATED, NOT_SAME_INPUTS, PROCESS_HAS_CHANGED
+from tuttle.invalidation import NO_LONGER_CREATED, NOT_SAME_INPUTS, PROCESS_HAS_CHANGED, PROCESSOR_HAS_CHANGED, \
+    RESOURCE_HAS_CHANGED
 from tuttle.project_parser import ProjectParser
 
 
@@ -168,6 +169,7 @@ file://C <- file://B
         assert output.find('* file://A') == -1, output
         assert output.find('* file://B') >= 0, output
         assert output.find('A produces B') >= 0, output
+        assert output.find(RESOURCE_HAS_CHANGED) >= 0, output
 
     @isolate(['A'])
     def test_modified_primary_resource_should_invalidate_dependencies_in_cascade(self):
@@ -315,10 +317,30 @@ file://C <- file://B
 
     @isolate(['A'])
     def test_processor_has_been_fixed(self):
+        """ Changing the processor should invalidate dependencies """
+        first = """file://B <- file://A
+    print("some python code")
+    open('B', 'w').write('A produces B')
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 2, output
+
+        second = """file://B <- file://A ! python
+    print("some python code")
+    open('B', 'w').write('A produces B')
+"""
+        rcode, output = run_tuttle_file(second)
+        assert rcode == 0, output
+        assert output.find("file://B") >= 0, output
+        assert isfile('B')
+        assert output.find(PROCESSOR_HAS_CHANGED) >= 0, output
+
+    @isolate(['A'])
+    def test_processor_or_process_has_been_fixed(self):
         """ Changing the processor of a process should invalidate dependencies """
         first = """file://B <- file://A
             print("some python code")
-            open('A', 'w').write('A')
+            open('A', 'w').write('A produces B')
 """
         rcode, output = run_tuttle_file(first)
         assert rcode == 2, output
@@ -331,6 +353,7 @@ file://C <- file://B
         assert rcode == 0, output
         assert output.find("file://B") >= 0, output
         assert isfile('B')
+        assert output.find(PROCESS_HAS_CHANGED) >= 0, output
 
     @isolate(['A'])
     def test_remove_primary(self):
@@ -384,7 +407,7 @@ file://C <- file://A
         assert output.find("Workflow already failed") >= 0, output
 
     @isolate(['A'])
-    def test_dont_invalidate_if_errors(self):
+    def test_rerun_outputless_process_if_code_changed(self):
         """ A change in a process without output should re-run the process (from bug) """
         first = """ <- file://A
             echo Action after A is created
@@ -398,3 +421,36 @@ file://C <- file://A
         rcode, output = run_tuttle_file(second)
         assert rcode == 0
         assert output.find("Another") >= 0, output
+
+    @isolate(['A'])
+    def test_rerun_outputless_process_if_code_changed(self):
+        """ An outputless process should not re-run if it hasn't changed """
+        first = """ <- file://A
+            echo Action after A is created
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0
+        assert output.find("Nothing to do") >= 0, output
+
+    @isolate(['A'])
+    def test_invalidate_all_outputs_from_a_process_if_one_missing(self):
+        """ If an output of a successfull process is missing, all others outputs should be removed
+        and the process should re-run """
+        first = """file://C file://B <- file://A
+    echo A produces B
+    echo A produces B > B
+    echo A produces C
+    echo A produces C > C
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+        remove('B')
+
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0
+        assert output.find("file://C") >= 0, output
+        assert output.find("A produces B") >= 0, output
+        assert output.find("A produces C") >= 0, output

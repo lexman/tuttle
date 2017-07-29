@@ -7,6 +7,7 @@ from re import search, DOTALL
 from tests.functional_tests import isolate, run_tuttle_file
 from cStringIO import StringIO
 from tuttle.commands import invalidate_resources
+from tuttle.invalidation import BROTHER_INVALID
 
 
 class TestCommands:
@@ -219,6 +220,7 @@ file://C <- file://B
         assert rcode == 0, output
         assert output.find("* file://B") >= 0, output
         assert output.find("* file://C") >= 0, output
+        assert output.find(BROTHER_INVALID.format("file://C")) >= 0, output
 
     @isolate(['A'])
     def test_new_primary_resources_should_not_be_invalidated(self):
