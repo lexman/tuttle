@@ -73,7 +73,7 @@ file://C <- file://B
 
 file://C <- file://B
             echo A creates C
-            python -c "import time; time.sleep(2)"
+            python -c "import time; time.sleep(1.2)"
             echo A creates C > C
 """
         rcode, output = run_tuttle_file(project)
@@ -301,6 +301,59 @@ file://C <- file://B
         assert output.find("Report has been updated to reflect") >= 0, output
 
     @isolate(['A'])
+    def test_adding_an_output_invalidates_process(self):
+        """ Adding an ingutput to a process that have succeeded should invalidate the whole process,
+        thus invalidate all other resources """
+        project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+            echo A produces C
+            echo A produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        print output
+        assert rcode == 0, output
+
+        project = """file://B file://C<- file://A
+            echo A produces B
+            echo A produces B > B
+            echo A produces C
+            echo A produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert output.find("file://B") >= 0, output
+        assert output.find("A produces B") >= 0, output
+        assert output.find("A produces C") >= 0, output
+
+    @isolate(['A', 'B'])
+    def test_removing_an_output_invalidates_process(self):
+        """ Removing an output to a process that have succeeded should invalidate the whole process,
+        thus invalidating all resources """
+        project = """file://B file://C <- file://A
+            echo A produces B
+            echo A produces B > B
+            echo A produces C
+            echo A produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        print output
+        assert rcode == 0, output
+
+        project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+            echo A produces C
+            echo A produces C > C
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert output.find("file://B") >= 0, output
+        assert output.find("file://C") >= 0, output
+        assert output.find("A produces B") >= 0, output
+        assert output.find("A produces C") >= 0, output
+
+    @isolate(['A'])
     def test_workflow_must_be_run_after_resource_invalidation(self):
         """ After invalidation of a resource, tuttle run should re-produce this resource """
         project = """file://B <- file://A
@@ -430,3 +483,22 @@ file://C <- file://B
         rcode, output = self.tuttle_invalide(project=second)
         assert rcode == 0, output
         assert output.find("Report has been updated to reflect") >= 0, output
+
+    @isolate(['A', 'B'])
+    def test_dont_mess_up_with_outputless_process(self):
+        """ Successful outputless process must not run again, even if some other
+        process have the same input (from bug) """
+        first = """file://C <- file://A
+    echo A produces C > C
+
+<- file://A
+    echo Action from A
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0
+        assert output.find("Nothing to do") >= 0, output
+        assert output.find("Action") == -1, output
+

@@ -398,23 +398,3 @@ file://C <- file://A
         rcode, output = run_tuttle_file(second)
         assert rcode == 0
         assert output.find("Another") >= 0, output
-
-    @isolate(['A'])
-    def test_invalidate_all_outputs_from_a_process_if_one_missing(self):
-        """ If an output of a successfull process is missing, all others outputs should be removed
-            and the process should re-run """
-        first = """file://C file://B <- file://A
-    echo A produces B
-    echo A produces B > B
-    echo A produces C
-    echo A produces C > C
-"""
-        rcode, output = run_tuttle_file(first)
-        assert rcode == 0, output
-        remove('B')
-
-        rcode, output = run_tuttle_file(first)
-        assert rcode == 0
-        assert output.find("file://C") >= 0, output
-        assert output.find("A produces B") >= 0, output
-        assert output.find("A produces C") >= 0, output

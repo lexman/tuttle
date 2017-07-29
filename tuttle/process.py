@@ -79,8 +79,11 @@ class Process:
     def input_urls(self):
         return {resource.url for resource in self._inputs}
 
-    def sorted_inputs_string(process):
-        sorted_inputs_urls = sorted([resource.url for resource in process.iter_inputs()])
+    def output_urls(self):
+        return {resource.url for resource in self._outputs}
+
+    def sorted_inputs_string(self):
+        sorted_inputs_urls = sorted([resource.url for resource in self.iter_inputs()])
         return ",".join(sorted_inputs_urls)
 
     def depends_on_process(self, process):

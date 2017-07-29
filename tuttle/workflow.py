@@ -291,7 +291,7 @@ class Workflow:
         else:
             other_wf_urls = process_from_other_workflow.input_urls()
             for process in self.iter_processes():
-                if process.input_urls() == other_wf_urls:
+                if not process.has_outputs() and process.input_urls() == other_wf_urls:
                     return process
         return None
 

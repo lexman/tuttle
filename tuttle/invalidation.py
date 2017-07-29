@@ -9,9 +9,8 @@ NOT_SAME_INPUTS = "Resource was created with different inputs"
 PROCESS_HAS_CHANGED = "Process code has changed"
 PROCESSOR_HAS_CHANGED = "Processor has changed"
 MUST_CREATE_RESOURCE = "The former primary resource has to be created by tuttle"  # Is it a subscase of NOT_PRODUCED_BY_TUTTLE ?
-RESOURCE_NOT_CREATED_BY_TUTTLE = "The existing resource has not been created by tuttle"
 RESOURCE_HAS_CHANGED = "Primary resource has changed"
-INCOHERENT_OUTPUTS = "Other outputs produced by the same process are missing"
+NOT_SAME_OUTPUTS = "Other outputs from same process have changed"
 DEPENDENCY_CHANGED = "Resource depends on {} that have changed"
 BROTHER_INVALID = "Resource is created along with {} that is invalid"
 BROTHER_MISSING = "Resource is created along with {} that is missing"
@@ -131,7 +130,7 @@ class InvalidCollector:
             # Process hasn't run yet. So it can't produce valid outputs
             for resource in process.iter_outputs():
                 if workflow.resource_available(resource.url):
-                    self.collect_resource(resource, RESOURCE_NOT_CREATED_BY_TUTTLE)
+                    self.collect_resource(resource, NOT_PRODUCED_BY_TUTTLE)
         else:
             if process.success is False:
                 # Process has failed. So it can't have produced valid outputs
@@ -163,9 +162,12 @@ class InvalidCollector:
                         self.collect_prev_process_and_not_primary_outputs(workflow, prev_process, PROCESSOR_HAS_CHANGED)
                     elif process.input_urls() != prev_process.input_urls():
                         self.collect_prev_process_and_not_primary_outputs(workflow, prev_process, NOT_SAME_INPUTS)
-#                    elif process.output_urls() != prev_process.output_url():
-#                        invalid_collector.collect_process_and_outputs(workflow, prev_process, NOT_SAME_OUPUTS)
-#                    Should we ? Only if check-integrity
+                    elif process.output_urls() != prev_process.output_urls():
+                        self.collect_prev_process_and_not_primary_outputs(workflow, prev_process, NOT_SAME_OUTPUTS)
+                        # We could be less restrictive : if someone adds an output because he discovered his process
+                        # produces logs, we'd like to add them to the project without reprocessing
+                        # At the condition that no process uses this new output
+#                       What about check-integrity too ?
                     else:
                         # Both process are the same
                         process.retrieve_execution_info(prev_process)
@@ -174,7 +176,8 @@ class InvalidCollector:
         if self._previous_workflow:
             workflow.retrieve_signatures_new(self._previous_workflow)
         workflow.clear_availability(self.iter_urls())
-        workflow.fill_missing_availability()
+        # Not needed unless we make adding outputs more flexible
+        # workflow.fill_missing_availability()
 
 
 def prep_for_invalidation(workflow, prev_workflow, invalidate_urls):
