@@ -234,6 +234,24 @@ $BODY$
         assert not res.exists(), "{} should not exist because no table, view nor any object with that name " \
                                  "exists".format(url)
 
+    def test_cant_connect(self):
+        """ Should display a message if tuttle cant connect to database """
+        project = """pg://localhost:5432/this_db_does_not_exists/table <- ! postgresql
+        CREATE TABLE new_table AS SELECT * FROM test_table;
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2, output
+        assert output.find("Can't connect")> -1, output
+
+    def test_no_host(self):
+        """ Should display a message if tuttle cant connect to database because host does not exists """
+        project = """pg://no-postgres-host.com:5432/this_db_does_not_exists/table <- ! postgresql
+        CREATE TABLE new_table AS SELECT * FROM test_table;
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2, output
+        assert output.find("Unknown database host") > -1, output
+
 
 class TestPostgresqlProcessor():
     """
@@ -280,7 +298,7 @@ class TestPostgresqlProcessor():
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
-        assert output.find("CREATE TABLE new_table AS SELECT * FROM test_table"), \
+        assert output.find("CREATE TABLE new_table AS SELECT * FROM test_table") > -1, \
             "PostgresqlProcessor should log the SQL statements"
 
     def test_static_check_should_fail_if_across_several_postgresql_databases(self):

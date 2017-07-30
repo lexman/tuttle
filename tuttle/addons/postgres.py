@@ -2,10 +2,17 @@
 from itertools import chain
 
 from re import compile
+
+from tuttle.addons.netutils import hostname_resolves
 from tuttle.error import TuttleError
 from tuttle.resources import MalformedUrl, ResourceMixIn
 from hashlib import sha1
 import psycopg2
+
+
+CANT_CONNECT_DB = "Can't connect to Postgresql database : \"{}\" to " \
+                  "check existence of resource {}."
+
 
 class PostgreSQLResource(ResourceMixIn, object):
     """A resource for an object in a PostgreSQL database. Objects can be tables, view..."""
@@ -77,10 +84,16 @@ class PostgreSQLResource(ResourceMixIn, object):
             return self.TYPE_FUNCTION
 
     def exists(self):
+        if not hostname_resolves(self._server):
+            raise TuttleError("Unknown database host : \"{}\"... "
+                              "Can't check existence of resource {}.".format(self._server, self.url))
+        conn_string = "host=\'{}\' dbname='{}' port={} ".format(self._server, self._database, self._port)
         try:
-            conn_string = "host=\'{}\' dbname='{}' port={} ".format(self._server, self._database,
-                                                                   self._port)
             db = psycopg2.connect(conn_string)
+        except psycopg2.OperationalError as e:
+            raise TuttleError("Can't connect to Postgresql database : \"{}\" to "
+                              "check existence of resource {}.".format(conn_string, self.url))
+        try:
             result = self.pg_object_type(db, self._schema, self._objectname) is not None
             db.close()
         except psycopg2.OperationalError as e:
