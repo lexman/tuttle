@@ -24,7 +24,7 @@ class S3Resource(ResourceMixIn, object):
         m = self.ereg.match(url)
         if m is None:
             raise MalformedUrl("Malformed S3 url : '{}'".format(url))
-        self._host = m.group(1)
+        self._host = m.group(1).split(':')[0]
         self._endpoint = "http://{}".format(m.group(1))
         self._bucket = m.group(2)
         self._key = m.group(3)
