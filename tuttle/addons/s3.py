@@ -1,6 +1,9 @@
 # -*- coding: utf8 -*-
 
 from re import compile
+
+from tuttle.addons.netutils import hostname_resolves
+from tuttle.error import TuttleError
 from tuttle.resources import ResourceMixIn, MalformedUrl
 from tuttle.version import version
 from boto3.session import Session
@@ -21,6 +24,7 @@ class S3Resource(ResourceMixIn, object):
         m = self.ereg.match(url)
         if m is None:
             raise MalformedUrl("Malformed S3 url : '{}'".format(url))
+        self._host = m.group(1)
         self._endpoint = "http://{}".format(m.group(1))
         self._bucket = m.group(2)
         self._key = m.group(3)
@@ -32,6 +36,10 @@ class S3Resource(ResourceMixIn, object):
         return obj
 
     def exists(self):
+        if not hostname_resolves(self._host):
+            raise TuttleError("Unknown host : \"{}\"... "
+                              "Can't check existence of resource {}.".format(self._host, self.url))
+
         object = self._object()
         try:
             res = object.get()
