@@ -10,10 +10,6 @@ from hashlib import sha1
 import psycopg2
 
 
-CANT_CONNECT_DB = "Can't connect to Postgresql database : \"{}\" to " \
-                  "check existence of resource {}."
-
-
 class PostgreSQLResource(ResourceMixIn, object):
     """A resource for an object in a PostgreSQL database. Objects can be tables, view..."""
     """eg : pg://localhost:5432/tuttle_test_database/test_schema/test_table"""
