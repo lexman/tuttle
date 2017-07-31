@@ -3,18 +3,20 @@
 from tests.functional_tests import isolate, run_tuttle_file
 from tests.test_project_parser import ProjectParser
 from os import path
-from tuttle.workflow_runner import WorkflowRuner, tuttle_dir
+
+from tuttle.tuttle_directories import TuttleDirectories
+from tuttle.workflow_runner import WorkflowRuner
 
 
 class TestWorkflow():
 
     def test_one_param_from_dir(self):
         """Should find the right path to a file in the project directory"""
-        assert tuttle_dir("test") == path.join(".tuttle", "test")
+        assert TuttleDirectories.tuttle_dir("test") == path.join(".tuttle", "test")
 
     def test_two_params_from_dir(self):
         """Should find the right path to a file in the project directory"""
-        assert tuttle_dir("test1", "test2") == path.join(".tuttle", "test1", "test2")
+        assert TuttleDirectories.tuttle_dir("test1", "test2") == path.join(".tuttle", "test1", "test2")
 
     def get_workflow(self, project_source):
         pp = ProjectParser()
@@ -44,8 +46,8 @@ file://file3 <- file://file1
             echo result > result
             """)
         process = workflow._processes[0]
-        WorkflowRuner.create_tuttle_dirs()
-        WorkflowRuner.prepare_and_assign_paths(process)
+        TuttleDirectories.create_tuttle_dirs()
+        TuttleDirectories.prepare_and_assign_paths(process)
         process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
         assert path.isfile("result")
 

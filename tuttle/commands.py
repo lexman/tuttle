@@ -4,6 +4,7 @@ from tuttle.project_parser import ProjectParser
 from tuttle.workflow import Workflow
 from tuttle.workflow_builder import WorkflowBuilder
 from tuttle.workflow_runner import WorkflowRuner
+from tuttle_directories import TuttleDirectories
 from os.path import abspath
 
 
@@ -37,7 +38,7 @@ def print_failures(failure_processes):
 
 
 def report_url():
-    report_path = abspath(WorkflowRuner.tuttle_dir("report.html"))
+    report_path = abspath(TuttleDirectories.tuttle_dir("report.html"))
     return "file://{}".format(report_path)
 
 

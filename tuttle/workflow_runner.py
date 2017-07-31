@@ -13,6 +13,7 @@ from os.path import join, isdir, isfile
 from traceback import format_exception
 
 from tuttle.error import TuttleError
+from tuttle.tuttle_directories import TuttleDirectories
 from tuttle.utils import EnvVar
 from tuttle.log_follower import LogsFollower
 from time import sleep, time
@@ -83,19 +84,7 @@ def run_process_without_exception(process):
     return True, None, signatures
 
 
-def tuttle_dir(*args):
-    return join('.tuttle', *args)
-
-
 class WorkflowRuner:
-
-    _processes_dir = tuttle_dir('processes')
-    _logs_dir = tuttle_dir('processes', 'logs')
-    _extensions_dir = tuttle_dir('extensions')
-
-    @staticmethod
-    def tuttle_dir(*args):
-        return join('.tuttle', *args)
 
     @staticmethod
     def resources2list(resources):
@@ -108,7 +97,7 @@ class WorkflowRuner:
         self._pool = None
         if nb_workers == -1:
             self._nb_workers = int((cpu_count() + 1) / 2)
-        else :
+        else:
             self._nb_workers = nb_workers
         self._free_workers = None
         self._completed_processes = []
@@ -131,9 +120,9 @@ class WorkflowRuner:
         list of processes ended with success, list of processes ended with failure
         """
         # TODO create tuttle dirs only once
-        WorkflowRuner.create_tuttle_dirs()
+        TuttleDirectories.create_tuttle_dirs()
         for process in workflow.iter_processes():
-            WorkflowRuner.prepare_and_assign_paths(process)
+            TuttleDirectories.prepare_and_assign_paths(process)
             self._lt.follow_process(process.log_stdout, process.log_stderr, process.id)
 
         failure_processes, success_processes = [], []
@@ -217,39 +206,6 @@ class WorkflowRuner:
         workflow.create_reports()
 
     @staticmethod
-    def prepare_and_assign_paths(process):
-        log_stdout = join(WorkflowRuner._logs_dir, "{}_stdout.txt".format(process.id))
-        log_stderr = join(WorkflowRuner._logs_dir, "{}_err.txt".format(process.id))
-        # It would be a good idea to clean up all directories before
-        # running the whole workflow
-        # For the moment we clean here : before folowing the logs
-        if isfile(log_stdout):
-            remove(log_stdout)
-        if isfile(log_stderr):
-            remove(log_stderr)
-        reserved_path = join(WorkflowRuner._processes_dir, process.id)
-        if isdir(reserved_path):
-            rmtree(reserved_path)
-        elif isfile(reserved_path):
-            remove(reserved_path)
-        process.assign_paths(reserved_path, log_stdout, log_stderr)
-
-    @staticmethod
-    def create_tuttle_dirs():
-        if not isdir(WorkflowRuner._processes_dir):
-            makedirs(WorkflowRuner._processes_dir)
-        if not isdir(WorkflowRuner._logs_dir):
-            makedirs(WorkflowRuner._logs_dir)
-
-    @staticmethod
-    def empty_extension_dir():
-        if not isdir(WorkflowRuner._extensions_dir):
-            makedirs(WorkflowRuner._extensions_dir)
-        else:
-            rmtree(WorkflowRuner._extensions_dir)
-            makedirs(WorkflowRuner._extensions_dir)
-
-    @staticmethod
     def print_preprocess_header(process, logger):
         logger.info("-" * 60)
         logger.info("Preprocess : {}".format(process.id))
@@ -268,11 +224,6 @@ class WorkflowRuner:
         print("=" * 60)
 
     @staticmethod
-    def list_extensions():
-        path = join(WorkflowRuner._extensions_dir, '*')
-        return glob(path)
-
-    @staticmethod
     def get_logger():
         logger = logging.getLogger(__name__)
         formater = logging.Formatter("%(message)s")
@@ -282,7 +233,6 @@ class WorkflowRuner:
         logger.setLevel(logging.INFO)
         logger.addHandler(handler)
         return logger
-
 
 
 class TuttleEnv(EnvVar):

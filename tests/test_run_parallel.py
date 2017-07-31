@@ -4,6 +4,7 @@ from os.path import isfile, abspath, exists
 from tests.test_project_parser import ProjectParser
 from tests.functional_tests import run_tuttle_file, isolate
 from tuttle.resources import FileResource
+from tuttle.tuttle_directories import TuttleDirectories
 from tuttle.workflow_runner import WorkflowRuner
 from tuttle.workflow import Workflow
 from time import time, sleep
@@ -62,7 +63,7 @@ def run_first_process(one_process_workflow, extra_processor=None, extra_resource
     wr = WorkflowRuner(2)
     wr.init_workers()
     try:
-        WorkflowRuner.prepare_and_assign_paths(process)
+        TuttleDirectories.prepare_and_assign_paths(process)
         wr._lt.follow_process(process.log_stdout, process.log_stderr, process.id)
         with wr._lt.trace_in_background():
             wr.start_process_in_background(process)  # The function we're testing !

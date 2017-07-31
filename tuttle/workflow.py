@@ -2,6 +2,7 @@
 from tuttle.report.html_repport import create_html_report
 from pickle import dump, load
 from tuttle.workflow_runner import WorkflowRuner, TuttleEnv
+from tuttle_directories import TuttleDirectories
 from tuttle.log_follower import LogsFollower
 
 
@@ -125,14 +126,14 @@ class Workflow:
         :return:
         :raises ExecutionError if an error occurs
         """
-        WorkflowRuner.create_tuttle_dirs()
-        WorkflowRuner.empty_extension_dir()
+        TuttleDirectories.create_tuttle_dirs()
+        TuttleDirectories.empty_extension_dir()
         if not self.has_preprocesses():
             return
         lt = LogsFollower()
         WorkflowRuner.print_preprocesses_header()
         for process in self.iter_preprocesses():
-            WorkflowRuner.prepare_and_assign_paths(process)
+            TuttleDirectories.prepare_and_assign_paths(process)
             lt.follow_process(process.log_stdout, process.log_stderr, process.id)
 
         with lt.trace_in_background(), TuttleEnv():
@@ -150,25 +151,25 @@ class Workflow:
         """ Write to disk files describing the workflow, with color for states
         :return: None
         """
-        create_html_report(self, WorkflowRuner.tuttle_dir("report.html"))
+        create_html_report(self, TuttleDirectories.tuttle_dir("report.html"))
 
     def dump(self):
         """ Pickles the workflow and writes it to last_workflow.pickle
         :return: None
         """
-        with open(WorkflowRuner.tuttle_dir("last_workflow.pickle"), "w") as f:
+        with open(TuttleDirectories.tuttle_dir("last_workflow.pickle"), "w") as f:
             dump(self, f)
 
     @staticmethod
     def load():
         try:
-            with open(WorkflowRuner.tuttle_dir("last_workflow.pickle"), "r") as f:
+            with open(TuttleDirectories.tuttle_dir("last_workflow.pickle"), "r") as f:
                 return load(f)
         except:
             return None
 
     def get_extensions(self):
-        return WorkflowRuner.list_extensions()
+        return TuttleDirectories.list_extensions()
 
     def find_process_that_creates(self, url):
         """
