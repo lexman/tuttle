@@ -47,6 +47,7 @@ class LogTracer:
         if self._filedescr:
             self._filedescr.close()
 
+
 class EnsureLogsFollowerStops(object):
     """
     Ensures a LogFollower is stopped when no longer required
@@ -100,7 +101,7 @@ class LogsFollower:
         return EnsureLogsFollowerStops(self)
         
     def terminate(self):
-        #sleep(0.1) # wait for flush
+        # sleep(0.1) # wait for flush
         self._terminate = True
         self._thread.join()
         for log in self._logs:
