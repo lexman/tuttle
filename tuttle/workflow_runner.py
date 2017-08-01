@@ -119,11 +119,10 @@ class WorkflowRuner:
         :return: success_processes, failure_processes :
         list of processes ended with success, list of processes ended with failure
         """
-        # TODO create tuttle dirs only once
-        TuttleDirectories.create_tuttle_dirs()
         for process in workflow.iter_processes():
-            TuttleDirectories.prepare_and_assign_paths(process)
-            self._lt.follow_process(process.log_stdout, process.log_stderr, process.id)
+            if process.start is None:
+                # Don't display logs if the process has already run
+                self._lt.follow_process(process.log_stdout, process.log_stderr, process.id)
 
         failure_processes, success_processes = [], []
         with self._lt.trace_in_background():

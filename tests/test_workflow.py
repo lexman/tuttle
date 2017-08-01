@@ -76,6 +76,8 @@ file://file3 <- file://file1
         workflow.static_check_processes()
         workflow.discover_resources()
         wr = WorkflowRuner(3)
+        TuttleDirectories.create_tuttle_dirs()
+        TuttleDirectories.straighten_out_process_and_logs(workflow)
         successes, failures = wr.run_parallel_workflow(workflow)
         assert failures
         failure = failures[0]
@@ -92,8 +94,8 @@ file://file3 <- file://file1
         workflow = pp.parse_project()
 
         process = workflow._processes[0]
-        WorkflowRuner.create_tuttle_dirs()
-        WorkflowRuner.prepare_and_assign_paths(process)
+        TuttleDirectories.create_tuttle_dirs()
+        TuttleDirectories.prepare_and_assign_paths(process)
         process._processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
         missing = process.missing_outputs()
 

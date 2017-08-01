@@ -108,6 +108,7 @@ class Process:
         self._success = process.success
         self.log_stdout = process.log_stdout
         self.log_stderr = process.log_stderr
+        self._reserved_path = process._reserved_path
 
     def reset_execution_info(self):
         """ Reset the execution info (all the properties set by function run()) because the resources produced

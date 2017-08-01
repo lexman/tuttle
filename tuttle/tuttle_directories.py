@@ -1,9 +1,9 @@
 # -*- coding: utf8 -*-
-
 from glob import glob
-from os.path import join, isfile, isdir
+from itertools import chain
+from os.path import join, isfile, isdir, basename
 from os import remove, makedirs
-from shutil import rmtree
+from shutil import rmtree, move
 
 
 def tuttle_dir(*args):
@@ -59,3 +59,25 @@ class TuttleDirectories:
             rmtree(TuttleDirectories._extensions_dir)
             makedirs(TuttleDirectories._extensions_dir)
 
+    @staticmethod
+    def move_paths_from(process, from_path):
+        reserved_path = join(from_path, basename(process._reserved_path))
+        log_stdout = join(from_path, 'logs', basename(process.log_stdout))
+        log_stderr = join(from_path, 'logs', basename(process.log_stderr))
+        TuttleDirectories.prepare_and_assign_paths(process)
+        move(reserved_path, process._reserved_path)
+        move(log_stdout, process.log_stdout)
+        move(log_stderr, process.log_stderr)
+
+    @staticmethod
+    def straighten_out_process_and_logs(workflow):
+        tmp_processes = TuttleDirectories.tuttle_dir('tmp_processes')
+        rmtree(tmp_processes, True)
+        move(TuttleDirectories._processes_dir, tmp_processes)
+        TuttleDirectories.create_tuttle_dirs()
+        for process in chain(workflow.iter_processes(), workflow.iter_preprocesses()):
+            if process.start is not None:
+                TuttleDirectories.move_paths_from(process, tmp_processes)
+            else:
+                TuttleDirectories.prepare_and_assign_paths(process)
+        rmtree(tmp_processes)

@@ -139,11 +139,16 @@ class Workflow:
         with lt.trace_in_background(), TuttleEnv():
             for preprocess in self.iter_preprocesses():
                 WorkflowRuner.print_preprocess_header(preprocess, lt._logger)
+                success = True
                 try:
+                    preprocess.set_start()
                     preprocess.processor.run(preprocess, preprocess._reserved_path,
                                              preprocess.log_stdout, preprocess.log_stderr)
-
+                except Exception:
+                    success = False
+                    raise
                 finally:
+                    preprocess.set_end(success, None)
                     self.create_reports()
             WorkflowRuner.print_preprocesses_footer()
 

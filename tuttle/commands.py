@@ -86,6 +86,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going
     inv_collector.remove_resources(workflow)
     inv_collector.reset_execution_info()
     inv_collector.straighten_out_availability(workflow)
+    TuttleDirectories.straighten_out_process_and_logs(workflow)
     workflow.create_reports()
     workflow.dump()
 
@@ -168,6 +169,7 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
         inv_collector.straighten_out_availability(workflow)
     reseted_failures = workflow.reset_failures()
     if inv_collector.resources_to_invalidate() or reseted_failures:
+        TuttleDirectories.straighten_out_process_and_logs(workflow)
         workflow.dump()
         workflow.create_reports()
 

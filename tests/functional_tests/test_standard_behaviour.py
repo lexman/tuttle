@@ -3,6 +3,7 @@ from os.path import isfile
 
 from os import path
 from tests.functional_tests import isolate, run_tuttle_file
+from tuttle.tuttle_directories import TuttleDirectories
 
 
 class TestStandardBehaviour:
@@ -108,3 +109,57 @@ file://C <- file://B
         assert rcode == 0, output
         result = file('B').read().decode('utf8')
         assert result.find(u"du texte accentué") >= 0, result
+
+    @isolate(['A'])
+    def test_processes_paths(self):
+        """ After a process has run, former logs and reserved_path should have moved according to
+            the new name of the process
+        """
+        project = """file://B <- file://A
+        echo A produces B > B
+        echo A has produced B
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+
+        out_log = open(TuttleDirectories.tuttle_dir("processes", "logs", "tuttlefile_1_stdout.txt")).read()
+        assert out_log.find("A has produced B") > -1, out_log
+
+        out_log = open(TuttleDirectories.tuttle_dir("processes", "tuttlefile_1")).read()
+        assert out_log.find("echo A has produced B") > -1, out_log
+
+        project = """file://C <- file://A ! python
+    f = open('C', 'w')
+    f.write('A produces C')
+    print('echo A has produced C')
+
+file://B <- file://A
+        echo A produces B > B
+        echo A has produced B
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+
+        out_log = open(TuttleDirectories.tuttle_dir("processes", "logs", "tuttlefile_6_stdout.txt")).read()
+        assert out_log.find("A has produced B") > -1, out_log
+
+        out_log = open(TuttleDirectories.tuttle_dir("processes", "tuttlefile_6")).read()
+        assert out_log.find("echo A has produced B") > -1, out_log
+
+    @isolate(['A'])
+    def test_preprocesses_paths(self):
+        """ After a workflow has run, logs and reserved path from preprocesses should be available (from bug)
+        """
+        project = """file://B <- file://A
+    echo A produces B > B
+    echo A has produced B
+        
+|<<
+    echo Preprocess running
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+
+        out_log = open(TuttleDirectories.tuttle_dir("processes", "logs", "tuttlefile_5_stdout.txt")).read()
+        assert out_log.find("Preprocess running") > -1, out_log
+        assert isfile(TuttleDirectories.tuttle_dir("processes","tuttlefile_5"))
