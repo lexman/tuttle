@@ -53,6 +53,11 @@ def format_resource(resource, workflow):
 
 
 def workflow_status(workflow):
+    for process in workflow.iter_preprocesses():
+        if process.start and not process.end:
+            return "NOT_FINISHED"
+        if process.success is False:
+            return "PREPROCESS_FAILURE"
     for process in workflow.iter_processes():
         if process.start and not process.end:
             return "NOT_FINISHED"
