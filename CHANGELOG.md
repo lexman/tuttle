@@ -1,6 +1,22 @@
 New on Version 0.4
 ===
 
+## Parallelism
+Tuttle can now run several processes in parallel in respect to dependency order. For exemple,
+``tuttle run --jobs 2`` will run your workflow with two workers. Default is still 1.
+
+## Other
+  * Refactored invalidation in order to make it easier to reason about
+  * Two processes without outputs can't have exactly the same inputs because we can't make the difference between them
+  * running tuttle with a postgresql resource will fail before running processes if it can't connect to the database
+
+## Bug fixes
+  * invalidation is now coherent for a processes without outputs : once it have succeded, it won't run again
+
+
+New on Version 0.4
+===
+
 ## Parametric processes
 ... To describe a workflow according to a configuration file or a the content of a directory :
   * 'preprocesses' are run before the workflow is executed
