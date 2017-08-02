@@ -156,9 +156,9 @@ class Workflow:
                 except Exception:
                     exc_info = sys.exc_info()
                     stacktrace = "".join(format_exception(*exc_info))
-                    error_msg = "An unexpected error have happen in tuttle processor {} : \n" \
+                    error_msg = "An unexpected error have happen in tuttle preprocessor {} : \n" \
                                 "{}\n" \
-                                "Process {} will not complete.".format(process._processor.name, stacktrace, process.id)
+                                "Process {} will not complete.".format(preprocess._processor.name, stacktrace, preprocess.id)
                 finally:
                     preprocess.set_end(success, error_msg)
                     self.create_reports()
