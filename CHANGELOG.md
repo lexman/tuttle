@@ -1,17 +1,24 @@
-New on Version 0.4
+New on Version 0.5
 ===
 
 ## Parallelism
-Tuttle can now run several processes in parallel in respect to dependency order. For exemple,
+* Tuttle can now run several processes in parallel in respect to dependency order. For exemple,
 ``tuttle run --jobs 2`` will run your workflow with two workers. Default is still 1.
+* live logs : you don't need anymore to wait until a process is complete to see the logs anymore. As soon as a line is complete it is displayed.
+* with ``--keep-going`` option, ``tuttle run`` doesn't stop at first error but tries to process as much as it can. Thus multiple failures *can occur.
+
 
 ## Other
-  * Refactored invalidation in order to make it easier to reason about
+  * Major refactor of the invalidation system in order to make it easier to reason about
   * Two processes without outputs can't have exactly the same inputs because we can't make the difference between them
-  * running tuttle with a postgresql resource will fail before running processes if it can't connect to the database
+  * Error message in report for failing (pre-)processes
+  * Only one call to ``exists()`` per resource and per run, because checking if an external piece of exist can be long. Also ``signature()`` is call maximum once because it can be *very* long
 
 ## Bug fixes
   * invalidation is now coherent for a processes without outputs : once it have succeded, it won't run again
+  * fixed persistence of logs in the ``.tuttle`` directory when a process id changes (ie : when its position change in the tuttlefile)
+  * Running tuttle with a postgresql resource will fail with explaination before running processes if it can't connect to the database instead of saying that resources don't exists
+  * ```--threshold`` now take into account duration of processes that don't create outputs
 
 
 New on Version 0.4
