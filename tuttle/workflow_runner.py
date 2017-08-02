@@ -4,19 +4,15 @@
 Utility methods for use in running workflows.
 This module is responsible for the inner structure of the .tuttle directory
 """
-from glob import glob
 from multiprocessing import Pool, cpu_count
 import multiprocessing
-from shutil import rmtree
-from os import remove, makedirs, getcwd
-from os.path import join, isdir, isfile
+from os.path import abspath
 from traceback import format_exception
 
 from tuttle.error import TuttleError
-from tuttle.tuttle_directories import TuttleDirectories
 from tuttle.utils import EnvVar
 from tuttle.log_follower import LogsFollower
-from time import sleep, time
+from time import sleep
 import sys
 import logging
 import psutil
@@ -239,5 +235,5 @@ class TuttleEnv(EnvVar):
     Adds the 'TUTTLE_ENV' environment variable so subprocesses can find the .tuttle directory.
     """
     def __init__(self):
-        directory = join(getcwd(), '.tuttle')
+        directory = abspath('.tuttle')
         super(TuttleEnv, self).__init__('TUTTLE_ENV', directory)
