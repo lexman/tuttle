@@ -114,6 +114,9 @@
             {% endif %}
             {{ preprocess.id }}
             </h2>
+            {% if preprocess.error_message %}
+            <pre class="alert alert-danger" role="alert">{{ preprocess.error_message|escape }}</pre>
+            {% endif %}
             <div>
             Processor : <strong>{{preprocess.processor}}</strong>
             {% if preprocess.code %}

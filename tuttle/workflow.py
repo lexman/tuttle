@@ -1,4 +1,8 @@
 # -*- coding: utf8 -*-
+import sys
+from traceback import format_exception
+
+from tuttle.error import TuttleError
 from tuttle.report.html_repport import create_html_report
 from pickle import dump, load
 from tuttle.workflow_runner import WorkflowRuner, TuttleEnv
@@ -140,15 +144,23 @@ class Workflow:
             for preprocess in self.iter_preprocesses():
                 WorkflowRuner.print_preprocess_header(preprocess, lt._logger)
                 success = True
+                error_msg = None
                 try:
                     preprocess.set_start()
                     preprocess.processor.run(preprocess, preprocess._reserved_path,
                                              preprocess.log_stdout, preprocess.log_stderr)
-                except Exception:
+                except TuttleError as e:
                     success = False
+                    error_msg = str(e)
                     raise
+                except Exception:
+                    exc_info = sys.exc_info()
+                    stacktrace = "".join(format_exception(*exc_info))
+                    error_msg = "An unexpected error have happen in tuttle processor {} : \n" \
+                                "{}\n" \
+                                "Process {} will not complete.".format(process._processor.name, stacktrace, process.id)
                 finally:
-                    preprocess.set_end(success, None)
+                    preprocess.set_end(success, error_msg)
                     self.create_reports()
             WorkflowRuner.print_preprocesses_footer()
 
