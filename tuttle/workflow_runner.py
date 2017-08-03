@@ -110,6 +110,29 @@ class WorkflowRuner:
         process.set_start()
         resp = self._pool.apply_async(run_process_without_exception, [process], callback = process_run_callback)
 
+    def start_processes_on_available_workers(self, runnables):
+        started_a_process = False
+        while self.workers_available() and runnables:
+            # No error
+            process = runnables.pop()
+            self.start_process_in_background(process)
+            started_a_process = True
+        return started_a_process
+
+    def handle_completed_process(self, workflow, runnables, success_processes, failure_processes):
+        handled_completed_process = False
+        while self._completed_processes:
+            completed_process, signatures = self._completed_processes.pop()
+            if completed_process.success:
+                success_processes.append(completed_process)
+                workflow.update_signatures(signatures)
+                new_runnables = workflow.discover_runnable_processes(completed_process)
+                runnables.update(new_runnables)
+            else:
+                failure_processes.append(completed_process)
+            handled_completed_process = True
+        return handled_completed_process
+
     def run_parallel_workflow(self, workflow, keep_going=False):
         """ Runs a workflow by running every process in the right order
         :return: success_processes, failure_processes :
@@ -124,33 +147,26 @@ class WorkflowRuner:
         with self._lt.trace_in_background():
             self.init_workers()
             runnables = workflow.runnable_processes()
-            failures = False
-            while (keep_going or not failures) and (self.active_workers() or self._completed_processes or runnables):
-                started_a_process = False
-                while self.workers_available() and runnables:
-                    # No error
-                    process = runnables.pop()
-                    self.start_process_in_background(process)
-                    started_a_process = True
-
-                handled_completed_process = False
-                while self._completed_processes:
-                    completed_process, signatures = self._completed_processes.pop()
-                    if completed_process.success:
-                        success_processes.append(completed_process)
-                        workflow.update_signatures(signatures)
-                        new_runnables = workflow.discover_runnable_processes(completed_process)
-                        runnables.update(new_runnables)
-                    else:
-                        failure_processes.append(completed_process)
-                        failures = True
-                    handled_completed_process = True
-                if handled_completed_process:
+            while (keep_going or not failure_processes) and (self.active_workers() or self._completed_processes or runnables):
+                started_a_process = self.start_processes_on_available_workers(runnables)
+                handled_completed_process = self.handle_completed_process(workflow, runnables, success_processes, failure_processes)
+                if handled_completed_process or started_a_process:
                     workflow.dump()
                     workflow.create_reports()
-
-                if not (handled_completed_process or started_a_process):
+                else:
                     sleep(0.1)
+            if failure_processes and not keep_going:
+                self._logger.error("Process {} has failled".format(failure_processes[0].id))
+                self._logger.warn("Waiting for all processes already started to complete")
+                # self._logger.warn("Press ^C to stop everything.")
+                while self.active_workers():
+                    handled_completed_process = self.handle_completed_process(workflow, runnables, success_processes, failure_processes)
+                    if handled_completed_process or started_a_process:
+                        workflow.dump()
+                        workflow.create_reports()
+                    else:
+                        sleep(0.1)
+
             self.terminate_workers_and_clean_subprocesses()
         if failure_processes:
             WorkflowRuner.mark_unfinished_processes_as_failure(workflow)

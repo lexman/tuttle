@@ -127,24 +127,44 @@ class TestRunParallel:
 
     @isolate(['A'])
     def test_error_before_all_processes_complete(self):
-        """ When a process stops in error, all running processes whould be stopped right now and declared in error """
+        """ When a process stops in error, tuttle should wait for all running processes to complete and no
+            other process should be started """
         first = """file://B <- file://A
-    sleep 1
     echo A produces B > B
+    echo about to fail
     error
     
 file://C <- file://A
-    sleep 2
+    sleep 1
     echo A produces C > C
+    echo A have produced C
+
+file://D <- file://B
+    echo B produces D > D
+    echo B have produced D
         """
 
         rcode, output = run_tuttle_file(first, nb_workers=2)
         assert rcode == 2
         assert isfile('B')
-        assert not isfile('C')
+        assert isfile('C')
+
+        assert output.find("Process tuttlefile_1 has failled") > -1, output
+        assert output.find("Waiting for all processes already started to complete") > -1, output
+        assert output.find("A have produced C") > output.find("about to fail") > -1, output
+
         w = Workflow.load()
-        p = w.find_process_that_creates("file://C")
-        assert not p.success, "Process that creates C should be in error in the dump"
+        pC = w.find_process_that_creates("file://C")
+        assert pC.success, "Process that creates C should be succesfull in the dump"
+
+        pB = w.find_process_that_creates("file://B")
+        assert not pB.success, "Process that creates B should be in error in the dump"
+
+        assert not isfile('D'), output
+        assert output.find("A have produced D") == -1, output
+        pD = w.find_process_that_creates("file://D")
+        assert pD.start is None, "Process that creates D should not have run"
+
 
     def test_error_message_from_background_process(self):
         """ When the process fails, its success attribute should be false, and there should be an error message"""
@@ -209,3 +229,23 @@ file://C <- file://A
         assert process.error_message.find('Traceback (most recent call last):') >= 0, process.error_message
         assert process.error_message.find('raise Exception("Unexpected error in exists()")') >= 0, process.error_message
         assert process.error_message.find('Process cannot be considered complete.') >= 0, process.error_message
+
+#    @isolate(['A'])
+#    def test_keep_going_after_failure(self):
+#        """ Rerunning a workflow with -k after failure should process as much as it can """
+#        first = """file://B <- file://A
+#    echo A produces B > B
+#    error
+#
+#file://C <- file://A
+#    sleep 2
+#    echo A produces C > C
+#        """
+#
+#        rcode, output = run_tuttle_file(first, nb_workers=2)
+#        assert rcode == 2
+#        assert isfile('B')
+#        assert not isfile('C')
+#        w = Workflow.load()
+#        p = w.find_process_that_creates("file://C")
+#        assert not p.success, "Process that creates C should be in error in the dump"
