@@ -167,14 +167,13 @@ class InvalidCollector:
                         # Both process are the same
                         process.retrieve_execution_info(prev_process)
 
-    def straighten_out_availability(self, workflow):
-
+    def straighten_out_signatures(self, workflow):
         if self._previous_workflow:
-            workflow.retrieve_signatures_new(self._previous_workflow)
-        workflow.clear_availability(self.iter_urls())
+            workflow.retrieve_signatures(self._previous_workflow)
+        workflow.clear_signatures(self.iter_urls())
         failed = {resource.url for resource in workflow.iter_resources()
                   if resource.creator_process and resource.creator_process.success is False}
-        workflow.clear_availability(failed)
+        workflow.clear_signatures(failed)
         # Assert straight :
         for resource in workflow.iter_resources():
             assert workflow.signature(resource.url) != "DISCOVERED", resource.url

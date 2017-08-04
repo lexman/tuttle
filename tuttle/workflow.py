@@ -54,7 +54,7 @@ class Workflow:
         self._processes = []
         self._preprocesses = []
         self._resources = resources
-        self._available_resources = {}
+        self._signatures = {}
 
     def add_process(self, process):
         """ Adds a process
@@ -122,7 +122,7 @@ class Workflow:
         """ updates the workflow's signatures after the process has run
         :param signatures: a dictionary of signatures indexed by urls
         """
-        self._available_resources.update(signatures)
+        self._signatures.update(signatures)
 
     def run_pre_processes(self):
         """ Runs all the preprocesses
@@ -215,15 +215,15 @@ class Workflow:
                 resource.dependant_processes.append(process)
 
     def iter_available_signatures(self):
-        return self._available_resources.iteritems()
+        return self._signatures.iteritems()
 
-    def retrieve_signatures_new(self, previous):
+    def retrieve_signatures(self, previous):
         """ Retrieve the signatures from the former workflow. Useful to detect what has changed.
             Returns True if some resources where in previous and no longer exist in self
         """
         for url, signature in previous.iter_available_signatures():
-            if (url in self._available_resources) and (self._available_resources[url] == "DISCOVERED"):
-                self._available_resources[url] = signature
+            if (url in self._signatures) and (self._signatures[url] == "DISCOVERED"):
+                self._signatures[url] = signature
 
     def pick_a_failing_process(self):
         for process in self.iter_processes():
@@ -275,24 +275,24 @@ class Workflow:
         for resource in self._resources.itervalues():
             if resource.exists():
                 if resource.is_primary():
-                    self._available_resources[resource.url] = resource.signature()
+                    self._signatures[resource.url] = resource.signature()
                 else:
-                    self._available_resources[resource.url] = "DISCOVERED"
+                    self._signatures[resource.url] = "DISCOVERED"
 
     def signature(self, url):
         # TODO simplier with __get__ ?
-        if url in self._available_resources:
-            return self._available_resources[url]
+        if url in self._signatures:
+            return self._signatures[url]
         else:
             return None
 
     def resource_available(self, url):
-        return url in self._available_resources
+        return url in self._signatures
 
-    def clear_availability(self, urls):
+    def clear_signatures(self, urls):
         for url in urls:
-            if url in self._available_resources:
-                del self._available_resources[url]
+            if url in self._signatures:
+                del self._signatures[url]
 
     def fill_missing_availability(self):
         for url, signature in self.iter_available_signatures():
@@ -300,7 +300,7 @@ class Workflow:
                 print("Filling availability for {}".format(url))
                 resource = self.find_resource(url)
                 new_signature = resource.signature()
-                self._available_resources[url] = new_signature
+                self._signatures[url] = new_signature
 
     def similar_process(self, process_from_other_workflow):
         output_resource = process_from_other_workflow.pick_an_output()

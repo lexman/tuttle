@@ -109,7 +109,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going
     # because of resources that may not have been produced by tuttle
     inv_collector.remove_resources(workflow)
     #inv_collector.reset_execution_info()
-    inv_collector.straighten_out_availability(workflow)
+    inv_collector.straighten_out_signatures(workflow)
     TuttleDirectories.straighten_out_process_and_logs(workflow)
     workflow.create_reports()
     workflow.dump()
@@ -198,10 +198,9 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
             return 2
         else:
             print_lost_sec(inv_duration)
-        # availability has already been cleared in rep_for_inv
         inv_collector.remove_resources(workflow)
         inv_collector.reset_execution_info()
-        inv_collector.straighten_out_availability(workflow)
+        inv_collector.straighten_out_signatures(workflow)
     reseted_failures = workflow.reset_failures()
     if inv_collector.resources_to_invalidate() or reseted_failures:
         TuttleDirectories.straighten_out_process_and_logs(workflow)
