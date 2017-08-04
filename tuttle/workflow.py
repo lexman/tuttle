@@ -222,7 +222,7 @@ class Workflow:
             Returns True if some resources where in previous and no longer exist in self
         """
         for url, signature in previous.iter_available_signatures():
-            if url in self._available_resources and self._available_resources[url] is True:
+            if (url in self._available_resources) and (self._available_resources[url] == "DISCOVERED"):
                 self._available_resources[url] = signature
 
     def pick_a_failing_process(self):
@@ -277,7 +277,7 @@ class Workflow:
                 if resource.is_primary():
                     self._available_resources[resource.url] = resource.signature()
                 else:
-                    self._available_resources[resource.url] = "AVAILABLE"
+                    self._available_resources[resource.url] = "DISCOVERED"
 
     def signature(self, url):
         # TODO simplier with __get__ ?

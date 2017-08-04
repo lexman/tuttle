@@ -105,8 +105,6 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going
             print_lost_sec(inv_duration)
 
 
-    #if inv_collector.warn_and_abort_on_threshold(threshold):
-    #    return 2
     # We have to remove resources, even if there is no previous workflow,
     # because of resources that may not have been produced by tuttle
     inv_collector.remove_resources(workflow)
@@ -121,7 +119,6 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going
     if failure_processes:
         print_failures(failure_processes)
         return 2
-
 
     if success_processes:
         print_success()

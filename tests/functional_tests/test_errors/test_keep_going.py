@@ -70,6 +70,7 @@ file://H <- file://A
     echo A have produced H
     
 file://B <- file://A
+    echo A won't produce B
     echo A won't produce B > B
     echo about to fail
     error

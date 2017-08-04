@@ -84,7 +84,6 @@ class InvalidCollector:
         self._previous_processes.append(prev_process)
 
     def collect_process_and_available_outputs(self, workflow, process, reason):
-        print("{} - {}".format(process.id, reason))
         for resource in process.iter_outputs():
             if workflow.resource_available(resource.url):
                 self.collect_resource(resource, reason)
@@ -122,7 +121,7 @@ class InvalidCollector:
 
     def ensure_process_validity(self, workflow, process, invalidate_urls, invalidate_failures):
         if not process.start:
-            # Process hasn't run yet. So it can't produce valid outputs
+            # Process hasn't run yet. So it can't have produced valid outputs
             for resource in process.iter_outputs():
                 if workflow.resource_available(resource.url):
                     self.collect_resource(resource, NOT_PRODUCED_BY_TUTTLE)
@@ -169,11 +168,15 @@ class InvalidCollector:
                         process.retrieve_execution_info(prev_process)
 
     def straighten_out_availability(self, workflow):
+
         if self._previous_workflow:
             workflow.retrieve_signatures_new(self._previous_workflow)
         workflow.clear_availability(self.iter_urls())
         failed = {resource.url for resource in workflow.iter_resources()
                   if resource.creator_process and resource.creator_process.success is False}
         workflow.clear_availability(failed)
+        # Assert straight :
+        for resource in workflow.iter_resources():
+            assert workflow.signature(resource.url) != "DISCOVERED", resource.url
         # Not needed unless we make adding outputs more flexible
         # workflow.fill_missing_availability()

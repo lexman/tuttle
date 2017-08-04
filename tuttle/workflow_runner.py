@@ -159,17 +159,17 @@ class WorkflowRuner:
                 self._logger.error("Process {} has failled".format(failure_processes[0].id))
                 self._logger.warn("Waiting for all processes already started to complete")
                 # self._logger.warn("Press ^C to stop everything.")
-                while self.active_workers():
+                while self.active_workers() or self._completed_processes:
                     handled_completed_process = self.handle_completed_process(workflow, runnables, success_processes, failure_processes)
-                    if handled_completed_process or started_a_process:
+                    if handled_completed_process:
                         workflow.dump()
                         workflow.create_reports()
                     else:
                         sleep(0.1)
 
             self.terminate_workers_and_clean_subprocesses()
-        if failure_processes:
-            WorkflowRuner.mark_unfinished_processes_as_failure(workflow)
+#        if failure_processes:
+#            WorkflowRuner.mark_unfinished_processes_as_failure(workflow)
 
         return success_processes, failure_processes
 
