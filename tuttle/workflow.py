@@ -5,7 +5,7 @@ from traceback import format_exception
 from tuttle.error import TuttleError
 from tuttle.report.html_repport import create_html_report
 from pickle import dump, load
-from tuttle.workflow_runner import WorkflowRuner, TuttleEnv
+from tuttle.workflow_runner import WorkflowRunner, TuttleEnv
 from tuttle_directories import TuttleDirectories
 from tuttle.log_follower import LogsFollower
 
@@ -135,14 +135,14 @@ class Workflow:
         if not self.has_preprocesses():
             return
         lt = LogsFollower()
-        WorkflowRuner.print_preprocesses_header()
+        WorkflowRunner.print_preprocesses_header()
         for process in self.iter_preprocesses():
             TuttleDirectories.prepare_and_assign_paths(process)
             lt.follow_process(process.log_stdout, process.log_stderr, process.id)
 
         with lt.trace_in_background(), TuttleEnv():
             for preprocess in self.iter_preprocesses():
-                WorkflowRuner.print_preprocess_header(preprocess, lt._logger)
+                WorkflowRunner.print_preprocess_header(preprocess, lt._logger)
                 success = True
                 error_msg = None
                 try:
@@ -162,7 +162,7 @@ class Workflow:
                 finally:
                     preprocess.set_end(success, error_msg)
                     self.create_reports()
-            WorkflowRuner.print_preprocesses_footer()
+            WorkflowRunner.print_preprocesses_footer()
 
     def create_reports(self):
         """ Write to disk files describing the workflow, with color for states

@@ -5,7 +5,7 @@ from os.path import isfile
 from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.project_parser import ProjectParser
 from tuttle.tuttle_directories import TuttleDirectories
-from tuttle.workflow_runner import WorkflowRuner
+from tuttle.workflow_runner import WorkflowRunner
 
 
 class TestErrorInProcess:
@@ -126,7 +126,7 @@ file://D <- file://A
         workflow = pp.parse_extend_and_check_project()
         workflow.discover_resources()
         TuttleDirectories.straighten_out_process_and_logs(workflow)
-        wr = WorkflowRuner(3)
+        wr = WorkflowRunner(3)
         successes, failures = wr.run_parallel_workflow(workflow)
         assert failures, "Process should be marked as failed"
         assert failures[0].success is False, "Process should be marked as failed"

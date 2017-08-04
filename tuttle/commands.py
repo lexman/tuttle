@@ -3,7 +3,7 @@ from tuttle.invalidation import InvalidCollector
 from tuttle.project_parser import ProjectParser
 from tuttle.workflow import Workflow
 from tuttle.workflow_builder import WorkflowBuilder
-from tuttle.workflow_runner import WorkflowRuner
+from tuttle.workflow_runner import WorkflowRunner
 from tuttle_directories import TuttleDirectories
 from os.path import abspath
 
@@ -112,7 +112,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going
     workflow.create_reports()
     workflow.dump()
 
-    wr = WorkflowRuner(nb_workers)
+    wr = WorkflowRunner(nb_workers)
     success_processes, failure_processes = wr.run_parallel_workflow(workflow, keep_going)
     if failure_processes:
         print_failures(failure_processes)

@@ -5,7 +5,7 @@ from tests.test_project_parser import ProjectParser
 from tests.functional_tests import run_tuttle_file, isolate
 from tuttle.resources import FileResource
 from tuttle.tuttle_directories import TuttleDirectories
-from tuttle.workflow_runner import WorkflowRuner
+from tuttle.workflow_runner import WorkflowRunner
 from tuttle.workflow import Workflow
 from time import time, sleep
 
@@ -60,7 +60,7 @@ def run_first_process(one_process_workflow, extra_processor=None, extra_resource
     pp.set_project(one_process_workflow)
     workflow = pp.parse_extend_and_check_project()
     process = workflow._processes[0]
-    wr = WorkflowRuner(2)
+    wr = WorkflowRunner(2)
     wr.init_workers()
     try:
         TuttleDirectories.prepare_and_assign_paths(process)
@@ -80,7 +80,7 @@ class TestRunParallel:
 
     def test_workers(self):
         """Test the flow of using workers"""
-        wr = WorkflowRuner(4)
+        wr = WorkflowRunner(4)
         try:
             wr.init_workers()
             assert wr.workers_available() == 4
@@ -113,7 +113,7 @@ class TestRunParallel:
         workflow = pp.parse_extend_and_check_project()
         process = workflow._processes[0]
 
-        wr = WorkflowRuner(3)
+        wr = WorkflowRunner(3)
         wr.init_workers()
         try:
             wr.start_process_in_background(process)

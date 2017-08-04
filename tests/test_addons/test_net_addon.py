@@ -10,7 +10,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler
 from SocketServer import TCPServer
 
 from tuttle.tuttle_directories import TuttleDirectories
-from tuttle.workflow_runner import WorkflowRuner
+from tuttle.workflow_runner import WorkflowRunner
 
 
 class MockHTTPHandler(BaseHTTPRequestHandler):
@@ -145,7 +145,7 @@ class TestDownloadProcessor:
         workflow.static_check_processes()
         workflow.discover_resources()
         TuttleDirectories.straighten_out_process_and_logs(workflow)
-        wr = WorkflowRuner(3)
+        wr = WorkflowRunner(3)
         wr.run_parallel_workflow(workflow)
         assert isfile("google.html")
         content = open("google.html").read()
@@ -164,7 +164,7 @@ class TestDownloadProcessor:
         workflow.static_check_processes()
         workflow.discover_resources()
         TuttleDirectories.straighten_out_process_and_logs(workflow)
-        wr = WorkflowRuner(3)
+        wr = WorkflowRunner(3)
         wr.run_parallel_workflow(workflow)
         assert isfile("jquery.js"), "jquery.js is missing"
         logs = open(join(".tuttle", "processes", "logs", "__1_stdout.txt"), "r").read()

@@ -80,7 +80,7 @@ def run_process_without_exception(process):
     return True, None, signatures
 
 
-class WorkflowRuner:
+class WorkflowRunner:
 
     @staticmethod
     def resources2list(resources):
@@ -89,7 +89,7 @@ class WorkflowRuner:
 
     def __init__(self, nb_workers):
         self._lt = LogsFollower()
-        self._logger = WorkflowRuner.get_logger()
+        self._logger = WorkflowRunner.get_logger()
         self._pool = None
         if nb_workers == -1:
             self._nb_workers = int((cpu_count() + 1) / 2)

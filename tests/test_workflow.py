@@ -5,7 +5,7 @@ from tests.test_project_parser import ProjectParser
 from os import path
 
 from tuttle.tuttle_directories import TuttleDirectories
-from tuttle.workflow_runner import WorkflowRuner
+from tuttle.workflow_runner import WorkflowRunner
 
 
 class TestWorkflow():
@@ -75,7 +75,7 @@ file://file3 <- file://file1
             """)
         workflow.static_check_processes()
         workflow.discover_resources()
-        wr = WorkflowRuner(3)
+        wr = WorkflowRunner(3)
         TuttleDirectories.create_tuttle_dirs()
         TuttleDirectories.straighten_out_process_and_logs(workflow)
         successes, failures = wr.run_parallel_workflow(workflow)
