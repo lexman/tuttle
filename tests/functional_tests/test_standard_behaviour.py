@@ -145,12 +145,7 @@ file://B <- file://A
         assert out_log.find("A has produced B") > -1, out_log
 
         reserved_path = TuttleDirectories.tuttle_dir("processes", "tuttlefile_6")
-        if isdir(reserved_path):
-            script = TuttleDirectories.tuttle_dir("processes", "tuttlefile_6", "tuttlefile_6.bat")
-        else:
-            script = reserved_path
-        out_log = open(script).read()
-        assert out_log.find("echo A has produced B") > -1, out_log
+        assert exists(reserved_path)
 
     @isolate(['A'])
     def test_preprocesses_paths(self):
