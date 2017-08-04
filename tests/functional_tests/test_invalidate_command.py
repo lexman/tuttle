@@ -488,3 +488,84 @@ file://C <- file://B
         assert output.find("Nothing to do") >= 0, output
         assert output.find("Action") == -1, output
 
+    @isolate(['A'])
+    def test_changes_in_a_process_invalidates_depending_failing_process_on_run(self):
+        """ If a process failed, changing a process that it depends on should
+            invalidate it before running (from bug) """
+
+        first = """ file://B <- file://A
+    echo A produces B > B 
+
+file://C <- file://B
+    echo B produces invalid C
+    echo B produces invalid C > C
+    error
+"""
+        rcode, output = run_tuttle_file(first)
+        print output
+        assert rcode == 2, output
+
+        second = """file://B <- file://A
+    echo A produces another B > B 
+
+file://C <- file://B
+    echo B produces invalid C
+    echo B produces invalid C > C
+    error
+"""
+
+        rcode, output = run_tuttle_file(second)
+        assert rcode == 2, output
+        assert output.find("* file://B") >= 0, output
+        assert output.find("B produces invalid C") >= 0, output
+
+
+    @isolate(['A'])
+    def test_changes_in_a_process_invalidates_depending_failing_process_on_invalidate(self):
+        """ If a process failed, changing a process that it depends on should
+            invalidate it before running (from bug) """
+
+        first = """ file://B <- file://A
+    echo A produces B > B 
+
+file://C <- file://B
+    echo B produces invalid C
+    echo B produces invalid C > C
+    error
+"""
+        rcode, output = run_tuttle_file(first)
+        print output
+        assert rcode == 2, output
+
+        second = """file://B <- file://A
+    echo A produces another B > B 
+
+file://C <- file://B
+    echo B produces invalid C
+    echo B produces invalid C > C
+    error
+"""
+
+        rcode, output = run_tuttle_file(second)
+        assert rcode == 2, output
+        assert output.find("* file://B") >= 0, output
+        assert output.find("* file://C") >= 0, output
+
+    @isolate(['A'])
+    def test_changes_in_resource_invalidates_failing_process(self):
+        """ If a process failed, changing input should invalidate it before running (from bug) """
+
+        project = """ file://B <- file://A
+    echo A produces B > B 
+    error
+"""
+        rcode, output = run_tuttle_file(project)
+        print output
+        assert rcode == 2, output
+
+        open('A', 'w').write('modfified')
+
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2, output
+        assert output.find("* file://B") >= 0, output
+        assert output.find("Fix the process and run tuttle again") == -1, output

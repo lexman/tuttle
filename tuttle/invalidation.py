@@ -48,21 +48,10 @@ class InvalidCollector:
         duration_sum = sum( (process.end - process.start for process in all_processes if process.end is not None) )
         return int(duration_sum)
 
-    def warn_and_abort_on_threshold(self, threshold):
-        aborted = False
-        if self._resources_and_reasons:  # BETTER TEST NEEDED HERE
-            inv_duration = self.duration()
-            print("The following resources are not valid any more and will be removed :")
-            for resource, reason in self._resources_and_reasons:
-                print("* {} - {}".format(resource.url, reason))
-            if -1 < threshold <= inv_duration:
-                msg = "You were about to loose {} seconds of processing time (which exceeds the {} seconds " \
-                      "threshold). \nAborting... ".format(inv_duration, threshold)
-                print(msg)
-                aborted = True
-            else:
-                print("{} seconds of processing will be lost".format(inv_duration))
-        return aborted
+    def warn_remove_resoures(self):
+        print("The following resources are not valid any more and will be removed :")
+        for resource, reason in self._resources_and_reasons:
+            print("* {} - {}".format(resource.url, reason))
 
     def remove_resources(self, workflow):
         for resource, reason in self._resources_and_reasons:
@@ -95,12 +84,13 @@ class InvalidCollector:
         self._previous_processes.append(prev_process)
 
     def collect_process_and_available_outputs(self, workflow, process, reason):
+        print("{} - {}".format(process.id, reason))
         for resource in process.iter_outputs():
             if workflow.resource_available(resource.url):
                 self.collect_resource(resource, reason)
         self._processes.append(process)
 
-    def ensure_successful_process_validity(self, workflow, process, invalidate_urls):
+    def ensure_complete_process_validity(self, workflow, process, invalidate_urls):
         for input_resource in process.iter_inputs():
             if input_resource.is_primary():
                 if self._previous_workflow:
@@ -113,6 +103,9 @@ class InvalidCollector:
                 self.collect_process_and_available_outputs(workflow, process, reason)
                 # All outputs have been invalidated, no need to dig further
                 return
+        if process.success is False:
+            # Only inputs can invalidate a failing process
+            return
         for output_resource in process.iter_outputs():
             if output_resource.url in invalidate_urls:
                 self.collect_resource(output_resource, USER_REQUEST)
@@ -127,26 +120,27 @@ class InvalidCollector:
                 return
             # Could check for integrity here
 
-    def ensure_process_validity(self, workflow, process, invalidate_urls):
+    def ensure_process_validity(self, workflow, process, invalidate_urls, invalidate_failures):
         if not process.start:
             # Process hasn't run yet. So it can't produce valid outputs
             for resource in process.iter_outputs():
                 if workflow.resource_available(resource.url):
                     self.collect_resource(resource, NOT_PRODUCED_BY_TUTTLE)
         else:
-            if process.success is False:
+            # If process has run, we need to look deeper to check if everything is coherent
+            self.ensure_complete_process_validity(workflow, process, invalidate_urls)
+
+            if invalidate_failures and process.success is False:
                 # Process has failed. So it can't have produced valid outputs
                 for resource in process.iter_outputs():
                     if workflow.resource_available(resource.url):
                         self.collect_resource(resource, PROCESS_HAS_FAILED)
                         #  NB : we don't collect the process itself, in order to be able to check for failing processes
-            else:
-                # If process is in success, we need to look deeper to check if everything is coherent
-                self.ensure_successful_process_validity(workflow, process, invalidate_urls)
 
-    def insure_dependency_coherence(self, workflow, invalidate_urls):
+    def insure_dependency_coherence(self, workflow, invalidate_urls, invalidate_failures):
+        # Take care of failing processes
         for process in workflow.iter_processes_on_dependency_order():
-            self.ensure_process_validity(workflow, process, invalidate_urls)
+            self.ensure_process_validity(workflow, process, invalidate_urls, invalidate_failures)
 
     def retrieve_common_processes_form_previous(self, workflow):
         if not self._previous_workflow:
@@ -178,5 +172,8 @@ class InvalidCollector:
         if self._previous_workflow:
             workflow.retrieve_signatures_new(self._previous_workflow)
         workflow.clear_availability(self.iter_urls())
+        failed = {resource.url for resource in workflow.iter_resources()
+                  if resource.creator_process and resource.creator_process.success is False}
+        workflow.clear_availability(failed)
         # Not needed unless we make adding outputs more flexible
         # workflow.fill_missing_availability()

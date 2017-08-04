@@ -55,6 +55,20 @@ def print_updated():
     print("Report has been updated to reflect tuttlefile. See {}".format(report_url()))
 
 
+def print_earlier_failures():
+    print("Workflow has not succedded because of earlier failures.")
+
+
+def print_abort_on_threshold(inv_duration, threshold):
+    msg = "You were about to loose {} seconds of processing time (which exceeds the {} seconds " \
+          "threshold). \nAborting... ".format(inv_duration, threshold)
+    print(msg)
+
+
+def print_lost_sec(inv_duration):
+    print("{} seconds of processing will be lost".format(inv_duration))
+
+
 def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going=False):
     try:
         workflow = load_project(tuttlefile)
@@ -71,20 +85,32 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going
 
     inv_collector = InvalidCollector(previous_workflow)
     inv_collector.retrieve_common_processes_form_previous(workflow)
-    inv_collector.insure_dependency_coherence(workflow, [])
+    inv_collector.insure_dependency_coherence(workflow, [], False)
+
+    inv_duration = inv_collector.duration()  # compute duration before reset
+    inv_collector.reset_execution_info()  # Ensure invalid failure process are reseted
 
     failing_process = workflow.pick_a_failing_process()
-    if failing_process:
-        # check before invalidate
+    if failing_process and not keep_going:
+        # check before invalidatew
         print_failing_process(failing_process)
         return 2
 
-    if inv_collector.warn_and_abort_on_threshold(threshold):
-        return 2
+    if inv_collector._resources_and_reasons:  # BETTER TEST NEEDED HERE
+        inv_collector.warn_remove_resoures()
+        if -1 < threshold <= inv_duration:
+            print_abort_on_threshold(inv_duration, threshold)
+            return 2
+        else:
+            print_lost_sec(inv_duration)
+
+
+    #if inv_collector.warn_and_abort_on_threshold(threshold):
+    #    return 2
     # We have to remove resources, even if there is no previous workflow,
     # because of resources that may not have been produced by tuttle
     inv_collector.remove_resources(workflow)
-    inv_collector.reset_execution_info()
+    #inv_collector.reset_execution_info()
     inv_collector.straighten_out_availability(workflow)
     TuttleDirectories.straighten_out_process_and_logs(workflow)
     workflow.create_reports()
@@ -96,12 +122,19 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going
         print_failures(failure_processes)
         return 2
 
+
     if success_processes:
         print_success()
+        if failing_process:
+            print_earlier_failures()
+            return 2
     elif inv_collector.something_to_invalidate():
         print_updated()
     else:
         print_nothing_to_do()
+        if failing_process:
+            print_earlier_failures()
+            return 2
 
     return 0
 
@@ -158,11 +191,16 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
 
     inv_collector = InvalidCollector(previous_workflow)
     inv_collector.retrieve_common_processes_form_previous(workflow)
-    inv_collector.insure_dependency_coherence(workflow, to_invalidate)
+    inv_collector.insure_dependency_coherence(workflow, to_invalidate, True)
 
     if inv_collector.resources_to_invalidate():
-        if inv_collector.warn_and_abort_on_threshold(threshold):
+        inv_collector.warn_remove_resoures()
+        inv_duration = inv_collector.duration()  # compute duration before reset
+        if -1 < threshold <= inv_duration:
+            print_abort_on_threshold(inv_duration, threshold)
             return 2
+        else:
+            print_lost_sec(inv_duration)
         # availability has already been cleared in rep_for_inv
         inv_collector.remove_resources(workflow)
         inv_collector.reset_execution_info()
