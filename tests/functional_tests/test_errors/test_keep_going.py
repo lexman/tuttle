@@ -65,15 +65,16 @@ file://G <- file://A
     echo A produces G > G
     echo A have produced G
     
-file://H <- file://A
-    echo A produces H > H
-    echo A have produced H
-    
 file://B <- file://A
     echo A won't produce B
     echo A won't produce B > B
     echo about to fail
     error
+
+file://H <- file://A
+    echo A produces H > H
+    echo A have produced H
+    
 """
         rcode1, output1 = run_tuttle_file(project, nb_workers=1)
         assert rcode1 == 2, output1

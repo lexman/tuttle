@@ -92,7 +92,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going
 
     failing_process = workflow.pick_a_failing_process()
     if failing_process and not keep_going:
-        # check before invalidatew
+        # check before invalidate
         print_failing_process(failing_process)
         return 2
 
@@ -104,11 +104,9 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going
         else:
             print_lost_sec(inv_duration)
 
-
     # We have to remove resources, even if there is no previous workflow,
     # because of resources that may not have been produced by tuttle
     inv_collector.remove_resources(workflow)
-    #inv_collector.reset_execution_info()
     inv_collector.straighten_out_signatures(workflow)
     TuttleDirectories.straighten_out_process_and_logs(workflow)
     workflow.create_reports()
