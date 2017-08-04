@@ -126,8 +126,8 @@ file://C <- file://B
         assert out_log.find("A has produced B") > -1, out_log
 
         assert exists(TuttleDirectories.tuttle_dir("processes", "tuttlefile_1"))
-        #out_log = open(TuttleDirectories.tuttle_dir("processes", "tuttlefile_1")).read()
-        #assert out_log.find("echo A has produced B") > -1, out_log
+        # out_log = open(TuttleDirectories.tuttle_dir("processes", "tuttlefile_1")).read()
+        # assert out_log.find("echo A has produced B") > -1, out_log
 
         project = """file://C <- file://A ! python
     f = open('C', 'w')
@@ -145,7 +145,7 @@ file://B <- file://A
         assert out_log.find("A has produced B") > -1, out_log
 
         reserved_path = TuttleDirectories.tuttle_dir("processes", "tuttlefile_6")
-        if isdir(reserved_path ):
+        if isdir(reserved_path):
             script = TuttleDirectories.tuttle_dir("processes", "tuttlefile_6", "tuttlefile_6.bat")
         else:
             script = reserved_path
@@ -168,4 +168,4 @@ file://B <- file://A
 
         out_log = open(TuttleDirectories.tuttle_dir("processes", "logs", "tuttlefile_5_stdout.txt")).read()
         assert out_log.find("Preprocess running") > -1, out_log
-        assert exists(TuttleDirectories.tuttle_dir("processes","tuttlefile_5"))
+        assert exists(TuttleDirectories.tuttle_dir("processes", "tuttlefile_5"))
