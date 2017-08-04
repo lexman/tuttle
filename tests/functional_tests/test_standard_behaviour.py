@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from os.path import isfile, exists
+from os.path import isfile, exists, isdir
 
 from os import path
 from tests.functional_tests import isolate, run_tuttle_file
@@ -144,7 +144,12 @@ file://B <- file://A
         out_log = open(TuttleDirectories.tuttle_dir("processes", "logs", "tuttlefile_6_stdout.txt")).read()
         assert out_log.find("A has produced B") > -1, out_log
 
-        out_log = open(TuttleDirectories.tuttle_dir("processes", "tuttlefile_6")).read()
+        reserved_path = TuttleDirectories.tuttle_dir("processes", "tuttlefile_6")
+        if isdir(reserved_path ):
+            script = TuttleDirectories.tuttle_dir("processes", "tuttlefile_6", "tuttlefile_6.bat")
+        else:
+            script = reserved_path
+        out_log = open(script).read()
         assert out_log.find("echo A has produced B") > -1, out_log
 
     @isolate(['A'])
