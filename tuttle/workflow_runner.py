@@ -37,46 +37,45 @@ def output_signatures(process):
     return result
 
 
+ERROR_IN_PROCESS = "An unexpected error have happen in tuttle processor {processor_name} : \n" \
+                   "{stacktrace}\n" \
+                   "Process {process_id} will not complete."
+
+ERROR_IN_EXISTS = "An unexpected error have happen in tuttle while checking existence of output resources " \
+                  "after process {process_id} has run: \n" \
+                  "{stacktrace}\n" \
+                  "Process cannot be considered complete."
+
+MISSING_OUTPUT = "After execution of process {process_id} : these resources " \
+                 "should have been created : \n" \
+                 "{missing_outputs} "
+
+ERROR_IN_SIGNATURE = "An unexpected error have happen in tuttle while retrieving signature after process {process_id} has run: " \
+                     "\n{stacktrace}\n" \
+                     "Process cannot be considered complete."
+
+
 # This is a free method, because it will be serialized and passed
 # to another process, so it must not be linked to objects nor
 # capture closures
 def run_process_without_exception(process):
     multiprocessing.current_process().name = process.id
+    print_process_header(process, LOGGER)
+    error_msg = ERROR_IN_PROCESS
     try:
-        print_process_header(process, LOGGER)
         process.processor.run(process, process._reserved_path, process.log_stdout, process.log_stderr)
-    except TuttleError as e:
-        return False, str(e), None
-    except Exception:
-        exc_info = sys.exc_info()
-        stacktrace = "".join(format_exception(*exc_info))
-        error_msg = "An unexpected error have happen in tuttle processor {} : \n" \
-                    "{}\n" \
-                    "Process {} will not complete.".format(process.processor.name, stacktrace, process.id)
-        return False, error_msg, None
-    try:
+        error_msg = ERROR_IN_EXISTS
         missing_outputs = process.missing_outputs()
-    except Exception:
-        exc_info = sys.exc_info()
-        stacktrace = "".join(format_exception(*exc_info))
-        error_msg = "An unexpected error have happen in tuttle while checking existence of output resources " \
-                    "after process {} has run: \n" \
-                    "{}\n" \
-                    "Process cannot be considered complete.".format(process.id, stacktrace)
-        return False, error_msg, None
-    if missing_outputs:
-        msg = "After execution of process {} : these resources " \
-              "should have been created : \n{} ".format(process.id, resources2list(missing_outputs))
-        return False, msg, None
-    try:
+        if missing_outputs:
+            msg = MISSING_OUTPUT.format(process_id=process.id, missing_outputs=resources2list(missing_outputs))
+            return False, msg, None
+        error_msg = ERROR_IN_SIGNATURE
         signatures = output_signatures(process)
     except Exception:
         exc_info = sys.exc_info()
         stacktrace = "".join(format_exception(*exc_info))
-        error_msg = "An unexpected error have happen in tuttle while retrieving signature after process {} has run: " \
-                    "\n{}\n" \
-                    "Process cannot be considered complete.".format(process.id, stacktrace)
-        return False, error_msg, None
+        msg = error_msg.format(process_id=process.id, stacktrace=stacktrace, processor_name=process.processor.name)
+        return False, msg, None
     return True, None, signatures
 
 
