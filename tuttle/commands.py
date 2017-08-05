@@ -186,7 +186,7 @@ def invalidate_resources(tuttlefile, urls, threshold=-1):
 
     inv_collector = InvalidCollector(previous_workflow)
     inv_collector.retrieve_common_processes_form_previous(workflow)
-    inv_collector.insure_dependency_coherence(workflow, to_invalidate, True)
+    inv_collector.insure_dependency_coherence(workflow, to_invalidate, True, False)
 
     if inv_collector.resources_to_invalidate():
         inv_collector.warn_remove_resoures()
