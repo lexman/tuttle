@@ -9,10 +9,12 @@ NOT_SAME_INPUTS = "Resource was created with different inputs"
 PROCESS_HAS_CHANGED = "Process code has changed"
 PROCESSOR_HAS_CHANGED = "Processor has changed"
 RESOURCE_HAS_CHANGED = "Primary resource has changed"
+RESOURCE_INTEGRITY = "Resource has changed outside of tuttle"
 NOT_SAME_OUTPUTS = "Other outputs from same process have changed"
 DEPENDENCY_CHANGED = "Resource depends on {} that have changed"
 BROTHER_INVALID = "Resource is created along with {} that is invalid"
 BROTHER_MISSING = "Resource is created along with {} that is missing"
+BROTHER_INTEGRITY = "Resource is created along with {} that have changed outside of tuttle"
 
 # Is it a subscase of NOT_PRODUCED_BY_TUTTLE ?
 MUST_CREATE_RESOURCE = "The former primary resource has to be created by tuttle"
@@ -89,7 +91,7 @@ class InvalidCollector:
                 self.collect_resource(resource, reason)
         self._processes.append(process)
 
-    def ensure_complete_process_validity(self, workflow, process, invalidate_urls):
+    def ensure_complete_process_validity(self, workflow, process, invalidate_urls, check_integrity):
         for input_resource in process.iter_inputs():
             if input_resource.is_primary():
                 if self._previous_workflow:
@@ -117,9 +119,16 @@ class InvalidCollector:
                 self.collect_process_and_available_outputs(workflow, process, reason)
                 # All outputs have been invalidated, no need to dig further
                 return
+            elif check_integrity and not output_resource.is_primary() and \
+                    self._previous_workflow.signature(output_resource.url) != workflow.signature(output_resource.url):
+                self.collect_resource(output_resource, RESOURCE_INTEGRITY)
+                reason = BROTHER_INTEGRITY.format(output_resource.url)
+                self.collect_process_and_available_outputs(workflow, process, reason)
+                # All outputs have been invalidated, no need to dig further
+                return
             # Could check for integrity here
 
-    def ensure_process_validity(self, workflow, process, invalidate_urls, invalidate_failures):
+    def ensure_process_validity(self, workflow, process, invalidate_urls, invalidate_failures, check_integrity):
         if not process.start:
             # Process hasn't run yet. So it can't have produced valid outputs
             for resource in process.iter_outputs():
@@ -127,7 +136,7 @@ class InvalidCollector:
                     self.collect_resource(resource, NOT_PRODUCED_BY_TUTTLE)
         else:
             # If process has run, we need to look deeper to check if everything is coherent
-            self.ensure_complete_process_validity(workflow, process, invalidate_urls)
+            self.ensure_complete_process_validity(workflow, process, invalidate_urls, check_integrity)
 
             if invalidate_failures and process.success is False:
                 # Process has failed. So it can't have produced valid outputs
@@ -136,10 +145,10 @@ class InvalidCollector:
                         self.collect_resource(resource, PROCESS_HAS_FAILED)
                         #  NB : we don't collect the process itself, in order to be able to check for failing processes
 
-    def insure_dependency_coherence(self, workflow, invalidate_urls, invalidate_failures):
+    def insure_dependency_coherence(self, workflow, invalidate_urls, invalidate_failures, check_integrity):
         # Take care of failing processes
         for process in workflow.iter_processes_on_dependency_order():
-            self.ensure_process_validity(workflow, process, invalidate_urls, invalidate_failures)
+            self.ensure_process_validity(workflow, process, invalidate_urls, invalidate_failures, check_integrity)
 
     def retrieve_common_processes_form_previous(self, workflow):
         if not self._previous_workflow:

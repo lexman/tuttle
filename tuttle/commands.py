@@ -69,7 +69,7 @@ def print_lost_sec(inv_duration):
     print("{} seconds of processing will be lost".format(inv_duration))
 
 
-def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going=False):
+def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going=False, check_integrity=False):
     try:
         workflow = load_project(tuttlefile)
     except TuttleError as e:
@@ -85,7 +85,7 @@ def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going
 
     inv_collector = InvalidCollector(previous_workflow)
     inv_collector.retrieve_common_processes_form_previous(workflow)
-    inv_collector.insure_dependency_coherence(workflow, [], False)
+    inv_collector.insure_dependency_coherence(workflow, [], False, check_integrity)
 
     inv_duration = inv_collector.duration()  # compute duration before reset
     inv_collector.reset_execution_info()  # Ensure invalid failure process are reseted

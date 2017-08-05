@@ -49,9 +49,16 @@ def tuttle_main():
                             default=1,
                             type=check_minus_1_or_positive)
     parser_run.add_argument('-k', '--keep-going',
-                            help="Don't stop when a process fail : run all the processes you can \n",
+                            help="Don't stop when a process fail : run all the processes you can",
                             default=False,
                             dest='keep_going',
+                            action="store_true")
+    parser_run.add_argument('-i', '--check-integrity',
+                            help="Check integrity of all resources in case some have changed outside of tuttle.\n"
+                                 "Requires to compute signature of every resource produced by tuttle, which can "
+                                 "can be time consuming eg for big files or database tables.",
+                            default=False,
+                            dest='check_integrity',
                             action="store_true")
     parser_invalidate = subparsers.add_parser('invalidate', parents=[parent_parser],
                                               help='Remove some resources already computed and all their dependencies')
@@ -64,7 +71,7 @@ def tuttle_main():
         sys.exit(2)
     with CurrentDir(params.workspace):
         if params.command == 'run':
-            return parse_invalidate_and_run(tuttlefile_path, params.threshold, params.jobs, params.keep_going)
+            return parse_invalidate_and_run(tuttlefile_path, params.threshold, params.jobs, params.keep_going, params.check_integrity)
         elif params.command == 'invalidate':
             return invalidate_resources(tuttlefile_path, params.resources, params.threshold)
 

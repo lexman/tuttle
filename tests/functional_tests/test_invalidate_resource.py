@@ -454,3 +454,56 @@ file://C <- file://A
         assert output.find("file://C") >= 0, output
         assert output.find("A produces B") >= 0, output
         assert output.find("A produces C") >= 0, output
+
+    @isolate(['A'])
+    def test_change_a_resource(self):
+        """ If a resource (not primary) has changed outside tuttle, it should be invalidated if checking integrity"""
+        first = """file://C file://B <- file://A
+    echo A produces B
+    echo A produces B > B
+    echo A produces C
+    echo A produces C > C
+
+file://D <- file://C   
+    echo C produces D
+    echo C produces D > D
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+        assert path.exists('B')
+        assert path.exists('C')
+        with open('B', 'w') as f:
+            f.write('B has changed')
+
+        rcode, output = run_tuttle_file(first, check_integrity=True)
+        assert rcode == 0
+        assert output.find("file://B") >= 0, output
+        assert output.find("file://C") >= 0, output
+        assert output.find("file://D") >= 0, output
+        assert output.find("A produces B") >= 0, output
+        assert output.find("A produces C") >= 0, output
+        assert output.find("C produces D") >= 0, output
+
+    @isolate(['A'])
+    def test_change_a_resource(self):
+        """ Don't mind a resource (not primary) that have changed outside tuttle, if NOT checking integrity"""
+        first = """file://C file://B <- file://A
+    echo A produces B
+    echo A produces B > B
+    echo A produces C
+    echo A produces C > C
+
+file://D <- file://C   
+    echo C produces D
+    echo C produces D > D
+"""
+        rcode, output = run_tuttle_file(first)
+        assert rcode == 0, output
+        assert path.exists('B')
+        assert path.exists('C')
+        with open('B', 'w') as f:
+            f.write('B has changed')
+
+        rcode, output = run_tuttle_file(first, check_integrity=False)
+        assert rcode == 0
+        assert output.find("Nothing to do") >= 0, output
