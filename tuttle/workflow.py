@@ -178,6 +178,14 @@ class Workflow:
         with open(TuttleDirectories.tuttle_dir("last_workflow.pickle"), "w") as f:
             dump(self, f)
 
+    def export(self):
+        """ Export the workflow for external use : a dump for running tuttle later and a report for human users
+        :return: None
+        """
+        self.dump()
+        self.create_reports()
+
+
     @staticmethod
     def load():
         try:

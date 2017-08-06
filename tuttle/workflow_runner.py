@@ -159,8 +159,7 @@ class WorkflowRunner:
                     handled_completed_process = self.handle_completed_process(workflow, runnables,
                                                                               success_processes, failure_processes)
                     if handled_completed_process or started_a_process:
-                        workflow.dump()
-                        workflow.create_reports()
+                        workflow.export()
                     else:
                         sleep(0.1)
                 if failure_processes and not keep_going:
@@ -168,8 +167,7 @@ class WorkflowRunner:
                     self._logger.warn("Waiting for all processes already started to complete")
                 while self.active_workers() or self._completed_processes:
                     if self.handle_completed_process(workflow, runnables, success_processes, failure_processes):
-                        workflow.dump()
-                        workflow.create_reports()
+                        workflow.export()
                     else:
                         sleep(0.1)
             finally:
@@ -220,8 +218,7 @@ class WorkflowRunner:
             if process.start and not process.end:
                 error_msg = "This process was aborted"
                 process.set_end(False, error_msg)
-        workflow.dump()
-        workflow.create_reports()
+        workflow.export()
 
     @staticmethod
     def print_preprocess_header(process, logger):

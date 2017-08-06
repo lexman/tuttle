@@ -109,8 +109,7 @@ def run(tuttlefile, threshold=-1, nb_workers=-1, keep_going=False, check_integri
     inv_collector.remove_resources(workflow)
     inv_collector.straighten_out_signatures(workflow)
     TuttleDirectories.straighten_out_process_and_logs(workflow)
-    workflow.create_reports()
-    workflow.dump()
+    workflow.export()
 
     wr = WorkflowRunner(nb_workers)
     success_processes, failure_processes = wr.run_parallel_workflow(workflow, keep_going)
@@ -202,8 +201,7 @@ def invalidate(tuttlefile, urls, threshold=-1):
     reseted_failures = workflow.reset_failures()
     if inv_collector.resources_to_invalidate() or reseted_failures:
         TuttleDirectories.straighten_out_process_and_logs(workflow)
-        workflow.dump()
-        workflow.create_reports()
+        workflow.export()
 
     if not inv_collector.resources_to_invalidate():
         if reseted_failures or inv_collector.something_to_invalidate():
