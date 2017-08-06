@@ -1,8 +1,23 @@
 tuttle (0.5-1) UNRELEASED; urgency=medium
 
   * TBD...
+  * Run several processes in parallel with --jobs option.
+  * Live logs : as soon as a line is complete it is displayed.
+  * Don't stop at first error with --keep-going
+  * --check-integrity option validates that no resource have changed since tuttle have produced them
+  * Two processes without outputs can't have exactly the same inputs because we can't make the difference between them
+  * Error message in report for failing (pre-)processes
+  * Version in report and in dumps so we can remember with which tuttle the data was crafted
+  * Interrupting tuttle with ^C will set running processes in error as aborted
+  * Major refactoring of the invalidation system in order to make it easier to reason about
+  * Only one call to exists() per resource and per run and no more than one call to signature(), because those calls can be long
+  * Be sure to terminate every sub-process after running the workflow
+  * Invalidation is now coherent for a processes without outputs : once it have succeeded, it won't run again
+  * Fixed persistence of logs in the ``.tuttle`` directory when a process id changes (ie : when its position change in the tuttlefile)
+  * --threshold now take into account duration of processes that don't create outputs
+  * Running tuttle with a postgresql resource will fail with an explicit error message if it can't connect to the database instead of saying that resources don't exists
 
- -- Lexman <tuttle@lexman.org>  Thu, 07 Jun 2016 17:00:00 -0500
+ -- Lexman <tuttle@lexman.org>  Sun, 06 Jul 2017 17:00:00 +0200
 
 
 tuttle (0.4-1) UNRELEASED; urgency=medium
