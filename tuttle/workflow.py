@@ -8,7 +8,7 @@ from pickle import dump, load
 from tuttle.workflow_runner import WorkflowRunner, TuttleEnv
 from tuttle_directories import TuttleDirectories
 from tuttle.log_follower import LogsFollower
-
+from tuttle.version import version
 
 class ProcessDependencyIterator:
     """ Provides an iterator on processes according to dependency order"""
@@ -55,6 +55,7 @@ class Workflow:
         self._preprocesses = []
         self._resources = resources
         self._signatures = {}
+        self.tuttle_version = version
 
     def add_process(self, process):
         """ Adds a process
