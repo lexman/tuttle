@@ -1,12 +1,12 @@
 # -*- coding: utf8 -*-
 from tempfile import mkdtemp
-from shutil import rmtree, copytree, copy
+from shutil import copytree, copy
 from os.path import isdir, join, isfile
 from tests.functional_tests import isolate, run_tuttle_file
-from tuttle.commands import invalidate_resources
+from tuttle.commands import invalidate
 
-from tuttle.resources import FileResource
-import tuttle.resources
+from tuttle.resource import FileResource
+import tuttle.resource
 from os import path, listdir
 from tuttle.utils import CurrentDir
 
@@ -20,11 +20,12 @@ def copycontent(src, dst):
         else:
             copy(src_elmt, dst_elmt)
 
+
 class TestHttpResource():
 
     def test_real_resource_exists(self):
         """A real resource should exist"""
-        file_url = "file://{}".format(path.abspath(tuttle.resources.__file__))
+        file_url = "file://{}".format(path.abspath(tuttle.resource.__file__))
         res = FileResource(file_url)
         assert res.exists()
 
@@ -46,7 +47,7 @@ class TestHttpResource():
         copycontent('.', tmp_dir)
         assert isfile(join(tmp_dir, 'B'))
         with CurrentDir(tmp_dir):
-            invalidate_resources(join(tmp_dir, 'tuttlefile'), ['file://B'])
+            invalidate(join(tmp_dir, 'tuttlefile'), ['file://B'])
         assert isfile('B'), "File B in the origin project should still exist"
         assert not isfile(join(tmp_dir, 'B')), "File B in the copied project should have been removed"
 

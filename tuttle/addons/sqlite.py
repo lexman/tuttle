@@ -7,7 +7,7 @@ from os import remove
 from os.path import isfile
 from re import compile
 from tuttle.error import TuttleError
-from tuttle.resources import MalformedUrl, ResourceMixIn
+from tuttle.resource import MalformedUrl, ResourceMixIn
 from hashlib import sha1
 
 
@@ -41,16 +41,17 @@ class SQLiteProcessor:
         sqlite_file = self._get_sqlite_file(process)
         if sqlite_file is None:
             raise SQLiteTuttleError(
-                "SQLite processor needs at least a SQLite resource as input or output... Don't know which database to connect to !")
+                "SQLite processor needs at least a SQLite resource as input or output... "
+                "Don't know which database to connect to !")
 
     def run(self, process, reserved_path, log_stdout, log_stderr):
         sqlite_file = self._get_sqlite_file(process)
         db = sqlite3.connect(sqlite_file)
         with open(log_stdout, "w") as lout, open(log_stderr, "w") as lerr:
             try:
-                lout.write(process._code)
+                lout.write(process.code)
                 lout.write("\n")
-                db.executescript(process._code)
+                db.executescript(process.code)
             except OperationalError as e:
                 lerr.write(e.message)
                 lerr.write("\n")

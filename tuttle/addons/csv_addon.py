@@ -6,7 +6,7 @@ import codecs
 
 from tuttle.error import TuttleError
 from tuttle.addons.sqlite import SQLiteResource
-from tuttle.resources import ResourceMixIn, FileResource
+from tuttle.resource import ResourceMixIn, FileResource
 
 
 def strip_backstophes(st):

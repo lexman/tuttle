@@ -3,7 +3,7 @@ from os.path import isfile, abspath, exists
 
 from tests.test_project_parser import ProjectParser
 from tests.functional_tests import run_tuttle_file, isolate
-from tuttle.resources import FileResource
+from tuttle.resource import FileResource
 from tuttle.tuttle_directories import TuttleDirectories
 from tuttle.workflow_runner import WorkflowRunner
 from tuttle.workflow import Workflow

@@ -4,7 +4,7 @@ from re import compile
 
 from tuttle.addons.netutils import hostname_resolves
 from tuttle.error import TuttleError
-from tuttle.resources import ResourceMixIn, MalformedUrl
+from tuttle.resource import ResourceMixIn, MalformedUrl
 from tuttle.version import version
 from boto3.session import Session
 from botocore.exceptions import ClientError, BotoCoreError

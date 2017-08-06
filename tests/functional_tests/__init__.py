@@ -6,7 +6,7 @@ from os import getcwd, chdir
 from shutil import rmtree, copy
 from functools import wraps
 from os.path import join, dirname
-from tuttle.commands import parse_invalidate_and_run, invalidate_resources
+from tuttle.commands import run, invalidate
 
 try:
     from StringIO import StringIO
@@ -22,7 +22,7 @@ def run_tuttle_file(content=None, threshold=-1, nb_workers=-1, keep_going=False,
     out = StringIO()
     try:
         sys.stdout,sys.stderr = out, out
-        rcode = parse_invalidate_and_run('tuttlefile', threshold=threshold, nb_workers=nb_workers, keep_going=keep_going, check_integrity=check_integrity)
+        rcode = run('tuttlefile', threshold=threshold, nb_workers=nb_workers, keep_going=keep_going, check_integrity=check_integrity)
     finally:
         sys.stdout, sys.stderr = oldout, olderr
     return rcode, out.getvalue()
@@ -36,7 +36,7 @@ def tuttle_invalidate(project=None, urls=[]):
     out = StringIO()
     try:
         sys.stdout, sys.stderr = out, out
-        rcode = invalidate_resources('tuttlefile', urls)
+        rcode = invalidate('tuttlefile', urls)
     finally:
         sys.stdout, sys.stderr = oldout, olderr
     return rcode, out.getvalue()

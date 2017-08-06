@@ -69,7 +69,7 @@ def print_lost_sec(inv_duration):
     print("{} seconds of processing will be lost".format(inv_duration))
 
 
-def parse_invalidate_and_run(tuttlefile, threshold=-1, nb_workers=-1, keep_going=False, check_integrity=False):
+def run(tuttlefile, threshold=-1, nb_workers=-1, keep_going=False, check_integrity=False):
     try:
         workflow = load_project(tuttlefile)
     except TuttleError as e:
@@ -165,7 +165,7 @@ def filter_invalidable_urls(workflow, urls):
     return to_invalidate
 
 
-def invalidate_resources(tuttlefile, urls, threshold=-1):
+def invalidate(tuttlefile, urls, threshold=-1):
     resources = get_resources(urls)
     if resources is False:
         return 2

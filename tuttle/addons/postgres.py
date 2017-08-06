@@ -5,7 +5,7 @@ from re import compile
 
 from tuttle.addons.netutils import hostname_resolves
 from tuttle.error import TuttleError
-from tuttle.resources import MalformedUrl, ResourceMixIn
+from tuttle.resource import MalformedUrl, ResourceMixIn
 from hashlib import sha1
 import psycopg2
 

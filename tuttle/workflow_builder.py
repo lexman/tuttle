@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-from tuttle.resources import FileResource
+from tuttle.resource import FileResource
 from tuttle.processors import *
 from tuttle.process import Process
 from tuttle.addons.csv_addon import CSV2SQLiteProcessor

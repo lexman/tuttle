@@ -4,7 +4,7 @@
 import sys
 from os.path import abspath, exists
 from argparse import ArgumentParser, ArgumentTypeError
-from tuttle.commands import parse_invalidate_and_run, invalidate_resources
+from tuttle.commands import run, invalidate
 from tuttle.utils import CurrentDir
 from tuttle.version import version
 from tuttle.extend_workflow import extend_workflow, ExtendError, extract_variables
@@ -72,9 +72,9 @@ def tuttle_main():
             sys.exit(2)
         with CurrentDir(params.workspace):
             if params.command == 'run':
-                return parse_invalidate_and_run(tuttlefile_path, params.threshold, params.jobs, params.keep_going, params.check_integrity)
+                return run(tuttlefile_path, params.threshold, params.jobs, params.keep_going, params.check_integrity)
             elif params.command == 'invalidate':
-                return invalidate_resources(tuttlefile_path, params.resources, params.threshold)
+                return invalidate(tuttlefile_path, params.resources, params.threshold)
     except KeyboardInterrupt:
         print("Interrupted by user")
         sys.exit(2)

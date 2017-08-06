@@ -7,7 +7,7 @@ except ImportError:
     from urllib.request import urlopen, Request
     from urllib.error import URLError, HTTPError
 from tuttle.error import TuttleError
-from tuttle.resources import ResourceMixIn
+from tuttle.resource import ResourceMixIn
 from tuttle.version import version
 
 
