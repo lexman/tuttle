@@ -1,5 +1,8 @@
 # -*- coding: utf8 -*-
+import re
+from os.path import expanduser, exists
 
+from tuttle.error import TuttleError
 from tuttle.resource import FileResource
 from tuttle.processors import *
 from tuttle.process import Process
@@ -12,13 +15,75 @@ from tuttle.addons.sqlite import SQLiteProcessor, SQLiteResource
 import os
 
 
+
+class MalformedTuttlepassError(TuttleError):
+    pass
+
+
+def tuttlepass_file():
+    if 'TUTTLEPASSFILE' in os.environ:
+        return os.environ['TUTTLEPASSFILE']
+    else:
+        return expanduser('~/.tuttlepass')
+
+
+class ResourceAuthenticator:
+
+    def __init__(self, lines_reader):
+        self._rules = [rule for rule in ResourceAuthenticator.read_rules(lines_reader)]
+
+    def fill_rules(self, line_reader):
+        self._rules = [rule for rule in ResourceAuthenticator.read_rules(line_reader)]
+
+    def get_auth(self, url):
+        for regex, user, password in self._rules:
+            if regex.search(url):
+                return user, password
+        return None, None
+
+    @staticmethod
+    def empty_line(line):
+        for ch in line:
+            if ch != " " and ch != "\t" and ord(ch) != 10:
+                return False
+        return True
+
+    @staticmethod
+    def read_rules(file_in):
+        line_no = 1
+        try:
+            for line in file_in:
+                pos_sharp = line.find('#')
+                if pos_sharp > -1:
+                    line = line[:pos_sharp].strip()
+                else:
+                    line = line.strip()
+                if not ResourceAuthenticator.empty_line(line):
+                    url_regex, user, password = line.split("\t")
+                    yield (re.compile(url_regex), user, password)
+                line_no += 1
+        except:
+            msg = "Parse error on tuttlepass file at line {}".format(line_no)
+            raise MalformedTuttlepassError(msg)
+
+
 class WorkflowBuilder():
     """A helper class to build Process classes from the name of processors and resources"""
     
     def __init__(self):
         self._resources_definition = {}
         self._processors = {}
+        self._resource_authenticator = None
+        self.init_resource_authenticator()
         self.init_resources_and_processors()
+
+    def init_resource_authenticator(self):
+        pass_file = tuttlepass_file()
+        if exists(pass_file):
+            with open(tuttlepass_file()) as f:
+                self._resource_authenticator = ResourceAuthenticator(f)
+        else:
+            self._resource_authenticator = ResourceAuthenticator([])
 
     def init_resources_and_processors(self):
         self._resources_definition['file'] = FileResource
@@ -64,7 +129,10 @@ class WorkflowBuilder():
         if self.url_is_empty(url):
             return None
         ResDefClass = self._resources_definition[scheme]
-        return ResDefClass(url)
+        resource = ResDefClass(url)
+        user, password = self._resource_authenticator.get_auth(url)
+        resource.set_authentication(user, password)
+        return resource
     
     def build_process(self, processor, file_name, line_num):
         if processor in self._processors:
