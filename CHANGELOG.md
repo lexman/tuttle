@@ -17,13 +17,15 @@ New on Version 0.5
 ## Internals
   * Major refactoring of the invalidation system in order to make it easier to reason about
   * Only one call to ``exists()`` per resource and per run, because checking if an external piece of exist can be long. Also ``signature()`` is call maximum once because it can be *very* long
+  * Be sure to terminate every process that might have been created by processors after running the workflow
 
 ## Bug fixes
   * Invalidation is now coherent for a processes without outputs : once it have succeeded, it won't run again
   * Fixed persistence of logs in the ``.tuttle`` directory when a process id changes (ie : when its position change in the tuttlefile)
-  * Running tuttle with a postgresql resource will fail with explaination before running processes if it can't connect to the database instead of saying that resources don't exists
   * ```--threshold`` now take into account duration of processes that don't create outputs
 
+## Resources and processors
+  * Running tuttle with a postgresql resource will fail if it can't connect to the database instead of saying that resources don't exists, but with an explicit error message
 
 New on Version 0.4
 ===
