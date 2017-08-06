@@ -38,7 +38,6 @@ tuttle_description = {
     'packages': [
         'tuttle',
         'tuttle.report',
-        'tuttle.resources',
         'tuttle.processors',
         'tuttle.addons',
     ],
