@@ -9,6 +9,8 @@ import multiprocessing
 from os.path import abspath
 from traceback import format_exception
 
+from psutil import NoSuchProcess
+
 from tuttle.error import TuttleError
 from tuttle.utils import EnvVar
 from tuttle.log_follower import LogsFollower
@@ -50,8 +52,8 @@ MISSING_OUTPUT = "After execution of process {process_id} : these resources " \
                  "should have been created : \n" \
                  "{missing_outputs} "
 
-ERROR_IN_SIGNATURE = "An unexpected error have happen in tuttle while retrieving signature after process {process_id} has run: " \
-                     "\n{stacktrace}\n" \
+ERROR_IN_SIGNATURE = "An unexpected error have happen in tuttle while retrieving signature after " \
+                     "process {process_id} has run: \n{stacktrace}\n" \
                      "Process cannot be considered complete."
 
 
@@ -75,6 +77,10 @@ def run_process_without_exception(process):
         exc_info = sys.exc_info()
         stacktrace = "".join(format_exception(*exc_info))
         msg = error_msg.format(process_id=process.id, stacktrace=stacktrace, processor_name=process.processor.name)
+        return False, msg, None
+    except KeyboardInterrupt:
+        LOGGER.error("Process {} aborted by user".format(process.id))
+        msg = "Process {} aborted by user".format(process.id)
         return False, msg, None
     return True, None, signatures
 
@@ -144,32 +150,31 @@ class WorkflowRunner:
 
         failure_processes, success_processes = [], []
         with self._lt.trace_in_background():
-            self.init_workers()
             runnables = workflow.runnable_processes()
-            while (keep_going or not failure_processes) and \
-                    (self.active_workers() or self._completed_processes or runnables):
-                started_a_process = self.start_processes_on_available_workers(runnables)
-                handled_completed_process = self.handle_completed_process(workflow, runnables,
-                                                                          success_processes, failure_processes)
-                if handled_completed_process or started_a_process:
-                    workflow.dump()
-                    workflow.create_reports()
-                else:
-                    sleep(0.1)
-            if failure_processes and not keep_going:
-                self._logger.error("Process {} has failled".format(failure_processes[0].id))
-                self._logger.warn("Waiting for all processes already started to complete")
-                # self._logger.warn("Press ^C to stop everything.")
-                while self.active_workers() or self._completed_processes:
+            self.init_workers()
+            try:
+                while (keep_going or not failure_processes) and \
+                        (self.active_workers() or self._completed_processes or runnables):
+                    started_a_process = self.start_processes_on_available_workers(runnables)
                     handled_completed_process = self.handle_completed_process(workflow, runnables,
                                                                               success_processes, failure_processes)
-                    if handled_completed_process:
+                    if handled_completed_process or started_a_process:
                         workflow.dump()
                         workflow.create_reports()
                     else:
                         sleep(0.1)
-
-            self.terminate_workers_and_clean_subprocesses()
+                if failure_processes and not keep_going:
+                    self._logger.error("Process {} has failled".format(failure_processes[0].id))
+                    self._logger.warn("Waiting for all processes already started to complete")
+                while self.active_workers() or self._completed_processes:
+                    if self.handle_completed_process(workflow, runnables, success_processes, failure_processes):
+                        workflow.dump()
+                        workflow.create_reports()
+                    else:
+                        sleep(0.1)
+            finally:
+                self.terminate_workers_and_clean_subprocesses()
+                self.mark_unfinished_processes_as_failure(workflow)
 
         return success_processes, failure_processes
 
@@ -188,7 +193,10 @@ class WorkflowRunner:
 
         # Then terminate subprocesses that have not been terminated
         for p in sub_procs:
-            p.terminate()
+            try:
+                p.terminate()
+            except NoSuchProcess:
+                pass
         gone, still_alive = psutil.wait_procs(sub_procs, timeout=2)
         for p in still_alive:
             p.kill()
@@ -210,7 +218,7 @@ class WorkflowRunner:
     def mark_unfinished_processes_as_failure(workflow):
         for process in workflow.iter_processes():
             if process.start and not process.end:
-                error_msg = "This process was canceled because another process has failed"
+                error_msg = "This process was aborted"
                 process.set_end(False, error_msg)
         workflow.dump()
         workflow.create_reports()
