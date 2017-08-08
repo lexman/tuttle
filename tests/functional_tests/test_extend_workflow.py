@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-from subprocess import Popen, PIPE, check_output, CalledProcessError
-from os.path import isfile, dirname, abspath, join
+from subprocess import check_output, CalledProcessError
+from os.path import isfile, join
 
-from os import path, environ, getcwd, mkdir
+from os import mkdir
 from tests.functional_tests import isolate, run_tuttle_file
 from shlex import split
-from pipes import quote
 from tuttle.extend_workflow import extract_variables, load_template
 from tuttle.utils import CurrentDir
 from tuttle.workflow_runner import TuttleEnv
@@ -114,22 +113,22 @@ class TestExtendWorkflow:
     def test_extract_variable_an_array(self):
         """  simple array should be constructed from the args"""
         args = ['inputs[]=A', 'B']
-        vars = extract_variables(args)
-        assert isinstance(vars, dict), type(vars)
-        assert len(vars) == 1, vars
-        assert isinstance(vars['inputs'], list), type(vars['inputs'])
-        assert vars['inputs'] == ['A', 'B'], vars['inputs']
+        variables = extract_variables(args)
+        assert isinstance(variables, dict), type(variables)
+        assert len(variables) == 1, variables
+        assert isinstance(variables['inputs'], list), type(variables['inputs'])
+        assert variables['inputs'] == ['A', 'B'], variables['inputs']
 
     def test_extract_variable_multiple(self):
         """  a complex extract variable case should work """
         args = ['inputs[]=A', 'B', 'C', 'foo=bar']
         variables = extract_variables(args)
-        expected = {'inputs' : ['A', 'B', 'C'], 'foo' : 'bar'}
+        expected = {'inputs': ['A', 'B', 'C'], 'foo' : 'bar'}
         assert variables == expected, variables
 
     @isolate(['A', 'everything-produces-result.tuttle'])
     def test_variable_array(self):
-        """tuttle-extend-workflow can have parameters setting an array for a variable"""
+        """tuttle-extend-workflow can have parameters setting and array for a variable"""
         try:
             output = self.run_extend_workflow('everything-produces-result.tuttle inputs[]=A B C foo=bar')
         except CalledProcessError as e:
