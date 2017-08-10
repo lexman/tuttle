@@ -1,9 +1,8 @@
 # -*- coding: utf8 -*-
-from shutil import rmtree
-
-from os.path import abspath, exists, isfile
-from os import remove
 from hashlib import sha1
+from os import remove
+from os.path import abspath, exists, isfile
+from shutil import rmtree
 from tuttle.error import TuttleError
 
 
@@ -17,6 +16,12 @@ class ResourceMixIn:
     def __init__(self, url):
         self.url = url
         self.creator_process = None
+        self._user = None
+        self._password = None
+
+    def set_authentication(self, user, password):
+        self._user = user
+        self._password = password
 
     def set_creator_process(self, process):
         self.creator_process = process
@@ -61,19 +66,19 @@ class FileResource(ResourceMixIn, object):
         return exists(self._get_path())
 
     def signature(self):
-        sha1 = None
+        res_sha1 = None
         try:
             with open(self._get_path()) as f:
-                sha1 = hash_file(f)
+                res_sha1 = hash_file(f)
         except IOError:
             pass
-        return "sha1:{}".format(sha1)
+        return "sha1:{}".format(res_sha1)
 
     def remove(self):
         path = self._get_path()
         if isfile(path):
             remove(path)
         else:
-            #directory
+            # directory
             rmtree(path)
         # TODO what about links ?
