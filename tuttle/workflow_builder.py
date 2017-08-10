@@ -62,6 +62,13 @@ class ResourceAuthenticator:
                     url_regex, user, password = line.split("\t")
                     yield (re.compile(url_regex), user, password)
                 line_no += 1
+        except re.error:
+            msg = "Parse error on regular expression in tuttlepass file at line {}".format(line_no)
+            raise MalformedTuttlepassError(msg)
+        except ValueError:
+            msg = "Parse error on tuttlepass file at line {} : wrong number of fields (3 expected). Or maybe they are " \
+                  "not separated by tabs".format(line_no)
+            raise MalformedTuttlepassError(msg)
         except:
             msg = "Parse error on tuttlepass file at line {}".format(line_no)
             raise MalformedTuttlepassError(msg)

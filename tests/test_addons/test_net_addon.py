@@ -2,6 +2,9 @@
 
 import re
 from os.path import isfile, join
+
+from nose.plugins.skip import Skip, SkipTest
+
 from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.error import TuttleError
 from tuttle.project_parser import ProjectParser
@@ -21,7 +24,29 @@ class MockHTTPHandler(BaseHTTPRequestHandler):
     Useful both for running tests offline and for not depending on some external change
     """
 
+    def log_message(self, format, *args):
+        # Don't log
+        return
+
     def do_GET(self):
+        if self.path == "/protected_resource":
+            auth = self.headers.get('Authorization', False)
+            if auth:
+                self.send_response(200, "OK")
+                self.send_header('Content-type', 'text/plain')
+                self.send_header('Etag', auth)
+                self.end_headers()
+                self.wfile.write("Authentication provided : {}".format(auth))
+            else:
+                self.send_response(401, "Authentication required")
+                self.send_header('WWW-Authenticate', 'BASIC realm="foo"')
+                self.end_headers()
+                self.wfile.write("Please provide user and password in BASIC authentication")
+        if self.path == "/unavailable_protected_resource":
+            self.send_response(401, "Authentication required")
+            self.send_header('WWW-Authenticate', 'BASIC realm="foo"')
+            self.end_headers()
+            self.wfile.write("Please provide user and password in BASIC authentication")
         if self.path == "/resource_with_etag":
             self.send_response(200, "OK")
             self.send_header('Etag', 'my_etag')
@@ -94,6 +119,8 @@ class TestHttpResource():
         """ An HTTPResource with an Etag should use it as signature """
         res = HTTPResource("http://www.example.com/")
         sig = res.signature()
+        if sig is False:
+            raise SkipTest()
         assert sig.find('Etag:') >= 0, sig
         assert sig.find('359670651') >= 0, sig
 
@@ -104,11 +131,24 @@ class TestHttpResource():
         sig = res.signature()
         assert sig == 'Last-Modified: Tue, 30 Jun 1981 03:14:59 GMT', sig
 
-    def test_ressource_signature_without_etag_nor_last_modified(self):
-        """ An HTTPResource signature should be a hash of the beginning of the file if we can't rely on headers """
-        res = HTTPResource("http://localhost:8042/resource_without_version")
+    def test_ressource_with_authentication(self):
+        """ Provided authentication should be used to access an http resource """
+        res = HTTPResource("http://localhost:8042/protected_resource")
+        res.set_authentication("user", "password")
+        assert res.exists(), "http://localhost:8042/protected_resource should exists"
         sig = res.signature()
-        assert sig == 'sha1-32K: 7ab4a6c6ca8bbcb3de82530797a0e455070e18fa', sig
+        assert sig == 'Etag: Basic dXNlcjpwYXNzd29yZA==', sig
+
+    def test_ressource_with_bad_authentication(self):
+        """ Wrong authentication should make tuttle fail """
+        res = HTTPResource("http://localhost:8042/unavailable_protected_resource")
+        res.set_authentication("user", "password")
+        try:
+            res.exists()
+            assert False, "http://localhost:8042/unavailable_protected_resource is not meant to be available"
+        except TuttleError as e:
+            assert True
+
 
 class TestHttpsResource:
 

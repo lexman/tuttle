@@ -36,7 +36,7 @@ http://g[ithub.com/\tuser\tpassword
             auth = ResourceAuthenticator(passfile)
             assert False, "should not be here"
         except MalformedTuttlepassError as e:
-            assert e.message == "Parse error on tuttlepass file at line 2"
+            assert e.message.find("Parse error on regular expression") > -1, e.message
 
     def test_field_missing(self):
         rules = """        
@@ -47,7 +47,7 @@ http://github.com/\tuser
             auth = ResourceAuthenticator(passfile)
             assert False, "should not be here"
         except MalformedTuttlepassError as e:
-            assert e.message == "Parse error on tuttlepass file at line 2"
+            assert e.message.find("wrong number of fields") > -1, e.message
 
     def test_two_many_fields(self):
         rules = """        
@@ -58,7 +58,7 @@ http://github.com/\tuser\tpassword\textra
             auth = ResourceAuthenticator(passfile)
             assert False, "should not be here"
         except MalformedTuttlepassError as e:
-            assert e.message == "Parse error on tuttlepass file at line 2"
+            assert e.message.find("wrong number of fields") > -1, e.message
 
     def test_comment_is_allowed(self):
         """ When there is a comment, spaces before # are not considered as part of the password """

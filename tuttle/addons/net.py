@@ -2,7 +2,8 @@
 
 from hashlib import sha1
 try:
-    from urllib2 import urlopen, Request, URLError, HTTPError
+    from urllib2 import urlopen, Request, URLError, HTTPError, HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler, \
+    build_opener, install_opener
 except ImportError:
     from urllib.request import urlopen, Request
     from urllib.error import URLError, HTTPError
@@ -18,9 +19,19 @@ USER_AGENT = "tuttle/{}".format(version)
 class HTTPResource(ResourceMixIn, object):
     """An HTTP resource"""
     scheme = 'http' # Also https...
+    password_manager = None  # Singleton
 
     def __init__(self, url):
         super(HTTPResource, self).__init__(url)
+
+    def set_authentication(self, user, password):
+        super(HTTPResource, self).set_authentication(user, password)
+        if not HTTPResource.password_manager:
+            HTTPResource.password_manager = HTTPPasswordMgrWithDefaultRealm()
+            auth_handler = HTTPBasicAuthHandler(HTTPResource.password_manager)
+            opener = build_opener(auth_handler)
+            install_opener(opener)
+        HTTPResource.password_manager.add_password(None, self.url, user, password)
 
     def exists(self):
         try:
@@ -28,8 +39,18 @@ class HTTPResource(ResourceMixIn, object):
             req = Request(self.url, headers=headers)
             response = urlopen(req)
             some_data = response.read(0)
-        except (URLError, HTTPError):
-            return False
+        except HTTPError as e:
+            if e.code == 404:
+                return False
+            elif e.code == 401:
+                msg = "Can't access {} because a password is needed. Configure a .tuttlepass file to set " \
+                      "authentication for this resource".format(self.url)
+                raise TuttleError(msg)
+            else:
+                msg = "An error occured while accessing {} : \n{}".format(self.url, str(e))
+                raise TuttleError(msg)
+        except URLError:
+            raise
         return True
 
     def remove(self):
