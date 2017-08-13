@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 import re
-from os.path import expanduser, exists
+from os.path import expanduser, exists, join
 
 from tuttle.error import TuttleError
 from tuttle.resource import FileResource
@@ -24,7 +24,7 @@ def tuttlepass_file():
     if 'TUTTLEPASSFILE' in os.environ:
         return os.environ['TUTTLEPASSFILE']
     else:
-        return expanduser('~/.tuttlepass')
+        return expanduser(join('~', '.tuttlepass'))
 
 
 class ResourceAuthenticator:
