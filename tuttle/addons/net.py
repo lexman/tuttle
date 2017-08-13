@@ -26,12 +26,13 @@ class HTTPResource(ResourceMixIn, object):
 
     def set_authentication(self, user, password):
         super(HTTPResource, self).set_authentication(user, password)
-        if not HTTPResource.password_manager:
-            HTTPResource.password_manager = HTTPPasswordMgrWithDefaultRealm()
-            auth_handler = HTTPBasicAuthHandler(HTTPResource.password_manager)
-            opener = build_opener(auth_handler)
-            install_opener(opener)
-        HTTPResource.password_manager.add_password(None, self.url, user, password)
+        if self.url.startswith("http"):
+            if not HTTPResource.password_manager:
+                HTTPResource.password_manager = HTTPPasswordMgrWithDefaultRealm()
+                auth_handler = HTTPBasicAuthHandler(HTTPResource.password_manager)
+                opener = build_opener(auth_handler)
+                install_opener(opener)
+            HTTPResource.password_manager.add_password(None, self.url, user, password)
 
     def exists(self):
         try:
@@ -49,8 +50,10 @@ class HTTPResource(ResourceMixIn, object):
             else:
                 msg = "An error occured while accessing {} : \n{}".format(self.url, str(e))
                 raise TuttleError(msg)
-        except URLError:
-            raise
+        except URLError as e:
+            # return False
+            msg = "An error occured while accessing {} : \n{}".format(self.url, str(e))
+            raise TuttleError(msg)
         return True
 
     def remove(self):
