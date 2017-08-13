@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
-
 import re
-from os.path import isfile, join
+import socket
+from os.path import isfile, join, dirname
 
 from nose.plugins.skip import Skip, SkipTest
 
@@ -14,6 +14,7 @@ from SocketServer import TCPServer
 
 from tuttle.tuttle_directories import TuttleDirectories
 from tuttle.workflow_runner import WorkflowRunner
+from tuttle import report
 
 
 class MockHTTPHandler(BaseHTTPRequestHandler):
@@ -23,6 +24,23 @@ class MockHTTPHandler(BaseHTTPRequestHandler):
     * Neither
     Useful both for running tests offline and for not depending on some external change
     """
+
+    viz = join(dirname(report.__file__), 'html_report_assets', 'viz.js')
+
+    def handle(self):
+        try:
+            BaseHTTPRequestHandler.handle(self)
+        except socket.error:
+            pass
+
+    def finish(self, *args, **kw):
+        try:
+            if not self.wfile.closed:
+                self.wfile.flush()
+                self.wfile.close()
+        except socket.error:
+            pass
+        self.rfile.close()
 
     def log_message(self, format, *args):
         # Don't log
@@ -64,10 +82,19 @@ class MockHTTPHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/plain')
             self.end_headers()
             self.wfile.write("This resource has no version information")
+        if self.path == "/huge_resource.js":
+            self.send_response(200, "OK")
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            with open(self.viz) as f:
+                content = f.read()
+                try:
+                    self.wfile.write(content)
+                except Exception:
+                    pass
 
 
-
-class TestHttpResource():
+class TestHttpResource:
 
     httpd = None
     p = None
@@ -175,6 +202,29 @@ class TestHttpsResource:
 
 class TestDownloadProcessor:
 
+    httpd = None
+    p = None
+
+    @classmethod
+    def run_server(cls):
+        cls.httpd = TCPServer(("", 8043), MockHTTPHandler)
+        cls.httpd.serve_forever()
+
+    @classmethod
+    def setUpClass(cls):
+        """ Run a web server in background to mock some specific HTTP behaviours
+        """
+        from threading import Thread
+        cls.p = Thread(target=cls.run_server)
+        cls.p.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        """ Stop the http server in background
+        """
+        cls.httpd.shutdown()
+        cls.p.join()
+
     @isolate
     def test_standard_download(self):
         """Should download a simple url"""
@@ -197,7 +247,7 @@ class TestDownloadProcessor:
     @isolate
     def test_long_download(self):
         """ Progress dots should appear in the logs in a long download"""
-        project = " file://jquery.js <- http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js ! download"
+        project = " file://huge_resource.js <- http://localhost:8043/huge_resource.js ! download"
         pp = ProjectParser()
         pp.set_project(project)
         workflow = pp.parse_extend_and_check_project()
@@ -206,7 +256,7 @@ class TestDownloadProcessor:
         TuttleDirectories.straighten_out_process_and_logs(workflow)
         wr = WorkflowRunner(3)
         wr.run_parallel_workflow(workflow)
-        assert isfile("jquery.js"), "jquery.js is missing"
+        assert isfile("huge_resource.js"), "huge_resource.js is missing"
         logs = open(join(".tuttle", "processes", "logs", "__1_stdout.txt"), "r").read()
         assert logs.find("...") >= 0
 
