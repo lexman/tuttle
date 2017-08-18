@@ -34,7 +34,7 @@ tuttle_description = {
     'platforms': ['Linux', 'Windows'],
     'url': 'http://tuttle.lexman.org/',
     'license': 'MIT',
-    'install_requires': ['jinja2', 'MarkupSafe', 'psycopg2', 'six', 'boto3', 'chardet', 'psutil', 'pycurl'],
+    'install_requires': ['jinja2', 'MarkupSafe', 'psycopg2', 'six', 'boto3', 'chardet', 'psutil'],
     'packages': [
         'tuttle',
         'tuttle.report',
@@ -56,9 +56,5 @@ tuttle_description = {
 
 
 if __name__ == '__main__':
-    # NB:  this script can ba imported by windows packager
+    # NB:  this script can be imported by windows packager
     setup(**tuttle_description)
-    # Need sudo apt-get install libssl-dev libcurl4-openssl-dev python-dev on debian
-    #try:
-    #except Exception as e:
-    #    if e.message.find("curl-config")
