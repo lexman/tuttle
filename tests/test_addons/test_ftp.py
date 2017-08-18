@@ -42,7 +42,7 @@ class TestFtpResource:
         cls.ftpd.ioloop.close()
         cls.p.join()
 
-    def test_real_resource_exists(self):
+    def test_resource_exists(self):
         """A mocked ftp resource should exist"""
         res = FTPResource("ftp://localhost:8021/ftp_resource")
         res.set_authentication("user", "password")
@@ -109,3 +109,8 @@ class TestFtpResource:
         assert len(workflow._processes) == 1
         inputs = [res for res in workflow._processes[0].iter_inputs()]
         assert len(inputs) == 1
+
+    def test_real_resource_exists(self):
+        """A mocked ftp resource should exist"""
+        res = FTPResource("ftp://ftp.debian.org/debian/README")
+        assert res.exists()
