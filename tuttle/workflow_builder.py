@@ -2,6 +2,7 @@
 import re
 from os.path import expanduser, exists, join
 
+from tuttle.addons.ftp import FTPResource
 from tuttle.error import TuttleError
 from tuttle.resource import FileResource
 from tuttle.processors import *
@@ -96,6 +97,7 @@ class WorkflowBuilder():
         self._resources_definition['file'] = FileResource
         self._resources_definition['http'] = HTTPResource
         self._resources_definition['https'] = HTTPResource
+        self._resources_definition['ftp'] = FTPResource
         self._resources_definition['sqlite'] = SQLiteResource
         self._resources_definition['pg'] = PostgreSQLResource
         self._resources_definition['s3'] = S3Resource
