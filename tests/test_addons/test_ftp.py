@@ -1,10 +1,12 @@
 # -*- coding: utf8 -*-
 
 from time import sleep
+
+from os import remove
 from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer
-from os.path import dirname, join
+from os.path import dirname, join, exists
 from tuttle.addons.ftp import FTPResource
 from tuttle.project_parser import ProjectParser
 
@@ -41,6 +43,9 @@ class TestFtpResource:
         cls.ftpd.close_all()
         cls.ftpd.ioloop.close()
         cls.p.join()
+        to_rm = join(cls.ftp_dir, 'to_remove')
+        if exists(to_rm):
+            remove(to_rm)
 
     def test_resource_exists(self):
         """A mocked ftp resource should exist"""
@@ -78,9 +83,6 @@ class TestFtpResource:
 
     def test_signature(self):
         """ Should return a signature for an ftp resource """
-        with open(join(self.ftp_dir, 'test_signature'), 'w') as f:
-            f.write("Will be hashed\n")
-
         res = FTPResource("ftp://localhost:8021/ftp_resource")
         res.set_authentication("user", "password")
         assert res.exists()
@@ -89,9 +91,6 @@ class TestFtpResource:
 
     def test_signature_raises_if_bad_credentials(self):
         """ If crendentials are wrong, signarue() should raise """
-        with open(join(self.ftp_dir, 'test_signature'), 'w') as f:
-            f.write("Will be hashed\n")
-
         res = FTPResource("ftp://localhost:8021/ftp_resource")
         res.set_authentication("user", "bad_password")
         try:
