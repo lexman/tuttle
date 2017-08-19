@@ -24,7 +24,7 @@ class FTPResource(ResourceMixIn, object):
         if captured_port:
             self._port = captured_port[1:]
         else:
-            self._host = 21
+            self._port = 21
         self._partial = m.group(3)
         self._authenticated_url = self.url
 
