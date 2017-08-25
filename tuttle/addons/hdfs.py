@@ -8,6 +8,7 @@ from tuttle.error import TuttleError
 from tuttle.resource import ResourceMixIn, MalformedUrl
 from snakebite.client import Client
 
+
 class HDFSResource(ResourceMixIn, object):
     """An HTTP resource"""
     scheme = 'hdfs'
