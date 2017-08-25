@@ -7,7 +7,6 @@ from setuptools.archive_util import unpack_tarfile
 
 from tuttle.addons.hdfs import HDFSResource
 from snakebite.minicluster import MiniCluster
-import tests
 import sys, os
 
 class TestHdfsResource:
@@ -94,7 +93,11 @@ class TestHdfsResource:
 
 
 def install_hadoop():
-    hadoop_path = join(dirname(tests.__file__), "hadoop")
+    try:
+        import tests
+        hadoop_path = join(dirname(tests.__file__), 'hadoop')
+    except:
+        hadoop_path = join('tests', 'hadoop')
     if not exists(hadoop_path):
         print("Installing hadoop 2.8.1 in {}".format(hadoop_path))
         url = "http://apache.mediamirrors.org/hadoop/common/hadoop-2.8.1/hadoop-2.8.1.tar.gz"
