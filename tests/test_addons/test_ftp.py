@@ -3,10 +3,14 @@
 from time import sleep
 
 from os import remove
+
+from nose.plugins.skip import SkipTest
 from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer
 from os.path import dirname, join, exists
+
+from tests import online
 from tuttle.addons.ftp import FTPResource
 from tuttle.project_parser import ProjectParser
 
@@ -111,5 +115,7 @@ class TestFtpResource:
 
     def test_real_resource_exists(self):
         """A mocked ftp resource should exist"""
+        if not online:
+            raise SkipTest("Offline")
         res = FTPResource("ftp://ftp.debian.org/debian/README")
         assert res.exists()

@@ -2,6 +2,10 @@
 from os.path import isfile, join
 
 from os import path, remove
+
+from nose.plugins.skip import SkipTest
+
+from tests import online
 from tests.functional_tests import isolate, run_tuttle_file
 from tuttle.invalidation import NO_LONGER_CREATED, NOT_SAME_INPUTS, PROCESS_HAS_CHANGED, PROCESSOR_HAS_CHANGED, \
     RESOURCE_HAS_CHANGED
@@ -300,6 +304,8 @@ file://C <- file://B
     @isolate(['A'])
     def test_invalidation_should_resist_remove_errors(self):
         """ If removing a resource raises an error, tuttle should display a warning"""
+        if not online:
+            raise SkipTest("Offline")
         project = """http://www.google.com <- file://A
             echo As if I could publish to the main page of google...
 """
