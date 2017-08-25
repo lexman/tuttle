@@ -16,6 +16,8 @@ before_install:
 - sudo apt-get update -qq
 - sudo apt-get install -y --force-yes python python-pip python-virtualenv dh-virtualenv build-essential fakeroot devscripts
   debhelper
+- python tests/test_addons/test_hdfs.py install
+- . tests/hadoop/vars.sh
 
 install:
 - pip install -r requirements-dev.txt

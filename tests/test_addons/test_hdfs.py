@@ -1,15 +1,14 @@
 # -*- coding: utf8 -*-
-
-from time import sleep
-from os.path import dirname, join, abspath
+from os import remove, getcwd
+from os.path import dirname, join, abspath, exists
 from urllib import urlretrieve
-
 from nose.plugins.skip import SkipTest
+from setuptools.archive_util import unpack_tarfile
 
 from tuttle.addons.hdfs import HDFSResource
-from tuttle.project_parser import ProjectParser
 from snakebite.minicluster import MiniCluster
-
+import tests
+import sys, os
 
 class TestHdfsResource:
 
@@ -19,6 +18,9 @@ class TestHdfsResource:
 
     @classmethod
     def setUpClass(cls):
+        if not os.environ['HADOOP_HOME']:
+            raise SkipTest("adoop not installed")
+
         if not cls.cluster:
             c = MiniCluster(None, start_cluster=False)
             result = c.ls("/")
@@ -92,7 +94,27 @@ class TestHdfsResource:
 
 
 def install_hadoop():
-    import zipfile
-    urlretrieve("http://apache.mediamirrors.org/hadoop/common/hadoop-2.8.1/hadoop-2.8.1.tar.gz", "hadoop-2.8.1.tar.gz")
-    zip = zipfile.ZipFile("hadoop-2.8.1.tar.gz")
-    zip.extractall("hadoop-2.8.1")
+    hadoop_path = join(dirname(tests.__file__), "hadoop")
+    if not exists(hadoop_path):
+        print("Installing hadoop 2.8.1 in {}".format(hadoop_path))
+        url = "http://apache.mediamirrors.org/hadoop/common/hadoop-2.8.1/hadoop-2.8.1.tar.gz"
+        if not exists("hadoop-2.8.1.tar.gz"):
+            print("Downloading from {} to {}".format(url, getcwd()))
+            urlretrieve(url, "hadoop-2.8.1.tar.gz")
+        print("Unzipping to {}".format(hadoop_path))
+        unpack_tarfile("hadoop-2.8.1.tar.gz", hadoop_path)
+        if os.name=="posix":
+            with open(join(hadoop_path, "vars.sh"), "w") as f:
+                f.write('export HADOOP_HOME="{}"\n'.format(join(hadoop_path, "hadoop-2.8.1")))
+        if os.name=="nt":
+            with open(join(hadoop_path, "vars.bat"), "w") as f:
+                f.write('HADOOP_HOME="{}"\n'.format(join(hadoop_path, "hadoop-2.8.1")))
+        remove("hadoop-2.8.1.tar.gz")
+
+    else:
+        print("Hadoop already installed in {}".format(hadoop_path))
+
+
+if __name__ == '__main__':
+    if len(sys.argv) == 2 and sys.argv[1] == 'install':
+        install_hadoop()
