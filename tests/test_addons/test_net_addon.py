@@ -15,6 +15,7 @@ from SocketServer import TCPServer
 from tuttle.tuttle_directories import TuttleDirectories
 from tuttle.workflow_runner import WorkflowRunner
 from tuttle import report
+from tests import is_online, online
 
 
 class MockHTTPHandler(BaseHTTPRequestHandler):
@@ -123,11 +124,15 @@ class TestHttpResource:
         """A real resource should exist"""
         # TODO : change this when tuttle has its site... If it can handle the load...
         # Or by a local http server
+        if not online:
+            raise SkipTest("Offline")
         res = HTTPResource("http://www.google.com/")
         assert res.exists()
 
     def test_fictive_resource_not_exists(self):
         """A fictive resource should not exist"""
+        if not online:
+            raise SkipTest("Offline")
         res = HTTPResource("http://www.example.com/tuttle")
         assert not res.exists()
 
@@ -181,11 +186,15 @@ class TestHttpsResource:
 
     def test_real_resource_exists(self):
         """A real resource should exist"""
+        if not online:
+            raise SkipTest("Offline")
         res = HTTPResource("https://www.google.com/")
         assert res.exists()
 
     def test_fictive_resource_not_exists(self):
         """A fictive resource should not exist"""
+        if not online:
+            raise SkipTest("Offline")
         res = HTTPResource("https://www.example.com/tuttle")
         assert not res.exists()
 
@@ -228,6 +237,8 @@ class TestDownloadProcessor:
     @isolate
     def test_standard_download(self):
         """Should download a simple url"""
+        if not online:
+            raise SkipTest("Offline")
         project = " file://google.html <- http://www.google.com/ ! download"
         pp = ProjectParser()
         pp.set_project(project)
@@ -317,6 +328,8 @@ file://google.html <- file://A ! download
     @isolate
     def test_download_https(self):
         """https download should work"""
+        if not online:
+            raise SkipTest("Offline")
         project = "file://google.html <- https://www.google.com/ ! download"
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
