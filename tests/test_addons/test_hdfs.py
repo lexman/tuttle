@@ -17,7 +17,7 @@ class TestHdfsResource:
 
     @classmethod
     def setUpClass(cls):
-        if 'HADOOP_HOME' not in os.environ or not os.environ['HADOOP']:
+        if 'HADOOP_HOME' not in os.environ or not os.environ['HADOOP_HOME']:
             raise SkipTest("Hadoop not installed")
 
         if not cls.cluster:
