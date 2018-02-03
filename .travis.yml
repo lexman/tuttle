@@ -40,7 +40,7 @@ script:
 - cp from-shell-or-batch workflow_execution_success3
 - cd ..
 # building docker image
- - cd docker
+- cd docker
 # prevented pushing docker image while password hasn't been reseted
 # - docker login -u "tuttle" -p "$DOCKER_PASS" -e "$DOCKER_MAIL"
  - docker build -t tuttle/tuttle:master .
