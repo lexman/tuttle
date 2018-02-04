@@ -34,7 +34,16 @@ tuttle_description = {
     'platforms': ['Linux', 'Windows'],
     'url': 'http://tuttle.lexman.org/',
     'license': 'MIT',
-    'install_requires': ['jinja2', 'MarkupSafe', 'psycopg2', 'six', 'boto3', 'chardet', 'psutil'],
+    'install_requires': [
+        'jinja2',
+        'MarkupSafe',
+        'psycopg2',
+        'six',
+        'boto3',
+        'chardet',
+        'psutil'
+        'pyodbc',
+    ],
     'packages': [
         'tuttle',
         'tuttle.report',

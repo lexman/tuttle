@@ -16,10 +16,16 @@ before_install:
 - sudo apt-get update -qq
 - sudo apt-get install -y --force-yes python python-pip python-virtualenv dh-virtualenv build-essential fakeroot devscripts
   debhelper
+# Install odbc
+- sudo apt-get install unixodbc-bin unixodbc odbc-postgresql unixodbc-dev
+- sudo odbcinst -i -d -f /usr/share/psqlodbc/odbcinst.ini.template
+- sudo odbcinst -i -s -l -n tuttle_test_db -f ci/odbc.ini
+
 
 install:
 - pip install -r requirements-dev.txt
 - psql -c 'CREATE DATABASE tuttle_test_db;' -U postgres
+
 
 script:
 # Running tests
