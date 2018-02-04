@@ -41,7 +41,7 @@ tuttle_description = {
         'six',
         'boto3',
         'chardet',
-        'psutil'
+        'psutil',
         'pyodbc',
     ],
     'packages': [
