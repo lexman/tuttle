@@ -1,7 +1,8 @@
-cx-Freeze==4.3.4
+cx-Freeze==5.1
 Jinja2>=2.7.3
 MarkupSafe>=0.23
 nose>=1.3.6
+coverage
 tornado>=4.3 # for mocking an S3 server
 pyftpdlib
 snakebite
