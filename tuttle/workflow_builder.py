@@ -88,7 +88,7 @@ class WorkflowBuilder():
     def init_resource_authenticator(self):
         pass_file = tuttlepass_file()
         if exists(pass_file):
-            with open(tuttlepass_file()) as f:
+            with open(pass_file) as f:
                 self._resource_authenticator = ResourceAuthenticator(f)
         else:
             self._resource_authenticator = ResourceAuthenticator([])
