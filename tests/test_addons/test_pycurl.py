@@ -6,10 +6,10 @@ class TestPyCurl:
 
     def test_pycurl_download_progress(self):
         def progress(download_t, download_d, upload_t, upload_d):
-            sys.stderr.write("Total to download {}\n".format(download_t))
-            sys.stderr.write("Total downloaded {}\n".format(download_d))
-            sys.stderr.write("Total to upload {}\n".format(upload_t))
-            sys.stderr.write("Total uploaded {}\n".format(upload_d))
+            print("Total to download {}\n".format(download_t))
+            print("Total downloaded {}\n".format(download_d))
+            print("Total to upload {}\n".format(upload_t))
+            print("Total uploaded {}\n".format(upload_d))
 
         with open('out.html', 'wb') as f:
             c = pycurl.Curl()
