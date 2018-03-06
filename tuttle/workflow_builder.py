@@ -3,6 +3,7 @@ import re
 from os.path import expanduser, exists, join
 
 from tuttle.addons.ftp import FTPResource
+from tuttle.addons.odbc import ODBCResource
 from tuttle.error import TuttleError
 from tuttle.resource import FileResource
 from tuttle.processors import *
@@ -101,6 +102,7 @@ class WorkflowBuilder():
         self._resources_definition['sqlite'] = SQLiteResource
         self._resources_definition['pg'] = PostgreSQLResource
         self._resources_definition['s3'] = S3Resource
+        self._resources_definition['odbc'] = ODBCResource
         self._processors['shell'] = ShellProcessor()
         self._processors['bat'] = BatProcessor()
         self._processors['python'] = PythonProcessor()
