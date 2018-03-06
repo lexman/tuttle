@@ -252,7 +252,7 @@ class TestDownloadProcessor:
         content = open("google.html").read()
         assert content.find("<title>Google</title>") >= 0
         logs = open(join(".tuttle", "processes", "logs", "__1_stdout.txt"), "r").read()
-        assert re.search("\n\.+\n", logs) is not None
+        assert re.search("\n\.+\n", logs) is not None, logs
         assert isfile(join(".tuttle", "processes", "logs", "__1_err.txt"))
 
     @isolate
@@ -337,5 +337,5 @@ file://google.html <- file://A ! download
         content = open("google.html").read()
         assert content.find("<title>Google</title>") >= 0
         logs = open(join(".tuttle", "processes", "logs", "tuttlefile_1_stdout.txt"), "r").read()
-        assert re.search("\n\.+\n", logs) is not None
+        assert re.search("\n\.+\n", logs) is not None, logs
         assert isfile(join(".tuttle", "processes", "logs", "tuttlefile_1_err.txt"))

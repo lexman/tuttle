@@ -1,6 +1,9 @@
 # -*- coding: utf8 -*-
 
 from hashlib import sha1
+
+from tuttle.report.html_repport import nice_size
+
 try:
     from urllib2 import urlopen, Request, URLError, HTTPError, HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler, \
     build_opener, install_opener
@@ -10,6 +13,11 @@ except ImportError:
 from tuttle.error import TuttleError
 from tuttle.resource import ResourceMixIn
 from tuttle.version import version
+
+try:
+    import pycurl
+except ImportError:
+    pycurl = None
 
 
 USER_AGENT = "tuttle/{}".format(version)
@@ -101,27 +109,58 @@ class DownloadProcessor:
         outputs = [res for res in process.iter_outputs()]
         if len(inputs) != 1 \
            or len(outputs) != 1 \
-           or inputs[0].scheme != 'http' \
+           or (inputs[0].scheme not in ['http', 'https'])\
            or outputs[0].scheme != 'file':
-            raise TuttleError("Download processor {} don't know how to handle his inputs / outputs".format(process.id))
+            raise TuttleError("Download processor {} don't know how to handle this inputs / outputs".format(process.id))
 
     def reader2writer(self, reader, writer, notifier):
         for chunk in iter(lambda: reader.read(32768), b''):
             writer.write(chunk)
             notifier.write('.')
 
+    def run_urlopen(self, url, fout, notifier):
+        headers = {"User-Agent": USER_AGENT}
+        req = Request(url, headers=headers)
+        fin = urlopen(req)
+        self.reader2writer(fin, fout, notifier)
+
+    def run_pycurl(self, url, fout, notifier):
+
+        self._progress_b = 0
+        self._progress_hMB = 0
+
+        def show_progress(download_t, download_d, upload_t, upload_d):
+            if download_d > self._progress_b + 32768:
+                notifier.write('.')
+                self._progress_b = download_d
+            if download_d > self._progress_b and download_d == download_t:
+                notifier.write('.')
+                self._progress_b = download_d
+            if download_d > self._progress_hMB + 100 * 1024 * 1024:
+                self._progress_hMB = download_d
+                notifier.write('{} / {}'.format(nice_size(self._progress_hMB), nice_size(download_t)))
+
+        c = pycurl.Curl()
+        c.setopt(c.URL, url)
+        c.setopt(pycurl.USERAGENT, USER_AGENT)
+        c.setopt(c.FOLLOWLOCATION, True)
+        c.setopt(c.NOPROGRESS, False)
+        c.setopt(c.XFERINFOFUNCTION, show_progress)
+        c.setopt(c.WRITEDATA, fout)
+        c.perform()
+        c.close()
+
     def run(self, process, reserved_path, log_stdout, log_stderr):
         inputs = [res for res in process.iter_inputs()]
         outputs = [res for res in process.iter_outputs()]
         file_name = outputs[0]._get_path()
         url = inputs[0].url
-        headers = {"User-Agent": USER_AGENT}
-        req = Request(url, headers=headers)
-        fin = urlopen(req)
+
         with open(file_name, 'wb') as fout, \
              open(log_stdout, 'wb') as stdout, \
              open(log_stderr, 'wb') as stderr:
             stdout.write("Downloading {}\n".format(url, file_name))
-            self.reader2writer(fin, fout, stdout)
+            if pycurl:
+                self.run_pycurl(url, fout, stdout)
             stdout.write("\ndone\n ")
         return 0
