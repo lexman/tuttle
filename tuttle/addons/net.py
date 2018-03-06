@@ -131,7 +131,8 @@ class DownloadProcessor:
         def show_progress(download_t, download_d, upload_t, upload_d):
             if download_d == download_t and download_d > self._progress_b:
                 notifier.write('.')
-            if download_d > self._progress_b + 32768:
+                self._progress_b = download_d
+            elif download_d > self._progress_b + 32768:
                 notifier.write('.')
                 self._progress_b = download_d
             if download_d > self._progress_hMB + 100 * 1024 * 1024:
