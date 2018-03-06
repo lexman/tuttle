@@ -125,20 +125,18 @@ class DownloadProcessor:
         self.reader2writer(fin, fout, notifier)
 
     def run_pycurl(self, url, fout, notifier):
-
         self._progress_b = 0
         self._progress_hMB = 0
 
         def show_progress(download_t, download_d, upload_t, upload_d):
-            if download_d > self._progress_b + 32768:
+            if download_d == download_t and download_d > self._progress_b:
                 notifier.write('.')
-                self._progress_b = download_d
-            if download_d > self._progress_b and download_d == download_t:
+            if download_d > self._progress_b + 32768:
                 notifier.write('.')
                 self._progress_b = download_d
             if download_d > self._progress_hMB + 100 * 1024 * 1024:
                 self._progress_hMB = download_d
-                notifier.write('{} / {}'.format(nice_size(self._progress_hMB), nice_size(download_t)))
+                notifier.write('\n{} / {}\n'.format(nice_size(self._progress_hMB), nice_size(download_t)))
 
         c = pycurl.Curl()
         c.setopt(c.URL, url)
