@@ -154,7 +154,7 @@ class TestHttpResource:
         if sig is False:
             raise SkipTest()
         assert sig.find('Etag:') >= 0, sig
-        assert sig.find('359670651') >= 0, sig
+        assert sig.find('1541025663') >= 0, sig
 
     def test_resource_last_modified_signature(self):
         """ An HTTPResource with an Last-Modified should use it as signature in case it doesn't have Etag"""
