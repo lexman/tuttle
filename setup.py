@@ -43,6 +43,7 @@ tuttle_description = {
         'chardet',
         'psutil',
         'pyodbc',
+        'pycurl',
     ],
     'packages': [
         'tuttle',
