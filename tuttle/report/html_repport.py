@@ -51,6 +51,7 @@ def format_resource(resource, workflow):
     return {
         'url': resource.url,
         'signature': sig,
+        'creator_process_id' : resource.creator_process.id,
     }
 
 
