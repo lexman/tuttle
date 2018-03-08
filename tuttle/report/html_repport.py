@@ -32,7 +32,9 @@ def nice_size(size):
         return "{} GB".format(size / (1024 * 1024 * 1024))
 
 
-def nice_file_size(filename):
+def nice_file_size(filename, running):
+    if running:
+        return "running"
     if not filename:
         return ""
     try:
@@ -86,7 +88,7 @@ def format_process(process, workflow, report_dir):
         if process.end:
             end = strftime("%a, %d %b %Y %H:%M:%S", localtime(process.end))
             duration = process.end - process.start
-
+    running = start and not end
     return {
         'id': process.id,
         'processor': process.processor.name,
@@ -94,9 +96,9 @@ def format_process(process, workflow, report_dir):
         'end': end,
         'duration': duration,
         'log_stdout': path2url(process.log_stdout, report_dir),
-        'log_stdout_size': nice_file_size(process.log_stdout),
+        'log_stdout_size': nice_file_size(process.log_stdout, running),
         'log_stderr': path2url(process.log_stderr, report_dir),
-        'log_stderr_size': nice_file_size(process.log_stderr),
+        'log_stderr_size': nice_file_size(process.log_stderr, running),
         'outputs': (format_resource(resource, workflow) for resource in process.iter_outputs()),
         'inputs': (format_resource(resource, workflow) for resource in process.iter_inputs()),
         'code': process.code,

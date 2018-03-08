@@ -6,7 +6,7 @@ from tuttle.report.html_repport import nice_size
 from tests.functional_tests import isolate, run_tuttle_file
 
 
-class TestReport():
+class TestReport:
 
     def test_nice_size_B(self):
         """ A number below 1 000 B should be expressed in B"""
@@ -66,7 +66,6 @@ file://C <- file://B
         assert title_match, report
         title_2_match = search(r'<h2.*Failure.*</h2>', report, DOTALL)
         assert title_2_match, report
-
 
     @isolate(['A'])
     def test_a_failure_in_a_process_without_output_should_be_marked_in_the_repoort(self):
