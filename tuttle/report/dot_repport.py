@@ -1,6 +1,10 @@
 # -*- coding: utf8 -*-
 
+from os import path
+
+
 DOT_HEADER = """digraph workflow {
+    rankdir="LR";
     Node [style="rounded,filled", shape=box, fillcolor=none]
 """
 
@@ -24,13 +28,16 @@ def nick_from_url(url):
     parts = url.split("/")
     return parts.pop()
 
+
 def dot_id(url):
     import urllib
     return urllib.quote(url)
 
+
 def process_node_id(id):
     p_node = '"p_{}"'.format(id)
     return p_node
+
 
 def dot(workflow):
     # TODO :
@@ -59,3 +66,14 @@ def dot(workflow):
             result += '    "{}" [fillcolor={}, label="{}"] ;\n'.format(resource_id, color, nick)
     result += '}'
     return result
+
+
+def create_dot_report(workflow, filename):
+    """ Write an html file describing the workflow
+    :param workflow:
+    :param filename: path to the html fil to be generated
+    :return: None
+    """
+    with open(filename, 'wb') as fout:
+        dot_src = dot(workflow)
+        fout.write(dot_src.encode('utf8)'))
