@@ -3,6 +3,7 @@ import sys
 from traceback import format_exception
 
 from tuttle.error import TuttleError
+from tuttle.report.dot_repport import create_dot_report
 from tuttle.report.html_repport import create_html_report
 from pickle import dump, load
 from tuttle.workflow_runner import WorkflowRunner, TuttleEnv
@@ -170,6 +171,7 @@ class Workflow:
         :return: None
         """
         create_html_report(self, TuttleDirectories.tuttle_dir("report.html"))
+        create_dot_report(self, TuttleDirectories.tuttle_dir("report.dot"))
 
     def dump(self):
         """ Pickles the workflow and writes it to last_workflow.pickle
