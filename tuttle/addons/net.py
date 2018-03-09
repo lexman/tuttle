@@ -129,17 +129,17 @@ class DownloadProcessor:
         self._progress_hMB = 0
 
         def show_progress(download_t, download_d, upload_t, upload_d):
-            notifier.write("*****\n")
-            notifier.write("self._progress_b {}\n".format(download_t))
-            notifier.write("self._progress_hMB {}\n".format(self._progress_hMB))
-            notifier.write("Total to download {}\n".format(download_t))
-            notifier.write("Total downloaded {}\n".format(download_d))
-            notifier.write("Total to upload {}\n".format(upload_t))
-            notifier.write("Total uploaded {}\n".format(upload_d))
+#            notifier.write("*****\n")
+#            notifier.write("self._progress_b {}\n".format(download_t))
+#            notifier.write("self._progress_hMB {}\n".format(self._progress_hMB))
+#            notifier.write("Total to download {}\n".format(download_t))
+#            notifier.write("Total downloaded {}\n".format(download_d))
+#            notifier.write("Total to upload {}\n".format(upload_t))
+#            notifier.write("Total uploaded {}\n".format(upload_d))
             if download_d >= download_t and download_d > self._progress_b:
-                notifier.write('XXXXXXXXXXXX\n')
+#                notifier.write('XXXXXXXXXXXX\n')
                 notifier.write('.')
-                self._progress_b = download_d
+                self._progress_b = download_t
             elif download_d > self._progress_b + 32768:
                 notifier.write('.')
                 self._progress_b = download_d
