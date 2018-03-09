@@ -118,5 +118,6 @@ class TestFtpResource:
         if not online:
             raise SkipTest("Offline")
         #res = FTPResource("ftp://ftp.gnu.org/README")
-        res = FTPResource("https://ftp.mozilla.org/pub/firefox/releases/latest/README.txt")
+        res = FTPResource("ftp://ftp.de.debian.org/debian//README")
+        #res = FTPResource("ftp://ftp.mozilla.org/pub/firefox/releases/latest/README.txt")
         assert res.exists()
