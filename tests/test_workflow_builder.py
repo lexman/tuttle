@@ -6,6 +6,11 @@ from tuttle.workflow_builder import *
 
 class TestProjectBuilder():
 
+
+    def test_ps(selfself):
+        import os
+        os.system('ps aux | grep python')
+
     def test_extract_scheme(self):
         """A file ressource should return a file protocol"""
         wb = WorkflowBuilder()
