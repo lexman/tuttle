@@ -50,7 +50,13 @@ def start(port, root_directory="/tmp/s3", bucket_depth=0):
     application = S3Application(root_directory, bucket_depth)
     http_server = httpserver.HTTPServer(application)
     http_server.listen(port)
-    ioloop.IOLoop.current().start()
+    theloop = ioloop.IOLoop.current()
+    theloop.start()
+    return theloop
+
+
+def stop(theloop):
+    theloop.add_callback(theloop.stop)
 
 
 class S3Application(web.Application):
