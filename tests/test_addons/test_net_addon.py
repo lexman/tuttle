@@ -223,6 +223,8 @@ class TestDownloadProcessor:
     def setUpClass(cls):
         """ Run a web server in background to mock some specific HTTP behaviours
         """
+        import sys
+        sys.stderr.write("Starting httpd *******\n")
         from threading import Thread
         cls.p = Thread(target=cls.run_server)
         cls.p.start()
@@ -231,8 +233,11 @@ class TestDownloadProcessor:
     def tearDownClass(cls):
         """ Stop the http server in background
         """
+        import sys
+        sys.stderr.write("About to close httpd *******\n")
         cls.httpd.shutdown()
         cls.p.join()
+        sys.stderr.write("... httpd closed\n")
 
     @isolate
     def test_standard_download(self):

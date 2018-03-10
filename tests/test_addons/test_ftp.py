@@ -35,6 +35,8 @@ class TestFtpResource:
     def setUpClass(cls):
         """ Run a web server in background to mock some specific HTTP behaviours
         """
+        import sys
+        sys.stderr.write("Starting ftpd *******\n")
         from threading import Thread
         cls.p = Thread(target=cls.run_server)
         cls.p.start()
@@ -44,9 +46,12 @@ class TestFtpResource:
     def tearDownClass(cls):
         """ Stop the http server in background
         """
+        import sys
+        sys.stderr.write("About to close ftpd *******\n")
         cls.ftpd.close_all()
         cls.ftpd.ioloop.close()
         cls.p.join()
+        sys.stderr.write("... ftpd closed\n")
         to_rm = join(cls.ftp_dir, 'to_remove')
         if exists(to_rm):
             remove(to_rm)
