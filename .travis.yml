@@ -33,12 +33,15 @@ script:
 - python tests/test_addons/test_hdfs.py install
 - . tests/hadoop/vars.sh
 - echo ============== Running tests ================
-- time nosetests -vv tests/test_addons/*.py
-- time nosetests -vv tests/test_processors/*.py
-- time nosetests -vv tests/functionnal_tests/*.py
-- time nosetests -vv tests/functionnal_tests/test_errors/*.py
-- time nosetests -vv tests/functionnal_tests/test_resources/*.py
-- time nosetests -vv tests/*.py
+- time nosetests -vv tests/test_addons/tests/test_addons/test_csv_addon.py
+- time nosetests -vv tests/test_addons/test_ftp.py
+- time nosetests -vv tests/test_addons/test_hdfs.py
+- time nosetests -vv tests/test_addons/test_net_addon.py
+- time nosetests -vv tests/test_addons/test_odbc.py
+- time nosetests -vv tests/test_addons/test_postgres.py
+- time nosetests -vv tests/test_addons/test_python.py
+- time nosetests -vv tests/test_addons/test_s3_addon.py
+- time nosetests -vv tests/test_addons/test_sqlite.py
 - echo ============== Test have finished ===========
 # Making .deb package
 - dpkg-buildpackage -us -uc
