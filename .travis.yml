@@ -34,6 +34,11 @@ script:
 - . tests/hadoop/vars.sh
 - echo ============== Running tests ================
 - time nosetests -vv tests/test_addons/*.py
+- time nosetests -vv tests/test_processors/*.py
+- time nosetests -vv tests/functionnal_tests/*.py
+- time nosetests -vv tests/functionnal_tests/test_errors/*.py
+- time nosetests -vv tests/functionnal_tests/test_resources/*.py
+- time nosetests -vv tests/*.py
 - echo ============== Test have finished ===========
 # Making .deb package
 - dpkg-buildpackage -us -uc
