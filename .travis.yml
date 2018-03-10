@@ -33,7 +33,7 @@ script:
 - python tests/test_addons/test_hdfs.py install
 - . tests/hadoop/vars.sh
 - echo ============== Running tests ================
-- time nosetests -vv tests/*.py
+- time nosetests -vv tests/test_addons/*.py
 - echo ============== Test have finished ===========
 # Making .deb package
 - dpkg-buildpackage -us -uc
