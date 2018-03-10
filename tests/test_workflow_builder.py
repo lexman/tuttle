@@ -9,11 +9,12 @@ class TestProjectBuilder():
 
     def test_ps(selfself):
         import os
-        print("*****************")
-        print("*****************")
-        os.system('ps aux')
-        print("*****************")
-        print("*****************")
+        import sys
+        sys.stderr.write("*****************")
+        sys.stderr.write("*****************")
+        os.system('ps elf')
+        sys.stderr.write("*****************")
+        sys.stderr.write("*****************")
         os.system('ps aux | grep python')
 
     def test_extract_scheme(self):
