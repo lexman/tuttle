@@ -3,9 +3,8 @@ from tempfile import mkdtemp
 from shutil import rmtree
 from os import makedirs, environ
 from os.path import join
-from unittest.case import SkipTest
 
-from tests.functional_tests import isolate, run_tuttle_file
+from tests.functional_tests import run_tuttle_file
 from s3server import start
 from tests.test_addons.s3server import stop
 from tuttle.project_parser import ProjectParser
@@ -94,7 +93,6 @@ class TestS3Resource():
 
     def test_when_host_is_unknown_should_display_message(self):
         """ Should display a message if tuttle cant connect to database because host does not exists """
-        raise SkipTest()
         project = """<- s3://no-s3-host.com:8069/test_bucket/test_key
         echo "Test"
         """
