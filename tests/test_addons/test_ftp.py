@@ -25,7 +25,6 @@ class TestFtpResource:
     def run_server(cls):
         authorizer = DummyAuthorizer()
         authorizer.add_user("user", "password", cls.ftp_dir, perm="elrd")
-        #authorizer.add_anonymous(ftp_dir, perm="elrd")
         handler = FTPHandler
         handler.authorizer = authorizer
         cls.ftpd = FTPServer(("0.0.0.0", 8021), handler)
@@ -35,8 +34,6 @@ class TestFtpResource:
     def setUpClass(cls):
         """ Run a web server in background to mock some specific HTTP behaviours
         """
-        import sys
-        sys.stderr.write("Starting ftpd *******\n")
         from threading import Thread
         cls.p = Thread(target=cls.run_server)
         cls.p.start()
@@ -46,12 +43,9 @@ class TestFtpResource:
     def tearDownClass(cls):
         """ Stop the http server in background
         """
-        import sys
-        sys.stderr.write("About to close ftpd *******\n")
         cls.ftpd.close_all()
         cls.ftpd.ioloop.close()
         cls.p.join()
-        sys.stderr.write("... ftpd closed\n")
         to_rm = join(cls.ftp_dir, 'to_remove')
         if exists(to_rm):
             remove(to_rm)
@@ -122,7 +116,5 @@ class TestFtpResource:
         """A mocked ftp resource should exist"""
         if not online:
             raise SkipTest("Offline")
-        #res = FTPResource("ftp://ftp.gnu.org/README")
-        #res = FTPResource("ftp://ftp.de.debian.org/debian//README")
-        #res = FTPResource("ftp://ftp.mozilla.org/pub/firefox/releases/latest/README.txt")
-        #assert res.exists()
+        res = FTPResource("ftp://ftp.mozilla.org/pub/firefox/releases/latest/README.txt")
+        assert res.exists()
