@@ -332,6 +332,10 @@ file://google.html <- file://A ! download
             raise SkipTest("Offline")
         project = "file://google.html <- https://www.google.com/ ! download"
         rcode, output = run_tuttle_file(project)
+
+        if output.find("SSL certificate problem: unable to get local issuer certificate") >= 0:
+            raise SkipTest("Skip test because of a certificate bug from appveyor")
+
         assert rcode == 0, output
         assert isfile("google.html")
         content = open("google.html").read()
