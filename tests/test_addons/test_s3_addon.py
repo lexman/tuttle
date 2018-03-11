@@ -3,16 +3,20 @@ from tempfile import mkdtemp
 from shutil import rmtree
 from os import makedirs, environ
 from os.path import join
+from unittest.case import SkipTest
 
 from tests.functional_tests import run_tuttle_file
-from s3server import start
-from tests.test_addons.s3server import stop
+from s3server import start, stop
 from tuttle.project_parser import ProjectParser
 from tuttle.addons.s3 import S3Resource
+from tests import bad_resolving
 
-class TestS3Resource():
+
+class TestS3Resource:
 
     server_thread = None
+    tmp_dir = None
+    ioloop = None
 
     @classmethod
     def run_server(cls):
@@ -24,12 +28,12 @@ class TestS3Resource():
         key_for_removal = join(bucket_dir, "key_for_removal")
         open(key_for_removal, "w").close()
         from tornado import ioloop
-        cls._ioloop = ioloop.IOLoop.current()
+        cls.ioloop = ioloop.IOLoop.current()
         start(8069, root_directory=cls.tmp_dir)
 
     @classmethod
     def stop_server(cls):
-        stop(cls._ioloop)
+        stop(cls.ioloop)
 
     @classmethod
     def setUpClass(cls):
@@ -93,6 +97,8 @@ class TestS3Resource():
 
     def test_when_host_is_unknown_should_display_message(self):
         """ Should display a message if tuttle cant connect to database because host does not exists """
+        if bad_resolving:
+            raise SkipTest("Skipping test because of resolving faillure on the host")
         project = """<- s3://no-s3-host.com:8069/test_bucket/test_key
         echo "Test"
         """
@@ -104,7 +110,7 @@ class TestS3Resource():
     # Maybe we can create a specific tuttle exception that could also be valid at least
     # with postgresql resources. Usable for files ?
     def test_invalid_credential_should_make_resource_not_exist(self):
-        """If """
+        """ If bad credentials, resource should be considered as not existing """
         del environ['AWS_ACCESS_KEY_ID']
         del environ['AWS_SECRET_ACCESS_KEY']
         try:

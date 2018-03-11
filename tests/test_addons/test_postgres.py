@@ -1,5 +1,7 @@
 # -*- coding: utf8 -*-
 from os.path import join
+
+from tests import bad_resolving
 from tests.functional_tests import run_tuttle_file, isolate
 from tuttle.addons.postgres import PostgreSQLResource, PostgresqlTuttleError
 from nose.plugins.skip import SkipTest
@@ -7,7 +9,7 @@ from tuttle.project_parser import ProjectParser
 import psycopg2
 
 
-class TestPostgresResource():
+class TestPostgresResource:
     """
     Test tuttle with Postgresql resources
     To ensure tests will be run, you must provide access to a local postgresql database called tuttle_test_db,
@@ -72,7 +74,7 @@ $BODY$
         url = "pg://localhost/tuttle_test_db/test_schema/test_table"
         res = PostgreSQLResource(url)
         assert res._server == "localhost", res._server
-        assert res._port is None , res._port
+        assert res._port is None, res._port
         assert res._database == "tuttle_test_db", res._database
         assert res._schema == "test_schema", res._schema
         assert res._objectname == "test_table", res._objectname
@@ -84,7 +86,7 @@ $BODY$
         assert res._server == "localhost", res._server
         assert res._port == "5432", res._port
         assert res._database == "tuttle_test_db", res._database
-        assert res._schema =="public", res._schema
+        assert res._schema == "public", res._schema
         assert res._objectname == "test_table", res._objectname
 
     def test_pg_table_exists(self):
@@ -241,10 +243,12 @@ $BODY$
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 2, output
-        assert output.find("Can't connect")> -1, output
+        assert output.find("Can't connect") > -1, output
 
     def test_no_host(self):
         """ Should display a message if tuttle cant connect to database because host does not exists """
+        if bad_resolving:
+            raise SkipTest("Skipping test because of resolving faillure on the host")
         project = """pg://no-postgres-host.com:5432/this_db_does_not_exists/table <- ! postgresql
         CREATE TABLE new_table AS SELECT * FROM test_table;
         """
@@ -253,7 +257,7 @@ $BODY$
         assert output.find("Unknown database host") > -1, output
 
 
-class TestPostgresqlProcessor():
+class TestPostgresqlProcessor:
     """
     Test the postgresql processor
     To ensure tests will be run, you must provide access to a local postgresql database called tuttle_test_db,
