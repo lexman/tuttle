@@ -25,7 +25,6 @@ class TestFtpResource:
     def run_server(cls):
         authorizer = DummyAuthorizer()
         authorizer.add_user("user", "password", cls.ftp_dir, perm="elrd")
-        #authorizer.add_anonymous(ftp_dir, perm="elrd")
         handler = FTPHandler
         handler.authorizer = authorizer
         cls.ftpd = FTPServer(("0.0.0.0", 8021), handler)
@@ -117,5 +116,5 @@ class TestFtpResource:
         """A mocked ftp resource should exist"""
         if not online:
             raise SkipTest("Offline")
-        res = FTPResource("ftp://ftp.gnu.org/README")
+        res = FTPResource("ftp://ftp.mozilla.org/pub/firefox/releases/latest/README.txt")
         assert res.exists()
