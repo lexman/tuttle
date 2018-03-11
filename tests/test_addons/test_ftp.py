@@ -12,6 +12,7 @@ from os.path import dirname, join, exists
 
 from tests import online
 from tuttle.addons.ftp import FTPResource
+from tuttle.error import TuttleError
 from tuttle.project_parser import ProjectParser
 
 
@@ -113,8 +114,13 @@ class TestFtpResource:
         assert len(inputs) == 1
 
     def test_real_resource_exists(self):
-        """A mocked ftp resource should exist"""
+        """A real  ftp resource should exist"""
         if not online:
             raise SkipTest("Offline")
         res = FTPResource("ftp://ftp.free.fr/mirrors/ftp.ubuntu.com/releases/HEADER.html")
-        assert res.exists()
+        try:
+            assert res.exists()
+        except TuttleError as e:
+            if e.message.find("425"):
+                raise SkipTest("Offline")
+
