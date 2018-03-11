@@ -48,10 +48,13 @@ def nice_file_size(filename, running):
 
 def format_resource(resource, workflow):
     sig = workflow.signature(resource.url)
+    creator_process_id = None
+    if resource.creator_process:
+        creator_process_id = resource.creator_process.id
     return {
         'url': resource.url,
         'signature': sig,
-        'creator_process_id' : resource.creator_process.id,
+        'creator_process_id' : creator_process_id,
     }
 
 

@@ -56,7 +56,11 @@
                     <ul> {% for input in process.inputs %}
                             <li>
                             {% if input.signature %} <span title="{{input.signature}}"> {% endif %}
-                                <a href="#{{ input.creator_process_id }}" title="Creator process">{{ input.url }}</a>
+                            {% if input.creator_process_id %}
+                                    <a href="#{{ input.creator_process_id }}" title="Creator process">{{ input.url }}</a>
+                                {% else %}
+                                    {{ input.url }}
+                                {% endif %}
                             {% if input.signature %} </span> {% endif %}
                             </li>
                         {% endfor %}
