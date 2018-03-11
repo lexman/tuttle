@@ -116,5 +116,5 @@ class TestFtpResource:
         """A mocked ftp resource should exist"""
         if not online:
             raise SkipTest("Offline")
-        res = FTPResource("ftp://ftp.mozilla.org/pub/firefox/releases/latest/README.txt")
+        res = FTPResource("ftp://ftp.free.fr/mirrors/ftp.ubuntu.com/releases/HEADER.html")
         assert res.exists()
