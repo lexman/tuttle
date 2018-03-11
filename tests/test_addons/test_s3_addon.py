@@ -3,8 +3,10 @@ from tempfile import mkdtemp
 from shutil import rmtree
 from os import makedirs, environ
 from os.path import join
-from tests.functional_tests import isolate, run_tuttle_file
+
+from tests.functional_tests import run_tuttle_file
 from s3server import start
+from tests.test_addons.s3server import stop
 from tuttle.project_parser import ProjectParser
 from tuttle.addons.s3 import S3Resource
 
@@ -21,7 +23,13 @@ class TestS3Resource():
         open(test_key_file, "w").close()
         key_for_removal = join(bucket_dir, "key_for_removal")
         open(key_for_removal, "w").close()
+        from tornado import ioloop
+        cls._ioloop = ioloop.IOLoop.current()
         start(8069, root_directory=cls.tmp_dir)
+
+    @classmethod
+    def stop_server(cls):
+        stop(cls._ioloop)
 
     @classmethod
     def setUpClass(cls):
@@ -38,9 +46,8 @@ class TestS3Resource():
     def tearDownClass(cls):
         """ Stop the S3 server in background
         """
-        from time import sleep
-        from tornado import ioloop
-        ioloop.IOLoop.current().stop()
+        cls.stop_server()
+        cls.server_thread.join()
         rmtree(cls.tmp_dir)
 
     def test_resource_properties(self):
