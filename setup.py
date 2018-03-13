@@ -37,7 +37,7 @@ tuttle_description = {
     'install_requires': [
         'jinja2',
         'MarkupSafe',
-        'psycopg2',
+        'psycopg2-binary',
         'six',
         'boto3',
         'chardet',
