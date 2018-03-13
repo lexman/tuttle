@@ -104,14 +104,27 @@ class DownloadProcessor:
     """
     name = 'download'
 
+    @staticmethod
+    def downloadable_resource(resource):
+        downloadable_schemes = ['http']
+        return resource.scheme in downloadable_schemes
+
+    @staticmethod
+    def contains_one_downloadable_resource(resources):
+        nb_downloadables = 0
+        for resource in resources:
+            if DownloadProcessor.downloadable_resource(resource):
+                nb_downloadables += 1
+        return nb_downloadables == 1
+
     def static_check(self, process):
         inputs = [res for res in process.iter_inputs()]
         outputs = [res for res in process.iter_outputs()]
-        if len(inputs) != 1 \
-           or len(outputs) != 1 \
-           or (inputs[0].scheme not in ['http', 'https'])\
+        if len(outputs) != 1 \
            or outputs[0].scheme != 'file':
-            raise TuttleError("Download processor {} don't know how to handle this inputs / outputs".format(process.id))
+            raise TuttleError("Download processor {} don't know how to handle these outputs".format(process.id))
+        if not DownloadProcessor.contains_one_downloadable_resource(inputs):
+            raise TuttleError("Download processor {} don't know how to handle these inputs".format(process.id))
 
     def reader2writer(self, reader, writer, notifier):
         for chunk in iter(lambda: reader.read(32768), b''):
