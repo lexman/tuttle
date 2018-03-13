@@ -109,7 +109,7 @@ class DownloadProcessor:
 
     @staticmethod
     def downloadable_resource(resource):
-        downloadable_schemes = ['http', 'ftp']
+        downloadable_schemes = ['http', 'ftp', 'https']
         return resource.scheme in downloadable_schemes
 
     @staticmethod
