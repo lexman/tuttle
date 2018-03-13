@@ -2,6 +2,7 @@
 import re
 import socket
 from os.path import isfile, join, dirname, isdir
+from time import sleep
 
 from nose.plugins.skip import Skip, SkipTest
 
@@ -11,8 +12,12 @@ from tuttle.project_parser import ProjectParser
 from tuttle.addons.net import HTTPResource
 from BaseHTTPServer import BaseHTTPRequestHandler
 from SocketServer import TCPServer
+from pyftpdlib.authorizers import DummyAuthorizer
+from pyftpdlib.handlers import FTPHandler
+from pyftpdlib.servers import FTPServer
 
 from tuttle.tuttle_directories import TuttleDirectories
+from tuttle.utils import EnvVar
 from tuttle.workflow_runner import WorkflowRunner
 from tuttle import report
 from tests import is_online, online
@@ -108,6 +113,7 @@ class TestHttpResource:
     @classmethod
     def run_server(cls):
         cls.httpd = TCPServer(("", 8042), MockHTTPHandler)
+        cls.httpd.allow_reuse_address = True
         cls.httpd.serve_forever()
 
     @classmethod
@@ -218,10 +224,12 @@ class TestDownloadProcessor:
 
     httpd = None
     p = None
+    _ftpd = None
 
     @classmethod
     def run_server(cls):
         cls.httpd = TCPServer(("", 8043), MockHTTPHandler)
+        cls.httpd.allow_reuse_address = True
         cls.httpd.serve_forever()
 
     @classmethod
@@ -278,7 +286,7 @@ class TestDownloadProcessor:
 
     @isolate
     def test_pre_check_outputs(self):
-        """Should fail if not file:// <- http://"""
+        """Should fail if don't know what to download """
         project = " file://foo <- ! download"
         pp = ProjectParser()
         pp.set_project(project)
@@ -290,7 +298,7 @@ class TestDownloadProcessor:
 
     @isolate
     def test_pre_check_inputs(self):
-        """Should fail if not file:// <- http://"""
+        """Should fail if don't nowk where to download """
         project = " <- http://www.google.com/ ! download"
         pp = ProjectParser()
         pp.set_project(project)
@@ -354,3 +362,33 @@ file://google.html <- file://A ! download
         assert rcode == 2
         assert output.find("* file://B") == -1
         assert output.find("Download processor") >= 0, output
+
+    def run_ftp_server(self):
+        authorizer = DummyAuthorizer()
+        ftp_dir = join(dirname(__file__), 'ftp')
+        authorizer.add_user("user", "password", ftp_dir, perm="elrd")
+        handler = FTPHandler
+        handler.authorizer = authorizer
+        self._ftpd = FTPServer(("0.0.0.0", 8021), handler)
+        self._ftpd.serve_forever(timeout=0.2, handle_exit=True)
+
+    @isolate
+    def test_download_ftp_resource(self):
+        """Download processor should be able to download an ftp resource with authentification """
+        from threading import Thread
+        p = Thread(target=self.run_ftp_server)
+        p.start()
+        try:
+            sleep(0.1)  # The server needs time to start
+
+            project = """file://downloaded_resource <- ftp://localhost:8021/ftp_resource ! download
+            """
+            passfile = join(dirname(__file__), '.tuttlepass')
+            with EnvVar('TUTTLEPASSFILE', passfile):
+                rcode, output = run_tuttle_file(project)
+            assert rcode == 0, output
+            assert isfile('downloaded_resource')
+        finally:
+            self._ftpd.close_all()
+            self._ftpd.ioloop.close()
+            p.join()
