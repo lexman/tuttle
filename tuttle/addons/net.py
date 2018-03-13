@@ -104,9 +104,12 @@ class DownloadProcessor:
     """
     name = 'download'
 
+    def __init__(self):
+        self._to_download = None
+
     @staticmethod
     def downloadable_resource(resource):
-        downloadable_schemes = ['http']
+        downloadable_schemes = ['http', 'ftp']
         return resource.scheme in downloadable_schemes
 
     @staticmethod
@@ -116,6 +119,17 @@ class DownloadProcessor:
             if DownloadProcessor.downloadable_resource(resource):
                 nb_downloadables += 1
         return nb_downloadables == 1
+
+    @staticmethod
+    def the_downloadable_resource(inputs):
+        result = None
+        for resource in inputs:
+            if DownloadProcessor.downloadable_resource(resource):
+                if result is not None:
+                    return False
+                else:
+                    result = resource
+        return result
 
     def static_check(self, process):
         inputs = [res for res in process.iter_inputs()]
@@ -137,7 +151,7 @@ class DownloadProcessor:
         fin = urlopen(req)
         self.reader2writer(fin, fout, notifier)
 
-    def run_pycurl(self, url, fout, notifier):
+    def run_pycurl(self, to_download, fout, notifier):
         self._progress_b = 0
         self._progress_hMB = 0
 
@@ -153,7 +167,11 @@ class DownloadProcessor:
                 notifier.write('\n{} / {}\n'.format(nice_size(self._progress_hMB), nice_size(download_t)))
 
         c = pycurl.Curl()
-        c.setopt(c.URL, url)
+        c.setopt(c.URL, to_download.url)
+        if to_download._user:
+            c.setopt(pycurl.USERNAME, to_download._user)
+        if to_download._password:
+            c.setopt(pycurl.PASSWORD, to_download._password)
         c.setopt(pycurl.USERAGENT, USER_AGENT)
         c.setopt(c.FOLLOWLOCATION, True)
         c.setopt(c.NOPROGRESS, False)
@@ -163,16 +181,15 @@ class DownloadProcessor:
         c.close()
 
     def run(self, process, reserved_path, log_stdout, log_stderr):
-        inputs = [res for res in process.iter_inputs()]
+        to_download = DownloadProcessor.the_downloadable_resource(process.iter_inputs())
         outputs = [res for res in process.iter_outputs()]
         file_name = outputs[0]._get_path()
-        url = inputs[0].url
 
         with open(file_name, 'wb') as fout, \
              open(log_stdout, 'wb') as stdout, \
              open(log_stderr, 'wb') as stderr:
-            stdout.write("Downloading {}\n".format(url, file_name))
+            stdout.write("Downloading {}\n".format(to_download.url, file_name))
             if pycurl:
-                self.run_pycurl(url, fout, stdout)
+                self.run_pycurl(to_download, fout, stdout)
             stdout.write("\ndone\n ")
         return 0
