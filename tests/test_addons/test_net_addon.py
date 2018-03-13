@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 import re
 import socket
-from os.path import isfile, join, dirname
+from os.path import isfile, join, dirname, isdir
 
 from nose.plugins.skip import Skip, SkipTest
 
@@ -66,6 +66,11 @@ class MockHTTPHandler(BaseHTTPRequestHandler):
             self.send_header('WWW-Authenticate', 'BASIC realm="foo"')
             self.end_headers()
             self.wfile.write("Please provide user and password in BASIC authentication")
+        if self.path == "/a_resource":
+            self.send_response(200, "OK")
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write("This is a resource")
         if self.path == "/resource_with_etag":
             self.send_response(200, "OK")
             self.send_header('Etag', 'my_etag')
@@ -272,16 +277,41 @@ class TestDownloadProcessor:
         assert logs.find("...") >= 0
 
     @isolate
-    def test_pre_check(self):
-        """Should fail if not http:// <- file:// """
-        project = " http://www.google.com/ <-  ! download"
+    def test_pre_check_outputs(self):
+        """Should fail if not file:// <- http://"""
+        project = " file://foo <- ! download"
         pp = ProjectParser()
         pp.set_project(project)
         try:
             workflow = pp.parse_extend_and_check_project()
             assert False, "An exception should be raised"
-        except TuttleError:
-            assert True
+        except TuttleError as e:
+            assert e.message.find("don't know how to handle these inputs") >= 0, e
+
+    @isolate
+    def test_pre_check_inputs(self):
+        """Should fail if not file:// <- http://"""
+        project = " <- http://www.google.com/ ! download"
+        pp = ProjectParser()
+        pp.set_project(project)
+        try:
+            workflow = pp.parse_extend_and_check_project()
+            assert False, "An exception should be raised"
+        except TuttleError as e:
+            assert e.message.find("don't know how to handle these outputs") >= 0, e.message
+
+    @isolate
+    def test_can_downloading_sub_dir(self):
+        """ Should download a file as long as there is one file input and exactly one downloadable resource """
+        project = """file://a_directory <-
+        mkdir a_directory
+
+file://a_directory/a_resource <- http://localhost:8043/a_resource file://a_directory ! download
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert isdir('a_directory')
+        assert isfile('a_directory/a_resource')
 
     # @isolate
     # def test_download_fails(self):
@@ -324,22 +354,3 @@ file://google.html <- file://A ! download
         assert rcode == 2
         assert output.find("* file://B") == -1
         assert output.find("Download processor") >= 0, output
-
-    @isolate
-    def test_download_https(self):
-        """https download should work"""
-        if not online:
-            raise SkipTest("Offline")
-        project = "file://google.html <- https://www.google.com/ ! download"
-        rcode, output = run_tuttle_file(project)
-
-        if output.find("SSL certificate problem: unable to get local issuer certificate") >= 0:
-            raise SkipTest("Skip test because of a certificate bug from appveyor")
-
-        assert rcode == 0, output
-        assert isfile("google.html")
-        content = open("google.html").read()
-        assert content.find("<title>Google</title>") >= 0
-        logs = open(join(".tuttle", "processes", "logs", "tuttlefile_1_stdout.txt"), "r").read()
-        assert re.search("\n\.+\n", logs) is not None, logs
-        assert isfile(join(".tuttle", "processes", "logs", "tuttlefile_1_err.txt"))
