@@ -32,8 +32,7 @@ script:
 - pip install .
 - python tests/test_addons/test_hdfs.py install
 - . tests/hadoop/vars.sh
-- nosetests
-- echo debug
+- nosetests -v
 # Making .deb package
 - dpkg-buildpackage -us -uc
 - mkdir -p dist/debian

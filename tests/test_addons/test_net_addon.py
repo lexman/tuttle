@@ -322,7 +322,7 @@ class TestDownloadProcessor:
         project = """file://a_directory <-
         mkdir a_directory
 
-file://a_directory/a_resource <- http://localhost:8043/a_resource file://a_directory ! download
+file://a_directory/a_resource <- http://localhost:8043/a_resource ! download
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
