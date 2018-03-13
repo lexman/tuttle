@@ -309,6 +309,14 @@ class TestDownloadProcessor:
             assert e.message.find("don't know how to handle these outputs") >= 0, e.message
 
     @isolate
+    def test_simple_dl(self):
+        """ Should download a file as long as there is one input and exactly one file as output """
+        project = """file://huge_resource.js <- http://localhost:8043/huge_resource.js ! download"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert isfile('huge_resource.js')
+
+    @isolate
     def test_can_downloading_sub_dir(self):
         """ Should download a file as long as there is one file input and exactly one downloadable resource """
         project = """file://a_directory <-
@@ -362,6 +370,25 @@ file://google.html <- file://A ! download
         assert rcode == 2
         assert output.find("* file://B") == -1
         assert output.find("Download processor") >= 0, output
+
+    @isolate
+    def test_download_https(self):
+        """ https download should work """
+        if not online:
+            raise SkipTest("Offline")
+        project = "file://google.html <- https://www.google.com/ ! download"
+        rcode, output = run_tuttle_file(project)
+
+        if output.find("SSL certificate problem: unable to get local issuer certificate") >= 0:
+            raise SkipTest("Skip test because of a certificate bug from appveyor")
+
+        assert rcode == 0, output
+        assert isfile("google.html")
+        content = open("google.html").read()
+        assert content.find("<title>Google</title>") >= 0
+        logs = open(join(".tuttle", "processes", "logs", "tuttlefile_1_stdout.txt"), "r").read()
+        assert re.search("\n\.+\n", logs) is not None, logs
+        assert isfile(join(".tuttle", "processes", "logs", "tuttlefile_1_err.txt"))
 
     def run_ftp_server(self):
         authorizer = DummyAuthorizer()
