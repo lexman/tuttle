@@ -3,7 +3,7 @@ import re
 from os.path import expanduser, exists, join
 
 from tuttle.addons.ftp import FTPResource
-from tuttle.addons.odbc import ODBCResource
+from tuttle.addons.odbc import ODBCResource, ODBCProcessor
 from tuttle.error import TuttleError
 from tuttle.resource import FileResource
 from tuttle.processors import *
@@ -110,6 +110,7 @@ class WorkflowBuilder():
         self._processors['sqlite'] = SQLiteProcessor()
         self._processors['postgresql'] = PostgresqlProcessor()
         self._processors['csv2sqlite'] = CSV2SQLiteProcessor()
+        self._processors['odbc'] = ODBCProcessor()
         if os.name == "nt":
             self._processors['default'] = self._processors['bat']
         else:
