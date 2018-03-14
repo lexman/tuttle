@@ -123,7 +123,7 @@ class TestODBCResource():
         assert output.find("Can't connect")> -1, output
 
 
-class NoTestODBCProcessor():
+class TestODBCProcessor():
     """
     Test the odbc processor
     To ensure tests will be run, you must provide access to a local postgresql database called tuttle_test_db,
@@ -162,7 +162,7 @@ class NoTestODBCProcessor():
         assert process._processor.name == "odbc"
 
     @isolate
-    def test_postgresql_processor(self):
+    def test_odbc_processor(self):
         """A project with a PostgreSQL processor should run the sql statements"""
         project = """odbc://tuttle_test_db/new_table <- odbc://tuttle_test_db/test_table ! odbc
         CREATE TABLE new_table AS SELECT * FROM test_table;
@@ -172,19 +172,19 @@ class NoTestODBCProcessor():
         assert output.find("CREATE TABLE new_table AS SELECT * FROM test_table") > -1, \
             "ODBCProcessor should log the SQL statements"
 
-#    def test_static_check_should_fail_if_across_several_postgresql_databases(self):
-#        """The PostgreSQL processor can't decide which database to connect to"""
-#        project = "pg://localhost:5432/tuttle_test_db/new_table <- pg://localhost:5432/another_db/test_table ! postgresql"
-#        pp = ProjectParser()
-#        pp.set_project(project)
-#        pp.read_line()
-#        process = pp.parse_dependencies_and_processor()
-#        assert process._processor.name == "postgresql"
-#        try:
-#            process.static_check()
-#            assert False, "Static check should not have allowed connection"
-#        except PostgresqlTuttleError:
-#            assert True
+    def test_static_check_should_fail_if_across_several_postgresql_databases(self):
+        """The ODBC processor can't decide which database to connect to"""
+        project = "odbc://tuttle_test_db/new_table <- odbc://another_db/test_table ! odbc"
+        pp = ProjectParser()
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_dependencies_and_processor()
+        assert process._processor.name == "odbc"
+        try:
+            process.static_check()
+            assert False, "Static check should not have allowed connection"
+        except TuttleError:
+            assert True
 
 #    @isolate
 #    def test_postgresql_processor_with_several_instuctions(self):
