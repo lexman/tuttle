@@ -33,6 +33,10 @@ class MockHTTPHandler(BaseHTTPRequestHandler):
 
     viz = join(dirname(report.__file__), 'html_report_assets', 'viz.js')
 
+    def server_bind(self):
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.bind(self.server_address)
+
     def handle(self):
         try:
             BaseHTTPRequestHandler.handle(self)
@@ -317,12 +321,12 @@ class TestDownloadProcessor:
         assert isfile('huge_resource.js')
 
     @isolate
-    def test_can_downloading_sub_dir(self):
-        """ Should download a file as long as there is one file input and exactly one downloadable resource """
+    def test_can_download_in_sub_dir(self):
+        """ Should download as long as there is one file output and exactly one downloadable resource """
         project = """file://a_directory <-
         mkdir a_directory
 
-file://a_directory/a_resource <- http://localhost:8043/a_resource ! download
+file://a_directory/a_resource <- file://a_directory http://localhost:8043/huge_resource.js ! download
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
@@ -332,7 +336,7 @@ file://a_directory/a_resource <- http://localhost:8043/a_resource ! download
     @isolate
     def test_can_downloading_sub_dir2(self):
         """ Should download a file as long as there is one file input and exactly one downloadable resource 2 """
-        project = """file://a_resource <- http://localhost:8043//huge_resource.js ! download
+        project = """file://a_resource <- http://localhost:8043/huge_resource.js ! download
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
