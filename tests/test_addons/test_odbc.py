@@ -1,9 +1,14 @@
 # -*- coding: utf8 -*-
 from os.path import join
+
+import psycopg2
+
 from tests.functional_tests import run_tuttle_file, isolate
 from tuttle.addons.odbc import ODBCResource
 from tuttle.addons.postgres import PostgreSQLResource, PostgresqlTuttleError
 from nose.plugins.skip import SkipTest
+
+from tuttle.error import TuttleError
 from tuttle.project_parser import ProjectParser
 
 
@@ -26,8 +31,7 @@ class TestODBCResource():
     def setUp(self):
         try:
             import pyodbc
-            conn_string = "dsn=\'{}\'".format(self.__test_dsn)
-            conn_string = "dsn=tuttle_test_db"
+            conn_string = "dsn={}".format(self.__test_dsn)
             conn = pyodbc.connect(conn_string)
 
         except pyodbc.InterfaceError:
@@ -86,8 +90,11 @@ class TestODBCResource():
         """If DSN does not exist, should tell tuttle can't connect !"""
         url = "odbc://unknown_dsn/test_table"
         res = ODBCResource(url)
-        # assert not res.exists(), "{} should not exist".format(url)
-
+        try:
+            res.exists()
+            assert False
+        except TuttleError as e:
+            assert e.message.find("to check existence of resource") > 0, e.message
 
     @isolate
     def test_odbc_resources_are_available_in_tuttle(self):
@@ -116,11 +123,12 @@ class TestODBCResource():
         assert output.find("Can't connect")> -1, output
 
 
-class NOTestODBCProcessor():
+class NoTestODBCProcessor():
     """
-    Test the postgresql processor
+    Test the odbc processor
     To ensure tests will be run, you must provide access to a local postgresql database called tuttle_test_db,
-    then you must run the tests with environment variables allowing access to this database.
+    that will be exposed as ODBC
+    To be able to run the tests you must run the tests with environment variables allowing access to this database.
     Eg, if you have defined a user tuttle with password tuttle, you can run the tests like this on Linux :
         export PGUSER=tuttle
         export PGPASSWORD=tuttle
@@ -137,114 +145,114 @@ class NOTestODBCProcessor():
                                                                    self.__test_db_port)
             conn = psycopg2.connect(conn_string)
         except psycopg2.OperationalError:
-            raise SkipTest("No postgreSQL database configured to run the tests")
+            raise SkipTest("No postgreSQL database configured to mock the ODBC tests")
         cur = conn.cursor()
         cur.execute("DROP TABLE IF EXISTS test_table CASCADE")
         cur.execute("CREATE TABLE test_table (col1 INT)")
         cur.execute("INSERT INTO test_table (col1) VALUES (12)")
         conn.commit()
 
-    def test_postgresql_processor_should_be_availlable(self):
+    def test_odbc_processor_should_be_availlable(self):
         """A project with a PostgreSQL processor should be Ok"""
-        project = "pg://localhost:5432/tuttle_test_db/another_test_table <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql"
+        project = "odbc://tuttle_test_db/another_test_table <- odbc://tuttle_test_db/test_table ! odbc"
         pp = ProjectParser()
         pp.set_project(project)
         pp.read_line()
         process = pp.parse_dependencies_and_processor()
-        assert process._processor.name == "postgresql"
+        assert process._processor.name == "odbc"
 
     @isolate
     def test_postgresql_processor(self):
         """A project with a PostgreSQL processor should run the sql statements"""
-        project = """pg://localhost:5432/tuttle_test_db/new_table <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql
+        project = """odbc://tuttle_test_db/new_table <- odbc://tuttle_test_db/test_table ! odbc
         CREATE TABLE new_table AS SELECT * FROM test_table;
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
         assert output.find("CREATE TABLE new_table AS SELECT * FROM test_table") > -1, \
-            "PostgresqlProcessor should log the SQL statements"
+            "ODBCProcessor should log the SQL statements"
 
-    def test_static_check_should_fail_if_across_several_postgresql_databases(self):
-        """The PostgreSQL processor can't decide which database to connect to"""
-        project = "pg://localhost:5432/tuttle_test_db/new_table <- pg://localhost:5432/another_db/test_table ! postgresql"
-        pp = ProjectParser()
-        pp.set_project(project)
-        pp.read_line()
-        process = pp.parse_dependencies_and_processor()
-        assert process._processor.name == "postgresql"
-        try:
-            process.static_check()
-            assert False, "Static check should not have allowed connection"
-        except PostgresqlTuttleError:
-            assert True
+#    def test_static_check_should_fail_if_across_several_postgresql_databases(self):
+#        """The PostgreSQL processor can't decide which database to connect to"""
+#        project = "pg://localhost:5432/tuttle_test_db/new_table <- pg://localhost:5432/another_db/test_table ! postgresql"
+#        pp = ProjectParser()
+#        pp.set_project(project)
+#        pp.read_line()
+#        process = pp.parse_dependencies_and_processor()
+#        assert process._processor.name == "postgresql"
+#        try:
+#            process.static_check()
+#            assert False, "Static check should not have allowed connection"
+#        except PostgresqlTuttleError:
+#            assert True
 
-    @isolate
-    def test_postgresql_processor_with_several_instuctions(self):
-        """ A PostgreSQL process can have several SQL instructions"""
-        project = """pg://localhost:5432/tuttle_test_db/new_table, pg://localhost:5432/tuttle_test_db/another_table <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql
-        CREATE TABLE new_table AS SELECT * FROM test_table;
+#    @isolate
+#    def test_postgresql_processor_with_several_instuctions(self):
+#        """ A PostgreSQL process can have several SQL instructions"""
+#        project = """pg://localhost:5432/tuttle_test_db/new_table, pg://localhost:5432/tuttle_test_db/another_table <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql
+#        CREATE TABLE new_table AS SELECT * FROM test_table;
 
-        CREATE TABLE another_table (id int, col1 varchar);
-        """
-        rcode, output = run_tuttle_file(project)
-        assert rcode == 0, output
+#        CREATE TABLE another_table (id int, col1 varchar);
+#        """
+#        rcode, output = run_tuttle_file(project)
+#        assert rcode == 0, output
 
-    @isolate
-    def test_sql_error_in_postgresql_processor(self):
-        """ If an error occurs, tuttle should fail and output logs should trace the error"""
-        project = """pg://localhost:5432/tuttle_test_db/new_table <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql
-        CREATE TABLE new_table AS SELECT * FROM test_table;
+#    @isolate
+#    def test_sql_error_in_postgresql_processor(self):
+#        """ If an error occurs, tuttle should fail and output logs should trace the error"""
+#        project = """pg://localhost:5432/tuttle_test_db/new_table <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql
+#        CREATE TABLE new_table AS SELECT * FROM test_table;
+#
+#        NOT an SQL statement;
+#        """
+#        rcode, output = run_tuttle_file(project)
+#        assert rcode == 2
+#        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err.txt')).read()
+#        assert error_log.find(' NOT ') >= 0, error_log
+#
+#    @isolate
+#    def test_comments_in_process(self):
+#        """ Comments should be ignored and not considered as errors"""
+#        project = """pg://localhost:5432/tuttle_test_db/new_table <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql
+#        CREATE TABLE new_table AS SELECT * FROM test_table;
+#        -- This is a comment
+#        /* last comment style*/
+#        """
+#        rcode, output = run_tuttle_file(project)
+#        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err.txt')).read()
+#        assert rcode == 0, error_log
+#        assert output.find("comment") >= 0
 
-        NOT an SQL statement;
-        """
-        rcode, output = run_tuttle_file(project)
-        assert rcode == 2
-        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err.txt')).read()
-        assert error_log.find(' NOT ') >= 0, error_log
+#    def test_check_ok_with_no_outputs(self):
+#        """static check should work even if there are no outputs"""
+#        project = " <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql"
+#        pp = ProjectParser()
+#        pp.set_project(project)
+#        pp.read_line()
+#        process = pp.parse_dependencies_and_processor()
+#        assert process._processor.name == "postgresql"
+#        process.static_check()
 
-    @isolate
-    def test_comments_in_process(self):
-        """ Comments should be ignored and not considered as errors"""
-        project = """pg://localhost:5432/tuttle_test_db/new_table <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql
-        CREATE TABLE new_table AS SELECT * FROM test_table;
-        -- This is a comment
-        /* last comment style*/
-        """
-        rcode, output = run_tuttle_file(project)
-        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err.txt')).read()
-        assert rcode == 0, error_log
-        assert output.find("comment") >= 0
+#    def test_sqlite_static_check_ok_with_no_inputs(self):
+#        """Static check should work even if there are no inputs"""
+#        project = "pg://localhost:5432/tuttle_test_db/test_table <- ! postgresql"
+#        pp = ProjectParser()
+#        pp.set_project(project)
+#        pp.read_line()
+#        process = pp.parse_dependencies_and_processor()
+#        assert process._processor.name == "postgresql"
+#        process.static_check()
 
-    def test_check_ok_with_no_outputs(self):
-        """static check should work even if there are no outputs"""
-        project = " <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql"
-        pp = ProjectParser()
-        pp.set_project(project)
-        pp.read_line()
-        process = pp.parse_dependencies_and_processor()
-        assert process._processor.name == "postgresql"
-        process.static_check()
-
-    def test_sqlite_static_check_ok_with_no_inputs(self):
-        """Static check should work even if there are no inputs"""
-        project = "pg://localhost:5432/tuttle_test_db/test_table <- ! postgresql"
-        pp = ProjectParser()
-        pp.set_project(project)
-        pp.read_line()
-        process = pp.parse_dependencies_and_processor()
-        assert process._processor.name == "postgresql"
-        process.static_check()
-
-    def test_static_check_should_fail_without_pg_resources(self):
-        """Static check should fail if no PostgreSQL resources are specified either in inputs or outputs"""
-        project = "<- ! postgresql"
-        pp = ProjectParser()
-        pp.set_project(project)
-        pp.read_line()
-        process = pp.parse_dependencies_and_processor()
-        assert process._processor.name == "postgresql"
-        try:
-            process.static_check()
-            assert False, "Static check should not have allowed PostgreSQL proccessor without PostgreSQL resource"
-        except PostgresqlTuttleError:
-            assert True
+#    def test_static_check_should_fail_without_pg_resources(self):
+#        """Static check should fail if no PostgreSQL resources are specified either in inputs or outputs"""
+#        project = "<- ! postgresql"
+#        pp = ProjectParser()
+#        pp.set_project(project)
+#        pp.read_line()
+#        process = pp.parse_dependencies_and_processor()
+#        assert process._processor.name == "postgresql"
+#        try:
+#            process.static_check()
+#            assert False, "Static check should not have allowed PostgreSQL proccessor without PostgreSQL resource"
+#        except PostgresqlTuttleError:
+#            assert True
