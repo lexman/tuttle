@@ -326,7 +326,7 @@ class TestDownloadProcessor:
         project = """file://a_directory <-
         mkdir a_directory
 
-file://a_directory/a_resource <- file://a_directory http://localhost:8043/huge_resource.js ! download
+file://a_resource <- file://a_directory http://localhost:8043/huge_resource.js ! download
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
