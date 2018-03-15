@@ -172,7 +172,7 @@ class TestODBCProcessor():
         assert output.find("CREATE TABLE new_table AS SELECT * FROM test_table") > -1, \
             "ODBCProcessor should log the SQL statements"
 
-    def test_static_check_should_fail_if_across_several_postgresql_databases(self):
+    def test_static_check_should_fail_if_across_several_odbc_databases(self):
         """The ODBC processor can't decide which database to connect to"""
         project = "odbc://tuttle_test_db/new_table <- odbc://another_db/test_table ! odbc"
         pp = ProjectParser()
@@ -186,73 +186,73 @@ class TestODBCProcessor():
         except TuttleError:
             assert True
 
-#    @isolate
-#    def test_postgresql_processor_with_several_instuctions(self):
-#        """ A PostgreSQL process can have several SQL instructions"""
-#        project = """pg://localhost:5432/tuttle_test_db/new_table, pg://localhost:5432/tuttle_test_db/another_table <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql
-#        CREATE TABLE new_table AS SELECT * FROM test_table;
+    @isolate
+    def test_odbc_processor_with_several_instuctions(self):
+        """ An ODBC process can have several SQL instructions and create several tables"""
+        project = """odbc://tuttle_test_db/new_table, odbc://tuttle_test_db/another_table <- odbc://tuttle_test_db/test_table ! odbc
+        CREATE TABLE new_table AS SELECT * FROM test_table;
+        CREATE TABLE another_table (id int, col1 varchar);
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
 
-#        CREATE TABLE another_table (id int, col1 varchar);
-#        """
-#        rcode, output = run_tuttle_file(project)
-#        assert rcode == 0, output
+    @isolate
+    def test_sql_error_in_odbc_processor(self):
+        """ If an error occurs, tuttle should fail and output logs should trace the error"""
+        project = """odbc://tuttle_test_db/new_table <- odbc://tuttle_test_db/test_table ! odbc
+        CREATE TABLE new_table AS SELECT * FROM test_table;
 
-#    @isolate
-#    def test_sql_error_in_postgresql_processor(self):
-#        """ If an error occurs, tuttle should fail and output logs should trace the error"""
-#        project = """pg://localhost:5432/tuttle_test_db/new_table <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql
-#        CREATE TABLE new_table AS SELECT * FROM test_table;
-#
-#        NOT an SQL statement;
-#        """
-#        rcode, output = run_tuttle_file(project)
-#        assert rcode == 2
-#        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err.txt')).read()
-#        assert error_log.find(' NOT ') >= 0, error_log
-#
-#    @isolate
-#    def test_comments_in_process(self):
-#        """ Comments should be ignored and not considered as errors"""
-#        project = """pg://localhost:5432/tuttle_test_db/new_table <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql
-#        CREATE TABLE new_table AS SELECT * FROM test_table;
-#        -- This is a comment
-#        /* last comment style*/
-#        """
-#        rcode, output = run_tuttle_file(project)
-#        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err.txt')).read()
-#        assert rcode == 0, error_log
-#        assert output.find("comment") >= 0
+        NOT an SQL statement;
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2, output
+        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err.txt')).read()
+        assert error_log.find('"NOT"') >= 0, error_log
 
-#    def test_check_ok_with_no_outputs(self):
-#        """static check should work even if there are no outputs"""
-#        project = " <- pg://localhost:5432/tuttle_test_db/test_table ! postgresql"
-#        pp = ProjectParser()
-#        pp.set_project(project)
-#        pp.read_line()
-#        process = pp.parse_dependencies_and_processor()
-#        assert process._processor.name == "postgresql"
-#        process.static_check()
+    @isolate
+    def test_comments_in_process(self):
+        """ Comments should be ignored and not considered as errors"""
+        project = """odbc://tuttle_test_db/new_table <- odbc://tuttle_test_db/test_table ! odbc
+        CREATE TABLE new_table AS SELECT * FROM test_table;
+        -- This is a comment
+        /* last comment style*/
+        """
+        rcode, output = run_tuttle_file(project)
+        error_log = open(join('.tuttle', 'processes', 'logs', 'tuttlefile_1_err.txt')).read()
+        assert rcode == 0, error_log
+        assert output.find("comment") >= 0
 
-#    def test_sqlite_static_check_ok_with_no_inputs(self):
-#        """Static check should work even if there are no inputs"""
-#        project = "pg://localhost:5432/tuttle_test_db/test_table <- ! postgresql"
-#        pp = ProjectParser()
-#        pp.set_project(project)
-#        pp.read_line()
-#        process = pp.parse_dependencies_and_processor()
-#        assert process._processor.name == "postgresql"
-#        process.static_check()
+    def test_check_ok_with_no_outputs(self):
+        """static check should work even if there are no outputs"""
+        project = " <- odbc://tuttle_test_db/test_table ! odbc"
+        pp = ProjectParser()
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_dependencies_and_processor()
+        assert process._processor.name == "odbc"
+        process.static_check()
 
-#    def test_static_check_should_fail_without_pg_resources(self):
-#        """Static check should fail if no PostgreSQL resources are specified either in inputs or outputs"""
-#        project = "<- ! postgresql"
-#        pp = ProjectParser()
-#        pp.set_project(project)
-#        pp.read_line()
-#        process = pp.parse_dependencies_and_processor()
-#        assert process._processor.name == "postgresql"
-#        try:
-#            process.static_check()
-#            assert False, "Static check should not have allowed PostgreSQL proccessor without PostgreSQL resource"
-#        except PostgresqlTuttleError:
-#            assert True
+    def test_static_check_ok_with_no_inputs(self):
+        """Static check should work even if there are no inputs"""
+        project = "odbc://tuttle_test_db/test_table <- ! odbc"
+        pp = ProjectParser()
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_dependencies_and_processor()
+        assert process._processor.name == "odbc"
+        process.static_check()
+
+    def test_static_check_should_fail_without_odbc_resources(self):
+        """Static check should fail if no ODBC resources are specified either in inputs or outputs"""
+        project = "<- ! odbc"
+        pp = ProjectParser()
+        pp.set_project(project)
+        pp.read_line()
+        process = pp.parse_dependencies_and_processor()
+        assert process._processor.name == "odbc"
+        try:
+            process.static_check()
+            assert False, "Static check should not have allowed ODBC proccessor without ODBC resource"
+        except TuttleError as e:
+            assert e.message.find("at least") >= 0, e.message
+            assert True
