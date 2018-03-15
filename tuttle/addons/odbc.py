@@ -1,9 +1,7 @@
 # -*- coding: utf8 -*-
+
 from itertools import chain
-
 from re import compile
-
-from tuttle.addons.netutils import hostname_resolves
 from tuttle.error import TuttleError
 from tuttle.resource import MalformedUrl, ResourceMixIn
 from hashlib import sha1
@@ -31,9 +29,8 @@ class ODBCResource(ResourceMixIn, object):
         try:
             conn = pyodbc.connect(conn_string)
         except pyodbc.InterfaceError as e:
-            raise TuttleError("Can't connect to DSN : \"{}\" to "
-                              "check existence of resource {}. Have you declared the Data Source Name ?".format(conn_string, self.url))
-
+            raise TuttleError("Can't connect to DSN : \"{}\" to check existence of resource {}. "
+                              "Have you declared the Data Source Name ?".format(conn_string, self.url))
         query = "SELECT * FROM {} LIMIT 0".format(self._relation)
         cur = conn.cursor()
         try:
@@ -94,8 +91,6 @@ class ODBCResource(ResourceMixIn, object):
             conn.close()
 
 
-
-
 class ODBCProcessor:
     """ A processor that runs sql directely in a postgres database
     """
@@ -137,9 +132,10 @@ class ODBCProcessor:
                     cursor.execute(process._code)
                     db.commit()
                 except Exception as e:
-                    lerr.write(e.message)
+                    query_err_mess = e.args[1]
+                    lerr.write(query_err_mess)
                     lerr.write("\n")
-                    msg = "Error while running ODBC process {} : '{}'".format(process.id, e.message)
+                    msg = "Error while running ODBC process {} : '{}'".format(process.id, query_err_mess)
                     raise TuttleError(msg)
         except pyodbc.InterfaceError as e:
             return False
