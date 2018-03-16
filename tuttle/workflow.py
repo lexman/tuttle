@@ -80,6 +80,9 @@ class Workflow:
         for preprocess in self._preprocesses:
             yield preprocess
 
+    def nb_resources(self):
+        return len(self._resources)
+
     def iter_resources(self):
         return self._resources.itervalues()
 
