@@ -140,7 +140,7 @@ class Workflow:
         WorkflowRunner.print_preprocesses_header()
         for process in self.iter_preprocesses():
             TuttleDirectories.prepare_and_assign_paths(process)
-            lt.follow_process(process.log_stdout, process.log_stderr, process.id)
+            lt.follow_process(process.log_stdout, process.log_stderr, None)
 
         with lt.trace_in_background(), TuttleEnv():
             for preprocess in self.iter_preprocesses():
@@ -164,7 +164,7 @@ class Workflow:
                 finally:
                     preprocess.set_end(success, error_msg)
                     self.create_reports()
-            WorkflowRunner.print_preprocesses_footer()
+        WorkflowRunner.print_preprocesses_footer()
 
     def create_reports(self):
         """ Write to disk files describing the workflow, with color for states

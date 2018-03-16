@@ -34,6 +34,17 @@ class TestPreprocessors:
         code_pos = report.find("echo Running preprocess")
         assert code_pos > -1, code_pos
 
+    @isolate
+    def test_preprocesslogs_are_not_prefixed(self):
+        """ Preprocessors should appear in the report """
+        project = """|<<
+    echo Running preprocess line 1
+    echo Running preprocess line 2
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+        assert output.find("\nRunning preprocess line 2") >= 0, output
+
     @isolate(['A'])
     def test_no_preprocess_in_report(self):
         """ The report should not include a preprocess section if there are no preprocesses """

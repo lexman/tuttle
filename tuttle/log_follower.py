@@ -39,7 +39,10 @@ class LogTracer:
             lines = self._filedescr.readlines(self.READ_SIZE)
             for line in lines:
                 traced = True
-                msg = "[{}] {}".format(self._namespace, LogTracer.remove_ending_cr(line))
+                if self._namespace:
+                    msg = "[{}] {}".format(self._namespace, LogTracer.remove_ending_cr(line))
+                else:
+                    msg = LogTracer.remove_ending_cr(line)
                 self._logger.info(msg)
         return traced
 
@@ -71,8 +74,14 @@ class LogsFollower:
 
     def follow_process(self, filestdout, filestderr, process_name):
         """ Adds 2 files to follow : the stderr and stdin of a process """
-        tracer_stdout = LogTracer(self._logger, "{}::stdout".format(process_name), filestdout)
-        tracer_stderr = LogTracer(self._logger, "{}::stderr".format(process_name), filestderr)
+        if process_name:
+            nsout = "{}::stdout".format(process_name)
+            nserr = "{}::stderr".format(process_name)
+        else:
+            nsout = None
+            nserr = None
+        tracer_stdout = LogTracer(self._logger, nsout, filestdout)
+        tracer_stderr = LogTracer(self._logger, nserr, filestderr)
         self._logs.append(tracer_stdout)
         self._logs.append(tracer_stderr)
         
