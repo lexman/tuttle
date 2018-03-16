@@ -85,6 +85,9 @@ def run_process_without_exception(process):
     return True, None, signatures
 
 
+def underline(st, char = '-'):
+    return char * len(st)
+
 class WorkflowRunner:
 
     @staticmethod
@@ -222,21 +225,21 @@ class WorkflowRunner:
 
     @staticmethod
     def print_preprocess_header(process, logger):
-        logger.info("-" * 60)
-        logger.info("Preprocess : {}".format(process.id))
-        logger.info("-" * 60)
+        title = "Preprocess : {}".format(process.id)
+        logger.info("[" + title + "]")
+        #logger.info(underline(title))
 
     @staticmethod
     def print_preprocesses_header():
-        print("=" * 60)
-        print("Running preprocesses for this workflow")
-        print("=" * 60)
+        title = "Running preprocesses".upper()
+        print("[" + title + "]")
+        #print(underline(title, '='))
 
     @staticmethod
     def print_preprocesses_footer():
-        print("=" * 60)
-        print("End of preprocesses... Running the workflow")
-        print("=" * 60)
+        title = "End of preprocesses... Running the workflow".upper()
+        #print(underline(title, '='))
+        print("[" + title + "]")
 
     @staticmethod
     def get_logger():
