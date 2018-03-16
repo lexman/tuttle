@@ -366,7 +366,7 @@ class TestPostgresqlProcessor:
         assert process._processor.name == "postgresql"
         process.static_check()
 
-    def test_sqlite_static_check_ok_with_no_inputs(self):
+    def test_static_check_ok_with_no_inputs(self):
         """Static check should work even if there are no inputs"""
         project = "pg://localhost:5432/tuttle_test_db/test_table <- ! postgresql"
         pp = ProjectParser()

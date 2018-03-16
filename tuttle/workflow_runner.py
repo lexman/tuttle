@@ -88,6 +88,7 @@ def run_process_without_exception(process):
 def underline(st, char = '-'):
     return char * len(st)
 
+
 class WorkflowRunner:
 
     @staticmethod
