@@ -53,8 +53,8 @@ tuttle_description = {
     ],
     'entry_points': {
         'console_scripts': [
-            'tuttle=tuttle.entry_points:tuttle_main',
-            'tuttle-extend-workflow=tuttle.entry_points:tuttle_extend_workflow_main',
+            'tuttle=tuttle.entry_points.tuttle_main:tuttle_main',
+            'tuttle-extend-workflow=tuttle.entry_points.tuttle_extend_workflow:tuttle_extend_workflow_main',
         ],
     },
     'include_package_data': True,

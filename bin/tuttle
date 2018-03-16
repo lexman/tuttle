@@ -13,7 +13,7 @@ else:
     tuttle_module = join(dirname(abspath(__file__)), '..', '..', 'tuttle')
 sys.path.insert(0, tuttle_module)
 
-from tuttle.entry_points import tuttle_main
+from tuttle.entry_points.tuttle_main import tuttle_main
 
 if __name__ == '__main__':
     freeze_support()
