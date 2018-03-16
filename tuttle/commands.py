@@ -11,7 +11,7 @@ from os.path import abspath
 def load_project(tuttlefile):
     pp = ProjectParser()
     workflow = pp.parse_and_check_file(tuttlefile)
-    print("Discovering resources...")
+    print("Discovering {} resources...".format(workflow.nb_resources()))
     workflow.discover_resources()
     return workflow
 
