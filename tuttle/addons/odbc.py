@@ -23,7 +23,6 @@ class ODBCResource(ResourceMixIn, object):
         self._dsn = m.group(1)
         self._relation = m.group(2)
 
-
     def exists(self):
         conn_string = "dsn={}".format(self._dsn)
         try:

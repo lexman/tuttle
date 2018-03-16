@@ -1,8 +1,7 @@
 # -*- coding: utf8 -*-
+
 from itertools import chain
-
 from re import compile
-
 from tuttle.addons.netutils import hostname_resolves
 from tuttle.error import TuttleError
 from tuttle.resource import MalformedUrl, ResourceMixIn
