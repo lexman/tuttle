@@ -67,7 +67,7 @@ def run_first_process(one_process_workflow, extra_processor=None, extra_resource
         wr._lt.follow_process(process.log_stdout, process.log_stderr, process.id)
         with wr._lt.trace_in_background():
             wr.start_process_in_background(process)  # The function we're testing !
-        timeout = time() + 0.9
+        timeout = time() + 1.2
         while time() < timeout and not wr._completed_processes:
             sleep(0.1)
         assert time() < timeout, "Process should have stoped now"
