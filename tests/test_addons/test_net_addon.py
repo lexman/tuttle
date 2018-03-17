@@ -323,24 +323,15 @@ class TestDownloadProcessor:
     @isolate
     def test_can_download_in_sub_dir(self):
         """ Should download as long as there is one file output and exactly one downloadable resource """
-        project = """file://a_resource <- http://localhost:8043/huge_resource.js ! download
+        project = """file://a_directory/a_resource <- http://localhost:8043/huge_resource.js file://a_directory ! download
 
 file://a_directory <-
         mkdir a_directory
         """
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
-        #assert isdir('a_directory')
-        #assert isfile('a_directory/a_resource')
-
-    @isolate
-    def test_can_downloading_sub_dir2(self):
-        """ Should download a file as long as there is one file input and exactly one downloadable resource 2 """
-        project = """file://a_resource <- http://localhost:8043/huge_resource.js ! download
-        """
-        rcode, output = run_tuttle_file(project)
-        assert rcode == 0, output
-        assert isfile('a_resource')
+        assert isdir('a_directory')
+        assert isfile('a_directory/a_resource')
 
     # @isolate
     # def test_download_fails(self):
