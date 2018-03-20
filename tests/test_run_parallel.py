@@ -70,7 +70,7 @@ def run_first_process(one_process_workflow, extra_processor=None, extra_resource
         timeout = time() + 1.2
         while time() < timeout and not wr._completed_processes:
             sleep(0.1)
-        assert time() < timeout, "Process should have stoped now"
+        assert time() < timeout, "Process should have stopped now"
     finally:
         wr.terminate_workers_and_clean_subprocesses()
     return process
@@ -133,11 +133,13 @@ class TestRunParallel:
     echo A produces B > B
     echo about to fail
     error
-    
-file://C <- file://A
-    sleep 1
-    echo A produces C > C
-    echo A have produced C
+
+file://C <- file://A ! python
+    import time
+    time.sleep(1)
+    f = open('C', 'w')
+    f.write('A produces C')
+    print('A have produced C')
 
 file://D <- file://B
     echo B produces D > D
@@ -146,8 +148,8 @@ file://D <- file://B
 
         rcode, output = run_tuttle_file(first, nb_workers=2)
         assert rcode == 2
-        assert isfile('B')
-        assert isfile('C')
+        assert isfile('B'), output 
+        assert isfile('C'), output 
 
         assert output.find("Process tuttlefile_1 has failled") > -1, output
         assert output.find("Waiting for all processes already started to complete") > -1, output
