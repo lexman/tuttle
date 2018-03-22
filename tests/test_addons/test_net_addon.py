@@ -1,4 +1,6 @@
 # -*- coding: utf8 -*-
+import BaseHTTPServer
+import SocketServer
 import re
 import socket
 from os.path import isfile, join, dirname, isdir
@@ -21,6 +23,12 @@ from tuttle.utils import EnvVar
 from tuttle.workflow_runner import WorkflowRunner
 from tuttle import report
 from tests import is_online, online
+
+
+class ThreadingHTTPServer(SocketServer.ThreadingMixIn,
+                          SocketServer.TCPServer,
+                          BaseHTTPServer.HTTPServer):
+    pass
 
 
 class MockHTTPHandler(BaseHTTPRequestHandler):
@@ -116,7 +124,7 @@ class TestHttpResource:
 
     @classmethod
     def run_server(cls):
-        cls.httpd = TCPServer(("", 8042), MockHTTPHandler)
+        cls.httpd = ThreadingHTTPServer(("", 8042), MockHTTPHandler)
         cls.httpd.allow_reuse_address = True
         cls.httpd.serve_forever()
 
@@ -232,7 +240,7 @@ class TestDownloadProcessor:
 
     @classmethod
     def run_server(cls):
-        cls.httpd = TCPServer(("", 8043), MockHTTPHandler)
+        cls.httpd = ThreadingHTTPServer(("", 8043), MockHTTPHandler)
         cls.httpd.allow_reuse_address = True
         cls.httpd.serve_forever()
 
