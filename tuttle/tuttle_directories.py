@@ -65,12 +65,13 @@ class TuttleDirectories:
         log_stdout = join(from_path, 'logs', basename(process.log_stdout))
         log_stderr = join(from_path, 'logs', basename(process.log_stderr))
         TuttleDirectories.prepare_and_assign_paths(process)
+        # Some process don't create all the necessary files
         if exists(reserved_path):
             move(reserved_path, process._reserved_path)
-        if exists(log_stdout):
-            move(log_stdout, process.log_stdout)
-        if exists(log_stderr):
-            move(log_stderr, process.log_stderr)
+        #if exists(log_stdout):
+        move(log_stdout, process.log_stdout)
+        #if exists(log_stdout):
+        move(log_stderr, process.log_stderr)
 
     @staticmethod
     def straighten_out_process_and_logs(workflow):
