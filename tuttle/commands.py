@@ -198,6 +198,8 @@ def invalidate(tuttlefile, urls, threshold=-1):
             print_lost_sec(inv_duration)
         inv_collector.remove_resources(workflow)
         inv_collector.reset_execution_info()
+    workflow.retrieve_signatures(previous_workflow)
+    if inv_collector.resources_to_invalidate():
         inv_collector.straighten_out_signatures(workflow)
     reseted_failures = workflow.reset_failures()
     if inv_collector.resources_to_invalidate() or reseted_failures:

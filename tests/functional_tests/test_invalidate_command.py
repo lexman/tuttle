@@ -361,6 +361,24 @@ file://C <- file://B
         assert output.find("B produces C") >= 0, output
 
     @isolate(['A'])
+    def test_workflow_must_run_after_invalidation_because_of_an_error(self):
+        """ If a process fails, it can be invalidated then run again (from bug) """
+        project = """file://B <- file://A
+            echo A produces B
+            echo A produces B > B
+
+file://C <- file://B
+            ERROR
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2, output
+        rcode, output = tuttle_invalidate()
+        assert rcode == 0, output
+        rcode, output = run_tuttle_file(project)
+        # If if we get here, it means no exception was raised
+        assert rcode == 2, output
+
+    @isolate(['A'])
     def test_workflow_must_be_run_after_resource_invalidation_in_cascade(self):
         """ After invalidation of a resource, tuttle run should re-produce this resource and the dependencies"""
         project = """file://B <- file://A
