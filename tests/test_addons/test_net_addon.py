@@ -8,7 +8,7 @@ from time import sleep
 
 from nose.plugins.skip import Skip, SkipTest
 
-from tests.functional_tests import isolate, run_tuttle_file
+from tests.functional_tests import isolate, run_tuttle_file, tuttle_invalidate
 from tuttle.error import TuttleError
 from tuttle.project_parser import ProjectParser
 from tuttle.addons.net import HTTPResource
@@ -365,6 +365,22 @@ file://google.html <- file://A ! download
         rcode, output = run_tuttle_file(project)
         assert rcode == 2
         assert output.find("Download processor") >= 0, output
+
+    @isolate
+    def test_no_error_with_download_process(self):
+        """ Download process does not create code in reserved_path for the process... Thus it cant be moved when """
+        """ retreiving logs and reserved path from previous execution(from bug) """
+        project = """file://g <-  http://slackingzone.free.fr ! download
+
+file://h <- file://g
+    ERROR
+        """
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2, output
+        rcode, output = tuttle_invalidate()
+        assert rcode == 0, output
+        rcode, output = run_tuttle_file()
+        assert rcode == 2, output
 
     @isolate
     def test_pre_check_before_invalidation(self):
