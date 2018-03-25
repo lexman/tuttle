@@ -10,6 +10,7 @@ from nose.plugins.skip import SkipTest
 
 from tuttle.error import TuttleError
 from tuttle.project_parser import ProjectParser
+from tuttle.resource import MalformedUrl
 
 
 class TestODBCResource():
@@ -96,6 +97,15 @@ class TestODBCResource():
         assert res._relation == "test_partitionned_table", res._relation
         assert "col1" in res._filters, res._filters
         assert res._filters["col1"] == "val1", res._filters["col1"]
+
+    def test_parse_too_many_values_in_filter(self):
+        """Should raise if url contains several times the same filter"""
+        url = "odbc://tuttle_test_db/test_partitionned_table?col1=val1&col1=val2"
+        try:
+            res = ODBCResource(url)
+            assert False, "Should have raised"
+        except MalformedUrl as e:
+            assert e.message.find("Too many values")
 
 #    def test_odbc_table_partition_exists(self):
 #        """exists() should return True when a partition exists in the table"""

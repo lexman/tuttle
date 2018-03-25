@@ -2,6 +2,8 @@
 
 from itertools import chain
 from re import compile
+from urlparse import parse_qs
+
 from tuttle.error import TuttleError
 from tuttle.resource import MalformedUrl, ResourceMixIn
 from hashlib import sha1
@@ -13,7 +15,20 @@ class ODBCResource(ResourceMixIn, object):
     """eg : odbc://datasource_name/test_table"""
     scheme = 'odbc'
 
-    __ereg = compile("^odbc://([^/^:]*)/([^/]*)$")
+    __ereg = compile("^odbc://([^/^:]*)/([^/^?]*)(\?.*)?$")
+
+    def query2filters(self, query, url):
+        try:
+            filters = parse_qs(query, strict_parsing=True)
+            for col, values in filters.items():
+                if len(values) > 1:
+                    raise MalformedUrl("Malformed filter '{}' in ODBC url '{}'. "
+                                       "Too many values : '{}'".format(col, url, ','.join(values)))
+                else:
+                    filters[col] = values[0]
+        except ValueError:
+            raise MalformedUrl("Malformed filters '{}' in ODBC url : '{}'".format(query, url))
+        return filters
 
     def __init__(self, url):
         super(ODBCResource, self).__init__(url)
@@ -22,6 +37,9 @@ class ODBCResource(ResourceMixIn, object):
             raise MalformedUrl("Malformed ODBC url : '{}'".format(url))
         self._dsn = m.group(1)
         self._relation = m.group(2)
+        qs = m.group(3)
+        if qs:
+            self._filters = self.query2filters(qs[1:], url)
 
     def exists(self):
         conn_string = "dsn={}".format(self._dsn)
