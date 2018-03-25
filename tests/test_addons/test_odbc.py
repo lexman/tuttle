@@ -39,7 +39,9 @@ class TestODBCResource():
         cur = conn.cursor()
         cur.execute("DROP TABLE IF EXISTS test_table_project CASCADE")
         cur.execute("DROP TABLE IF EXISTS test_table CASCADE")
+        cur.execute("DROP TABLE IF EXISTS test_partitionned_table CASCADE")
         cur.execute("CREATE TABLE test_table (col1 INT)")
+        cur.execute("CREATE TABLE test_partitionned_table (col1 INT)")
         #cur.execute("DROP VIEW IF EXISTS test_view")
         #cur.execute("CREATE VIEW test_view AS SELECT * FROM test_table")
         cur.execute("INSERT INTO test_table (col1) VALUES (12)")
@@ -83,6 +85,21 @@ class TestODBCResource():
 #    def test_odbc_view_exists(self):
 #        """exists() should return True when the table exists"""
 #        url = "odbc://tuttle_test_db/test_view"
+#        res = ODBCResource(url)
+#        assert res.exists(), "{} should exist".format(url)
+
+    def test_parse_partitionned_url(self):
+        """A standard odbc url should provide a valid resource"""
+        url = "odbc://tuttle_test_db/test_partitionned_table?col1=val1"
+        res = ODBCResource(url)
+        assert res._dsn == "tuttle_test_db", res._dsn
+        assert res._relation == "test_partitionned_table", res._relation
+        assert "col1" in res._filters, res._filters
+        assert res._filters["col1"] == "val1", res._filters["col1"]
+
+#    def test_odbc_table_partition_exists(self):
+#        """exists() should return True when a partition exists in the table"""
+#        url = "odbc://tuttle_test_db/test_partitionned_table?col1=val1"
 #        res = ODBCResource(url)
 #        assert res.exists(), "{} should exist".format(url)
 
