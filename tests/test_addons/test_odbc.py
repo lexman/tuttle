@@ -107,11 +107,17 @@ class TestODBCResource():
         except MalformedUrl as e:
             assert e.message.find("Too many values")
 
-#    def test_odbc_table_partition_exists(self):
-#        """exists() should return True when a partition exists in the table"""
-#        url = "odbc://tuttle_test_db/test_partitionned_table?col1=val1"
-#        res = ODBCResource(url)
-#        assert res.exists(), "{} should exist".format(url)
+    def test_odbc_table_partition_exists(self):
+        """exists() should return True when a partition exists in the table"""
+        url = "odbc://tuttle_test_db/test_partitionned_table?col1=val1"
+        res = ODBCResource(url)
+        assert res.exists(), "{} should exist".format(url)
+
+    def test_odbc_table_partition_not_exists(self):
+        """exists() should return False if there are no data in the partition"""
+        url = "odbc://tuttle_test_db/test_partitionned_table?col1=unknown_value"
+        res = ODBCResource(url)
+        assert not res.exists(), "{} should not exist".format(url)
 
     def test_bad_dsn(self):
         """If DSN does not exist, should tell tuttle can't connect !"""
