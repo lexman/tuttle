@@ -40,6 +40,34 @@ class ODBCResource(ResourceMixIn, object):
         qs = m.group(3)
         if qs:
             self._filters = self.query2filters(qs[1:], url)
+        else:
+            self._filters = None
+
+    def exists_partition(self, conn, relation, filters):
+        cur = conn.cursor()
+        keys = []
+        values = []
+        for key, value in filters.items():
+            keys.append(key)
+            values.append(value)
+        where_keys = ' AND '.join(["`{}` = ?".format(key) for key in keys])
+        query = "SELECT * FROM {} WHERE {} LIMIT 0".format(relation, where_keys)
+        try:
+            cur.execute(query, values)
+            conn.close()
+        except pyodbc.ProgrammingError as e:
+            return False
+        return True
+
+    def exists_table(self, conn, relation):
+        cur = conn.cursor()
+        query = "SELECT * FROM {} LIMIT 0".format(relation)
+        try:
+            cur.execute(query)
+            conn.close()
+        except pyodbc.ProgrammingError as e:
+            return False
+        return True
 
     def exists(self):
         conn_string = "dsn={}".format(self._dsn)
@@ -48,14 +76,10 @@ class ODBCResource(ResourceMixIn, object):
         except pyodbc.InterfaceError as e:
             raise TuttleError("Can't connect to DSN : \"{}\" to check existence of resource {}. "
                               "Have you declared the Data Source Name ?".format(conn_string, self.url))
-        query = "SELECT * FROM {} LIMIT 0".format(self._relation)
-        cur = conn.cursor()
-        try:
-            cur.execute(query)
-            conn.close()
-        except pyodbc.ProgrammingError as e:
-            return False
-        return True
+        if self._filters:
+            return self.exists_partition(conn, self._relation, self._filters)
+        else:
+            return self.exists_table(conn, self._relation)
 
     def remove(self):
         conn_string = "dsn={}".format(self._dsn)
