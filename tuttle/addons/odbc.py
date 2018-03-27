@@ -57,11 +57,11 @@ class ODBCResource(ResourceMixIn, object):
     def exists_partition(self, conn, relation, filters):
         cur = conn.cursor()
         where, values = self.where_filter(filters)
-        query = "SELECT * FROM {} {} LIMIT 1".format(relation, where)
+        query = "SELECT 1 FROM {} {} LIMIT 1".format(relation, where)
         try:
             cur.execute(query, values)
-            elmt = cur.fetchone()
-            return elmt is not None
+            row = cur.fetchone()
+            return row is not None
         except pyodbc.ProgrammingError as e:
             filter_st = ' AND '.join(("{}={}".format(key, value) for key, value in filters.items()))
             raise TuttleError("Error checking existance of partition {}. "
