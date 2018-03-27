@@ -43,21 +43,31 @@ class ODBCResource(ResourceMixIn, object):
         else:
             self._filters = None
 
-    def exists_partition(self, conn, relation, filters):
-        cur = conn.cursor()
+    def where_filter(self, filters):
+        if not filters:
+            return ("", ())
         keys = []
         values = []
         for key, value in filters.items():
             keys.append(key)
             values.append(value)
-        where_keys = ' AND '.join(["`{}` = ?".format(key) for key in keys])
-        query = "SELECT * FROM {} WHERE {} LIMIT 0".format(relation, where_keys)
+        where_keys = ' AND '.join(["{} = ?".format(key) for key in keys])
+        return ("WHERE {}".format(where_keys), values)
+
+    def exists_partition(self, conn, relation, filters):
+        cur = conn.cursor()
+        where, values = self.where_filter(filters)
+        query = "SELECT * FROM {} {} LIMIT 1".format(relation, where)
         try:
             cur.execute(query, values)
-            conn.close()
+            elmt = cur.fetchone()
+            return elmt is not None
         except pyodbc.ProgrammingError as e:
-            return False
-        return True
+            filter_st = ' AND '.join(("{}={}".format(key, value) for key, value in filters.items()))
+            raise TuttleError("Error checking existance of partition {}. "
+                              "Does table {} does exists ?".format(filter_st, relation))
+        finally:
+            conn.close()
 
     def exists_table(self, conn, relation):
         cur = conn.cursor()
@@ -81,6 +91,15 @@ class ODBCResource(ResourceMixIn, object):
         else:
             return self.exists_table(conn, self._relation)
 
+    def remove_table(self, cursor, relation):
+        query = "DROP TABLE {}".format(relation)
+        cursor.execute(query)
+
+    def remove_partition(self, cursor, relation, filters):
+        where, values = self.where_filter(filters)
+        query = "DELETE FROM {} {}".format(relation, where)
+        cursor.execute(query, values)
+
     def remove(self):
         conn_string = "dsn={}".format(self._dsn)
         try:
@@ -89,26 +108,20 @@ class ODBCResource(ResourceMixIn, object):
             return False
         try:
             cur = conn.cursor()
-            query = "DROP TABLE {}".format(self._relation)
-            cur.execute(query)
+            if self._filters:
+                self.remove_partition(cur, self._relation, self._filters)
+            else:
+                self.remove_table(cur, self._relation)
             cur.commit()
         finally:
             conn.close()
 
-    def table_signature(self, db, schema, tablename):
+    def relation_hash(self, db, relation, filters):
         """Generate a hash for the contents of a table."""
         checksum = sha1()
         cur = db.cursor()
-        query = """SELECT *
-                    FROM information_schema.columns
-                    WHERE table_name=%s AND table_schema=%s
-                    ORDER BY column_name;
-                """
-        cur.execute(query, (tablename, schema))
-        for row in cur:
-            for field in row:
-                checksum.update(str(field))
-        cur.execute('SELECT * FROM "{}"'.format(tablename))
+        where, values = self.where_filter(filters)
+        cur.execute('SELECT * FROM "{}" {}'.format(relation, where), values)
         for row in cur:
             for field in row:
                 checksum.update(str(field))
@@ -121,13 +134,7 @@ class ODBCResource(ResourceMixIn, object):
         except pyodbc.InterfaceError as e:
             return False
         try:
-            checksum = sha1()
-            cur = conn.cursor()
-            cur.execute('SELECT * FROM "{}"'.format(self._relation))
-            for row in cur:
-                for field in row:
-                    checksum.update(str(field))
-            return checksum.hexdigest()
+            return self.relation_hash(conn, self._relation, self._filters)
         finally:
             conn.close()
 

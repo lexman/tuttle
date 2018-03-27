@@ -41,11 +41,16 @@ class TestODBCResource():
         cur.execute("DROP TABLE IF EXISTS test_table_project CASCADE")
         cur.execute("DROP TABLE IF EXISTS test_table CASCADE")
         cur.execute("DROP TABLE IF EXISTS test_partitionned_table CASCADE")
+        cur.execute("DROP TABLE IF EXISTS test_partitionned_table_int CASCADE")
         cur.execute("CREATE TABLE test_table (col1 INT)")
-        cur.execute("CREATE TABLE test_partitionned_table (col1 INT)")
+        cur.execute("INSERT INTO test_table (col1) VALUES (12)")
+        cur.execute("CREATE TABLE test_partitionned_table (col1 TEXT)")
+        cur.execute("INSERT INTO test_partitionned_table (col1) VALUES ('val1')")
+        cur.execute("CREATE TABLE test_partitionned_table_int (col_int INT, col_float FLOAT)")
+        cur.execute("INSERT INTO test_partitionned_table_int (col_int, col_float) VALUES (14, 3.14)")
+        cur.execute("INSERT INTO test_partitionned_table_int (col_int, col_float) VALUES (42, 2.72)")
         #cur.execute("DROP VIEW IF EXISTS test_view")
         #cur.execute("CREATE VIEW test_view AS SELECT * FROM test_table")
-        cur.execute("INSERT INTO test_table (col1) VALUES (12)")
         conn.commit()
 
     def test_parse_standard_url(self):
@@ -75,12 +80,32 @@ class TestODBCResource():
         res.remove()
         assert not res.exists(), "{} should not exist".format(url)
 
+    def test_remove_partition(self):
+        """remove() should remove a table"""
+        partition_to_delete = "odbc://tuttle_test_db/test_partitionned_table_int?col_int=14"
+        resource_to_delete = ODBCResource(partition_to_delete)
+        assert resource_to_delete.exists(), "{} should exist".format(partition_to_delete)
+        other_partition = "odbc://tuttle_test_db/test_partitionned_table_int?col_int=42"
+        other_resource = ODBCResource(other_partition)
+        assert resource_to_delete.exists(), "{} should exist".format(other_partition)
+        resource_to_delete.remove()
+        assert not resource_to_delete.exists(), "{} should not exist anymore".format(partition_to_delete)
+        assert other_resource.exists(), "Other partition {} should still exist".format(other_partition)
+
     def test_table_signature(self):
         """signature() should return a hash of the structure and the data for a table"""
         url = "odbc://tuttle_test_db/test_table"
         res = ODBCResource(url)
         sig = res.signature()
         expected = "7b52009b64fd0a2a49e6d8a939753077792b0554"
+        assert sig == expected, sig
+
+    def test_partition_signature(self):
+        """signature() should return a hash of the structure and the data for a table"""
+        url = "odbc://tuttle_test_db/test_partitionned_table_int?col_int=14"
+        res = ODBCResource(url)
+        sig = res.signature()
+        expected = "d22e04365ffe5ba05d7f5ec4f2115fde8d251e3d"
         assert sig == expected, sig
 
 #    def test_odbc_view_exists(self):
@@ -113,11 +138,33 @@ class TestODBCResource():
         res = ODBCResource(url)
         assert res.exists(), "{} should exist".format(url)
 
+    def test_odbc_table_partition_exists_with_int(self):
+        """exists() should return True when a partition exists in the table"""
+        url = "odbc://tuttle_test_db/test_partitionned_table_int?col_int=14"
+        res = ODBCResource(url)
+        assert res.exists(), "{} should exist".format(url)
+
+    def test_odbc_table_partition_does_not_exists_with_int(self):
+        """exists() should return True when a partition exists in the table"""
+        url = "odbc://tuttle_test_db/test_partitionned_table_int?col_int=13"
+        res = ODBCResource(url)
+        assert not res.exists(), "{} should not exist".format(url)
+
     def test_odbc_table_partition_not_exists(self):
         """exists() should return False if there are no data in the partition"""
         url = "odbc://tuttle_test_db/test_partitionned_table?col1=unknown_value"
         res = ODBCResource(url)
         assert not res.exists(), "{} should not exist".format(url)
+
+    def test_odbc_partition_raise_if_table_not_exists(self):
+        """exists() for a partition should raise if the table does not exist"""
+        url = "odbc://tuttle_test_db/no_table?col1=val1"
+        res = ODBCResource(url)
+        try:
+            res.exists()
+            assert False, "Should have raised because the table does not exists"
+        except TuttleError as e:
+            assert True
 
     def test_bad_dsn(self):
         """If DSN does not exist, should tell tuttle can't connect !"""
