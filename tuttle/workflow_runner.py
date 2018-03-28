@@ -74,8 +74,10 @@ def run_process_without_exception(process):
         error_msg = ERROR_IN_SIGNATURE
         signatures = output_signatures(process)
     except Exception:
-        exc_info = sys.exc_info()
-        stacktrace = "".join(format_exception(*exc_info))
+        (expt_class, e, traceback) = sys.exc_info()
+        # Remove this part of the code from the traceback, because exception
+        # is very likely to be from the processor
+        stacktrace = "".join(format_exception(expt_class, e, traceback.tb_next))
         msg = error_msg.format(process_id=process.id, stacktrace=stacktrace, processor_name=process.processor.name)
         return False, msg, None
     except KeyboardInterrupt:

@@ -204,6 +204,21 @@ file://D <- file://B
         assert process.error_message.find('will not complete.') >= 0, process.error_message
 
     @isolate(['A'])
+    def test_unexpected_error_in_processor_should_show_traceback_from_processor_only(self):
+        """ If there is an exception in running, it must come from the processor because tuttle code is perfect :) So
+        traceback can't mention tuttle's code."""
+
+        one_process_workflow = """file://B <- file://A ! buggy_processor
+            echo A does not produce B
+        """
+        process = run_first_process(one_process_workflow, BuggyProcessor())
+        assert process.success is False, process.error_message
+        assert process.error_message.find('An unexpected error have happen in tuttle processor '
+                                          'buggy_processor :') >= 0, process.error_message
+        assert process.error_message.find('Traceback (most recent call last):') >= 0, process.error_message
+        assert process.error_message.find('in run_process_without_exception') == -1, process.error_message
+
+    @isolate(['A'])
     def test_unexpected_error_in_signature(self):
         """ Tuttle should be protected against unexpected exceptions from resource.signature() """
         one_process_workflow = """buggy://B <- file://A
