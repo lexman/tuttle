@@ -1,10 +1,16 @@
 # -*- coding: utf8 -*-
 import pycurl
 import sys
+from unittest.case import SkipTest
+
+from tests import online
+
 
 class TestPyCurl:
 
     def test_pycurl_download_progress(self):
+        if not online:
+            raise SkipTest("Can't test download offline")
         def progress(download_t, download_d, upload_t, upload_d):
             print("Total to download {}\n".format(download_t))
             print("Total downloaded {}\n".format(download_d))
