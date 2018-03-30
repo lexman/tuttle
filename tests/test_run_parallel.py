@@ -176,6 +176,10 @@ file://D <- file://B
         """
         process = run_first_process(one_process_workflow)
         assert process.error_message.find("Process ended with error code") >= 0, process.error_message
+        # Should not see a python error message
+        assert process.error_message.find("Traceback") == -1, process.error_message
+        assert process.error_message.find("ProcessExecutionError") == -1, process.error_message
+
 
     @isolate(['A'])
     def test_outputs_not_created(self):

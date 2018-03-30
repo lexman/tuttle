@@ -39,6 +39,9 @@ def output_signatures(process):
     return result
 
 
+FAILLURE_IN_PROCESS = "Process {process_id} ({processor_name} processor) has failled :\n" \
+                      "{error_detail}"
+
 ERROR_IN_PROCESS = "An unexpected error have happen in tuttle processor {processor_name} : \n" \
                    "{stacktrace}\n" \
                    "Process {process_id} will not complete."
@@ -73,11 +76,14 @@ def run_process_without_exception(process):
             return False, msg, None
         error_msg = ERROR_IN_SIGNATURE
         signatures = output_signatures(process)
+    except TuttleError as e:
+        msg = FAILLURE_IN_PROCESS.format(process_id=process.id, error_detail=e.message, processor_name=process.processor.name)
+        return False, msg, None
     except Exception:
-        (expt_class, e, traceback) = sys.exc_info()
+        (e_type, value, traceback) = sys.exc_info()
         # Remove this part of the code from the traceback, because exception
         # is very likely to be from the processor
-        stacktrace = "".join(format_exception(expt_class, e, traceback.tb_next))
+        stacktrace = "".join(format_exception(e_type, value, traceback.tb_next))
         msg = error_msg.format(process_id=process.id, stacktrace=stacktrace, processor_name=process.processor.name)
         return False, msg, None
     except KeyboardInterrupt:
