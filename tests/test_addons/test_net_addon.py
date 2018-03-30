@@ -370,7 +370,7 @@ file://google.html <- file://A ! download
     def test_no_error_with_download_process(self):
         """ Download process does not create code in reserved_path for the process... Thus it cant be moved when """
         """ retreiving logs and reserved path from previous execution(from bug) """
-        project = """file://g <-  http://slackingzone.free.fr ! download
+        project = """file://g <-  http://localhost:8043/a_resource ! download
 
 file://h <- file://g
     ERROR
