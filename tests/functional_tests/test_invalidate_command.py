@@ -290,6 +290,7 @@ file://C <- file://B
     def test_adding_an_output_invalidates_process(self):
         """ Adding an ingutput to a process that have succeeded should invalidate the whole process,
         thus invalidate all other resources """
+        # TODO : Really ?
         project = """file://B <- file://A
             echo A produces B
             echo A produces B > B
