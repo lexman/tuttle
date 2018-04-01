@@ -66,8 +66,3 @@ deploy:
   on:
     repo: lexman/tuttle
     tags: true
-
-env:
-  global:
-  - secure: BmtqLxb3sUrY9nMCBe/DqE/yMPXuT2NFpvK9aPkJmRHl+PWJxwQsCbHzFm0xLDkq1vdOjrBnT9M57lUownDH4cddnG2VQJxYTglYas7JRKKTNhnforG5yzge1M7XggIFgtUk0cUcKCYq4l7iD1tRUZlAu/5zw0cNQ8aqsdl/pxM=
-  - secure: TUipxjZrdcPR7JgqiXmyi6El0cInPTMEFlcvy+Lscm6lzdyL1g6pMJroa0DbPNd4jWxRgXsOdj28qqv9OrSCm97uobAJEpEuoi11TLg2kDzCVvGYQfe9V0tRjIrnugDXiLYcTZMTf2PpHfJdT6Fg35wbBkzjvMAELt0K5TEWXlQ=
