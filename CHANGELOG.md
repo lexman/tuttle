@@ -1,3 +1,21 @@
+New on Version 0.6
+===
+
+## Authentication
+* Access your protected resources by setting passwords in a .tuttlepass file
+
+## Report
+* Dependency graph from left to right is easier to read than top to bottom
+* Logs can be accessed even if the process is not complete yet
+* Link to find definition of process that creates a resource
+
+## Resources and processors
+* odbc resources and processor for handling any SQL database
+* ftp resources. Available for download processor
+* Download processor uses curl witch makes it more robusts for long downloads
+* Download processor can have multiple inputs, in order to ensure downloading in a subdirectory
+* hdfs resources
+
 New on Version 0.5
 ===
 
@@ -5,7 +23,6 @@ New on Version 0.5
 * Tuttle can now run several processes in parallel in respect to dependency order. For example, ``tuttle run --jobs 2`` will run your workflow with two workers. Default is still 1.
 * Live logs : you don't need anymore to wait until a process is complete to see the logs anymore. As soon as a line is complete it is displayed.
 * With ``--keep-going`` option, ``tuttle run`` doesn't stop at first error but tries to process as much as it can. Thus multiple failures *can* occur. Also running a failing process with ``keep-going`` will try to run all remaining processes
-
 
 ## Other
   * New ``check-integrity`` option validates that no resource have changed since tuttle have produced them
@@ -44,7 +61,6 @@ New on Version 0.4
   * escape process ids in the report
   * ``file://`` is not a valid resource
   * ``!shell`` does not stand for processor ``hell``
-
 
   
 New on Version 0.3

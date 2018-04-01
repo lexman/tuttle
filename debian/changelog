@@ -1,3 +1,16 @@
+tuttle (0.6-1) UNRELEASED; urgency=medium
+
+  * Access your protected resources by setting passwords in a .tuttlepass file
+  * Dependency graph from left to right is easier to read than top to bottom
+  * Logs can be accessed from report even if the process is not complete yet
+  * Link in report to find definition of process that creates a resource
+  * odbc resources and processor for handling any SQL database
+  * ftp resources. Available for download processor
+  * Download processor uses curl witch makes it more robusts for long downloads
+  * Download processor can have multiple inputs, in order to ensure downloading in a subdirectory
+
+ -- Lexman <tuttle@lexman.org>  Sun, 01 Apr 2018 17:00:00 +0200
+
 tuttle (0.5-1) UNRELEASED; urgency=medium
 
   * TBD...
