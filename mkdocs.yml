@@ -1,6 +1,7 @@
 site_name: tuttle
+theme: readthedocs
 pages:
-- Overview : README.md
+- Overview : index.md
 - Reference:
     - reference/tuttlefile_reference.md
     - resources_authentication.MD
