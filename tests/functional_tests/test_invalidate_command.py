@@ -537,7 +537,6 @@ file://C <- file://B
         assert output.find("* file://B") >= 0, output
         assert output.find("B produces invalid C") >= 0, output
 
-
     @isolate(['A'])
     def test_changes_in_a_process_invalidates_depending_failing_process_on_invalidate(self):
         """ If a process failed, changing a process that it depends on should
