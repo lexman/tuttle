@@ -331,7 +331,7 @@ class TestDownloadProcessor:
     @isolate
     def test_can_download_in_sub_dir(self):
         """ Should download as long as there is one file output and exactly one downloadable resource """
-        sleep(3)
+        sleep(0.5) # Travis needs some time before running the project or http mock server won't be available
         project = """file://a_directory/a_resource <- http://localhost:8043/a_resource file://a_directory ! download
 
 file://a_directory <-
