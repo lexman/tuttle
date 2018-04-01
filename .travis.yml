@@ -48,12 +48,12 @@ script:
 # building docker image
 - cd docker
 # prevented pushing docker image while password hasn't been reseted
-# - docker login -u "tuttle" -p "$DOCKER_PASS" -e "$DOCKER_MAIL"
+- docker login -u "tuttle" -p "$DOCKER_PASS"
 - docker build -t tuttle/tuttle:master .
-- docker tag tuttle/tuttle:master tuttle/tuttle:latest
+# - docker tag tuttle/tuttle:master tuttle/tuttle:latest
 - docker tag tuttle/tuttle:master tuttle/tuttle:v0.5-rc1
-# - docker push tuttle/tuttle
-# - docker logout
+- docker push tuttle/tuttle
+- docker logout
 - cd ..
 
 deploy:
@@ -66,8 +66,3 @@ deploy:
   on:
     repo: lexman/tuttle
     tags: true
-
-env:
-  global:
-  - secure: BmtqLxb3sUrY9nMCBe/DqE/yMPXuT2NFpvK9aPkJmRHl+PWJxwQsCbHzFm0xLDkq1vdOjrBnT9M57lUownDH4cddnG2VQJxYTglYas7JRKKTNhnforG5yzge1M7XggIFgtUk0cUcKCYq4l7iD1tRUZlAu/5zw0cNQ8aqsdl/pxM=
-  - secure: TUipxjZrdcPR7JgqiXmyi6El0cInPTMEFlcvy+Lscm6lzdyL1g6pMJroa0DbPNd4jWxRgXsOdj28qqv9OrSCm97uobAJEpEuoi11TLg2kDzCVvGYQfe9V0tRjIrnugDXiLYcTZMTf2PpHfJdT6Fg35wbBkzjvMAELt0K5TEWXlQ=
