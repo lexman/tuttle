@@ -188,7 +188,7 @@ Tuttle does not have a gnuplot processor (... yet ! *pull requests are welcome*)
         $script$
 
 After we've ran tuttle, we can see the graph :
-![Characters count](tutorial_step/step4/characters_count.png)
+![Characters count](tutorial_steps/step4/characters_count.png)
 
 
 Now once again we can commit our work...
