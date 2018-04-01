@@ -1,50 +1,13 @@
 
-addons:
-  postgresql: "9.2"
-
 services:
   - docker
-  - postgresql
  
 language: python
 
 python:
 - '2.7'
 
-before_install:
-- sudo add-apt-repository ppa:dh-virtualenv/stable -y
-- sudo apt-get update -qq
-- sudo apt-get install -y --force-yes python python-pip python-virtualenv dh-virtualenv build-essential fakeroot devscripts
-  debhelper
-# Install odbc
-- sudo apt-get install unixodbc-bin unixodbc odbc-postgresql unixodbc-dev
-- sudo odbcinst -i -d -f /usr/share/psqlodbc/odbcinst.ini.template
-- sudo odbcinst -i -s -l -n tuttle_test_db -f ci/odbc.ini
-
-
-install:
-- pip install -r requirements-dev.txt
-- psql -c 'CREATE DATABASE tuttle_test_db;' -U postgres
-
-
 script:
-# Running tests
-- pip install .
-- python tests/test_addons/test_hdfs.py install
-- . tests/hadoop/vars.sh
-- nosetests -v
-# Making .deb package
-- dpkg-buildpackage -us -uc
-- mkdir -p dist/debian
-- mv -v ../tuttle_* dist/debian/
-- sudo dpkg -i dist/debian/tuttle_0.6-1_amd64.deb
-# Be sure the .deb package works
-- cd ci
-- tuttle run -j 3
-- cp world-cities.csv workflow_execution_success
-- cp from-python workflow_execution_success2
-- cp from-shell-or-batch workflow_execution_success3
-- cd ..
 # building docker image
 - cd docker
 # prevented pushing docker image while password hasn't been reseted
@@ -55,14 +18,3 @@ script:
 - docker push tuttle/tuttle
 - docker logout
 - cd ..
-
-deploy:
-  skip_cleanup: true
-  provider: releases
-  api_key:
-    secure: CNw4FQYKEtQGl5rZH+N/p3d0w1PsVEvNEP46hLes4H5t12Vueh3D5zkz9HasTywZV1UVxa67sTLMuo063GJMJWBHs3hUo9QyHkbETz4PWsUEc1ayhlcP+I/IeNKyTXHoEj93hAYT1LDiApSEa5KKsUW1c188Z2L5G9Z2cFvpKfY=
-  file: dist/debian/tuttle_0.6-1_amd64.deb
-  skip_cleanup: true
-  on:
-    repo: lexman/tuttle
-    tags: true
