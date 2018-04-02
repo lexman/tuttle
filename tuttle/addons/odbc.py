@@ -45,14 +45,14 @@ class ODBCResource(ResourceMixIn, object):
 
     def where_filter(self, filters):
         if not filters:
-            return ("", ())
+            return "", ()
         keys = []
         values = []
         for key, value in filters.items():
             keys.append(key)
             values.append(value)
         where_keys = ' AND '.join(["{} = ?".format(key) for key in keys])
-        return ("WHERE {}".format(where_keys), values)
+        return "WHERE {}".format(where_keys), values
 
     def exists_partition(self, conn, relation, filters):
         cur = conn.cursor()
@@ -62,7 +62,7 @@ class ODBCResource(ResourceMixIn, object):
             cur.execute(query, values)
             row = cur.fetchone()
             return row is not None
-        except pyodbc.ProgrammingError as e:
+        except pyodbc.ProgrammingError:
             filter_st = ' AND '.join(("{}={}".format(key, value) for key, value in filters.items()))
             raise TuttleError("Error checking existance of partition {}. "
                               "Does table {} does exists ?".format(filter_st, relation))
@@ -75,7 +75,7 @@ class ODBCResource(ResourceMixIn, object):
         try:
             cur.execute(query)
             conn.close()
-        except pyodbc.ProgrammingError as e:
+        except pyodbc.ProgrammingError:
             return False
         return True
 
@@ -83,7 +83,7 @@ class ODBCResource(ResourceMixIn, object):
         conn_string = "dsn={}".format(self._dsn)
         try:
             conn = pyodbc.connect(conn_string)
-        except pyodbc.InterfaceError as e:
+        except pyodbc.InterfaceError:
             raise TuttleError("Can't connect to DSN : \"{}\" to check existence of resource {}. "
                               "Have you declared the Data Source Name ?".format(conn_string, self.url))
         if self._filters:
@@ -104,7 +104,7 @@ class ODBCResource(ResourceMixIn, object):
         conn_string = "dsn={}".format(self._dsn)
         try:
             conn = pyodbc.connect(conn_string)
-        except pyodbc.InterfaceError as e:
+        except pyodbc.InterfaceError:
             return False
         try:
             cur = conn.cursor()
@@ -131,7 +131,7 @@ class ODBCResource(ResourceMixIn, object):
         conn_string = "dsn={}".format(self._dsn)
         try:
             conn = pyodbc.connect(conn_string)
-        except pyodbc.InterfaceError as e:
+        except pyodbc.InterfaceError:
             return False
         try:
             return self.relation_hash(conn, self._relation, self._filters)
@@ -154,7 +154,7 @@ class ODBCProcessor:
                 elif conn_string != resource_conn_string:
                     raise TuttleError(
                         "ODBC processor can't connect to several ODBC databases at the same time. "
-                        "Found connections string '{}' and '{}'.".format(conn_string , resource_conn_string))
+                        "Found connections string '{}' and '{}'.".format(conn_string, resource_conn_string))
         return conn_string
 
     def static_check(self, process):
@@ -185,7 +185,7 @@ class ODBCProcessor:
                     lerr.write("\n")
                     msg = "Error while running ODBC process {} : '{}'".format(process.id, query_err_mess)
                     raise TuttleError(msg)
-        except pyodbc.InterfaceError as e:
+        except pyodbc.InterfaceError:
             return False
         finally:
             db.close()
