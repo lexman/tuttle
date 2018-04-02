@@ -8,6 +8,7 @@ from tuttle.addons.odbc import ODBCResource
 from tuttle.addons.postgres import PostgreSQLResource, PostgresqlTuttleError
 from nose.plugins.skip import SkipTest
 
+from tuttle.commands import run
 from tuttle.error import TuttleError
 from tuttle.project_parser import ProjectParser
 from tuttle.resource import MalformedUrl
@@ -41,14 +42,14 @@ class TestODBCResource():
         cur.execute("DROP TABLE IF EXISTS test_table_project CASCADE")
         cur.execute("DROP TABLE IF EXISTS test_table CASCADE")
         cur.execute("DROP TABLE IF EXISTS test_partitionned_table CASCADE")
-        cur.execute("DROP TABLE IF EXISTS test_partitionned_table_int CASCADE")
+        cur.execute("DROP TABLE IF EXISTS test_partitionned_table_num CASCADE")
         cur.execute("CREATE TABLE test_table (col1 INT)")
         cur.execute("INSERT INTO test_table (col1) VALUES (12)")
         cur.execute("CREATE TABLE test_partitionned_table (col1 TEXT)")
         cur.execute("INSERT INTO test_partitionned_table (col1) VALUES ('val1')")
-        cur.execute("CREATE TABLE test_partitionned_table_int (col_int INT, col_float FLOAT)")
-        cur.execute("INSERT INTO test_partitionned_table_int (col_int, col_float) VALUES (14, 3.14)")
-        cur.execute("INSERT INTO test_partitionned_table_int (col_int, col_float) VALUES (42, 2.72)")
+        cur.execute("CREATE TABLE test_partitionned_table_num (col_int INT, col_float FLOAT)")
+        cur.execute("INSERT INTO test_partitionned_table_num (col_int, col_float) VALUES (14, 3.14)")
+        cur.execute("INSERT INTO test_partitionned_table_num (col_int, col_float) VALUES (42, 2.72)")
         #cur.execute("DROP VIEW IF EXISTS test_view")
         #cur.execute("CREATE VIEW test_view AS SELECT * FROM test_table")
         conn.commit()
@@ -82,10 +83,10 @@ class TestODBCResource():
 
     def test_remove_partition(self):
         """remove() should remove a table"""
-        partition_to_delete = "odbc://tuttle_test_db/test_partitionned_table_int?col_int=14"
+        partition_to_delete = "odbc://tuttle_test_db/test_partitionned_table_num?col_int=14"
         resource_to_delete = ODBCResource(partition_to_delete)
         assert resource_to_delete.exists(), "{} should exist".format(partition_to_delete)
-        other_partition = "odbc://tuttle_test_db/test_partitionned_table_int?col_int=42"
+        other_partition = "odbc://tuttle_test_db/test_partitionned_table_num?col_int=42"
         other_resource = ODBCResource(other_partition)
         assert resource_to_delete.exists(), "{} should exist".format(other_partition)
         resource_to_delete.remove()
@@ -102,7 +103,7 @@ class TestODBCResource():
 
     def test_partition_signature(self):
         """signature() should return a hash of the structure and the data for a table"""
-        url = "odbc://tuttle_test_db/test_partitionned_table_int?col_int=14"
+        url = "odbc://tuttle_test_db/test_partitionned_table_num?col_int=14"
         res = ODBCResource(url)
         sig = res.signature()
         expected = "d22e04365ffe5ba05d7f5ec4f2115fde8d251e3d"
@@ -140,13 +141,13 @@ class TestODBCResource():
 
     def test_odbc_table_partition_exists_with_int(self):
         """exists() should return True when a partition exists in the table"""
-        url = "odbc://tuttle_test_db/test_partitionned_table_int?col_int=14"
+        url = "odbc://tuttle_test_db/test_partitionned_table_num?col_int=14"
         res = ODBCResource(url)
         assert res.exists(), "{} should exist".format(url)
 
     def test_odbc_table_partition_does_not_exists_with_int(self):
         """exists() should return True when a partition exists in the table"""
-        url = "odbc://tuttle_test_db/test_partitionned_table_int?col_int=13"
+        url = "odbc://tuttle_test_db/test_partitionned_table_num?col_int=13"
         res = ODBCResource(url)
         assert not res.exists(), "{} should not exist".format(url)
 
@@ -201,6 +202,14 @@ class TestODBCResource():
         rcode, output = run_tuttle_file(project)
         assert rcode == 2, output
         assert output.find("Can't connect")> -1, output
+
+    @isolate
+    def test_odbc_partitioned_url_in_project(self):
+        """partitionned url should not raise (from utf8 bug)"""
+        # parse_qs needs an ascii string,
+        # and auto mapping of values fails with utf8
+        project = """odbc://tuttle_test_db/test_partitionned_table_num?col_int=14 <- ! odbc"""
+        rcode, output = run_tuttle_file(project)
 
 
 class TestODBCProcessor():

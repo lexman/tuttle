@@ -153,6 +153,7 @@ class WorkflowBuilder():
             return False
 
     def get_or_build_resource(self, url, resources):
+        url = url.encode("ascii")
         if url not in resources:
             resource = self.build_resource(url)
             resources[url] = resource
