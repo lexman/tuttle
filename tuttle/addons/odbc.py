@@ -138,9 +138,26 @@ class ODBCResource(ResourceMixIn, object):
         finally:
             conn.close()
 
+    @staticmethod
+    def check_consistency(workflow):
+        odbc_not_primary = (res for res in workflow.iter_resources()
+                            if isinstance(res, ODBCResource) and not res.is_primary())
+        references = {}
+        for res in odbc_not_primary:
+            if res._relation not in references:
+                references[res._relation] = res
+            else:
+                if references[res._relation]._filters != res._filters:
+                    # TODO
+                    INCOHERENT_PARTITIONS = "ODBC table {} have incoherent partitions {} and {}. The filters must be " \
+                                            "the same to avoid overlapping of filters when creating resources. " \
+                                            "See http://github.com/lexman/tuttle/docs/TODO"
+                    msg = INCOHERENT_PARTITIONS.format(res._relation, references[res._relation].url, res.url)
+                    raise TuttleError(msg)
+
 
 class ODBCProcessor:
-    """ A processor that runs sql directely in a postgres database
+    """ A processor that runs sql directly in an odbc database
     """
     name = 'odbc'
 

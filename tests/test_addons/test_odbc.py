@@ -211,6 +211,31 @@ class TestODBCResource():
         project = """odbc://tuttle_test_db/test_partitionned_table_num?col_int=14 <- ! odbc"""
         rcode, output = run_tuttle_file(project)
 
+    @isolate
+    def test_odbc_partition_cant_overlap(self):
+        """There can be only one partition for a table"""
+        project = """odbc://tuttle_test_db/test_partitionned_table_num?col_int=14 <- ! odbc
+            INSERT INTO test_partitionned_table_num (col_int, col_float) VALUES (14, 3.14)
+        
+odbc://tuttle_test_db/test_partitionned_table_num?col_float=3.14 <- ! odbc
+            INSERT INTO test_partitionned_table_num (col_int, col_float) VALUES (14, 3.14)
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 2, output
+        assert output.find("overlap") >= 0, output
+
+    @isolate
+    def test_primary_odbc_partition_can_overlap(self):
+        """ If the partition is a primary, it can overlap """
+        project = """<- odbc://tuttle_test_db/test_partitionned_table_num?col_int=14 ! odbc
+            SELECT * FROM test_partitionned_table_num WHERE col_int=14
+
+odbc://tuttle_test_db/test_partitionned_table_num?col_float=3.14 <- ! odbc
+            INSERT INTO test_partitionned_table_num (col_int, col_float) VALUES (14, 3.14)
+"""
+        rcode, output = run_tuttle_file(project)
+        assert rcode == 0, output
+
 
 class TestODBCProcessor():
     """

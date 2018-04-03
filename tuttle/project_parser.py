@@ -137,6 +137,7 @@ class ProjectParser():
                 error_msg += "* {}\n".format(process.id)
             raise WorkflowError(error_msg, self._filename, self._streamer._num_line)
         workflow.static_check_processes()
+        workflow.check_resources_consistency()
         return workflow
 
     def set_project(self, text):

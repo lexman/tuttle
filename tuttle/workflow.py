@@ -123,6 +123,11 @@ class Workflow:
         for process in self.iter_processes():
             process.static_check()
 
+    def check_resources_consistency(self):
+        resource_classes = { res.__class__ for res in self.iter_resources()}
+        for resource_class in resource_classes:
+            resource_class.check_consistency(self)
+
     def update_signatures(self, signatures):
         """ updates the workflow's signatures after the process has run
         :param signatures: a dictionary of signatures indexed by urls

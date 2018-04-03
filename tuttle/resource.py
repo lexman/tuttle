@@ -19,6 +19,10 @@ class ResourceMixIn:
         self._user = None
         self._password = None
 
+    @staticmethod
+    def check_consistency(workflow):
+        pass
+
     def set_authentication(self, user, password):
         self._user = user
         self._password = password
