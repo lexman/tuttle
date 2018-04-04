@@ -2,9 +2,12 @@ site_name: tuttle
 theme: readthedocs
 pages:
 - Overview : index.md
-- Reference:
-    - reference/tuttlefile_reference.md
-    - resources_authentication.MD
+- Reference :
+    - reference/index.md
+    - reference/tuttlefile_syntax.md
+    - reference/resources_and_urls.md
+    - reference/processors.md
+    - reference/resources_authentication.md
 - Tutorials:
     - Discover tuttle : tutorial_musketeers/tutorial.md
     - Parametrized workflow : tuto_parametrized_workflow/tuto_parametrized_workflow.MD
