@@ -68,7 +68,7 @@ deploy:
   description: 'Version $(appveyor_repo_tag_name)'
   provider: GitHub
   auth_token:
-    secure: 7aNfc1VhEopoawEBNhOwZHswi5BZnK/XUNWeSxaGMfutQRETWAFK1D0+5aWC2oUk
+    secure: zoaeXycWHS3rNbTzM9C5TshvVEp6hzXDPrqHK1aBdxiXr5aJd8gOHfJUz5XYrLgu
   artifact: /tuttle-0.*\.msi/
   draft: true
   prerelease: true
