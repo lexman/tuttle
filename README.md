@@ -1,5 +1,5 @@
 # News
-July 6th : Version 0.5 Release Candidate 1 is [available](https://github.com/lexman/tuttle/releases/tag/v0.5-rc1) !
+April 7th : Version 0.6 Alpha 2 is [available](https://github.com/lexman/tuttle/releases/tag/v0.6-dev2) !
 
 # Tuttle : Make for data
 
