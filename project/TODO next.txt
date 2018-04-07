@@ -33,7 +33,7 @@ DONE - -Check that the claimed-to-be-created resource really exists at the end o
 
     + Test of a resource not really created by a process should not be invalided when removed
 
-When there is an error running a process, every resources produced by this process should be marked as invalid
+When there is an error running a process, tes resources produced by this process should be marked as invalid
 	It means that if a process didn't produce one of the expected outputs, every other output must be considered invalid
 
 DONE - Run Functional tests and process states in its own temporary dir
