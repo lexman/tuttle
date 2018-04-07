@@ -1,6 +1,6 @@
 tuttle (0.6-1) UNRELEASED; urgency=medium
 
-  * Access your protected resources by setting passwords in a .tuttlepass file
+  * Access your protected resources by setting passwords in a .tuttlepass file for authentication
   * Dependency graph from left to right is easier to read than top to bottom
   * Logs can be accessed from report even if the process is not complete yet
   * Link in report to find definition of process that creates a resource
