@@ -47,11 +47,10 @@ script:
 - cd ..
 # building docker image
 - cd docker
-# prevented pushing docker image while password hasn't been reseted
 - docker login -u "tuttle" -p "$DOCKER_PASS"
 - docker build -t tuttle/tuttle:master .
 # - docker tag tuttle/tuttle:master tuttle/tuttle:latest
-- docker tag tuttle/tuttle:master tuttle/tuttle:v0.6-rc1
+- docker tag tuttle/tuttle:master tuttle/tuttle:v0.6-dev1
 - docker push tuttle/tuttle
 - docker logout
 - cd ..
