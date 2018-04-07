@@ -71,10 +71,11 @@ Source Name ``datasource_name``, the url would be :
 ````
 odbc://datasource_name/my_table
 ````
-The table can be partitionned, wich means you write chunks of data according to a filter on a column. If your column is "my_col" , this is a valid url :
+ODBC resources have experimental support for partitioning, which means you write chunks of data according to a filter on columns. If your column is "my_col" , this is a valid url :
 ````
 odbc://datasource_name/my_table?my_col=a_value
 ````
+Only one set of filters is allowed for the same table.
 
 ## hdfs
 Any file or directory in an hdfs storage. eg ``hdfs:\\myserver\path\to\my\file``
