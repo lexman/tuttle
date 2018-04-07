@@ -59,7 +59,7 @@ deploy:
   skip_cleanup: true
   provider: releases
   api_key:
-    secure: BmKAsspBpvzC1aSlwPHwDkuPYKEAirfFL9yWCoveMefH5c2TU2xurI5W1Nig2beW8JV54rcgvPAIYOMUHaEnMcFBix6G3ze7kbhIw8sFLNP2c7OiQrd6u7QY6BpsxyEq7Z2Ef6aajm1Nyj5H2AEUR63t2VFCilwWj2Wdzr0Rh
+    secure: BmKAsspBpvzC1aSlwPHwDkuPYKEAirfFL9yWCoveMefH5c2TU2xurI5W1Nig2beW8JV54rcgvPAIYOMUHaEnMcFBix6G3ze7kbhIw8sFLNP2c7OiQrd6u7QY6BpsxyEq7Z2Ef6aajm1Nyj5H2AEUR63t2VFCilwWj2Wdzr0Rh/8=
   file: dist/debian/tuttle_0.6-1_amd64.deb
   skip_cleanup: true
   on:
