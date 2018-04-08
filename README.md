@@ -51,9 +51,9 @@ spreadsheet software :
 When you run this project, you get a [report](http://lexman.github.io/tuttle/docs/examples/musketeers_tuttle_dir/report.html) of every
 thing that has been run, when, whether it succeeded, an access to the logs, and... A nice dependency graph !
 
-![Dependency graph](doc/screenshot_report.png)
+![Dependency graph](docs/screenshot_report.png)
 
-You'll find details on this workflow on the dedicated [tutorial](doc/tutorial_musketeers/tutorial.md).
+You'll find details on this workflow on the dedicated [tutorial](docs/tutorial_musketeers/tutorial.md).
 
 Please note that Tuttle is at a very early stage of development and must be considered as alpha, therefore syntax as
 well as command line options are likely to change.
