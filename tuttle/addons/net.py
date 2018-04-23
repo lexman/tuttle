@@ -2,7 +2,7 @@
 
 from hashlib import sha1
 
-from tuttle.report.html_repport import nice_size
+from tuttle.figures_formating import nice_size
 
 try:
     from urllib2 import urlopen, Request, URLError, HTTPError, HTTPPasswordMgrWithDefaultRealm, HTTPBasicAuthHandler, \
