@@ -80,7 +80,7 @@
                     <tr>
                         <th>Start</th>
                         <th>End</th>
-                        <th>Duration (s)</th>
+                        <th>Duration</th>
                         <th>Stdout</th>
                         <th>Stderr</th>
                     </tr>
@@ -89,7 +89,7 @@
                     <tr>
                         <td>{{ process.start }}</td>
                         <td>{{ process.end }}</td>
-                        <td>{% if process.duration %} {{ process.duration|round(3) }} {% endif %}</td>
+                        <td>{{ process.duration }} </td>
                         <td>{% if process.log_stdout_size == "empty" %}
                             (empty)
                             {% else %}
@@ -138,7 +138,7 @@
                     <tr>
                         <th>Start</th>
                         <th>End</th>
-                        <th>Duration (s)</th>
+                        <th>Duration</th>
                         <th>Stdout</th>
                         <th>Stderr</th>
                     </tr>
@@ -147,7 +147,7 @@
                     <tr>
                         <td>{{ preprocess.start }}</td>
                         <td>{{ preprocess.end }}</td>
-                        <td>{{ preprocess.duration|round(3) }}</td>
+                        <td>{{ preprocess.duration }}</td>
                         <td>{% if preprocess.log_stdout_size == "empty" %}
                             (empty)
                             {% else %}

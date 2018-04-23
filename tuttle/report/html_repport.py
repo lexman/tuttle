@@ -7,7 +7,7 @@ from time import strftime, localtime
 
 from jinja2 import Template
 
-from tuttle.figures_formating import nice_file_size
+from tuttle.figures_formating import nice_file_size, nice_duration
 from tuttle.report.dot_repport import dot
 
 
@@ -67,7 +67,7 @@ def format_process(process, workflow, report_dir):
         start = strftime("%a, %d %b %Y %H:%M:%S", localtime(process.start))
         if process.end:
             end = strftime("%a, %d %b %Y %H:%M:%S", localtime(process.end))
-            duration = process.end - process.start
+            duration = nice_duration(process.end - process.start)
     running = start and not end
     return {
         'id': process.id,
