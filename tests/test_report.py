@@ -2,11 +2,11 @@
 from os.path import isfile, join
 from re import search, DOTALL, findall
 
-from tuttle.report.html_repport import nice_size
+from tuttle.report.html_repport import nice_size, nice_duration
 from tests.functional_tests import isolate, run_tuttle_file
 
 
-class TestReport:
+class TestFileSizeFormating:
 
     def test_nice_size_B(self):
         """ A number below 1 000 B should be expressed in B"""
@@ -32,6 +32,32 @@ class TestReport:
         """ A number below 1 000 000 0000 000 B should be expressed in B"""
         nice = nice_size(12049000000)
         assert nice == "11.2 GB", nice
+
+
+class TestDurationFormating:
+
+    def test_nice_duration_s(self):
+        """ A number below 1 000 B should be expressed in B"""
+        nice = nice_duration(12)
+        assert nice == "12s", nice
+
+    def test_nice_duration_min(self):
+        """ A number below 1 000 000 B should be expressed in B"""
+        nice = nice_duration(64)
+        assert nice == "1min 4s", nice
+
+    def test_nice_size_hour(self):
+        """ A number below 1 000 000 0000 B should be expressed in B"""
+        nice = nice_duration(10000)
+        assert nice == "2h 46min", nice
+
+    def test_nice_size_day(self):
+        """ A number below 1 000 000 0000 B should be expressed in B"""
+        nice = nice_duration(1000000)
+        assert nice == "11d 13h", nice
+
+
+class TestReport:
 
     @isolate(['A'])
     def test_success(self):
