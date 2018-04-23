@@ -16,17 +16,22 @@ class TestReport:
     def test_nice_size_KB(self):
         """ A number below 1 000 000 B should be expressed in B"""
         nice = nice_size(12034)
-        assert nice == "11 KB", nice
+        assert nice == "11.7 KB", nice
 
     def test_nice_size_MB(self):
         """ A number below 1 000 000 0000 B should be expressed in B"""
         nice = nice_size(12056000)
-        assert nice == "11 MB", nice
+        assert nice == "11.4 MB", nice
+
+    def test_nice_size_MB_after_dot(self):
+        """ A number below 1 000 000 0000 B should be expressed in B"""
+        nice = nice_size(12506000)
+        assert nice == "11.9 MB", nice
 
     def test_nice_size_GB(self):
         """ A number below 1 000 000 0000 000 B should be expressed in B"""
         nice = nice_size(12049000000)
-        assert nice == "11 GB", nice
+        assert nice == "11.2 GB", nice
 
     @isolate(['A'])
     def test_success(self):

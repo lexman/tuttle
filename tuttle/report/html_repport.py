@@ -9,6 +9,11 @@ from os.path import dirname, join, relpath, abspath, split
 import sys
 
 
+KB = 1024
+MB = 1024 * 1024
+GB = 1024 * 1024 * 1024
+
+
 def data_path(*path_parts):
     if getattr(sys, 'frozen', False):
         # The application is frozen
@@ -20,16 +25,19 @@ def data_path(*path_parts):
     return join(datadir, *path_parts)
 
 
+def round_after_dot(num, precision):
+    meaningful= 10 * num / precision
+    return meaningful * 0.1
 
 def nice_size(size):
-    if size < 1000:
+    if size < KB:
         return "{} B".format(size)
-    elif size < 1000 * 1000:
-        return "{} KB".format(size / 1024)
-    elif size < 1000 * 1000 * 1000:
-        return "{} MB".format(size / (1024 * 1024))
-    elif size < 1000 * 1000 * 1000 * 1000:
-        return "{} GB".format(size / (1024 * 1024 * 1024))
+    elif size < MB:
+        return "{} KB".format(round_after_dot(size, KB))
+    elif size < GB:
+        return "{} MB".format(round_after_dot(size, MB))
+    else:
+        return "{} GB".format(round_after_dot(size, GB))
 
 
 def nice_file_size(filename, running):
