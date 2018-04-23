@@ -1,4 +1,5 @@
 from tuttle.error import TuttleError
+from tuttle.figures_formating import nice_duration
 from tuttle.invalidation import InvalidCollector
 from tuttle.project_parser import ProjectParser
 from tuttle.workflow import Workflow
@@ -62,7 +63,7 @@ def print_earlier_failures():
 
 def print_abort_on_threshold(inv_duration, threshold):
     msg = "You were about to loose {} seconds of processing time (which exceeds the {} seconds " \
-          "threshold). \nAborting... ".format(inv_duration, threshold)
+          "threshold). \nAborting... ".format(nice_duration(inv_duration), threshold)
     print(msg)
 
 
