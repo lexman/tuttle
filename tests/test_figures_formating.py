@@ -60,6 +60,14 @@ class TestDurationParsing:
         d = parse_duration("12")
         assert d == 12, d
 
+    def test_parse_negative_value(self):
+        """ Should raise if the expression is negative because a duration can't be negative"""
+        try:
+            d = parse_duration("-1")
+            assert False, "Should have raised"
+        except ValueError as e:
+            assert True
+
     def test_parse_seconds(self):
         """ should interpret s as seconds """
         d = parse_duration("12s")

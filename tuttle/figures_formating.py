@@ -75,6 +75,9 @@ def parse_duration(expression):
 
     try:
         sec = int(expression)
+        if sec < 0:
+            raise ValueError("A duration can't be negative (found {})".format(sec))
+
         return sec
     except ValueError:
         pass
