@@ -1,4 +1,5 @@
-from tuttle.figures_formating import nice_size, nice_duration
+from tuttle.error import TuttleError
+from tuttle.figures_formating import nice_size, nice_duration, parse_duration
 
 
 class TestFileSizeFormating:
@@ -50,3 +51,57 @@ class TestDurationFormating:
         """ A duration above the day should be expressed in days and hours"""
         nice = nice_duration(1000000)
         assert nice == "11d 13h", nice
+
+
+class TestDurationParsing:
+
+    def test_parse_no_unit_is_seconds(self):
+        """ When no unit is provided, the duration parser supposes it's seconds """
+        d = parse_duration("12")
+        assert d == 12, d
+
+    def test_parse_seconds(self):
+        """ should interpret s as seconds """
+        d = parse_duration("12s")
+        assert d == 12, d
+
+    def test_parse_bad_expression(self):
+        """ Should raise if the expression isn't a duration"""
+        try:
+            d = parse_duration("Not a number, Bro")
+            assert False, "Should have raised"
+        except ValueError as e:
+            assert True
+
+    def test_parse_empty(self):
+        """ Should raise if the expression isn't a duration"""
+        try:
+            d = parse_duration("")
+            assert False, "Should have raised"
+        except ValueError as e:
+            assert True
+
+    def test_parse_minutes_secs(self):
+        """ A duration can have minutes and seconds """
+        d = parse_duration("14min 12s")
+        assert d == 14*60 + 12, d
+
+    def test_parse_minutes(self):
+        """ A duration can have only minutes """
+        d = parse_duration("14min")
+        assert d == 14*60, d
+
+    def test_parse_several_spaces(self):
+        """ Figures and units also parts of the duration can be separated by any number of spaces """
+        d = parse_duration("14  min     12 s")
+        assert d == 14*60 + 12, d
+
+    def test_parse_hours(self):
+        """ A duration can have hours """
+        d = parse_duration("3 h 12s")
+        assert d == 3*3600 + 12, d
+
+    def test_parse_days(self):
+        """ A duration can have days """
+        d = parse_duration("4d 12s")
+        assert d == 4*24*3600 + 12, d

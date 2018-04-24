@@ -1,15 +1,11 @@
 from datetime import timedelta
 from os import path, error
+from re import compile
 
 
 KB = 1024
 MB = 1024 * 1024
 GB = 1024 * 1024 * 1024
-
-
-ONE_MINUTE = timedelta(minutes=1)
-ONE_HOUR = timedelta(hours=1)
-ONE_DAY = timedelta(days=1)
 
 
 def round_after_dot(num, precision):
@@ -42,6 +38,11 @@ def nice_file_size(filename, running):
         return ""
 
 
+ONE_MINUTE = timedelta(minutes=1)
+ONE_HOUR = timedelta(hours=1)
+ONE_DAY = timedelta(days=1)
+
+
 def nice_duration(seconds):
     delta = timedelta(seconds=seconds)
     if delta < ONE_MINUTE:
@@ -57,3 +58,33 @@ def nice_duration(seconds):
     else:
         hours = (seconds - delta.days * 3600 * 24) / 3600
         return "{}d {}h".format(delta.days, hours)
+
+
+DURATION_REGEX = compile("^((?P<days>\d+)\s*d)?\s*((?P<hours>\d+)\s*h)?\s*((?P<min>\d+)\s*min)?\s*((?P<sec>\d+)\s*s)?$")
+
+
+def group_value(match_result, group_name):
+    if match_result.group(group_name):
+        return int(match_result.group(group_name))
+    return 0
+
+
+def parse_duration(expression):
+    if not expression:
+        raise ValueError("Duration can't be empty")
+
+    try:
+        sec = int(expression)
+        return sec
+    except ValueError:
+        pass
+
+    # Not a simple int, we have to parse
+    m = DURATION_REGEX.match(expression)
+    if m:
+        sec = group_value(m, 'sec')
+        min = group_value(m, 'min')
+        hours = group_value(m, 'hours')
+        days = group_value(m, 'days')
+        return ((((days * 24) + hours ) * 60) + min) * 60 + sec
+    raise ValueError('"{}" is not a valid duration'.format(expression))
