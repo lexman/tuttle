@@ -5,6 +5,7 @@ import sys
 from os.path import abspath, exists
 from argparse import ArgumentParser, ArgumentTypeError
 from tuttle.commands import run, invalidate
+from tuttle.figures_formating import parse_duration
 from tuttle.utils import CurrentDir
 from tuttle.version import version
 
@@ -14,6 +15,22 @@ def check_minus_1_or_positive(value):
     if ivalue == 0 or ivalue < -1:
          raise ArgumentTypeError("%s is an invalid positive int value or -1" % value)
     return ivalue
+
+
+def check_duration(value):
+    if len(value) == 0:
+        raise ArgumentTypeError("Duration can't be empty")
+    try:
+        sec = int(value)
+        if sec < -1:
+                raise ArgumentTypeError("A duration can't be negative (found {})".format(sec))
+        return sec
+    except ValueError:
+        pass
+    try:
+        return parse_duration(value)
+    except ValueError as e:
+        raise ArgumentTypeError(e.message)
 
 
 def tuttle_main():
@@ -33,13 +50,16 @@ def tuttle_main():
                           dest='workspace',
                           help='Directory where the workspace lies. Default is the current directory')
         parent_parser.add_argument('-t', '--threshold',
-                          default='-1',
-                          type=int,
+                          default=-1,
+                          type=check_duration,
                           dest='threshold',
                           help='Threshold for invalidation : \n'
+                               '-1 (default) - no verification\n'
                                '0 - prevents any invalidation \n'
-                               'N - prevents invalidation if lost processing time >= N\n'
-                               '-1 (default) - no verification')
+                               'N - prevents invalidation if lost processing time >= N (in seconds)\n'
+                               'DURATION - prevents invalidation if processing time >= DURATION. DURATION can either be in second or in duration format, eg 4d8h32min5s : 4 days, 8 hours, 32 minutes 5 seconds'
+
+                          )
         subparsers = parser.add_subparsers(help='commands help', dest='command')
         parser_run = subparsers.add_parser('run', parents=[parent_parser],
                                            help='Run the missing part of workflow')

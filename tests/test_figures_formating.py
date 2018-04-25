@@ -81,14 +81,6 @@ class TestDurationParsing:
         except ValueError as e:
             assert True
 
-    def test_parse_empty(self):
-        """ Should raise if the expression isn't a duration"""
-        try:
-            d = parse_duration("")
-            assert False, "Should have raised"
-        except ValueError as e:
-            assert True
-
     def test_parse_minutes_secs(self):
         """ A duration can have minutes and seconds """
         d = parse_duration("14min 12s")

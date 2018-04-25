@@ -121,6 +121,51 @@ file://C <- file://B
         assert isfile('B'), output
 
     @isolate(['A'])
+    def test_duration_threshold_in_command_line_run(self):
+        """ The threshold -t parameter could be a duration string eg 3h2min """
+
+        project = """file://B <- file://A
+    echo A produces B > B
+"""
+        with open('tuttlefile', "w") as f:
+            f.write(project)
+        proc = Popen(['tuttle', 'run', '-t', '3min2s'], stdout=PIPE)
+        output = proc.stdout.read()
+        rcode = proc.wait()
+        assert rcode == 0, output
+
+    @isolate(['A'])
+    def test_bad_duration_threshold_error(self):
+        """ If the threshold -t parameter has a bad value, tuttle should display an error """
+
+        project = """file://B <- file://A
+    echo A produces B > B
+"""
+        with open('tuttlefile', "w") as f:
+            f.write(project)
+        proc = Popen(['tuttle', 'run', '-t', '3min2s4ms'], stdout=PIPE, stderr=PIPE)
+        errormsg = proc.stderr.read()
+        rcode = proc.wait()
+        assert rcode == 2, errormsg
+        assert errormsg.find('valid duration') >= 0, errormsg
+
+
+    @isolate(['A'])
+    def test_negative_threshold_in_command_line_run(self):
+        """ The threshold -t parameter can't be negative """
+
+        project = """file://B <- file://A
+    echo A produces B > B
+"""
+        with open('tuttlefile', "w") as f:
+            f.write(project)
+        proc = Popen(['tuttle', 'run', '-t', '-2'], stdout=PIPE, stderr=PIPE)
+        errormsg = proc.stderr.read()
+        rcode = proc.wait()
+        assert rcode == 2, errormsg
+        assert errormsg.find('negative') >= 0, errormsg
+
+    @isolate(['A'])
     def test_ignore_default_threshold(self):
         """ Threshold should be ignored if not provided or left to default value"""
         first = """file://B <- file://A

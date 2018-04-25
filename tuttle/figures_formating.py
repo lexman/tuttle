@@ -70,18 +70,6 @@ def group_value(match_result, group_name):
 
 
 def parse_duration(expression):
-    if not expression:
-        raise ValueError("Duration can't be empty")
-
-    try:
-        sec = int(expression)
-        if sec < 0:
-            raise ValueError("A duration can't be negative (found {})".format(sec))
-
-        return sec
-    except ValueError:
-        pass
-
     # Not a simple int, we have to parse
     m = DURATION_REGEX.match(expression)
     if m:
