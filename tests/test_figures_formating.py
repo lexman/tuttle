@@ -55,11 +55,6 @@ class TestDurationFormating:
 
 class TestDurationParsing:
 
-    def test_parse_no_unit_is_seconds(self):
-        """ When no unit is provided, the duration parser supposes it's seconds """
-        d = parse_duration("12")
-        assert d == 12, d
-
     def test_parse_negative_value(self):
         """ Should raise if the expression is negative because a duration can't be negative"""
         try:
