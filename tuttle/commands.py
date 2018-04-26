@@ -84,6 +84,9 @@ def run(tuttlefile, threshold=-1, nb_workers=-1, keep_going=False, check_integri
         return 2
 
     previous_workflow = Workflow.load()
+    if previous_workflow:
+        # TODO : check that tuttle is not running before running again !
+        WorkflowRunner.mark_unfinished_processes_as_failure(previous_workflow)
 
     inv_collector = InvalidCollector(previous_workflow)
     inv_collector.retrieve_common_processes_form_previous(workflow)
