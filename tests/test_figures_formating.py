@@ -52,6 +52,11 @@ class TestDurationFormating:
         nice = nice_duration(1000000)
         assert nice == "11d 13h", nice
 
+    def test_nice_duration_ms(self):
+        """ A duration must be rounded to seconds"""
+        nice = nice_duration(73.3)
+        assert nice == "1min 13s", nice
+
 
 class TestDurationParsing:
 

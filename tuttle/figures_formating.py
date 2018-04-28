@@ -43,20 +43,21 @@ ONE_HOUR = timedelta(hours=1)
 ONE_DAY = timedelta(days=1)
 
 
-def nice_duration(seconds):
-    delta = timedelta(seconds=seconds)
+def nice_duration(duration):
+    duration_in_s = int(duration)
+    delta = timedelta(seconds=duration_in_s)
     if delta < ONE_MINUTE:
         return "{}s".format(delta.seconds)
     elif delta < ONE_HOUR:
-        minutes = seconds / 60
-        sec = seconds % 60
-        return "{}min {}s".format(minutes, sec)
+        minutes = duration_in_s / 60
+        seconds = duration_in_s % 60
+        return "{}min {}s".format(minutes, seconds)
     elif delta < ONE_DAY:
-        hours = seconds / 3600
-        minutes = (seconds - hours * 3600) / 60
+        hours = duration_in_s / 3600
+        minutes = (duration_in_s - hours * 3600) / 60
         return "{}h {}min".format(hours, minutes)
     else:
-        hours = (seconds - delta.days * 3600 * 24) / 3600
+        hours = (duration_in_s - delta.days * 3600 * 24) / 3600
         return "{}d {}h".format(delta.days, hours)
 
 
