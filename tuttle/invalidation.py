@@ -8,10 +8,10 @@ NO_LONGER_CREATED = "Resource no longer created by the newer process"
 NOT_SAME_INPUTS = "Resource was created with different inputs"
 PROCESS_HAS_CHANGED = "Process code has changed"
 PROCESSOR_HAS_CHANGED = "Processor has changed"
-RESOURCE_HAS_CHANGED = "Primary resource has changed"
+RESOURCE_HAS_CHANGED = "Resource depends on primary resource {} which has changed"
 RESOURCE_INTEGRITY = "Resource has changed outside of tuttle"
 NOT_SAME_OUTPUTS = "Other outputs from same process have changed"
-DEPENDENCY_CHANGED = "Resource depends on {} that have changed"
+DEPENDENCY_CHANGED = "Resource depends on {} which is not valid anymore"
 BROTHER_INVALID = "Resource is created along with {} that is invalid"
 BROTHER_MISSING = "Resource is created along with {} that is missing"
 BROTHER_INTEGRITY = "Resource is created along with {} that have changed outside of tuttle"
@@ -96,7 +96,8 @@ class InvalidCollector:
             if input_resource.is_primary():
                 if self._previous_workflow:
                     if self._previous_workflow.signature(input_resource.url) != workflow.signature(input_resource.url):
-                        self.collect_process_and_available_outputs(workflow, process, RESOURCE_HAS_CHANGED)
+                        reason = RESOURCE_HAS_CHANGED.format(input_resource.url)
+                        self.collect_process_and_available_outputs(workflow, process, reason)
                         # All outputs have been invalidated, no need to dig further
                         return
             elif self.resource_invalid(input_resource.url):

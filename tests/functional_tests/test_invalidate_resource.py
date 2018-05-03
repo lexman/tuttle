@@ -7,8 +7,7 @@ from nose.plugins.skip import SkipTest
 
 from tests import online
 from tests.functional_tests import isolate, run_tuttle_file
-from tuttle.invalidation import NO_LONGER_CREATED, NOT_SAME_INPUTS, PROCESS_HAS_CHANGED, PROCESSOR_HAS_CHANGED, \
-    RESOURCE_HAS_CHANGED
+from tuttle.invalidation import NO_LONGER_CREATED, NOT_SAME_INPUTS, PROCESS_HAS_CHANGED, PROCESSOR_HAS_CHANGED
 from tuttle.project_parser import ProjectParser
 
 
@@ -173,7 +172,7 @@ file://C <- file://B
         assert output.find('* file://A') == -1, output
         assert output.find('* file://B') >= 0, output
         assert output.find('A produces B') >= 0, output
-        assert output.find(RESOURCE_HAS_CHANGED) >= 0, output
+        assert output.find("file://A which has changed") >= 0, output
 
     @isolate(['A'])
     def test_modified_primary_resource_should_invalidate_dependencies_in_cascade(self):
@@ -194,6 +193,7 @@ file://C <- file://B
         rcode, output = run_tuttle_file(project)
         assert rcode == 0, output
         assert output.find('* file://A') == -1, output
+        assert output.find('file://A which has changed') >= 0, output
         assert output.find('* file://B') >= 0, output
         assert output.find('* file://C') >= 0, output
         assert output.find('A produces B') >= 0, output
