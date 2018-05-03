@@ -4,6 +4,7 @@ tuttle (0.6-1) UNRELEASED; urgency=medium
   * Dependency graph from left to right is easier to read than top to bottom
   * Logs can be accessed from report even if the process is not complete yet
   * Link in report to find definition of process that creates a resource
+  * Nicer durations in hours, minutes, seconds
   * odbc resources and processor for handling any SQL database
   * ftp resources. Available for download processor
   * Download processor uses curl witch makes it more robusts for long downloads

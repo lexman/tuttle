@@ -8,11 +8,12 @@ New on Version 0.6
 * Dependency graph from left to right is easier to read than top to bottom
 * Logs can be accessed even if the process is not complete yet
 * Link to find definition of process that creates a resource
+* Nicer durations in hours, minutes, seconds
 
 ## Resources and processors
 * odbc resources and processor for handling any SQL database
 * ftp resources. Available for download processor
-* Download processor uses curl witch makes it more robusts for long downloads
+* Download processor uses curl witch makes it more robust for long downloads
 * Download processor can have multiple inputs, in order to ensure downloading in a subdirectory
 * hdfs resources
 
