@@ -68,7 +68,7 @@ def print_abort_on_threshold(inv_duration, threshold):
 
 
 def print_lost_sec(inv_duration):
-    print("{} seconds of processing will be lost".format(inv_duration))
+    print("{} seconds of processing will be lost".format(nice_duration(inv_duration)))
 
 
 def run(tuttlefile, threshold=-1, nb_workers=-1, keep_going=False, check_integrity=False):
