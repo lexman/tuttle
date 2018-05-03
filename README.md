@@ -7,7 +7,7 @@ April 7th : Version 0.6 Alpha 2 is [available](https://github.com/lexman/tuttle/
 This tool has been designed to help you create data as a team in an industrial environment, with reliability in mind.
 
 Whether you change the scripts, merge your work with teammate's, checkout another branch of code, Tuttle will re-compute the data for you, but only the part that changed.
-Most of all, Tuttle GUARANTIES the result you expect from your source files, every time you run it, onn every plateform.
+Most of all, Tuttle GUARANTIES the result you expect from your source files, every time you run it, on every plateform.
 
 
 # Syntax
