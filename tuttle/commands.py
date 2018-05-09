@@ -62,8 +62,8 @@ def print_earlier_failures():
 
 
 def print_abort_on_threshold(inv_duration, threshold):
-    msg = "You were about to loose {} seconds of processing time (which exceeds the {} seconds " \
-          "threshold). \nAborting... ".format(nice_duration(inv_duration), threshold)
+    msg = "You were about to loose {} seconds of processing time (which exceeds the {} " \
+          "threshold). \nAborting... ".format(nice_duration(inv_duration), nice_duration(threshold))
     print(msg)
 
 
