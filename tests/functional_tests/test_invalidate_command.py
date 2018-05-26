@@ -70,8 +70,8 @@ file://C <- file://B
         assert rcode == 0, output
         assert output.find('* file://B') >= 0, output
         assert output.find('* file://C') >= 0, output
-        assert output.find(' seconds') >= 0, output
-        assert output.find('\n0 seconds') == -1, output
+        assert output.find('s of processing will be lost') >= 0, output
+        assert output.find('\n0s') == -1, output
         assert not isfile('B'), output
         assert not isfile('C'), output
 
