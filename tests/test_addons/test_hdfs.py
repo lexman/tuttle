@@ -99,20 +99,20 @@ def install_hadoop():
     except:
         hadoop_path = join('tests', 'hadoop')
     if not exists(hadoop_path):
-        print("Installing hadoop 2.9.0 in {}".format(hadoop_path))
-        url = "http://apache.mediamirrors.org/hadoop/common/stable2/hadoop-2.9.0.tar.gz"
-        if not exists("hadoop-2.9.0.tar.gz"):
+        print("Installing hadoop 2.9.1 in {}".format(hadoop_path))
+        url = "http://apache.mirrors.ovh.net/ftp.apache.org/dist/hadoop/common/hadoop-2.9.1/hadoop-2.9.1.tar.gz"
+        if not exists("hadoop-2.9.1.tar.gz"):
             print("Downloading from {} to {}".format(url, getcwd()))
-            urlretrieve(url, "hadoop-2.9.0.tar.gz")
+            urlretrieve(url, "hadoop-2.9.1.tar.gz")
         print("Unzipping to {}".format(hadoop_path))
-        unpack_tarfile("hadoop-2.9.0.tar.gz", hadoop_path)
+        unpack_tarfile("hadoop-2.9.1.tar.gz", hadoop_path)
         if os.name=="posix":
             with open(join(hadoop_path, "vars.sh"), "w") as f:
-                f.write('export HADOOP_HOME="{}"\n'.format(join(hadoop_path, "hadoop-2.9.0")))
+                f.write('export HADOOP_HOME="{}"\n'.format(join(hadoop_path, "hadoop-2.9.1")))
         if os.name=="nt":
             with open(join(hadoop_path, "vars.bat"), "w") as f:
-                f.write('HADOOP_HOME="{}"\n'.format(join(hadoop_path, "hadoop-2.9.0")))
-        remove("hadoop-2.9.0.tar.gz")
+                f.write('HADOOP_HOME="{}"\n'.format(join(hadoop_path, "hadoop-2.9.1")))
+        remove("hadoop-2.9.1.tar.gz")
 
     else:
         print("Hadoop already installed in {}".format(hadoop_path))
